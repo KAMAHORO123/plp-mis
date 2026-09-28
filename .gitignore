@@ -1,0 +1,18 @@
+node_modules
+
+.env
+.env.*
+!.env.example
+
+playwright-report/
+test-results/
+
+# Generated builds, previews, and local tooling
+dist/
+dist-ssr/
+output/
+*.tsbuildinfo
+.DS_Store
+*.log
+.idea/
+.vscode/
