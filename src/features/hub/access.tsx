@@ -11,6 +11,8 @@ import {
 import {
   ArrowRight,
   LockKeyhole,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { categories, type HubRole } from "./data";
 import { createPasswordHash, verifyPassword, today, uid, useHub, type Profile } from "./store";
@@ -56,6 +58,19 @@ function returnDestination(value: string | null) {
     ? value
     : "/hub";
 }
+function PasswordField({ label, name, creating = false }: { label: string; name: string; creating?: boolean }) {
+  const [visible, setVisible] = useState(false);
+  const id = `hub-${name}`;
+  return <div className="hub-field">
+    <label htmlFor={id}>{label}</label>
+    <div style={{ position: 'relative' }}>
+      <input id={id} name={name} required type={visible ? 'text' : 'password'} autoComplete={creating ? 'new-password' : 'current-password'} minLength={creating ? 8 : undefined} maxLength={creating ? 128 : undefined} placeholder={name === 'confirmPassword' ? 'Re-enter your password' : creating ? 'At least 8 characters' : 'Enter your password'} style={{ width: '100%', paddingRight: 48 }} />
+      <button type="button" aria-label={`${visible ? 'Hide' : 'Show'} ${label.toLowerCase()}`} aria-controls={id} aria-pressed={visible} onClick={() => setVisible(!visible)} style={{ position: 'absolute', right: 4, top: '50%', transform: 'translateY(-50%)', width: 40, height: 40, display: 'grid', placeItems: 'center', color: '#52677d', borderRadius: 6 }}>
+        {visible ? <EyeOff size={19} aria-hidden="true" /> : <Eye size={19} aria-hidden="true" />}
+      </button>
+    </div>
+  </div>;
+}
 export function SignInPage() {
   const { state, profile, session, isMember, openSession, update } = useHub();
   const [params] = useSearchParams();
@@ -70,7 +85,6 @@ export function SignInPage() {
         <img src="/favicon.svg" alt="" className="mx-auto mb-4 h-14 w-14" />
         <Heading
           title="Welcome back"
-          description="Sign in with your email and password to continue your PLP journey."
         />
         <form
           className="hub-form"
@@ -119,15 +133,7 @@ export function SignInPage() {
               defaultValue={session ? profile.email : ""}
             />
           </Field>
-          <Field label="Password">
-            <input
-              name="password"
-              required
-              type="password"
-              autoComplete="current-password"
-              placeholder="Enter your password"
-            />
-          </Field>
+          <PasswordField label="Password" name="password" />
           {error && (
             <p role="alert" className="hub-access-error">
               {error}
@@ -138,9 +144,6 @@ export function SignInPage() {
             <ArrowRight size={16} />
           </button>
         </form>
-        <p className="hub-caption hub-space">
-          Preview accounts are saved in this browser only.
-        </p>
         <p>
           New to PLP?{" "}
           <Link to="/join" className="hub-text-link">
@@ -149,7 +152,7 @@ export function SignInPage() {
         </p>
         <details className="hub-dev-note" open>
           <summary>Explore demo dashboards</summary>
-          <p className="hub-caption">Shared demo password: <strong>PlpDemo2026!</strong>. These accounts use local sample data only.</p>
+          <p className="hub-caption">Demo password: <strong>PlpDemo2026!</strong></p>
           <div className="ws-demo-grid">{demoAccounts.map(account=><button key={account.id} onClick={()=>{if(openSession(account.id,"member"))navigate("/hub");}}>{account.role === "Community member" ? "Member" : account.role}<small>{account.email}</small></button>)}</div>
         </details>
       </Panel>
@@ -162,6 +165,7 @@ export function JoinPage() {
   const [params] = useSearchParams();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [accountRole, setAccountRole] = useState("Member");
   const token = params.get("invite");
   const invitation = state.invitations.find(
     (i) => i.code === token && !i.usedBy && !i.revoked,
@@ -185,9 +189,7 @@ export function JoinPage() {
   return (
     <div className="hub-section hub-narrow">
       <Heading
-        eyebrow="BELONG. LEARN. CONTRIBUTE."
         title="Join PLP"
-        description="Create your account and start learning, connecting, and contributing right away."
       />
       {token && (
         <p className={validInvitation ? "hub-feedback" : "hub-access-error"}>
@@ -210,6 +212,10 @@ export function JoinPage() {
               setError(
                 "Enter your name and a password of at least 8 characters.",
               );
+              return;
+            }
+            if (password !== String(f.get("confirmPassword"))) {
+              setError("Passwords do not match. Please confirm your password.");
               return;
             }
             if (state.profiles.some((p) => p.email.toLowerCase() === email)) {
@@ -235,7 +241,8 @@ export function JoinPage() {
                 role: f.get("category") === "High school" ? "Student member" : f.get("category") === "University" ? "University member" : "Community member",
                 memberCategory: String(f.get("category") || "Community"),
                 requestedRole: f.get("accountRole") === "Member" ? undefined : String(f.get("accountRole")),
-                schoolId: f.get("school") ? String(f.get("school")) : undefined,
+                schoolName: String(f.get("school") || "").trim().toUpperCase() || undefined,
+                schoolId: demoSchools.find(s => s.name.toUpperCase() === String(f.get("school") || "").trim().toUpperCase())?.id,
                 bio: "",
                 skills: [],
                 leadership: [],
@@ -283,14 +290,12 @@ export function JoinPage() {
             />
           </Field>
           <Field label="Account type">
-            <select name="accountRole"><option>Member</option><option>Club leader</option><option>School coordinator</option><option>Trainer</option></select>
+            <select name="accountRole" value={accountRole} onChange={e => setAccountRole(e.target.value)}><option>Member</option><option>School coordinator</option><option>Trainer</option></select>
           </Field>
-          <p className="hub-caption">Members start immediately. Club leader, coordinator, and trainer access is activated by PLP after verifying your assignment. To explore staff dashboards now, use a demo account on Sign in.</p>
-          <Field label="Member category"><select name="category"><option>Community</option><option>High school</option><option>University</option></select></Field>
-          <Field label="School (if applicable)"><select name="school"><option value="">Not affiliated with a school</option>{demoSchools.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></Field>
-          <Field label="Password">
-            <input name="password" type="password" autoComplete="new-password" required minLength={8} maxLength={128} placeholder="At least 8 characters" />
-          </Field>
+          {accountRole === "Member" && <Field label="Member category"><select name="category"><option>Community</option><option>High school</option><option>University</option></select></Field>}
+          <Field label="School (if applicable)"><input name="school" list="school-suggestions" maxLength={160} autoCapitalize="characters" placeholder="TYPE YOUR SCHOOL NAME" onChange={e => { e.currentTarget.value = e.currentTarget.value.toUpperCase(); }}/><datalist id="school-suggestions">{demoSchools.map(s=><option key={s.id} value={s.name.toUpperCase()}/>)}</datalist></Field>
+          <PasswordField label="Password" name="password" creating />
+          <PasswordField label="Confirm password" name="confirmPassword" creating />
           {error && (
             <p role="alert" className="hub-access-error">
               {error}
@@ -301,9 +306,6 @@ export function JoinPage() {
             <ArrowRight size={17} />
           </button>
         </form>
-        <p className="hub-caption">
-          Preview accounts are saved in this browser only.
-        </p>
         <TextLink to="/sign-in">Already a member? Sign in</TextLink>
       </Panel>
     </div>

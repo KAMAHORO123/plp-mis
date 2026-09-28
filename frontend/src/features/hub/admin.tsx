@@ -1,7 +1,8 @@
+import { CourseManagement } from "./course-management";
 import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
-import { BarChart3, BookOpen, Users } from "lucide-react";
+import { BarChart3, Users } from "lucide-react";
 import {
   alxPrograms,
   categories,
@@ -56,195 +57,7 @@ export function StudioPage() {
           </button>
         ))}
       </div>
-      {tab === "Courses" && (
-        <>
-          <div className="hub-stack">
-            {managedCourses.map((c) => (
-              <Panel key={c.id}>
-                <div className="hub-row">
-                  <div>
-                    <Tag>{c.category}</Tag>
-                    <h3>{c.title}</h3>
-                    <p>
-                      {c.lessons.length} lessons ·{" "}
-                      {
-                        state.enrollments.filter((e) => e.courseId === c.id)
-                          .length
-                      }{" "}
-                      enrollments
-                    </p>
-                  </div>
-                  {admin && (
-                    <Field label={`Trainer for ${c.title}`}>
-                      <select
-                        aria-label={`Trainer for ${c.title}`}
-                        value={c.ownerId || ""}
-                        onChange={(e) =>
-                          update((s) => {
-                            s.courses.find((x) => x.id === c.id)!.ownerId =
-                              e.target.value;
-                          })
-                        }
-                      >
-                        <option value="">Unassigned</option>
-                        {state.profiles
-                          .filter(
-                            (p) =>
-                              p.role === "Trainer" &&
-                              p.membership === "Approved",
-                          )
-                          .map((p) => (
-                            <option key={p.id} value={p.id}>
-                              {p.name}
-                            </option>
-                          ))}
-                      </select>
-                    </Field>
-                  )}
-                  <button
-                    className="hub-button secondary"
-                    onClick={() =>
-                      update((s) => {
-                        const course = s.courses.find((x) => x.id === c.id)!;
-                        course.published = !course.published;
-                      })
-                    }
-                  >
-                    {c.published ? "Unpublish" : "Publish"}
-                  </button>
-                </div>
-              </Panel>
-            ))}
-          </div>
-          <Panel className="hub-space">
-            <h2>Create a course</h2>
-            <p>
-              Start with one focused lesson, a practical assignment, and a
-              knowledge check. Publish when it is ready.
-            </p>
-            <form
-              className="hub-form"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.currentTarget;
-                const f = new FormData(form);
-                const str = (key: string) => String(f.get(key)).trim();
-                if (
-                  update((s) => {
-                    s.courses.push({
-                      id: uid(),
-                      ownerId: profile.id,
-                      title: str("title"),
-                      category: str("category"),
-                      summary: str("summary"),
-                      duration: str("duration"),
-                      level: str("level"),
-                      skills: str("skills")
-                        .split(",")
-                        .map((x) => x.trim())
-                        .filter(Boolean),
-                      lessons: [
-                        { title: str("lessonTitle"), content: str("lesson") },
-                      ],
-                      assignment: str("assignment"),
-                      question: str("question"),
-                      options: [str("option0"), str("option1"), str("option2")],
-                      answer: Number(f.get("answer")),
-                      published: false,
-                    });
-                  })
-                ) {
-                  form.reset();
-                  toast.success("Course saved as a draft");
-                }
-              }}
-            >
-              <div className="hub-grid two">
-                <Field label="Course title">
-                  <input name="title" required minLength={3} maxLength={100} />
-                </Field>
-                <Field label="Category">
-                  <select name="category">
-                    {categories.map((c) => (
-                      <option key={c}>{c}</option>
-                    ))}
-                  </select>
-                </Field>
-                <Field label="Level">
-                  <select name="level">
-                    <option>Beginner</option>
-                    <option>Intermediate</option>
-                    <option>Advanced</option>
-                  </select>
-                </Field>
-                <Field label="Estimated duration">
-                  <input
-                    name="duration"
-                    placeholder="30 min"
-                    required
-                    maxLength={30}
-                  />
-                </Field>
-              </div>
-              <Field label="Course summary">
-                <textarea
-                  name="summary"
-                  required
-                  minLength={20}
-                  maxLength={500}
-                />
-              </Field>
-              <Field label="Skills (comma separated)">
-                <input name="skills" required maxLength={300} />
-              </Field>
-              <Field label="Lesson title">
-                <input name="lessonTitle" required maxLength={100} />
-              </Field>
-              <Field label="Lesson content">
-                <textarea
-                  name="lesson"
-                  required
-                  minLength={80}
-                  maxLength={10000}
-                />
-              </Field>
-              <Field label="Assignment instructions">
-                <textarea
-                  name="assignment"
-                  required
-                  minLength={20}
-                  maxLength={1500}
-                />
-              </Field>
-              <Field label="Assessment question">
-                <input
-                  name="question"
-                  required
-                  minLength={10}
-                  maxLength={250}
-                />
-              </Field>
-              {[0, 1, 2].map((i) => (
-                <Field key={i} label={`Answer option ${i + 1}`}>
-                  <input name={`option${i}`} required maxLength={250} />
-                </Field>
-              ))}
-              <Field label="Correct answer">
-                <select name="answer">
-                  {[0, 1, 2].map((i) => (
-                    <option key={i} value={i}>
-                      Option {i + 1}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <button className="hub-button">
-                <BookOpen size={17} /> Save draft course
-              </button>
-            </form>
-          </Panel>
-        </>
-      )}
+      {tab === "Courses" && <CourseManagement/>}
       {tab === "Assignments" && (
         <div className="hub-stack">
           {assignments.map((e) => (
@@ -269,8 +82,7 @@ export function StudioPage() {
                 <Tag>{p.status}</Tag>
                 <h3>{alxPrograms.find((a) => a.id === p.programId)?.title}</h3>
                 <p>
-                  {state.profiles.find((m) => m.id === p.memberId)?.name} ·{" "}
-                  {p.progress}% reported progress
+                  {state.profiles.find((m) => m.id === p.memberId)?.name}
                 </p>
                 <a
                   href={p.file}
@@ -283,7 +95,6 @@ export function StudioPage() {
                   <div className="hub-actions hub-space">
                     <button
                       className="hub-button"
-                      disabled={p.progress < 100}
                       onClick={() =>
                         update((s) => {
                           s.proofs.find((x) => x.id === p.id)!.status =
@@ -305,11 +116,6 @@ export function StudioPage() {
                       Return for revision
                     </button>
                   </div>
-                )}
-                {p.progress < 100 && (
-                  <p className="hub-caption">
-                    Progress must reach 100% before recognition.
-                  </p>
                 )}
               </Panel>
             ))}

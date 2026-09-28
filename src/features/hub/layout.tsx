@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import {
   ArrowUpRight,
+  ArrowLeft,
   BookOpen,
   BriefcaseBusiness,
   Users,
@@ -20,7 +21,6 @@ import {
   X,
   GraduationCap,
   ChartNoAxesCombined,
-  MessagesSquare,
   PenTool,
   Globe,
   LogOut,
@@ -38,7 +38,6 @@ export const hubNav = [
   { to: "/alx", label: "ALX learning zone", icon: GraduationCap },
   { to: "/opportunities", label: "Opportunities", icon: BriefcaseBusiness },
   { to: "/mentorship", label: "Mentorship", icon: Users },
-  { to: "/community", label: "Community", icon: MessagesSquare },
   { to: "/clubs", label: "Clubs & homegroups", icon: Globe },
   { to: "/passport", label: "Youth passport", icon: Fingerprint },
   { to: "/certificates", label: "My certificates", icon: Award },
@@ -109,23 +108,23 @@ function Layout({ privateWorkspace = false }: { privateWorkspace?: boolean }) {
       ...(admin ? [
         {to:'/memberships',label:'Members & staff',icon:ShieldCheck},
         {to:'/studio',label:'Content studio',icon:PenTool},
-        {to:'/clubs',label:'Clubs & reports',icon:Globe},
+        {to:'/clubs',label:'Activities & requests',icon:Globe},
+        {to:'/learning-materials',label:'Learning materials',icon:BookOpen},
         {to:'/hub-analytics',label:'Impact analytics',icon:ChartNoAxesCombined},
         {to:'/school-members',label:'School registers',icon:Users},
         {to:'/certificate-centre',label:'School certificate requests',icon:Award},
-        {to:'/community',label:'Community',icon:MessagesSquare},
       ] : trainer ? [{to:'/studio',label:'Trainer studio',icon:PenTool}] : coordinator ? [
         {to:'/school-members',label:'School members',icon:Users},
         {to:'/certificate-centre',label:'School certificate requests',icon:Award},
-        {to:'/academy',label:'Learning academy',icon:BookOpen},
+        {to:'/learning-materials',label:'Learning materials',icon:BookOpen},
+        {to:'/clubs',label:'Activities & reports',icon:Globe},
       ] : [
         ...(leader?[{to:'/clubs',label:'Club management',icon:Globe},{to:'/memberships',label:'Club invitations',icon:ShieldCheck}]:[]),
         {to:'/academy',label:'Learning academy',icon:BookOpen},
         {to:'/alx',label:'ALX learning zone',icon:GraduationCap},
         {to:'/opportunities',label:'Opportunities',icon:BriefcaseBusiness},
         {to:'/mentorship',label:'Mentorship',icon:Users},
-        ...(!leader?[{to:'/clubs',label:'Clubs & challenges',icon:Globe}]:[]),
-        {to:'/community',label:'Community',icon:MessagesSquare},
+        ...(!leader?[{to:'/clubs',label:'Clubs & communities',icon:Globe}]:[]),
         {to:'/certificates',label:'My achievements',icon:Award},
         {to:'/credits',label:'PLP credits',icon:Coins},
       ]),
@@ -166,10 +165,10 @@ function Layout({ privateWorkspace = false }: { privateWorkspace?: boolean }) {
         <div className="space-y-3 border-t border-border p-4">
           <Link
             to="/"
-            className="flex items-center gap-2 text-sm text-muted-foreground"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
+            aria-label="Back to website" title="Back to website"
           >
-            <Globe size={16} />
-            PLP website
+            <ArrowLeft size={20} aria-hidden="true" />
           </Link>
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
@@ -251,7 +250,6 @@ function Layout({ privateWorkspace = false }: { privateWorkspace?: boolean }) {
               </p>
             </div>
           </main>
-          <HelpChat />
         </div>
       </div>
     );
@@ -270,8 +268,8 @@ function Layout({ privateWorkspace = false }: { privateWorkspace?: boolean }) {
                 Sign out
               </button>
             ) : (
-              <Link className="text-sm text-primary" to="/">
-                PLP website
+              <Link className="inline-flex h-10 w-10 items-center justify-center rounded-md text-primary hover:bg-secondary" to="/" aria-label="Back to website" title="Back to website">
+                <ArrowLeft size={20} aria-hidden="true" />
               </Link>
             )
           }
@@ -301,8 +299,8 @@ function Layout({ privateWorkspace = false }: { privateWorkspace?: boolean }) {
         <div className="hub-header-actions">
           {privateWorkspace ? (
             <>
-              <Link to="/" className="hub-website-link">
-                PLP website <ArrowUpRight size={15} />
+              <Link to="/" className="hub-website-link" aria-label="Back to website" title="Back to website">
+                <ArrowLeft size={20} aria-hidden="true" />
               </Link>
               <Link to="/passport" className="hub-account">
                 <strong>{profile.name}</strong>
@@ -411,7 +409,7 @@ function Layout({ privateWorkspace = false }: { privateWorkspace?: boolean }) {
           <a href="mailto:info@peaceloveproclaimers.org">Contact PLP</a>
         </footer>
       ) : (
-        <LandingFooter />
+        <><LandingFooter /><HelpChat /></>
       )}
     </div>
   );

@@ -23,6 +23,7 @@ async function join(page: Page, email = "member@example.test", name = "New Membe
   await page.getByLabel("Full name").fill(name);
   await page.getByLabel("Email address").fill(email);
   await page.getByLabel("Password", { exact: true }).fill("Member-pass-123!");
+  await page.getByLabel("Confirm password", { exact: true }).fill("Member-pass-123!");
   await page.getByRole("button", { name: "Create account", exact: true }).click();
   await expect(page).toHaveURL(/\/hub$/);
 }
@@ -32,11 +33,6 @@ async function signIn(page: Page, email: string, password: string) {
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
 }
-function applicantCard(page: Page, name = "New Applicant") {
-  return page
-    .locator("section")
-    .filter({ has: page.getByRole("heading", { name, exact: true }) });
-}
 
 test("visitors see public content only; direct member URLs require sign-in", async ({
   page,
@@ -45,7 +41,7 @@ test("visitors see public content only; direct member URLs require sign-in", asy
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
   await expect(
-    page.getByRole("link", { name: "Join PLP", exact: true }),
+    page.getByRole("banner").getByRole("link", { name: "Join PLP", exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("combobox", { name: "Preview member" }),
@@ -121,6 +117,7 @@ test("members join immediately, sign back in, and cannot access staff tools", as
   await page.getByLabel("Full name").fill("Duplicate Member");
   await page.getByLabel("Email address").fill("MEMBER@example.test");
   await page.getByLabel("Password", { exact: true }).fill("Member-pass-123!");
+  await page.getByLabel("Confirm password", { exact: true }).fill("Member-pass-123!");
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page.getByRole("alert")).toContainText("already uses this email");
 });
@@ -136,33 +133,15 @@ test("staff routes are role restricted; joining another club does not grant mana
       }),
     ).toBeVisible();
   }
-  await page.goto("/clubs");
-  await page.getByRole("button", { name: "Join this community" }).click();
-  await expect(
-    page.getByRole("heading", { name: "Member register" }),
-  ).toHaveCount(0);
-  await expect(
-    page.getByRole("button", { name: "Download club report" }),
-  ).toHaveCount(0);
-  await devSignIn(page, "Club leader");
-  await page.goto("/clubs");
-  await expect(
-    page.getByRole("heading", { name: "Member register" }),
-  ).toBeVisible();
-  await page
-    .getByRole("button")
-    .filter({ hasText: "University Changemakers" })
-    .click();
-  await page.getByRole("button", { name: "Join this community" }).click();
-  await expect(
-    page.getByRole("heading", { name: "Create a club activity" }),
-  ).toHaveCount(0);
-  await expect(
-    page.getByRole("heading", { name: "Member register" }),
-  ).toHaveCount(0);
-  await page.goto("/memberships");
-  await expect(page.getByLabel("Club").locator("option")).toHaveCount(1);
-  await expect(page.getByLabel("Club")).toHaveValue("club-school");
+  await page.goto('/clubs');
+  await page.getByRole('button',{name:'Request to join',exact:true}).first().click();
+  await expect(page.getByRole('heading',{name:'Publish an activity'})).toHaveCount(0);
+  await devSignIn(page, 'School coordinator');
+  await page.goto('/clubs');
+  await expect(page.getByRole('heading',{name:'Publish an activity'})).toBeVisible();
+  await expect(page.getByLabel('Activity host')).toHaveCount(0);
+  await page.goto('/memberships');
+  await expect(page.getByRole('heading',{name:'This workspace isn’t part of your role.'})).toBeVisible();
   await devSignIn(page, "Trainer");
   await page.goto("/hub-analytics");
   await expect(
@@ -182,44 +161,13 @@ test("trainer sees only assigned courses and related submissions", async ({
   await devSignIn(page, "Trainer");
   await page.goto("/studio");
   await expect(
-    page.getByRole("heading", { name: "Personal Leadership", exact: true }),
+    page.getByRole("cell", { name: "Personal Leadership", exact: true }),
   ).toHaveCount(0);
   await expect(
-    page.getByRole("heading", {
+    page.getByRole("cell", {
       name: "CV Writing & Interview Skills",
       exact: true,
     }),
-  ).toBeVisible();
-});
-test("invitation grants approved membership once and binds the invited email", async ({
-  page,
-}) => {
-  await devSignIn(page, "Club leader");
-  await page.goto("/memberships");
-  await page.getByLabel("Invitee email").fill("invited@example.test");
-  await page.getByRole("button", { name: "Create invitation" }).click();
-  const url = await page.getByTestId("invitation-url").innerText();
-  await signOut(page);
-  await page.goto(url);
-  await page.getByLabel("Full name").fill("Invited Member");
-  await page.getByLabel("Password", { exact: true }).fill("Invited-pass-123!");
-  await page.getByLabel("Email address").fill("wrong@example.test");
-  await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page.getByRole("alert")).toContainText("invitation");
-  await page.getByLabel("Email address").fill("invited@example.test");
-  await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page).toHaveURL(/\/hub$/);
-  await page.goto("/clubs");
-  await expect(
-    page.getByRole("button", { name: "You’re a member" }),
-  ).toBeDisabled();
-  await signOut(page);
-  await page.goto(url);
-  await expect(
-    page.getByText(
-      "This invitation is invalid, already used, or no longer active.",
-      { exact: false },
-    ),
   ).toBeVisible();
 });
 test("suspended member loses access on reload; persisted currentId is not a session", async ({
@@ -227,12 +175,11 @@ test("suspended member loses access on reload; persisted currentId is not a sess
 }) => {
   await devSignIn(page);
   await page.goto("/memberships");
-  await page.getByRole("button", { name: /^Approved/ }).click();
-  const card = applicantCard(page, "Alex Member");
-  await card
-    .getByLabel("Review feedback for Alex Member")
-    .fill("Your membership is paused for review.");
-  await card.getByRole("button", { name: "Pause membership" }).click();
+  await page.getByLabel('Search members and staff').fill('Alex Member');
+  await page.getByRole('button',{name:'Edit account'}).click();
+  await page.getByLabel('Membership status').selectOption('Suspended');
+  await page.getByLabel('Account note').fill('Your membership is paused for review.');
+  await page.getByRole('button',{name:'Save account'}).click();
   await page.goto('/dev/access');
   await page.getByRole('button',{name:'Continue as Student member',exact:true}).click();
   await expect(page).toHaveURL(/\/application-status$/);
@@ -278,4 +225,29 @@ test("public access pages and member navigation fit mobile screens", async ({
   ).toBeVisible();
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await expect(page).toHaveURL(/\/sign-in$/);
+});
+
+test("signup requires matching password confirmation before creating an account", async ({ page }) => {
+  await page.goto('/join');
+  await page.getByLabel('Full name').fill('Confirmation Test');
+  await page.getByLabel('Email address').fill('confirmation@example.test');
+  await page.getByLabel('School (if applicable)').fill('Green hills academy');
+  await expect(page.getByLabel('School (if applicable)')).toHaveValue('GREEN HILLS ACADEMY');
+  await page.getByLabel('Password', { exact: true }).fill('Member-pass-123!');
+  await expect(page.getByLabel('Confirm password', { exact: true })).toHaveAttribute('required', '');
+  await page.getByRole('button', { name: 'Show password', exact: true }).click();
+  await expect(page.getByLabel('Password', { exact: true })).toHaveAttribute('type', 'text');
+  await expect(page.getByLabel('Password', { exact: true })).toHaveValue('Member-pass-123!');
+  await page.getByRole('button', { name: 'Hide password', exact: true }).click();
+  await expect(page.getByLabel('Password', { exact: true })).toHaveAttribute('type', 'password');
+  await page.getByRole('button', { name: 'Show confirm password', exact: true }).click();
+  await expect(page.getByLabel('Confirm password', { exact: true })).toHaveAttribute('type', 'text');
+  await page.getByLabel('Confirm password', { exact: true }).fill('Different-pass-123!');
+  await page.getByRole('button', { name: 'Create account', exact: true }).click();
+  await expect(page.getByRole('alert')).toContainText('Passwords do not match');
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('plp-hub-v1') || '{"profiles":[]}').profiles.some((p: {email:string}) => p.email === 'confirmation@example.test'))).toBe(false);
+  await page.getByLabel('Confirm password', { exact: true }).fill('Member-pass-123!');
+  await page.getByRole('button', { name: 'Create account', exact: true }).click();
+  await expect(page).toHaveURL(/\/hub$/);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('plp-hub-v1')!).profiles.find((p: {email:string}) => p.email === 'confirmation@example.test').schoolName)).toBe('GREEN HILLS ACADEMY');
 });

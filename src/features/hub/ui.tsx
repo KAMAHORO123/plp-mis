@@ -9,7 +9,7 @@ export function Heading({
 }: {
   eyebrow?: string;
   title: string;
-  description: string;
+  description?: string;
   action?: ReactNode;
 }) {
   return (
@@ -17,7 +17,7 @@ export function Heading({
       <div>
         {eyebrow && <p className="hub-eyebrow">{eyebrow}</p>}
         <h1>{title}</h1>
-        <p>{description}</p>
+        {description && <p>{description}</p>}
       </div>
       {action}
     </div>

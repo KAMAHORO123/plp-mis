@@ -116,3 +116,6 @@
 .ws-shortcuts strong { display:flex; justify-content:space-between; gap:10px; font-size:13px; color:#1d75db; }
 .ws-shortcuts span { display:block; margin-top:8px; color:#667085; font-size:12px; line-height:1.6; }
 @media(max-width:750px){.ws-shortcuts { grid-template-columns:1fr; }}
+.ops-photos { display:flex; flex-wrap:wrap; gap:12px; margin:16px 0; }
+.ops-photos img { width:160px; height:110px; object-fit:cover; border-radius:8px; }
+.ws-table select { max-width:190px; }

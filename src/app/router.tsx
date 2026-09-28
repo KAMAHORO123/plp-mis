@@ -1,5 +1,8 @@
+import { useHub } from '@/features/hub/store';
+import { AccountProfilePage, LearningMaterialsPage, ActivitiesPage, OperationsAnalyticsPage, SchoolDirectoryPage, SchoolLeaderDashboard } from '@/features/hub/school-operations';
+import { MembershipCertificatesPage } from '@/features/hub/membership-certificates';
 import { RoleDashboard } from '@/features/hub/role-dashboard';
-import { SchoolMembersPage, CertificateCentrePage, CertificateCheckPage } from "@/features/hub/workspaces";
+import { SchoolMembersPage, CertificateCheckPage } from "@/features/hub/workspaces";
 import { lazy, Suspense } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { RootLayout } from "@/app/root-layout";
@@ -27,10 +30,8 @@ import {
 import {
   OpportunitiesPage,
   MentorshipPage,
-  CommunityPage,
 } from "@/features/hub/connect";
-import { ClubsPage } from "@/features/hub/clubs";
-import { StudioPage, AnalyticsPage } from "@/features/hub/admin";
+import { StudioPage } from "@/features/hub/admin";
 
 import {
   JoinPage,
@@ -143,6 +144,10 @@ const withSuspense = (node: React.ReactNode) => (
   <Suspense fallback={<PageLoader />}>{node}</Suspense>
 );
 
+function AcademyRoute(){const {profile}=useHub();return profile.role==='School coordinator'?<Navigate to="/learning-materials" replace/>:<AcademyPage/>;}
+function ProfileRoute(){const {profile}=useHub();return ['Administrator','Trainer','School coordinator','Club leader'].includes(profile.role)?<AccountProfilePage/>:<PassportPage/>;}
+function DashboardRoute(){const {profile}=useHub();return ['School coordinator','Club leader'].includes(profile.role)?<SchoolLeaderDashboard/>:<RoleDashboard/>;}
+function SchoolRegisterRoute(){const {profile}=useHub();return profile.role==='Administrator'?<SchoolDirectoryPage/>:<SchoolMembersPage/>;}
 export const router = createBrowserRouter([
   {
     element: <RootLayout />,
@@ -176,23 +181,23 @@ export const router = createBrowserRouter([
               {
                 element: <MemberWorkspaceLayout />,
                 children: [
-                  { path: "hub", element: <RoleDashboard /> },
-                  { path: "academy", element: <AcademyPage /> },
+                  { path: "hub", element: <DashboardRoute /> },
+                  { path: "academy", element: <AcademyRoute /> },
                   { path: "academy/:id", element: <CoursePage /> },
                   { path: "alx", element: <AlxPage /> },
                   { path: "opportunities", element: <OpportunitiesPage /> },
                   { path: "mentorship", element: <MentorshipPage /> },
-                  { path: "community", element: <CommunityPage /> },
-                  { path: "clubs", element: <ClubsPage /> },
-                  { path: "passport", element: <PassportPage /> },
+                  { path: "community", element: <Navigate to="/clubs" replace /> },
+                  { path: "clubs", element: <ActivitiesPage /> },
+                  { path: "passport", element: <ProfileRoute /> },
                   {
                     path: "profile",
                     element: <Navigate to="/passport" replace />,
                   },
                   { path: "certificates", element: <CertificatesPage /> },
-                  { path: "certificate-centre", element: <CertificateCentrePage /> },
+                  { path: "certificate-centre", element: <MembershipCertificatesPage /> },
                   { path: "learning-certificates", element: <Navigate to="/certificates" replace /> },
-                  { element: <MemberGuard allowed={["School coordinator", "Administrator"]} />, children: [{path:"school-members",element:<SchoolMembersPage/>}] },
+                  { element: <MemberGuard allowed={["School coordinator", "Administrator"]} />, children: [{path:"school-members",element:<SchoolRegisterRoute/>}, {path:"learning-materials",element:<LearningMaterialsPage/>}] },
                   { path: "verify/:id", element: <VerifyPage /> },
                   { path: "credits", element: <CreditsPage /> },
                   {
@@ -204,12 +209,13 @@ export const router = createBrowserRouter([
                   {
                     element: <MemberGuard allowed={["Administrator"]} />,
                     children: [
-                      { path: "hub-analytics", element: <AnalyticsPage /> },
+                      { path: "hub-analytics", element: <OperationsAnalyticsPage /> },
+                      { path: "issued-certificates", element: <Navigate to="/hub" replace /> },
                     ],
                   },
                   {
                     element: (
-                      <MemberGuard allowed={["Administrator", "Club leader"]} />
+                      <MemberGuard allowed={["Administrator"]} />
                     ),
                     children: [
                       { path: "memberships", element: <MembershipsPage /> },

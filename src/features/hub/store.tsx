@@ -1,3 +1,4 @@
+import { emptyOperations, type Operations, type HubFile } from "./operations-data";
 import { demoAccounts, seedSchoolRecords, type SchoolRecords } from "./school-data";
 import {
   createContext,
@@ -30,8 +31,10 @@ export interface Profile {
   credentialHash?: string;
   managedClubIds: string[];
   schoolId?: string;
+  schoolName?: string;
   requestedRole?: string;
   memberCategory?: string;
+  community?: string;
 }
 export interface Enrollment {
   memberId: string;
@@ -61,7 +64,8 @@ export interface Proof {
   id: string;
   memberId: string;
   programId: string;
-  progress: number;
+  /** Legacy local records may retain this; ALX now uses certificate uploads only. */
+  progress?: number;
   file?: string;
   fileName?: string;
   status: "Learning" | "Pending review" | "Recognized" | "Returned";
@@ -114,6 +118,7 @@ export interface Invitation {
 }
 export interface HubState {
   schoolRecords: SchoolRecords;
+  operations: Operations;
   version: 1;
   currentId: string;
   profiles: Profile[];
@@ -133,6 +138,7 @@ export interface HubState {
     memberId: string;
     opportunityId: string;
     note: string;
+    documents?: {kind:string; file:HubFile}[];
     date: string;
   }[];
   saved: { memberId: string; opportunityId: string }[];
@@ -156,6 +162,7 @@ export const uid = () => crypto.randomUUID();
 function seed(): HubState {
   return {
     schoolRecords: seedSchoolRecords(),
+    operations: emptyOperations(),
     version: 1,
     currentId: "demo-0",
     invitations: [],
@@ -210,11 +217,18 @@ function seed(): HubState {
   };
 }
 function withDemoAccounts(state: HubState): HubState {
+  state.operations ??= emptyOperations();
+  for(const a of state.activities) {
+    const id=`legacy-${a.id}`;
+    if(!state.operations.activities.some(x=>x.id===id)) state.operations.activities.push({id,hostId:a.clubId==='club-school'?'school-kigali':a.clubId,title:a.title,date:a.date,description:a.report||'Club activity',type:a.type,hours:a.hours,photos:[],authorId:a.authorId,attendees:a.attendees,report:a.report||undefined,reportedAt:a.report?a.date:undefined,reviewedAt:a.status==='Reviewed'?a.date:undefined});
+  }
+
   const addTrainer = !state.profiles.some(p => p.id === "preview-trainer");
   if (addTrainer) state.courses.forEach(c => { if (c.ownerId === "demo-4") c.ownerId = "preview-trainer"; });
   for (const account of demoAccounts) {
-    if (!state.profiles.some(p => p.id === account.id)) state.profiles.push({ ...account, bio: "Demo account", skills: [], leadership: account.role === "Club leader" ? ["Club leader"] : [], clubIds: account.role === "Club leader" ? ["club-school"] : [], managedClubIds: account.role === "Club leader" ? ["club-school"] : [], joined: today(), membership: "Approved", credentialHash: "pbkdf2:plp-frontend-demo:5898a7037a3cbd6e4f1a3d5412b0264a47bb2ca1c38a5220b559855b785f7e9c" });
+    if (!state.profiles.some(p => p.id === account.id)) state.profiles.push({ ...account, bio: "Demo account", skills: [], leadership: [], clubIds: [], managedClubIds: [], joined: today(), membership: "Approved", credentialHash: "pbkdf2:plp-frontend-demo:5898a7037a3cbd6e4f1a3d5412b0264a47bb2ca1c38a5220b559855b785f7e9c" });
   }
+  state.profiles.forEach(p => { if(p.role === 'Club leader') { p.role='School coordinator'; if(['demo-3','preview-leader'].includes(p.id))p.schoolId??='school-kigali'; } });
   return state;
 }
 function read(): HubState {
@@ -223,6 +237,7 @@ function read(): HubState {
     const fresh = seed();
     if (saved?.version === 1) {
       saved.schoolRecords ??= seedSchoolRecords();
+      saved.operations ??= emptyOperations();
       saved.invitations ??= [];
       saved.membershipRequests ??= [];
       if (Array.isArray(saved.profiles))
@@ -243,7 +258,7 @@ function read(): HubState {
       saved?.version === 1 &&
       Object.keys(fresh).every(
         (key) =>
-          key === "version" || key === "currentId" || key === "schoolRecords" || Array.isArray(saved[key]),
+          key === "version" || key === "currentId" || key === "schoolRecords" || key === "operations" || Array.isArray(saved[key]),
       ) &&
       saved.profiles.some((p: Profile) => p.id === saved.currentId)
     )

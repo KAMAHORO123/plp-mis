@@ -43,7 +43,7 @@ export function CoordinatorProfilePage() {
     e.preventDefault();
     if (!user?.schoolId) return;
     try {
-      await updateSchool.mutateAsync({ id: user.schoolId, data: form });
+      await updateSchool.mutateAsync({ id: user.schoolId, data: { ...form, name: form.name.trim().toUpperCase() } });
       toast.success("School profile updated");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Update failed");
@@ -55,7 +55,7 @@ export function CoordinatorProfilePage() {
       <PageHeader title="School Profile" description="Update your school information and contact details." />
       <Card className="p-5">
         <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2">
-          <div><Label>School Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+          <div><Label>School Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value.toUpperCase() })} /></div>
           <div><Label>District</Label><Input value={form.district} onChange={(e) => setForm({ ...form, district: e.target.value })} /></div>
           <div><Label>Logo URL</Label><Input value={form.logoUrl} onChange={(e) => setForm({ ...form, logoUrl: e.target.value })} /></div>
           <div><Label>Contact Email</Label><Input value={form.contactEmail} onChange={(e) => setForm({ ...form, contactEmail: e.target.value })} /></div>

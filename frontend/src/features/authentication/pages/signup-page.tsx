@@ -62,7 +62,7 @@ export function SignupPage() {
         lastName,
         email: values.email,
         password: values.password,
-        schoolName: values.schoolName,
+        schoolName: values.schoolName.trim().toUpperCase(),
         district: values.district,
         coordinatorPhone: values.phone,
       });
@@ -81,7 +81,7 @@ export function SignupPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <div className="space-y-1.5">
           <Label htmlFor="schoolName">School Name</Label>
-          <Input id="schoolName" placeholder="Your school name" {...register("schoolName")} />
+          <Input id="schoolName" placeholder="Your school name" {...register("schoolName", { onChange: e => { e.target.value = e.target.value.toUpperCase(); } })} autoCapitalize="characters" />
           {errors.schoolName && <p className="text-xs text-destructive">{errors.schoolName.message}</p>}
         </div>
 

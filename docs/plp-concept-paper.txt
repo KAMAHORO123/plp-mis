@@ -1,0 +1,279 @@
+PEACE AND LOVE PROCLAIMERS
+“Youth for a Change”
+Concept Paper for the PLP Hub Platform
+Prepared for: PLP RCA
+1. Executive Summary
+The PLP Hub is envisioned as the official digital learning, talent development, membership
+management, and opportunity platform for Peace and Love Proclaimers (PLP).
+The platform will serve as the backbone of the Discover & Develop Stage of the PLP Pathway,
+enabling young people to discover their potential, build practical skills, earn certifications, access
+opportunities, and prepare for the next stages of their PLP journey.
+The PLP Hub should function as a combination of:
+● Learning Management System (LMS)
+● Youth Development Platform
+● Talent Management System
+● Community Platform
+● Leadership Academy
+● Opportunity Marketplace
+● Digital Portfolio System
+The platform should be accessible through both:
+● Web Application
+● Mobile Application (Phase II)
+2. The PLP Pathway
+The PLP Hub supports the first stage of the PLP ecosystem:
+Tel: (+250) 788 236 141 www.peaceloveproclaimers.org
+Address: Kigali-Rwanda | KG 684St 128 Email : info@peaceloveproclaimers.org
+PEACE AND LOVE PROCLAIMERS
+“Youth for a Change”
+Discover & Develop
+Entry Points
+● PLP Clubs
+● PLP Homegroups
+● Schools
+● Universities
+● Communities
+Young people join PLP and begin their development journey.
+The PLP Hub becomes their learning and development center.
+Through the platform they access:
+● Leadership Development
+● Employability Skills
+● Entrepreneurship
+● Digital Skills
+● Civic & Peace Leadership
+Once they complete learning requirements and gain practical experience, they advance to:
+Do
+(PLP Connect)
+Demonstrate
+(Showcase achievements, ventures, careers, leadership impact)
+3. Platform Objectives
+The PLP Hub should:
+Discover Talent
+Tel: (+250) 788 236 141 www.peaceloveproclaimers.org
+Address: Kigali-Rwanda | KG 684St 128 Email : info@peaceloveproclaimers.org
+PEACE AND LOVE PROCLAIMERS
+“Youth for a Change”
+Identify young people with potential.
+Develop Talent
+Provide structured learning and growth pathways.
+Track Progress
+Monitor member development.
+Certify Learning
+Automatically award certificates.
+Connect Opportunities
+Link members with internships, jobs, projects, mentors, and ventures.
+Build Community
+Create a strong PLP ecosystem.
+4. User Categories
+Student Members
+Secondary school students
+Access:
+● Courses
+● Challenges
+● Certificates
+● Clubs
+Tel: (+250) 788 236 141 www.peaceloveproclaimers.org
+Address: Kigali-Rwanda | KG 684St 128 Email : info@peaceloveproclaimers.org
+PEACE AND LOVE PROCLAIMERS
+“Youth for a Change”
+University Members
+Access:
+● Advanced courses
+● Entrepreneurship resources
+● Internships
+● Career opportunities
+Community Members
+Access:
+● Leadership courses
+● Skills programs
+● Mentorship
+Club Leaders
+Manage:
+● Club members
+● Activities
+● Reports
+Trainers
+Create:
+● Courses
+● Assignments
+● Assessments
+Administrators
+Manage:
+● Users
+Tel: (+250) 788 236 141 www.peaceloveproclaimers.org
+Address: Kigali-Rwanda | KG 684St 128 Email : info@peaceloveproclaimers.org
+PEACE AND LOVE PROCLAIMERS
+“Youth for a Change”
+● Content
+● Analytics
+● Certificates
+● Opportunities
+5. PLP Hub Main Modules
+A. Home Page
+The platform homepage should communicate:
+Who We Are
+● About PLP
+● Vision
+● Mission
+● Impact
+Resources
+● Download Portfolio
+● Download Reports
+● Download Brochures
+Apply to Join PLP
+Success Stories
+Upcoming Events
+Testimonials
+Partner Showcase
+B. Learning Academy
+This becomes the heart of the platform.
+Tel: (+250) 788 236 141 www.peaceloveproclaimers.org
+Address: Kigali-Rwanda | KG 684St 128 Email : info@peaceloveproclaimers.org
+PEACE AND LOVE PROCLAIMERS
+“Youth for a Change”
+Learning Categories
+Leadership Development
+Courses such as:
+● Personal Leadership
+● Servant Leadership
+● Communication
+● Emotional Intelligence
+● Team Management
+Employability Skills
+Courses such as:
+● CV Writing
+● Interview Skills
+● Workplace Readiness
+● Professional Communication
+Entrepreneurship
+Courses such as:
+● Startup Fundamentals
+● Business Modeling
+● Financial Literacy
+● Sales & Marketing
+Digital Skills
+Courses such as:
+● Digital Literacy
+● Graphic Design
+● Data Skills
+● Coding Basics
+● AI Tools
+Civic & Peace Leadership
+Tel: (+250) 788 236 141 www.peaceloveproclaimers.org
+Address: Kigali-Rwanda | KG 684St 128 Email : info@peaceloveproclaimers.org
+PEACE AND LOVE PROCLAIMERS
+“Youth for a Change”
+Courses such as:
+● Active Citizenship
+● Peacebuilding
+● Conflict Resolution
+● Community Leadership
+C. ALX Learning Integration
+Since PLP is partnering with ALX:
+Create a dedicated section called:
+ALX Learning Zone
+Features:
+● ALX Course Catalogue
+● ALX Registration Links
+● Progress Tracking
+● Recommended ALX Courses
+● Success Stories
+When a member completes an ALX course, they can upload proof and earn PLP recognition
+badges.
+D. Digital Certification System
+One of the most important features.
+After course completion:
+The system should automatically generate:
+● Certificates
+● Digital Badges
+Tel: (+250) 788 236 141 www.peaceloveproclaimers.org
+Address: Kigali-Rwanda | KG 684St 128 Email : info@peaceloveproclaimers.org
+PEACE AND LOVE PROCLAIMERS
+“Youth for a Change”
+● Completion Records
+Members should be able to:
+● Download PDF Certificates
+● Share on LinkedIn
+● Verify Certificates using QR Codes
+This reduces administrative workload.
+E. PLP Member Profile
+Every member receives:
+Digital Youth Passport
+Shows:
+● Profile
+● Skills
+● Certifications
+● Learning Progress
+● Club Membership
+● Volunteer Hours
+● Leadership Roles
+● Projects Completed
+Think of it like a professional growth record.
+F. Opportunity Center
+This may become the platform's most valuable feature.
+Members access:
+● Internships
+● Scholarships
+Tel: (+250) 788 236 141 www.peaceloveproclaimers.org
+Address: Kigali-Rwanda | KG 684St 128 Email : info@peaceloveproclaimers.org
+PEACE AND LOVE PROCLAIMERS
+“Youth for a Change”
+● Job Opportunities
+● Fellowships
+● Competitions
+● Grants
+● Volunteer Opportunities
+● Conferences & Summits
+● Training Programs
+G. Mentorship Platform
+Members can book:
+● Mentors
+● Industry Experts
+● Coaches
+Features:
+● Mentor Matching
+● Sessions Tracking
+● Discussion Forums
+6. PLP Clubs Management Module
+Every club gets:
+Club Dashboard
+Contains:
+● Member register
+● Activities
+● Attendance
+● Reports
+Tel: (+250) 788 236 141 www.peaceloveproclaimers.org
+Address: Kigali-Rwanda | KG 684St 128 Email : info@peaceloveproclaimers.org
+PEACE AND LOVE PROCLAIMERS
+“Youth for a Change”
+● Performance
+Club leaders submit reports digitally.
+PLP Headquarters sees all clubs in one dashboard.
+7. Analytics Dashboard
+For administrators.
+Track:
+● Total Members
+● Active Members
+● Courses Completed
+● Certificates Issued
+● Clubs Active
+● Youth Reached
+● Employment Outcomes
+This data becomes useful for donor reporting.
+1. PLP Credits System
+Members earn PLP Credits when they:
+● Complete courses
+● Attend meetings
+● Volunteer
+● Recruit new members
+● Participate in challenges
+Credits can unlock:
+● Premium training
+● Event tickets
+● Merchandise
+Tel: (+250) 788 236 141 www.peaceloveproclaimers.org
+Address: Kigali-Rwanda | KG 684St 128 Email : info@peaceloveproclaimers.org
+PEACE AND LOVE PROCLAIMERS
+“Youth for a Change”
+● Mentorship sessions
+Tel: (+250) 788 236 141 www.peaceloveproclaimers.org
+Address: Kigali-Rwanda | KG 684St 128 Email : info@peaceloveproclaimers.org

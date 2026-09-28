@@ -1,3 +1,4 @@
+import type { HubFile } from "./operations-data";
 export const categories = [
   "Leadership Development",
   "Employability Skills",
@@ -34,6 +35,7 @@ export interface Course {
   answer: number;
   published: boolean;
   ownerId?: string;
+  documents?: HubFile[];
 }
 export const courses: Course[] = [
   {

@@ -10,8 +10,8 @@ import {
   Plus,
 } from "lucide-react";
 import { toast } from "sonner";
-import { clubs, rewards, alxPrograms, mentors } from "./data";
-import { useHub, balance, uid, today, type HubCertificate } from "./store";
+import { clubs, alxPrograms, mentors } from "./data";
+import { useHub, balance, type HubCertificate } from "./store";
 import {
   Empty,
   Field,
@@ -189,6 +189,8 @@ export function JourneyPage() {
 export function PassportPage() {
   const { state, profile, update } = useHub();
   const [edit, setEdit] = useState(false);
+  const schoolAchievements = state.schoolRecords.requests.filter(r => r.status === 'Issued').flatMap(r => r.members.filter(m => m.email && m.email.toLowerCase() === profile.email.toLowerCase()).map(m => ({ id: `${r.id}/${m.id}`, title: r.programme, name: m.name, issued: r.issued, completed: r.completed, schoolId: r.schoolId, verifyUrl: `/certificate-check/${r.id}/${m.id}` })));
+
   const enrollments = state.enrollments.filter(
     (e) => e.memberId === profile.id,
   );
@@ -217,6 +219,7 @@ export function PassportPage() {
                     certificates: state.certificates.filter(
                       (c) => c.memberId === profile.id,
                     ),
+                    schoolCertificates: schoolAchievements,
                     projects,
                     volunteerHours,
                   },
@@ -318,10 +321,9 @@ export function PassportPage() {
           {
             label: "Certificates",
             value: state.certificates.filter((c) => c.memberId === profile.id)
-              .length,
+              .length + schoolAchievements.length,
           },
           { label: "Recorded volunteer hours", value: volunteerHours },
-          { label: "Projects completed", value: projects.length },
         ]}
       />
       <div className="hub-grid two">
@@ -406,73 +408,11 @@ export function PassportPage() {
                 <Tag>ALX recognition</Tag>
               </div>
             ))}
+          {schoolAchievements.map(c => <div className="hub-list-row" key={c.id}><Award size={20}/><Link className="hub-text-link" to={c.verifyUrl}>{c.title}</Link><Tag>School achievement</Tag></div>)}
           <TextLink to="/certificates">View certificates</TextLink>
         </Panel>
       </div>
-      <h2 className="hub-section-title">Projects & demonstrated impact</h2>
-      <div className="hub-grid two">
-        {projects.map((p) => (
-          <Panel key={p.id}>
-            <Tag>Self-reported project</Tag>
-            <h3>{p.title}</h3>
-            <p>{p.description}</p>
-            <p className="hub-caption">
-              {p.date} · {p.hours} project hours
-            </p>
-          </Panel>
-        ))}
-        <Panel>
-          <h3>Add a completed project</h3>
-          <form
-            className="hub-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              const form = e.currentTarget;
-              const f = new FormData(form);
-              if (
-                update((s) => {
-                  s.projects.push({
-                    id: uid(),
-                    memberId: profile.id,
-                    title: String(f.get("title")).trim(),
-                    description: String(f.get("description")).trim(),
-                    hours: Number(f.get("hours")),
-                    date: String(f.get("date")),
-                  });
-                })
-              )
-                form.reset();
-            }}
-          >
-            <Field label="Project title">
-              <input name="title" required minLength={3} maxLength={100} />
-            </Field>
-            <Field label="What changed because of your work?">
-              <textarea
-                name="description"
-                required
-                minLength={20}
-                maxLength={2000}
-              />
-            </Field>
-            <div className="hub-grid two">
-              <Field label="Date completed">
-                <input name="date" type="date" max={today()} required />
-              </Field>
-              <Field label="Hours contributed">
-                <input
-                  name="hours"
-                  type="number"
-                  min="0"
-                  max="10000"
-                  required
-                />
-              </Field>
-            </div>
-            <button className="hub-button">Add project</button>
-          </form>
-        </Panel>
-      </div>
+
     </>
   );
 }
@@ -513,25 +453,28 @@ export async function certificatePDF(c: HubCertificate) {
   doc.addImage(qr, "PNG", 245, 152, 30, 30);
   doc.save(`PLP-${c.courseId}-certificate.pdf`);
 }
-export function CertificatesPage() {
+export function CertificatesPage({ administration = false }: { administration?: boolean }) {
   const { state, profile } = useHub();
-  const list = state.certificates.filter((c) => c.memberId === profile.id);
+  const [query, setQuery] = useState('');
+  const admin = administration && profile.role === 'Administrator';
+  const list = state.certificates.filter(c => (admin || c.memberId === profile.id) && `${c.title} ${c.memberName} ${c.id}`.toLowerCase().includes(query.toLowerCase()));
   return (
     <>
       <Heading
         eyebrow="CELEBRATE YOUR PROGRESS"
-        title="Certificates & digital badges"
-        description="Course achievements are awarded automatically after you complete the lessons, assignment, and assessment."
+        title={admin ? "Issued course certificates" : "Certificates & digital badges"}
+        description={admin ? "Search automatically awarded course records. Course completion needs no manual approval." : "Course achievements are awarded automatically after you complete the lessons, assignment, and assessment."}
       />
       <p className="hub-caption">
         Preview certificates are not official credentials. QR verification works
         only where this browser’s local records are available.
       </p>
-      <Panel className="hub-space"><h2>School-issued achievements</h2><p>School activities completed outside the Academy follow a separate coordinator request and administrator approval process.</p><TextLink to="/certificate-centre">View my school certificates</TextLink></Panel>
+      <Panel className="hub-space"><h2>School-issued achievements</h2><p>School activities completed outside the Academy follow a separate coordinator request and administrator approval process.</p><TextLink to="/certificate-centre">{admin ? "Review school certificate requests" : "View my school certificates"}</TextLink></Panel>
+      {admin && <Field label="Search issued certificates"><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search recipient, programme, or certificate ID"/></Field>}
       {!list.length ? (
         <Empty>
           <Award size={32} />
-          <h2>Your first milestone is waiting.</h2>
+          <h2>{admin ? "No issued course certificates match this view." : "Your first milestone is waiting."}</h2>
           <p>
             Complete a course’s lessons, assignment, and assessment to earn a
             certificate.
@@ -621,7 +564,7 @@ export function VerifyPage() {
   );
 }
 export function CreditsPage() {
-  const { state, profile, update } = useHub();
+  const { state, profile } = useHub();
   const total = balance(state, profile.id);
   const ledger = state.credits.filter((c) => c.memberId === profile.id);
   return (
@@ -671,59 +614,6 @@ export function CreditsPage() {
         participation, once per activity. Course credits are awarded once per
         completed course.
       </p>
-      <h2 className="hub-section-title">Unlock something new</h2>
-      <div className="hub-grid two">
-        {rewards.map((r) => {
-          const claimed = state.redemptions.some(
-            (x) => x.memberId === profile.id && x.rewardId === r.id,
-          );
-          return (
-            <Panel key={r.id}>
-              <Tag>{r.cost} credits</Tag>
-              <h3>{r.title}</h3>
-              <p>{r.detail}</p>
-              <button
-                className="hub-button secondary"
-                disabled={claimed || total < r.cost}
-                onClick={() => {
-                  const ok = update((s) => {
-                    if (
-                      balance(s, profile.id) < r.cost ||
-                      s.redemptions.some(
-                        (x) => x.memberId === profile.id && x.rewardId === r.id,
-                      )
-                    )
-                      return;
-                    s.redemptions.push({
-                      memberId: profile.id,
-                      rewardId: r.id,
-                      date: today(),
-                    });
-                    s.credits.push({
-                      id: uid(),
-                      memberId: profile.id,
-                      source: `reward:${r.id}`,
-                      label: `Redeemed: ${r.title}`,
-                      amount: -r.cost,
-                      date: today(),
-                    });
-                  });
-                  if (ok)
-                    toast.success(
-                      "Preview reward recorded. No order or booking has been placed.",
-                    );
-                }}
-              >
-                {claimed
-                  ? "Reward redeemed"
-                  : total < r.cost
-                    ? `${r.cost - total} more credits needed`
-                    : "Redeem reward"}
-              </button>
-            </Panel>
-          );
-        })}
-      </div>
       <h2 className="hub-section-title">Your credit history</h2>
       <Panel>
         {ledger.length ? (

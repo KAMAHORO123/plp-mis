@@ -175,6 +175,7 @@ export function CoursePage() {
         title={course.title}
         description={course.summary}
       />
+      {enrollment && course.documents?.length ? <Panel><h2>Course documents</h2>{course.documents.map((d,i)=><p key={i}><a className="hub-text-link" href={d.data} download={d.name}>{d.name}</a></p>)}</Panel> : null}
       <div className="hub-course-detail">
         <aside>
           <Panel>
@@ -370,7 +371,7 @@ export function AlxPage() {
       <Heading
         eyebrow="GO FURTHER WITH ALX"
         title="ALX learning zone"
-        description="Explore external learning, track your progress, and submit completion evidence for PLP recognition."
+        description="Upload your ALX completion certificate for PLP recognition."
       />
       <div className="hub-academy-banner alx">
         <div className="hub-alx-logo">ALX</div>
@@ -378,8 +379,7 @@ export function AlxPage() {
           <Tag>Partner learning pathway</Tag>
           <h2>Learn beyond the Hub.</h2>
           <p>
-            Register through the official ALX website. Progress here is
-            self-reported; recognition requires a review in this preview.
+            Complete your course on ALX, then upload your certificate here.
           </p>
           <a
             href="https://www.alxafrica.com/"
@@ -432,7 +432,10 @@ export function AlxPage() {
                   const form = e.currentTarget;
                   const f = new FormData(form);
                   const file = f.get("proof") as File;
-                  const progress = Number(f.get("progress"));
+                  if (!file?.size) {
+                    toast.error("Upload your ALX completion certificate.");
+                    return;
+                  }
                   if (file?.size > 1500000) {
                     toast.error("Choose a PDF or image smaller than 1.5 MB.");
                     return;
@@ -468,12 +471,10 @@ export function AlxPage() {
                           id: uid(),
                           memberId: profile.id,
                           programId: program.id,
-                          progress: 0,
-                          status: "Learning",
+                          status: "Pending review",
                         };
                         s.proofs.push(p);
                       }
-                      p.progress = progress;
                       if (fileData) {
                         p.file = fileData;
                         p.fileName = file.name;
@@ -481,11 +482,7 @@ export function AlxPage() {
                       }
                     });
                     if (ok)
-                      toast.success(
-                        fileData
-                          ? "Proof submitted for local review"
-                          : "Progress saved",
-                      );
+                      { toast.success("Certificate submitted for review"); form.reset(); }
                   } catch {
                     toast.error(
                       "Could not read this file. Please try another.",
@@ -495,20 +492,10 @@ export function AlxPage() {
                   }
                 }}
               >
-                <Field label="Your progress (%)">
-                  <input
-                    type="number"
-                    name="progress"
-                    min="0"
-                    max="100"
-                    required
-                    defaultValue={proof?.progress || 0}
-                    disabled={proof?.status === "Recognized"}
-                  />
-                </Field>
-                <Field label="Completion proof (PDF, PNG, JPG; max 1.5 MB)">
+                <Field label="Completion certificate (PDF, PNG, JPG; max 1.5 MB)">
                   <input
                     name="proof"
+                    required
                     type="file"
                     accept="application/pdf,image/png,image/jpeg"
                     disabled={proof?.status === "Recognized"}
@@ -518,14 +505,13 @@ export function AlxPage() {
                   className="hub-button secondary"
                   disabled={busy || proof?.status === "Recognized"}
                 >
-                  Save progress / submit proof
+                  Submit certificate
                 </button>
               </form>
               <div className="hub-space">
-                <Progress value={proof?.progress || 0} />
-                <Tag>{proof?.status || "Not started"}</Tag>
+                <Tag>{proof?.file ? proof.status : "No certificate submitted"}</Tag>
                 {proof?.fileName && (
-                  <p className="hub-caption">Evidence: {proof.fileName}</p>
+                  <p className="hub-caption">Certificate: {proof.fileName}</p>
                 )}
                 {proof?.status === "Recognized" && (
                   <p className="hub-feedback">ALX recognition badge earned</p>

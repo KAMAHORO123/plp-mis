@@ -1,3 +1,4 @@
+import { readUpload } from "./operations-data";
 import { useState } from "react";
 import {
   Bookmark,
@@ -129,6 +130,7 @@ export function OpportunitiesPage() {
                     Practice application recorded · {applied.date}
                   </strong>
                   <p>{applied.note}</p>
+                  {applied.documents?.map(d=><p key={d.kind}><a href={d.file.data} download={d.file.name}>{d.kind}: {d.file.name}</a></p>)}
                   <button
                     className="hub-text-button"
                     onClick={() =>
@@ -149,11 +151,12 @@ export function OpportunitiesPage() {
               ) : selected === o.id ? (
                 <form
                   className="hub-form"
-                  onSubmit={(e) => {
+                  onSubmit={async (e) => {
                     e.preventDefault();
-                    const note = String(
-                      new FormData(e.currentTarget).get("note"),
-                    ).trim();
+                    const form = new FormData(e.currentTarget);
+                    const note = String(form.get('note')).trim();
+                    let documents: {kind:string;file:Awaited<ReturnType<typeof readUpload>>}[]=[];
+                    try { for(const kind of ['CV','Cover letter','Supporting letter']) { const file=form.get(kind) as File; if(file?.size)documents.push({kind,file:await readUpload(file)}); } } catch(e) { toast.error((e as Error).message); return; }
                     if (
                       update((s) => {
                         if (
@@ -167,6 +170,7 @@ export function OpportunitiesPage() {
                             memberId: profile.id,
                             opportunityId: o.id,
                             note,
+                            documents,
                             date: today(),
                           });
                       })
@@ -184,6 +188,8 @@ export function OpportunitiesPage() {
                       maxLength={1500}
                     />
                   </Field>
+                  {['CV','Cover letter','Supporting letter'].map(kind=><Field key={kind} label={`${kind} (optional)`}><input type="file" name={kind} accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"/></Field>)}
+                  <p className="hub-caption">PDF, DOC, DOCX or image · up to 1.5 MB per file.</p>
                   <div className="hub-actions">
                     <button className="hub-button">
                       Record practice application
