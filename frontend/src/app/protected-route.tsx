@@ -12,7 +12,7 @@ export function ProtectedRoute() {
   }
 
   if (user?.roleCode !== "NATIONAL_ADMIN" && user?.roleCode !== "COORDINATOR") {
-    return <Navigate to="/sign-in" replace />;
+    return <Navigate to="/auth/login" replace />;
   }
   const isCoordinatorRoute = location.pathname.startsWith("/coordinator");
   const isNationalRoute =

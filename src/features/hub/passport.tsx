@@ -1,16 +1,31 @@
-import { useState } from "react";
+import { platformApi } from "./platform-api";
+import { useLiveTick } from './live';
+import { isPlatformId } from "./platform-course";
+import { certificateReference } from "./certificate-id";
+import { downloadCertificatePDF, certificateFileName, courseCertificateDesign, issuedCertificateDesign, type IssuedCertificate } from './certificate-pdf';
+import { CertificateCard } from './certificate-card';
+import { downloadPassportPDF } from './passport-pdf';
+import { ProfileCard, ProfilePanel } from './profile-card';
+import { useOverview, figure, type MemberOverview } from './reports';
+import { FormModal } from './modal';
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowRight,
   Award,
   BookOpen,
+  Clock3,
   Coins,
   Download,
   Fingerprint,
   Plus,
+  PencilLine,
+  Sparkles,
+  Flag,
+  Users,
 } from "lucide-react";
 import { toast } from "sonner";
-import { clubs, alxPrograms, mentors } from "./data";
+import { clubs, mentors } from "./data";
 import { useHub, balance, type HubCertificate } from "./store";
 import {
   Empty,
@@ -21,7 +36,6 @@ import {
   Stats,
   Tag,
   TextLink,
-  downloadText,
 } from "./ui";
 export function JourneyPage() {
   const { state, profile } = useHub();
@@ -188,74 +202,54 @@ export function JourneyPage() {
 }
 export function PassportPage() {
   const { state, profile, update } = useHub();
+  // Server-issued certificates (trainer-built courses and school membership) count alongside local ones.
+  const live = useLiveTick();
+  const [serverCerts, setServerCerts] = useState<{ id: string; kind: string; revoked_at: string | null }[]>([]);
+  useEffect(() => { platformApi<{ id: string; kind: string; revoked_at: string | null }[]>("/certificates").then((rows) => setServerCerts(rows.filter((r) => !r.revoked_at))).catch(() => {}); }, [profile.id, live]);
   const [edit, setEdit] = useState(false);
   const schoolAchievements = state.schoolRecords.requests.filter(r => r.status === 'Issued').flatMap(r => r.members.filter(m => m.email && m.email.toLowerCase() === profile.email.toLowerCase()).map(m => ({ id: `${r.id}/${m.id}`, title: r.programme, name: m.name, issued: r.issued, completed: r.completed, schoolId: r.schoolId, verifyUrl: `/certificate-check/${r.id}/${m.id}` })));
 
   const enrollments = state.enrollments.filter(
     (e) => e.memberId === profile.id,
   );
-  const projects = state.projects.filter((p) => p.memberId === profile.id);
-  const volunteerHours = state.activities
-    .filter(
-      (a) => a.type === "Volunteering" && a.attendees.includes(profile.id),
-    )
-    .reduce((n, a) => n + a.hours, 0);
+  // Learning, attendance and certificates are counted on the server; built-in academy courses live in this browser.
+  const overview = useOverview<MemberOverview>();
+  const volunteerHours = overview?.volunteerHours ?? 0;
+  const downloadPassport = async () => {
+              try {
+                const issued = await platformApi<{ id: string; programme: string; issued_at: string; revoked_at: string | null; kind: string }[]>("/certificates").catch(() => []);
+                const local = state.certificates.filter((c) => c.memberId === profile.id && !issued.some((r) => r.id === c.id));
+                await downloadPassportPDF({
+                  name: profile.name, email: profile.email, role: profile.role, joined: profile.joined, bio: profile.bio, photo: profile.avatarUrl,
+                  skills: profile.skills, leadership: profile.leadership,
+                  communities: clubs.filter((c) => profile.clubIds.includes(c.id)).map((c) => c.name),
+                  credits: balance(state, profile.id), volunteerHours,
+                  coursesInProgress: enrollments.filter((e) => !e.completedAt).map((e) => state.courses.find((c) => c.id === e.courseId)?.title).filter((t): t is string => !!t),
+                  achievements: [
+                    ...issued.filter((r) => !r.revoked_at).map((r) => ({ title: r.programme, kind: r.kind === "school" ? "School membership certificate" : "Course certificate", date: r.issued_at.slice(0, 10), reference: certificateReference(r.id) })),
+                    ...local.map((c) => ({ title: c.title, kind: "Course certificate", date: c.date, reference: c.id })),
+                    ...schoolAchievements.filter(() => !issued.some((r) => r.kind === "school")).map((a) => ({ title: a.title, kind: "School membership certificate", date: a.issued ?? "", reference: a.id })),
+                  ],
+                });
+              } catch { toast.error("The passport PDF could not be created. Try again."); }
+            };
+  const localCertificates = state.certificates.filter((c) => c.memberId === profile.id && !serverCerts.some((r) => r.id === c.id)).length;
+  const courses = overview ? figure(overview.coursesCompleted + enrollments.filter((e) => e.completedAt).length) : "—";
+  const certificates = overview ? figure(overview.certificates + localCertificates) : "—";
+  const communities = clubs.filter((c) => profile.clubIds.includes(c.id));
   return (
-    <>
-      <Heading
-        eyebrow="YOUR GROWTH, IN ONE PLACE"
-        title="Digital youth passport"
-        description="A living record of the skills you build, the people you serve, and the impact you make."
-        action={
-          <button
-            className="hub-button secondary"
-            onClick={() =>
-              downloadText(
-                "plp-youth-passport.json",
-                JSON.stringify(
-                  {
-                    profile,
-                    enrollments,
-                    certificates: state.certificates.filter(
-                      (c) => c.memberId === profile.id,
-                    ),
-                    schoolCertificates: schoolAchievements,
-                    projects,
-                    volunteerHours,
-                  },
-                  null,
-                  2,
-                ),
-                "application/json",
-              )
-            }
-          >
-            <Download size={17} /> Export passport
-          </button>
-        }
+    <div className="ws-page pv-page">
+      <ProfileCard
+        kicker="PLP DIGITAL YOUTH PASSPORT"
+        bio={profile.bio || "Add a short bio so mentors and communities know what you care about."}
+        actions={<>
+          <button className="hub-button secondary" onClick={() => setEdit(true)}><PencilLine size={16} /> Edit profile</button>
+          <button className="hub-button" onClick={downloadPassport}><Download size={16} /> Download PDF</button>
+        </>}
+        stats={[{ label: "Courses completed", value: courses, icon: BookOpen }, { label: "Certificates", value: certificates, icon: Award }, { label: "Verified credits", value: figure(balance(state, profile.id)), icon: Coins }, { label: "Volunteer hours", value: overview ? figure(volunteerHours) : "—", icon: Clock3 }]}
       />
-      <Panel className="hub-passport-header">
-        <div className="hub-passport-avatar">
-          {profile.name
-            .split(" ")
-            .map((n) => n[0])
-            .slice(0, 2)
-            .join("")}
-        </div>
-        <div>
-          <Tag>{profile.role}</Tag>
-          <h2>{profile.name}</h2>
-          <p>{profile.bio || "Your PLP journey is just beginning."}</p>
-          <p className="hub-caption">
-            Member since {profile.joined} · Local preview profile
-          </p>
-        </div>
-        <button className="hub-button secondary" onClick={() => setEdit(!edit)}>
-          {edit ? "Close editor" : "Edit profile"}
-        </button>
-      </Panel>
       {edit && (
-        <Panel className="hub-space">
+        <FormModal title="Edit your passport" description="Shown on your youth passport and in the PDF you download." onClose={() => setEdit(false)}>
           <form
             key={profile.id}
             className="hub-form"
@@ -308,168 +302,55 @@ export function PassportPage() {
                 defaultValue={profile.leadership.join(", ")}
               />
             </Field>
-            <button className="hub-button">Save profile</button>
+            <div className="hub-actions hub-dialog-actions">
+              <button type="button" className="hub-button secondary" onClick={() => setEdit(false)}>Cancel</button>
+              <button className="hub-button">Save profile</button>
+            </div>
           </form>
-        </Panel>
+        </FormModal>
       )}
-      <Stats
-        items={[
-          {
-            label: "Courses completed",
-            value: enrollments.filter((e) => e.completedAt).length,
-          },
-          {
-            label: "Certificates",
-            value: state.certificates.filter((c) => c.memberId === profile.id)
-              .length + schoolAchievements.length,
-          },
-          { label: "Recorded volunteer hours", value: volunteerHours },
-        ]}
-      />
-      <div className="hub-grid two">
-        <Panel>
-          <h2>Skills & leadership</h2>
-          <div className="hub-tags">
-            {profile.skills.length ? (
-              profile.skills.map((s) => <Tag key={s}>{s}</Tag>)
-            ) : (
-              <p>Complete a course or add a skill to start your record.</p>
-            )}
-          </div>
-          <h3 className="hub-space">Leadership roles</h3>
-          {profile.leadership.length ? (
-            profile.leadership.map((r, i) => <p key={i}>{r}</p>)
-          ) : (
-            <p>Your leadership roles will appear here.</p>
-          )}
-          <p className="hub-caption">Profile additions are self-reported.</p>
-        </Panel>
-        <Panel>
-          <h2>My communities</h2>
-          {profile.clubIds.length ? (
-            clubs
-              .filter((c) => profile.clubIds.includes(c.id))
-              .map((c) => (
-                <div className="hub-list-row" key={c.id}>
-                  <span>{c.name}</span>
-                  <Tag>{c.type}</Tag>
-                </div>
-              ))
-          ) : (
-            <p>Find a local club or homegroup to begin.</p>
-          )}
+      <div className="pv-grid">
+        <ProfilePanel icon={Sparkles} title="Skills">
+          {profile.skills.length
+            ? <div className="pv-chips">{profile.skills.map((s) => <span key={s}>{s}</span>)}</div>
+            : <p className="pv-empty">Skills you add or earn from courses appear here.</p>}
+          <button className="hub-text-button" onClick={() => setEdit(true)}>{profile.skills.length ? "Edit skills" : "Add skills"}</button>
+        </ProfilePanel>
+        <ProfilePanel icon={Flag} title="Leadership">
+          {profile.leadership.length
+            ? <ul className="pv-list">{profile.leadership.map((r, i) => <li key={i}>{r}</li>)}</ul>
+            : <p className="pv-empty">Roles you take on in clubs, schools and events appear here.</p>}
+          <TextLink to="/certificates">View my achievements</TextLink>
+        </ProfilePanel>
+        <ProfilePanel icon={Users} title="Communities">
+          {communities.length
+            ? <ul className="pv-list">{communities.map((c) => <li key={c.id}><span>{c.name}</span><small>{c.type}</small></li>)}</ul>
+            : <p className="pv-empty">Join a local club or homegroup to grow with others.</p>}
           <TextLink to="/clubs">Explore communities</TextLink>
-        </Panel>
-        <Panel>
-          <h2>Learning progress</h2>
-          {enrollments.length ? (
-            enrollments.map((e) => {
-              const c = state.courses.find((c) => c.id === e.courseId)!;
-              return (
-                <div className="hub-space" key={c.id}>
-                  <TextLink to={`/academy/${c.id}`}>{c.title}</TextLink>
-                  <Progress
-                    value={
-                      e.completedAt
-                        ? 100
-                        : Math.round(
-                            (e.lessons.length / (c.lessons.length + 1)) * 100,
-                          )
-                    }
-                  />
-                </div>
-              );
-            })
-          ) : (
-            <TextLink to="/academy">Start learning</TextLink>
-          )}
-        </Panel>
-        <Panel>
-          <h2>Badges & achievements</h2>
-          {state.certificates
-            .filter((c) => c.memberId === profile.id)
-            .map((c) => (
-              <div className="hub-list-row" key={c.id}>
-                <Award size={20} />
-                <span>{c.title}</span>
-                <Tag>Completed</Tag>
-              </div>
-            ))}
-          {state.proofs
-            .filter(
-              (p) => p.memberId === profile.id && p.status === "Recognized",
-            )
-            .map((p) => (
-              <div className="hub-list-row" key={p.id}>
-                <Award size={20} />
-                <span>
-                  {alxPrograms.find((a) => a.id === p.programId)?.title}
-                </span>
-                <Tag>ALX recognition</Tag>
-              </div>
-            ))}
-          {schoolAchievements.map(c => <div className="hub-list-row" key={c.id}><Award size={20}/><Link className="hub-text-link" to={c.verifyUrl}>{c.title}</Link><Tag>School achievement</Tag></div>)}
-          <TextLink to="/certificates">View certificates</TextLink>
-        </Panel>
+        </ProfilePanel>
       </div>
-
-    </>
+    </div>
   );
 }
 export async function certificatePDF(c: HubCertificate) {
-  const [{ jsPDF }, { default: QRCode }] = await Promise.all([
-    import("jspdf"),
-    import("qrcode"),
-  ]);
-  const doc = new jsPDF({ orientation: "landscape" });
-  const url = `${window.location.origin}/verify/${c.id}`;
-  const qr = await QRCode.toDataURL(url, { margin: 1, width: 200 });
-  doc.setFillColor(246, 248, 252);
-  doc.rect(0, 0, 297, 210, "F");
-  doc.setDrawColor(32, 82, 160);
-  doc.setLineWidth(1);
-  doc.rect(12, 12, 273, 186);
-  doc.setTextColor(26, 46, 75);
-  doc.setFontSize(17);
-  doc.text("PEACE AND LOVE PROCLAIMERS", 148, 37, { align: "center" });
-  doc.setFontSize(30);
-  doc.text("Certificate of completion", 148, 62, { align: "center" });
-  doc.setFontSize(12);
-  doc.text("FRONTEND PREVIEW - NOT AN OFFICIAL CREDENTIAL", 148, 76, {
-    align: "center",
-  });
-  doc.setFontSize(22);
-  doc.text(c.memberName, 148, 99, { align: "center", maxWidth: 235 });
-  doc.setFontSize(13);
-  doc.text("has completed the sample learning course", 148, 115, {
-    align: "center",
-  });
-  doc.setFontSize(19);
-  doc.text(c.title, 148, 133, { align: "center", maxWidth: 230 });
-  doc.setFontSize(10);
-  doc.text(`Issued ${c.date}`, 24, 160);
-  doc.text(doc.splitTextToSize(c.id, 205), 24, 172);
-  doc.text("Verification record exists only in the issuing browser.", 24, 188);
-  doc.addImage(qr, "PNG", 245, 152, 30, 30);
-  doc.save(`PLP-${c.courseId}-certificate.pdf`);
+  await downloadCertificatePDF([courseCertificateDesign({ id: c.id, recipient: c.memberName, course: c.title, date: c.date })], certificateFileName(c.memberName, c.title));
 }
 export function CertificatesPage({ administration = false }: { administration?: boolean }) {
   const { state, profile } = useHub();
   const [query, setQuery] = useState('');
   const admin = administration && profile.role === 'Administrator';
-  const list = state.certificates.filter(c => (admin || c.memberId === profile.id) && `${c.title} ${c.memberName} ${c.id}`.toLowerCase().includes(query.toLowerCase()));
+  const [issued,setIssued]=useState<HubCertificate[]>([]);
+  // The platform's own records, so each download uses the wording it was issued with.
+  const [rows,setRows]=useState<IssuedCertificate[]>([]);
+  useEffect(()=>{let active=true;const load=()=>platformApi<(IssuedCertificate&{revoked_at:string|null})[]>("/certificates").then(rows=>{if(active)setRows(rows);if(active)setIssued(rows.filter(r=>!r.revoked_at).map(r=>({id:r.id,memberId:profile.id,memberName:r.recipient,title:r.programme,courseId:r.kind==="school"?"school":r.id,date:r.issued_at.slice(0,10)})));}).catch(()=>{});void load();window.addEventListener('plp:achievements-updated',load);return()=>{active=false;window.removeEventListener('plp:achievements-updated',load);};},[profile.id]);
+  const list = [...issued,...state.certificates.filter(c=>!issued.some(r=>r.id===c.id))].filter(c => (admin || c.memberId === profile.id) && `${c.title} ${c.memberName} ${c.id}`.toLowerCase().includes(query.toLowerCase()));
   return (
-    <>
+    <div className="hub-editorial-page hub-achievements-page">
       <Heading
-        eyebrow="CELEBRATE YOUR PROGRESS"
-        title={admin ? "Issued course certificates" : "Certificates & digital badges"}
-        description={admin ? "Search automatically awarded course records. Course completion needs no manual approval." : "Course achievements are awarded automatically after you complete the lessons, assignment, and assessment."}
+        title={admin ? "Issued course certificates" : "My achievements"}
+        description={admin ? "Manage issued course certificates." : "Your learning milestones, all in one place."}
       />
-      <p className="hub-caption">
-        Preview certificates are not official credentials. QR verification works
-        only where this browser’s local records are available.
-      </p>
-      <Panel className="hub-space"><h2>School-issued achievements</h2><p>School activities completed outside the Academy follow a separate coordinator request and administrator approval process.</p><TextLink to="/certificate-centre">{admin ? "Review school certificate requests" : "View my school certificates"}</TextLink></Panel>
+      <div className="hub-achievements-summary"><span><strong>{list.length}</strong> {list.length === 1 ? "achievement" : "achievements"}</span><TextLink to="/certificate-centre">School certificates</TextLink></div>
       {admin && <Field label="Search issued certificates"><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search recipient, programme, or certificate ID"/></Field>}
       {!list.length ? (
         <Empty>
@@ -482,144 +363,86 @@ export function CertificatesPage({ administration = false }: { administration?: 
           <TextLink to="/academy">Find a course</TextLink>
         </Empty>
       ) : (
-        <div className="hub-grid two">
-          {list.map((c) => (
-            <Panel key={c.id} className="hub-certificate">
-              <Award size={38} />
-              <Tag>Course completed</Tag>
-              <h2>{c.title}</h2>
-              <p>
-                {c.memberName} · {c.date}
-              </p>
-              <p className="hub-caption hub-break">{c.id}</p>
-              <div className="hub-actions">
-                <button
-                  className="hub-button"
-                  onClick={() =>
-                    certificatePDF(c).catch(() =>
-                      toast.error("Certificate could not be generated."),
-                    )
-                  }
-                >
-                  <Download size={16} /> Download PDF
-                </button>
-                <Link className="hub-button secondary" to={`/verify/${c.id}`}>
-                  Verify record
-                </Link>
-                <a
-                  className="hub-text-link"
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + "/verify/" + c.id)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Share on LinkedIn ↗
-                </a>
-              </div>
-              <p className="hub-caption">
-                This preview link requires member sign-in and the issuing
-                browser.
-              </p>
-            </Panel>
-          ))}
+        <div className="cc-grid">
+          {list.map((c) => {
+            // Platform certificates carry their own wording; courses tracked in this browser use the course design.
+            const raw = rows.find((r) => r.id === c.id);
+            return <CertificateCard key={c.id} design={raw ? issuedCertificateDesign(raw) : courseCertificateDesign({ id: c.id, recipient: c.memberName, course: c.title, date: c.date })} revoked={!!(raw as { revoked_at?: string | null } | undefined)?.revoked_at} />;
+          })}
         </div>
       )}
-    </>
+    </div>
   );
 }
-export function VerifyPage() {
+function PlatformVerifyPage(){
+ const {id}=useParams();const [record,setRecord]=useState<{recipient:string;programme:string;issued_at:string;revoked_at:string|null;kind?:string;title?:string|null;citation?:string|null;role?:string|null;period_from?:string|null;period_to?:string|null;school?:string|null}|null>(null),[error,setError]=useState('');
+ useEffect(()=>{platformApi<typeof record>(`/public/certificates/${id}`).then(setRecord).catch(e=>setError(e.message));},[id]);
+ // Anyone who scans the QR code sees the certificate itself, with its current status.
+ return <div className="hub-section cv-page"><Heading title="Certificate verification" description="Peace and Love Proclaimers"/>{record?<>
+  <p className={`cv-status ${record.revoked_at?'revoked':''}`}>{record.revoked_at?'This certificate has been revoked and is no longer valid.':`Verified: this certificate was issued by Peace and Love Proclaimers on ${record.issued_at.slice(0,10)}.`}</p>
+  <CertificateCard actions={false} design={issuedCertificateDesign({...record,id:id!,kind:record.kind??(record.title?'school':'course')})}/>
+ </>:<Panel><p>{error||'Checking certificate…'}</p></Panel>}</div>;
+}
+export function VerifyPage(){const {id}=useParams();return id&&isPlatformId(id)?<PlatformVerifyPage/>:<LocalVerifyPage/>;}
+function LocalVerifyPage() {
   const { id } = useParams();
-  const { state, profile } = useHub();
-  const c = state.certificates.find(
-    (c) =>
-      c.id === id &&
-      (c.memberId === profile.id || profile.role === "Administrator"),
-  );
+  const { state } = useHub();
+  const c = state.certificates.find(c => certificateReference(c.id) === certificateReference(id || ""));
   return (
     <>
       <Heading
         title="Certificate verification"
-        description="Check a completion record in this local preview."
+        description="Check a PLP course completion record."
       />
       {c ? (
         <Panel>
           <Award className="hub-feature-icon" />
-          <Tag>Found in this browser</Tag>
+          <Tag>Record found</Tag>
           <h2>{c.title}</h2>
           <p>
             Awarded to {c.memberName} on {c.date}.
           </p>
           <p className="hub-caption hub-break">{c.id}</p>
-          <p>
-            This sample record is stored locally and is not an independently
-            verified PLP credential.
-          </p>
         </Panel>
       ) : (
         <Empty>
-          No accessible certificate was found. Members can view only their own
-          records.
+          No certificate was found with this ID. Check the link or QR code and
+          try again.
         </Empty>
       )}
     </>
   );
 }
 export function CreditsPage() {
-  const { state, profile } = useHub();
+  const { state, profile, creditsLoading, creditsError } = useHub();
   const total = balance(state, profile.id);
   const ledger = state.credits.filter((c) => c.memberId === profile.id);
   return (
     <>
       <Heading
-        eyebrow="SMALL STEPS. REAL MOMENTUM."
         title="Your PLP credits"
-        description="Celebrate learning and participation. Turn your progress into new possibilities."
+        description="Credits confirmed by PLP and saved to your account."
       />
       <div className="hub-credit-hero">
         <Coins size={50} />
         <div>
           <p>AVAILABLE BALANCE</p>
-          <strong>{total}</strong>
+          <strong>{creditsLoading ? "…" : creditsError ? "—" : total}</strong>
           <span>PLP credits</span>
         </div>
-        <p>
-          Keep learning.
-          <br />
-          Keep showing up.
-          <br />
-          Keep making a difference.
-        </p>
+<p>Verified attendance.<br />Recognized learning.</p>
       </div>
+      {creditsError && <p role="alert">Could not load your verified credits. {creditsError}</p>}
       <h2 className="hub-section-title">How to earn</h2>
-      <div className="hub-grid three">
-        {[
-          { title: "Complete a course", amount: 50, to: "/academy" },
-          { title: "Attend a club meeting", amount: 10, to: "/clubs" },
-          { title: "Volunteer with your club", amount: 20, to: "/clubs" },
-          { title: "Recruit new members", amount: 15, to: "/clubs" },
-          { title: "Participate in a challenge", amount: 25, to: "/clubs" },
-        ].map((x) => (
-          <Panel key={x.title}>
-            <Tag>+{x.amount} credits</Tag>
-            <h3>{x.title}</h3>
-            <TextLink to={x.to}>
-              {x.to === "/academy"
-                ? "Find a course"
-                : "Explore club activities"}
-            </TextLink>
-          </Panel>
-        ))}
+      <div className="hub-grid two">
+        <Panel><h3>Attend a PLP meeting</h3><p>Visit the venue, use the host’s code, and confirm your location during the attendance window. Credits arrive automatically, once per meeting.</p><TextLink to="/meetings">Upcoming meetings</TextLink></Panel>
+        <Panel><h3>Complete verified learning & activities</h3><p>Credits are awarded when PLP confirms course completion or activity participation. Self-reported progress does not add verified credits.</p><TextLink to="/academy">Explore learning</TextLink></Panel>
       </div>
-      <p className="hub-caption">
-        Preview reward values. Club credits are awarded when a leader confirms
-        participation, once per activity. Course credits are awarded once per
-        completed course.
-      </p>
       <h2 className="hub-section-title">Your credit history</h2>
       <Panel>
         {ledger.length ? (
           ledger
             .slice()
-            .reverse()
             .map((c) => (
               <div className="hub-list-row" key={c.id}>
                 <div>
@@ -633,7 +456,7 @@ export function CreditsPage() {
               </div>
             ))
         ) : (
-          <Empty>Your first credits are a course or activity away.</Empty>
+          <Empty>{creditsLoading ? "Loading credit history…" : creditsError ? "Credit history is unavailable." : "Your verified credits will appear here."}</Empty>
         )}
       </Panel>
     </>

@@ -1,10 +1,21 @@
-# PLP Hub — system guide and backend handover
+# PLP website and MIS
 
-Peace and Love Proclaimers · Youth for a Change
+The public website and database-backed system can be developed and deployed independently.
 
-PLP Hub connects members with learning, opportunities, mentorship, school clubs and community activities. This repository is a **frontend demonstration**. Records and uploads are stored in the current browser; authentication, permissions, certificates, applications and bookings are not backed by a production server.
+| Folder | Run / purpose |
+| --- | --- |
+| `landing/` | Public website: `npm --prefix landing ci` then `npm --prefix landing run dev` |
+| `system/` | New server-backed workspace: `npm --prefix system ci` then `npm --prefix system run dev` |
+| `services/platform/` | PostgreSQL API, authentication, permissions and business records |
+| `services/credentials/` | Private certificate PDF service |
+| `services/public-content/` | Read-only announcement service |
+| `deploy/` | One-server Docker Compose deployment, HTTPS and backup scripts |
 
-The latest workflow revision takes precedence over earlier concept-paper examples. School coordinators now serve as school club leaders. Schools use downloadable learning materials rather than Academy courses. Community discussions, reward redemption, passport projects, member outcomes, invitations and the separate club-leader dashboard have been removed from the active experience.
+Start with [the deployment and hosting guide](docs/production-roadmap.md). It explains database setup, the lowest-cost server options, Strettch, temporary hostnames, first-admin creation, backups and exact remaining workflow gaps. No server has been purchased or deployed yet.
+
+**The original root `src/` and `frontend/` applications remain browser-local demos.** Their localStorage accounts are not production accounts and their data has not been imported. The sections below document that legacy demonstration. Use `landing/` for the independently deployable public site and `system/` for the new API-backed interface.
+
+Google sign-in and emailed password recovery setup: [configuration guide](docs/google-and-password-recovery.md).
 
 ## Run locally
 
@@ -29,7 +40,7 @@ Open `/sign-in` and use a shortcut or the credentials below. All passwords are *
 | Role | Email |
 | --- | --- |
 | Member | `member@demo.plp.test` |
-| School coordinator / school club leader | `coordinator@demo.plp.test` |
+| Club leader | `coordinator@demo.plp.test` |
 | Trainer | `trainer@demo.plp.test` |
 | Administrator | `admin@demo.plp.test` |
 
@@ -52,15 +63,15 @@ Members can:
 - Enroll in published Academy courses, complete lessons and assessments, and earn automatic course achievements.
 - Explore ALX courses and upload completion certificates for PLP recognition. There is no manual ALX percentage tracking.
 - Browse opportunities, save listings, and submit a local application with optional CV, cover letter and supporting letter files.
-- Explore other schools, clubs and communities, see upcoming/past activities and photos, and request participation or membership.
+- Explore other schools, clubs and communities, see upcoming/past activities and photos, and join or participate instantly.
 - Request mentoring and record sessions/reflections.
 - View personal achievements, the Youth Passport, and their credit ledger.
 
 The separate discussion-forum section has been removed. `/community` redirects to the activity directory. Credits retain earning history but no longer include “Unlock something new” or reward redemption. The passport no longer includes project entry or the “Projects & demonstrated impact” section.
 
-### School coordinator = school club leader
+### Club leader
 
-There is one school-leadership workspace. Old local Club leader profiles migrate to School coordinator; only known demo leaders receive a default demo-school assignment. Other accounts need an administrator-assigned school. The separate leader demo button and dashboard have been removed.
+There is one school-leadership workspace. Old local School coordinator profiles migrate to Club leader; only known demo leaders receive a default demo-school assignment. Other accounts need an administrator-assigned school. The separate leader demo button and dashboard have been removed.
 
 School leaders can:
 
@@ -68,10 +79,10 @@ School leaders can:
 2. Select students and request standardized membership certificates. There is **no programme, achievement, completion-date or evidence form**.
 3. Download materials published by the administrator for their school, use them in sessions, and mark each material completed once per school.
 4. Publish activities with title, date, type, duration, description and photos. Future activities appear to members as upcoming events.
-5. Approve/decline participation and joining requests for their own school.
+5. View participants and record actual attendance for their own school.
 6. Submit activity reports, attendance and photographs. Reports become available to the administrator.
 
-The profile contains account details and the assigned school. `/academy` redirects school coordinators to `/learning-materials`. The main school dashboard summarizes members, activities and material completion rather than treating certificates as its sole purpose.
+The profile contains account details and the assigned school. `/academy` redirects club leaders to `/learning-materials`. The main school dashboard summarizes members, activities and material completion rather than treating certificates as its sole purpose.
 
 ### Membership certificates
 
@@ -92,7 +103,7 @@ PDFs and QR records remain marked as demonstrations. No official signature is co
 
 ### School learning materials
 
-Administrators upload a titled file and target specific schools, or all schools. Coordinators can download accessible materials and mark them completed. Completion records store material ID, school ID, actor and time. Administrators see aggregate and per-school completion details.
+Administrators upload a titled file and target specific schools, or all schools. Club leaders can download accessible materials and mark them completed. Completion records store material ID, school ID, actor and time. Administrators see aggregate and per-school completion details.
 
 School material completion is a school-level session-delivery record. It is not an individual Academy enrollment, exam pass or automatic school-certificate trigger.
 
@@ -110,7 +121,7 @@ The current Academy completion rule is all lessons complete, an assignment of at
 
 The directory includes schools and the existing club/homegroup/community catalogue. Administrators can publish/report for any listed host; school leaders manage only their assigned school. Members can filter upcoming, past or all activities and select a host.
 
-A participation request refers to an activity. A joining request refers to a host. Each records member, host, optional activity, state and time. Duplicate requests are prevented locally. Approval of a club joining request adds the club membership; approval of a school joining request adds a register entry without granting staff access.
+Members join communities and participate in upcoming activities immediately. Records retain the legacy Approved status internally, with member, host, optional activity and timestamp; duplicate entries are prevented. Community joining updates clubIds, without adding a student to the official school register or granting staff access. Upcoming participation appears in dashboard reminders. Attendance is recorded separately by leaders.
 
 Reports can be submitted on or after the activity date. Attendance can select registered school members, club members and approved participants. Administrators review the report and photos. Editing a report clears its review state.
 
@@ -123,7 +134,7 @@ Confirmed participation earns demo credits for matched member accounts once per 
 - **Learning materials:** file publication to all or selected schools.
 - **School registers:** school, assigned club leaders and member counts; select a school for its searchable member table.
 - **School certificate requests:** Pending, Corrected, Approved and Correction required views, request timestamps, search, pagination and decisions.
-- **Activities & requests:** all hosts' activities, membership/participation decisions and reporting.
+- **Activities & requests:** all hosts' activities, participation and reporting.
 - **Reports & analysis:** host and date filters, overall/per-host activity and attendance measures, activity/report chart, report detail/photos/review, and material completion by school.
 - **Profile:** account details only.
 
@@ -150,7 +161,7 @@ The automated FAQ is now on public landing pages only. It is a keyword-based hel
 | `/opportunities`, `/mentorship` | `connect.tsx` |
 | `/clubs` | `ActivitiesPage` in `school-operations.tsx` |
 | `/learning-materials` | `LearningMaterialsPage` in `school-operations.tsx` |
-| `/school-members` | `workspaces.tsx` for coordinators; `SchoolDirectoryPage` for admin |
+| `/school-members` | `workspaces.tsx` for club leaders; `SchoolDirectoryPage` for admin |
 | `/certificate-centre` | `membership-certificates.tsx` |
 | `/passport` | `passport.tsx` for members; `AccountProfilePage` for staff |
 | `/certificates`, `/credits` | `passport.tsx`; `/learning-certificates` redirects to personal certificates |
@@ -210,7 +221,7 @@ Agree an OpenAPI contract and auth strategy before integration. `/api/v1` below 
 | Course assignment | Admin `POST /courses` with title/trainer ID; scoped trainer `PATCH /courses/:id`; publication command |
 | Course learning | Catalogue/detail, own enrollment/progress/assignment/assessment commands; never expose answer keys in learner responses |
 | Activities | `GET /activities?hostId=&period=`; scoped `POST /activities`; `PUT /activities/:id/report`; admin review command |
-| Joining/participation | `POST /hosts/:id/join-requests`; `POST /activities/:id/participation-requests`; scoped request decision |
+| Joining/participation | `POST /hosts/:id/join`; `POST /activities/:id/participate`; immediate idempotent enrolment |
 | Certificates | `POST /school-certificate-requests` with member IDs; correction/decision commands; filtered paginated reads; authorized PDF downloads |
 | Verification | Public opaque-token verification returning minimal issued credential fields only |
 | ALX | Catalogue; own certificate upload; admin proof queue and decision |
@@ -227,7 +238,7 @@ Example new school request:
 }
 ```
 
-The server resolves the coordinator’s school, validates every recipient belongs to it, snapshots names, applies the fixed membership-certificate wording, and sets the request timestamp. Never trust client-supplied approver, issuance state, or certificate title.
+The server resolves the club leader’s school, validates every recipient belongs to it, snapshots names, applies the fixed membership-certificate wording, and sets the request timestamp. Never trust client-supplied approver, issuance state, or certificate title.
 
 Example material completion:
 
@@ -237,7 +248,7 @@ Example material completion:
 }
 ```
 
-The server derives school and actor, verifies assignment, and upserts one completion record. It must not let a coordinator submit another school's ID.
+The server derives school and actor, verifies assignment, and upserts one completion record. It must not let a club leader submit another school's ID.
 
 ### Consistency and permissions
 
@@ -280,3 +291,9 @@ No live backend, identity/recovery service, private file storage, real applicati
 PLP must approve curricula/materials, reports, event dates, testimonial consent, certificate wording/signatory, staff assignments, credit policy and reporting definitions. The platform must not label demo content as official evidence. The five Academy starter courses are not a complete advanced curriculum.
 
 See [the concept-paper audit](docs/plp-hub-requirements.md), [latest workflow specification](docs/current-workflows.md), and [demo guide](docs/demo-workspaces.md). The latest user-requested workflow changes override earlier concept-paper progress/reward/forum examples.
+
+## Independent public website and production roadmap
+
+The public website now has its own deployable project in [`landing/`](landing/README.md). Use that folder for new landing-page changes and public deployments while continuing MIS work here. It can also be copied to a separate repository without the system source or secrets.
+
+A separate read-only announcement API is in [`services/public-content/`](services/public-content/README.md). Production database, auth, credential verification and Strettch hosting steps are documented in [`docs/production-roadmap.md`](docs/production-roadmap.md). Existing MIS workflows remain a local frontend demo until those backend phases are implemented.

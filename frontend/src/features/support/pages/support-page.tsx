@@ -11,14 +11,14 @@ const CHANNELS = [
   {
     icon: Mail,
     title: "Email us",
-    detail: "support@plp.rw",
-    action: () => (window.location.href = "mailto:support@plp.rw"),
+    detail: "info@peaceloveproclaimers.org",
+    action: () => (window.location.href = "mailto:info@peaceloveproclaimers.org"),
   },
   {
     icon: Phone,
     title: "Call us",
-    detail: "+250 788 000 000",
-    action: () => (window.location.href = "tel:+250788000000"),
+    detail: "+250 788 236 141",
+    action: () => (window.location.href = "tel:+250788236141"),
   },
   {
     icon: BookOpen,

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ArrowUpRight, Search } from "lucide-react";
+import { ArrowUpRight, Search, BarChart3, type LucideIcon } from "lucide-react";
 export function Heading({
   eyebrow,
   title,
@@ -93,16 +93,17 @@ export function SearchBox({
 export function Stats({
   items,
 }: {
-  items: { label: string; value: string | number }[];
+  items: { label: string; value: string | number; icon?: LucideIcon }[];
 }) {
   return (
     <div className="hub-stats">
-      {items.map((x) => (
+      {items.map((x) => { const Icon=x.icon ?? BarChart3; return (
         <div key={x.label}>
+          <Icon className="hub-stat-icon" aria-hidden="true"/>
           <strong>{x.value}</strong>
           <span>{x.label}</span>
         </div>
-      ))}
+      );})}
     </div>
   );
 }

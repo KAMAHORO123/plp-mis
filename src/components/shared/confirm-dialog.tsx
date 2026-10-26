@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import {
   Dialog,
@@ -63,5 +64,44 @@ export function ConfirmDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+interface ConfirmRequest {
+  title: string;
+  description: string;
+  confirmLabel?: string;
+  destructive?: boolean;
+}
+let enqueue: ((request: ConfirmRequest, resolve: (ok: boolean) => void) => void) | null = null;
+
+// In-app replacement for window.confirm; resolves false if no host is mounted.
+export function confirmAction(request: ConfirmRequest) {
+  return new Promise<boolean>((resolve) => {
+    if (enqueue) enqueue(request, resolve);
+    else resolve(false);
+  });
+}
+
+export function ConfirmHost() {
+  const [pending, setPending] = useState<{ request: ConfirmRequest; resolve: (ok: boolean) => void } | null>(null);
+  useEffect(() => {
+    enqueue = (request, resolve) => setPending({ request, resolve });
+    return () => { enqueue = null; };
+  }, []);
+  const close = (ok: boolean) => {
+    pending?.resolve(ok);
+    setPending(null);
+  };
+  return (
+    <ConfirmDialog
+      open={!!pending}
+      onOpenChange={(open) => { if (!open) close(false); }}
+      title={pending?.request.title ?? ""}
+      description={pending?.request.description ?? ""}
+      confirmLabel={pending?.request.confirmLabel}
+      destructive={pending?.request.destructive}
+      onConfirm={() => close(true)}
+    />
   );
 }

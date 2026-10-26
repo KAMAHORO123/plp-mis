@@ -7,6 +7,9 @@ export default defineConfig({
   use: {
     baseURL: "http://127.0.0.1:5185",
     channel: "chrome",
+    // Quizzes and exams require a camera; Chrome supplies a simulated one in tests.
+    permissions: ["camera"],
+    launchOptions: { args: ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"] },
     screenshot: "only-on-failure",
     trace: "retain-on-failure",
   },

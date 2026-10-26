@@ -26,11 +26,11 @@ export function StatCard({
   return (
     <Card
       className={cn(
-        "p-4 transition-shadow hover:shadow-card-hover",
+        "plp-stat-card p-4 transition-shadow hover:shadow-card-hover",
         className
       )}
     >
-      <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-secondary/60 text-muted-foreground">
+      <div className="plp-stat-icon flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-secondary/60 text-muted-foreground">
         <Icon className="h-[18px] w-[18px]" />
       </div>
       <p className="mt-3 text-[13px] font-medium text-muted-foreground">

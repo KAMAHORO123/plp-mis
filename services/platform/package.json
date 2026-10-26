@@ -1,0 +1,26 @@
+{
+  "name": "plp-platform",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node src/server.mjs",
+    "migrate": "node src/migrate.mjs",
+    "test": "node --test test/*.test.mjs",
+    "bootstrap-admin": "node src/bootstrap-admin.mjs",
+    "mail:check": "node src/check-mail.mjs",
+    "mail:worker": "node src/mail-worker.mjs",
+    "demo:seed": "node scripts/demo-seed.mjs",
+    "demo:live": "node scripts/demo-live.mjs",
+    "demo:history": "node scripts/demo-history.mjs"
+  },
+  "dependencies": {
+    "google-auth-library": "^11.3.0",
+    "nodemailer": "^10.2.1",
+    "pg": "^8.16.3",
+    "zod": "^4.6.7"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

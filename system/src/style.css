@@ -1,0 +1,379 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font:
+    15px/1.6 Inter,
+    system-ui,
+    sans-serif;
+  color: #183b58;
+  background: #f3f7fc;
+}
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+}
+h1 {
+  font-size: 32px;
+}
+h2 {
+  font-size: 21px;
+}
+a {
+  color: #176bad;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button {
+  background: #2177bf;
+  color: white;
+  border: 0;
+  border-radius: 9px;
+  padding: 10px 18px;
+  min-height: 44px;
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+button.secondary {
+  background: #eaf2fb;
+  color: #205a89;
+}
+.danger {
+  background: #fff0f0;
+  color: #b62a36;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #389ce0;
+  outline-offset: 3px;
+}
+label {
+  display: grid;
+  gap: 5px;
+  margin: 12px 0;
+}
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #c9dae9;
+  border-radius: 8px;
+  background: #fff;
+  color: inherit;
+  font-size: 16px;
+}
+textarea {
+  min-height: 100px;
+}
+small {
+  display: block;
+  color: #5a7288;
+  overflow-wrap: anywhere;
+}
+.check {
+  display: flex;
+  align-items: center;
+}
+.check input {
+  width: auto;
+}
+form > button {
+  margin: 8px 8px 0 0;
+}
+.access {
+  max-width: 500px;
+  margin: 8vh auto;
+  padding: 32px;
+  background: #fff;
+  border: 1px solid #dce7f2;
+  border-radius: 22px;
+}
+.access > img {
+  width: 150px;
+}
+.workspace {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  min-height: 100vh;
+}
+.workspace > aside {
+  background: white;
+  padding: 22px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+  border-right: 1px solid #dce7f2;
+}
+.workspace > aside img {
+  width: 145px;
+}
+.workspace nav {
+  display: grid;
+  gap: 4px;
+  margin-top: 28px;
+}
+.workspace nav button {
+  text-align: left;
+  background: transparent;
+  color: #486176;
+}
+.workspace nav button.selected {
+  background: #eaf3fc;
+  color: #176bad;
+}
+.content header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: white;
+  padding: 14px 32px;
+  border-bottom: 1px solid #dce7f2;
+}
+.content main {
+  padding: 32px;
+  max-width: 1400px;
+  margin: auto;
+}
+.page-title {
+  padding: 22px;
+  border-radius: 18px;
+  background: linear-gradient(110deg, #e0f0fd, #f5f9fe);
+  border: 1px solid #d4e7f7;
+  margin-bottom: 25px;
+}
+.page-title span {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+}
+.toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.toolbar input {
+  max-width: 480px;
+}
+.records {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 18px;
+}
+.records article,
+.panel {
+  background: #fff;
+  border: 1px solid #dce7f2;
+  border-radius: 15px;
+  padding: 22px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.panel {
+  margin: 20px 0;
+}
+.panel article {
+  margin: 16px 0;
+}
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+.icon {
+  width: 44px;
+  padding: 10px;
+}
+.menu {
+  display: none;
+}
+[role="alert"] {
+  background: #fff0f0;
+  color: #9b2430;
+  padding: 12px;
+  border-radius: 8px;
+}
+[role="status"] {
+  background: #eaf8f0;
+  padding: 12px;
+}
+fieldset {
+  border: 1px solid #dce7f2;
+  border-radius: 10px;
+  margin: 16px 0;
+}
+@media (max-width: 760px) {
+  .workspace {
+    display: block;
+  }
+  .workspace > aside {
+    display: none;
+  }
+  .workspace > aside.open {
+    display: block;
+    position: fixed;
+    top: 78px;
+    left: 0;
+    bottom: 0;
+    height: auto;
+    z-index: 20;
+    width: 250px;
+    box-shadow: 5px 0 25px #183b5822;
+  }
+  .menu {
+    display: flex;
+  }
+  .content header {
+    padding: 12px 16px;
+  }
+  .content main {
+    padding: 18px;
+  }
+  .access {
+    margin: 20px 12px;
+    padding: 24px;
+  }
+  .toolbar {
+    flex-wrap: wrap;
+  }
+}
+.download {
+  display: inline-block;
+  margin: 8px 12px;
+  min-height: 44px;
+  padding: 10px 0;
+}
+.page-title {
+  position: relative;
+  overflow: hidden;
+}
+.page-title::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 28%;
+  opacity: 0.12;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 10px,
+      #2177bf 11px 12px,
+      transparent 13px 22px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0 10px,
+      #2177bf 11px 12px,
+      transparent 13px 22px
+    );
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.metric {
+  font-size: 36px;
+  color: #2177bf;
+  margin: 10px 0;
+}
+.trend > div {
+  display: grid;
+  grid-template-columns: 80px 1fr 40px;
+  align-items: center;
+  gap: 16px;
+  margin: 14px 0;
+}
+meter {
+  width: 100%;
+  height: 24px;
+  accent-color: #2177bf;
+}
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  background: white;
+  border: 1px solid #dce7f2;
+  border-radius: 15px;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+}
+th,
+td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #e5edf5;
+}
+thead {
+  background: #eaf3fc;
+  font-size: 13px;
+}
+
+.auth-options {
+  width: 100%;
+  margin: 1.25rem 0;
+}
+.google-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 46px;
+}
+.google-button svg {
+  flex-shrink: 0;
+}
+.auth-options small {
+  display: block;
+  margin-top: 0.5rem;
+}
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #596c80;
+  font-size: 0.85rem;
+  margin: 0 0 1.25rem;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  height: 1px;
+  background: #dce6ef;
+  flex: 1;
+}
+.forgot-link {
+  display: inline-block;
+  padding: 0.75rem 0;
+}
+.access {
+  box-sizing: border-box;
+  width: calc(100% - 24px);
+  max-width: 500px;
+}
+.app-loading {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  color: #61758c;
+}

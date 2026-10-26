@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, ArrowUpRight, Download } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Download, BookOpen, Compass, Users, Award, Sparkles } from "lucide-react";
+import { TestimonialsSection, FunCorner, AlbumSection, CanadaSection } from "./community-sections";
+
 import { PhotoPlayground } from "./landing-art";
 
 const programmes = [
-  { id: "peace-memory", label: "Peace & memory", title: "Remembering together. Taking responsibility.", image: "plp-remembrance", alt: "A PLP remembrance gathering", caption: "Peace & memory", intro: "Memory is part of how we build peace. PLP brings young people, survivors, and communities together to remember the 1994 Genocide against the Tutsi and confront the divisions that lead to violence.", items: [
+  { id: "peace-memory", label: "Peace & memory", title: "Remembering together. Taking responsibility.", image: "plp-walk", alt: "Participants walking together at Walk to Remember", caption: "Peace & memory", intro: "Memory is part of how we build peace. PLP brings young people, survivors, and communities together to remember the 1994 Genocide against the Tutsi and confront the divisions that lead to violence.", items: [
     ["Walk to Remember", "Initiated by PLP in 2009, this youth-led campaign brings remembrance walks, survivor testimonies, poetry, and art into a shared act of commemoration. The initiative has reached more than 25 countries."],
     ["Ku Gicaniro Dialogue", "Honest conversations about history, responsibility, and unity give young people a space to learn about genocide prevention and challenge divisionism and hate."]
   ] },
@@ -15,7 +17,7 @@ const programmes = [
     ["Anda Arts Initiative", "A cultural talent competition celebrating dance, music, poetry, and storytelling. Anda Arts connects pride in tradition with creative expression and opportunities in the arts."]
   ] },
   { id: "wellness", label: "Wellness & belonging", title: "Room to talk. Reasons to celebrate.", image: "plp-sober-nights", alt: "Young people celebrating at an event shown in the PLP wellness programme", caption: "Kickin’ it Sober & Sober Nights", intro: "PLP’s wellness programmes bring emotional resilience and healthy choices into everyday community life, through conversation, sport, music, and shared experiences.", items: [
-    ["Urungano Space", "A monthly meeting where young people reflect, share stories, and learn emotional resilience through mental health workshops, peer circles, and guest sessions."],
+    ["Sober Campaign", "A campaign bringing young people together around healthy choices, emotional resilience, and substance-free celebration through peer conversations, creative expression, and shared experiences."],
     ["Kickin’ it Sober & Sober Nights", "Sports, dance nights, and peer-led talks promote healthy lifestyles and challenge substance abuse while making room for celebration."]
   ] },
   { id: "service", label: "Community service", title: "Care is something we do.", image: "plp-megacare", alt: "PLP MegaCare representatives at a community support presentation", caption: "MegaCare · Youth-led philanthropy", intro: "Members contribute their time and resources to support vulnerable communities. Service gives young people a direct role in the wellbeing of the people around them.", items: [
@@ -31,13 +33,30 @@ function ProgrammeFeatures({full = false}: {full?: boolean}) { return <div class
   </Link>
   {full && <div className="plp-poster-details"><p>{p.intro}</p>{p.items.map(([title,text])=><details key={title}><summary>{title}<span aria-hidden="true">+</span></summary><p>{text}</p></details>)}<small>{p.caption}</small></div>}
 </article>)}</div>; }
-function Pathway() { return <section className="plp-pathway-editorial" id="pathways"><div><p className="plp-section-label">OUR FLAGSHIP MODEL</p><h2>PLP Pathways</h2><p>From discovery to practical experience, then leadership in action. The three stages connect PLP’s work across schools, universities, and communities.</p></div><ol>{[
+function Pathway() { return <section className="plp-pathway-editorial" id="pathways"><div className="plp-pathway-intro"><p className="plp-section-label">OUR FLAGSHIP MODEL</p><h2>PLP Pathways</h2><p>From discovery to practical experience, then leadership in action. The three stages connect PLP’s work across schools, universities, and communities.</p><div className="plp-pathway-symbol" aria-hidden="true"><span><BookOpen size={24}/>Discover</span><i>↗</i><span><Compass size={24}/>Do</span><i>↗</i><span><Sparkles size={24}/>Demonstrate</span></div></div><ol>{[
   ["Discover & Develop","Clubs and homegroups are the starting point. Leadership, mentorship, and practical skills help members find their direction. The PLP Hub supports this stage as a digital learning platform."],
   ["Do: PLP Connect","Apply what you learn through internships, volunteering, apprenticeships, professional mentorship, and business opportunities."],
   ["Demonstrate","Bring your leadership and talents into community life through PLP’s peace, arts, wellness, and service initiatives."]
 ].map(([title,text],i)=><li key={title}><span>0{i+1}</span><div><h3>{title}</h3><p>{text}</p>{i===0&&<Link className="plp-editorial-link" to="/courses">Explore Hub learning <ArrowUpRight size={16}/></Link>}</div></li>)}</ol></section>; }
 function Partnership() { return <section className="plp-partnership" id="partner"><p className="plp-section-label">WORK WITH PLP</p><h2>Put your experience<br/>to work with young people.</h2><div><p>Partner on a programme, contribute a curriculum, host an internship, or co-create a community initiative. PLP’s network connects partners with youth-led work in schools and communities.</p><a className="plp-editorial-link" href="mailto:info@peaceloveproclaimers.org?subject=Partner%20with%20PLP">Talk to PLP about a partnership <ArrowUpRight size={18}/></a><PortfolioLink/></div></section>; }
-function HubResources() { return <section className="plp-hub-resources" aria-label="Hub resources and community updates"><div><p className="plp-section-label">EXPLORE THE PLP HUB</p><h2>Your next step starts with learning.</h2><p>Build leadership, digital, entrepreneurship, employability, and peacebuilding skills. Join as a school student, university student, or community member.</p><Link className="plp-editorial-link" to="/join">Join PLP <ArrowUpRight size={17}/></Link></div><div className="plp-resource-grid"><article><h3>Resources</h3><a href="/resources/plp-portfolio.pdf" download>Organization portfolio ↓</a><a href="/resources/plp-impact-brief.pdf" download>Impact brief ↓</a><a href="/resources/plp-hub-brochure.pdf" download>Hub brochure ↓</a><p>The impact brief summarizes the portfolio; it is not an audited annual report.</p></article><article><h3>Upcoming events</h3><p>The next public event dates will appear once confirmed by PLP. Members can find club activities in the Hub.</p><Link to="/clubs">Explore club activities →</Link></article><article><h3>Member voices</h3><p>Member testimonials will appear here with their permission.</p><Link to="/stories">Explore PLP impact stories →</Link></article><article><h3>Learning & opportunity partners</h3><p><strong>ALX</strong> · Explore learning programmes through the ALX Learning Zone.</p><p><strong>AMI Africa</strong> · Volunteer placements described in the PLP portfolio.</p><Link to="/alx">Discover ALX learning →</Link></article></div></section>; }
+const leadership = [
+  ["Israel Nuru","Executive Director","Leads PLP and works alongside the Board of Directors."],
+  ["Aime Mutemura","Deputy Executive Director · Programs & Impact","Discover & Develop and Demonstrate: clubs, homegroups, and PLP’s signature initiatives."],
+  ["Divin Ibambasi","Deputy Executive Director · Strategic Planning & Development","PLP Connect: jobs, internships, mentorship, and membership."],
+];
+const directors = [
+  ["Gaju Alidah","Executive Secretary","The executive office and administration."],
+  ["Ntwari Abdallah","Creative Director","Organizational branding and creative direction."],
+  ["N. Jean De Dieu","Director of IT & Digital Systems","PLP’s digital systems, including the PLP Hub."],
+  ["Giramata Sandra","Director of Finance","Budgeting, accounting, and financial reporting."],
+  ["Rita Sandrine","Director of Partnerships","Strategy, research, and resource mobilization."],
+];
+const initials = (name: string) => name.replace(/^[A-Z]\.\s*/, "").split(/\s+/).filter(w => /^[A-Z]/.test(w)).slice(0, 2).map(w => w[0]).join("");
+function Person({person: [name, role, remit], lead = false}: {person: string[]; lead?: boolean}) { return <li className={lead ? "plp-team-lead" : undefined}><span className="plp-team-monogram" aria-hidden="true">{initials(name)}</span><div><h3>{name}</h3><p className="plp-team-role">{role}</p><p>{remit}</p></div></li>; }
+function Team() { return <section className="plp-team" id="team" aria-labelledby="team-title">
+  <div className="plp-team-intro"><p className="plp-section-label">YOUTH-LED, FROM STRATEGY TO SERVICE</p><h2 id="team-title">Meet our team</h2><p>The people who guide PLP’s programmes, partnerships, and day-to-day work, with the support of club leaders, mentors, and volunteers across every community.</p></div>
+  <div className="plp-team-groups"><p className="plp-team-group-label">Leadership</p><ul className="plp-team-leadership">{leadership.map(p=><Person key={p[0]} person={p} lead/>)}</ul><p className="plp-team-group-label">Directors</p><ul className="plp-team-directors">{directors.map(p=><Person key={p[0]} person={p}/>)}</ul><p className="plp-source-note">PLP is governed by a Board of Directors and supported by an Advisory Council.</p></div>
+</section>; }
 export function HomePage() { return <>
   <section className="plp-landing-hero plp-restored-hero">
     <p className="plp-hero-kicker">PEACE AND LOVE PROCLAIMERS · SINCE 2007</p>
@@ -45,9 +64,9 @@ export function HomePage() { return <>
     <p>Peace, leadership, culture, wellness, and service.<br className="plp-desktop-break"/> A youth-led community rooted in Rwanda, reaching beyond borders.</p>
     <div className="hub-actions"><Link to="/programmes" className="hub-button">Explore our work <ArrowRight size={18}/></Link><Link to="/about" className="plp-quiet-link">The story of PLP <ArrowUpRight size={18}/></Link></div>
     <div className="plp-photo-stage">
-      <figure className="plp-side-photo plp-side-left"><img src="/images/plp/plp-workshop.webp" alt="A PLP Academy facilitator leading a workshop" width="522" height="452"/><figcaption>Learning to lead.</figcaption></figure>
+      <figure className="plp-side-photo plp-side-left"><img src="/images/plp/icyeza-home-hd.png" alt="Two PLP ICYEZA members holding a Peace and Love Proclaimers photo frame" width="1135" height="1386" fetchPriority="high"/><figcaption>Peace, love & belonging.</figcaption></figure>
       <figure className="plp-main-photo"><span className="plp-photo-word" aria-hidden="true">together.</span><img src="/images/plp/plp-youth.webp" alt="PLP members together in their MegaCare shirts" width="1500" height="1001" fetchPriority="high"/><figcaption>Peace and Love Proclaimers · Youth for Change</figcaption></figure>
-      <figure className="plp-side-photo plp-side-right"><img src="/images/plp/plp-walk.webp" alt="Young people taking part in a PLP community walk" width="523" height="452"/><figcaption>Walking with purpose.</figcaption></figure>
+      <figure className="plp-side-photo plp-side-right"><img src="/images/plp/plp-remembrance.webp" alt="A community gathered in an arena for remembrance" width="523" height="452"/><figcaption>Remembering together.</figcaption></figure>
     </div><div className="plp-hero-baseline"><span>Rwanda · Canada · One community</span><a href="#our-work">Discover PLP <ArrowRight size={16}/></a></div>
   </section>
   <Reach/>
@@ -55,7 +74,8 @@ export function HomePage() { return <>
   <ProgrammeFeatures/>
   <Pathway/>
   <PhotoPlayground/>
-  <HubResources/>
+  {import.meta.env.DEV && <TestimonialsSection/>}
+  <FunCorner/>
   <Partnership/>
 </>; }
 export function ProgrammesPage() { return <><header className="plp-page-intro"><p className="plp-section-label">OUR WORK</p><h1>Peace, leadership,<br/>and life in community.</h1><p>Explore the programmes that bring PLP’s mission into practice, from remembrance and cultural expression to wellness and service.</p><nav className="plp-programme-index" aria-label="Programme areas">{programmes.map(p=><a href={`#${p.id}`} key={p.id}>{p.label}<ArrowUpRight size={14}/></a>)}<a href="#pathways">PLP Pathways<ArrowUpRight size={14}/></a></nav></header><ProgrammeFeatures full/><Pathway/><Partnership/></>; }
@@ -64,14 +84,27 @@ export function AboutPage() { return <>
   <figure className="plp-org-wide-photo"><img src="/images/plp/plp-community.webp" alt="A group of PLP members pictured together" width="1242" height="822"/><figcaption>The PLP community</figcaption></figure>
   <section className="plp-about-statements"><div><p className="plp-section-label">OUR VISION</p><h2>A united and peaceful world, led by skilled and empowered youth.</h2></div><div><p className="plp-section-label">OUR MISSION</p><p>To develop a generation of young people equipped with leadership, cultural identity, and practical skills, enabling them to build peaceful, resilient, and thriving communities.</p><h3>Why this work matters</h3><p>Our work addresses connected challenges: unemployment and limited practical skills, post-genocide trauma and loss of historical identity, mental health stigma and substance abuse, poverty and school dropout, and gaps in career readiness.</p></div></section>
   <Reach/>
-  <section className="plp-about-statements"><div><p className="plp-section-label">WHERE WE COME TOGETHER</p><h2>In schools.<br/>In communities.<br/>Across borders.</h2></div><div><p>Clubs and homegroups bring PLP into high schools, universities, and local communities. Rwanda is PLP’s base and benchmark country.</p><p>A Canada chapter launched on July 26, 2025, extending the organization’s community beyond Rwanda.</p><Link className="plp-editorial-link" to="/join">Join PLP <ArrowUpRight size={18}/></Link></div></section>
-  <section className="plp-governance"><p className="plp-section-label">YOUTH-LED, FROM STRATEGY TO SERVICE</p><h2>How PLP is organized</h2><dl>{[["Executive Committee","Strategy, partnerships, and operations."],["Programme Leads","PLP Pathways, monitoring and evaluation, and signature initiatives."],["Chapter & Club Coordinators","School clubs and community outreach."],["Youth Mentors & Volunteers","Grassroots programmes in schools and communities."]].map(([title,text])=><div key={title}><dt>{title}</dt><dd>{text}</dd></div>)}</dl><p className="plp-source-note">A Board of Directors is planned as part of PLP’s governance development.</p></section>
+  <section className="plp-about-statements"><div><p className="plp-section-label">WHERE WE COME TOGETHER</p><h2>In schools.<br/>In communities.<br/>Across borders.</h2></div><div><p>Clubs and homegroups bring PLP into high schools, universities, and local communities. Rwanda is PLP’s base and benchmark country.</p><p>A Canada chapter launched on July 26, 2025, extending the organization’s community beyond Rwanda.</p><Link className="plp-editorial-link" to="/auth/signup">Join PLP <ArrowUpRight size={18}/></Link></div></section>
+  <Team/>
   <Partnership/>
 </>; }
 export function StoriesPage() { return <>
   <header className="plp-page-intro"><p className="plp-section-label">OUR IMPACT</p><h1>A record of<br/>youth-led action.</h1><p>Milestones in youth leadership, community service, and peacebuilding.</p></header><Reach/>
-  <section className="plp-impact-lead"><figure><img src="/images/plp/plp-walk.webp" alt="Participants at a PLP community walk" width="523" height="452"/><figcaption>Community participation</figcaption></figure><div><p className="plp-section-label">2009 → A GLOBAL INITIATIVE</p><h2>Walk to Remember</h2><p>Initiated by PLP in 2009, Walk to Remember became a national commemoration initiative in Rwanda. It has been organized in more than 25 countries.</p><Link className="plp-editorial-link" to="/programmes#peace-memory">Read about peace & memory <ArrowUpRight size={18}/></Link></div></section>
+  <section className="plp-impact-lead"><figure><img src="/images/plp/plp-remembrance.webp" alt="Participants gathered in an arena for a remembrance event" width="523" height="452"/><figcaption>Community participation</figcaption></figure><div><p className="plp-section-label">2009 → A GLOBAL INITIATIVE</p><h2>Walk to Remember</h2><p>Initiated by PLP in 2009, Walk to Remember became a national commemoration initiative in Rwanda. It has been organized in more than 25 countries.</p><Link className="plp-editorial-link" to="/programmes#peace-memory">Read about peace & memory <ArrowUpRight size={18}/></Link></div></section>
   <section className="plp-impact-record"><article><span>01 / RECOGNITION</span><h2>Youth-led impact, recognized.</h2><p>PLP received recognition from Rwanda’s First Lady for its impact on more than 40,000 young people.</p></article><article><span>02 / OPPORTUNITY</span><h2>100+ volunteer placements.</h2><p>Through its partnership with AMI Africa, PLP has placed more than 100 volunteers across AMI projects, building professional experience and pathways to employment.</p></article><article><span>03 / COMMUNITY</span><h2>A new chapter in Canada.</h2><p>Launched on July 26, 2025, the Canada chapter extends PLP’s network beyond its base in Rwanda.</p></article></section>
   <section className="plp-targets"><div><p className="plp-section-label">LOOKING AHEAD</p><h2>What PLP is working towards.</h2><p>Our goals for expanding opportunity and strengthening communities.</p></div><ul><li>Reach 200 high schools and 5 universities.</li><li>Engage 4,000 active members, with 60% women.</li><li>Support 100 internship or apprenticeship placements.</li><li>Track improved unity and peace knowledge for 5,000+ youth, alongside social and emotional learning measures.</li></ul></section>
   <div className="plp-source-download"><PortfolioLink/></div><Partnership/>
 </>; }
+
+export function AlbumPage() { return <AlbumSection/>; }
+export function PublicHubPage() { return <>
+ <header className="plp-page-intro plp-hub-intro"><div className="plp-hub-intro-copy"><p className="plp-section-label">THE PLP HUB</p><h1>A place to learn.<br/>A community to grow with.</h1><p>Build your skills, discover opportunities, and keep your PLP journey in one place.</p><div className="hub-actions"><Link className="hub-button" to="/hub">Enter the Hub <ArrowUpRight size={18}/></Link><Link className="plp-editorial-link" to="/auth/signup">Become a member <ArrowRight size={18}/></Link></div></div><div className="plp-hub-visual" aria-label="Learn, connect, and grow with PLP"><div className="plp-hub-orbit" aria-hidden="true"/><div className="plp-hub-core"><img src="/logo.svg" alt="" width="70" height="70"/><strong>Your next<br/>chapter.</strong><span>STARTS WITH YOU</span></div><div className="plp-hub-float hub-float-learn"><BookOpen/><span>Stay curious.<strong>Learn something new.</strong></span></div><div className="plp-hub-float hub-float-connect"><Users/><span>Find your people.<strong>Grow together.</strong></span></div><div className="plp-hub-float hub-float-grow"><Award/><span>Make it count.<strong>Celebrate progress.</strong></span></div><span className="plp-hub-visual-note">LEARN · CONNECT · BECOME</span></div></header>
+ <section className="plp-community-section plp-hub-overview" aria-label="Explore the PLP Hub">{[
+  ['01','Learn at your pace','Explore leadership, digital skills, entrepreneurship, employability, and peacebuilding.','/courses','Explore learning'],
+  ['02','Find your next opportunity','Discover opportunities and connect with the support to take your next step.','/opportunities','View opportunities'],
+  ['03','Stay connected','See what’s happening across PLP clubs and communities.','/clubs','Explore activities'],
+  ['04','See your progress','Keep track of your learning, achievements, and certificates in your member workspace.','/passport','Open my profile'],
+ ].map(([number,title,description,to,label])=><article key={number}><div className="plp-hub-card-top"><span className="plp-section-label">{number} / YOUR JOURNEY</span>{number==='01'?<BookOpen/>:number==='02'?<Compass/>:number==='03'?<Users/>:<Award/>}</div><h2>{title}</h2><p>{description}</p><Link className="plp-editorial-link" to={to}>{label}<ArrowUpRight size={16}/></Link></article>)}</section>
+ </>; }
+
+export function CanadaPage() { return <><header className="plp-page-intro plp-canada-page-intro"><p className="plp-section-label">PEACE AND LOVE PROCLAIMERS</p><h1>PLP Canada.</h1><p>Connected by heritage. Brought together by purpose.</p></header><CanadaSection/></>; }
