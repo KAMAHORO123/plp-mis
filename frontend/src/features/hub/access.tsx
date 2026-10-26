@@ -1,5 +1,7 @@
-import { demoAccounts, demoSchools } from "./school-data";
-import { useState } from "react";
+import { platformApi } from "./platform-api";
+import { CodeInput, useCountdown } from "./code-input";
+import { demoSchools } from "./school-data";
+import { useEffect, useState } from "react";
 import {
   Link,
   Navigate,
@@ -15,7 +17,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import { categories, type HubRole } from "./data";
-import { createPasswordHash, verifyPassword, today, uid, useHub, type Profile } from "./store";
+import { today, uid, useHub, type Profile } from "./store";
 import {
   Empty,
   Field,
@@ -25,18 +27,43 @@ import {
   TextLink,
 } from "./ui";
 
+async function authRequest(path: string, body: object) {
+  const response = await fetch("/api/auth/" + path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  let data;
+  try { data = await response.json(); }
+  catch { throw Error("Account services are unavailable. Please try again later."); }
+  if (!response.ok) throw Error(data.error || "Please try again.");
+  return data;
+}
+
 export function MemberGuard({ allowed }: { allowed?: HubRole[] }) {
-  const { session, profile, isMember } = useHub();
+  const { session, isMember, signOut } = useHub();
   const location = useLocation();
+  const [checked,setChecked] = useState(false);
+  const [accessError,setAccessError] = useState("");
+  const [serverRole,setServerRole] = useState<HubRole|null>(null);
+  useEffect(()=>{
+    let active=true;setChecked(false);setAccessError("");
+    platformApi<{role:string}>("/me").then(account=>{
+      if(active)setServerRole(account.role==='admin'?'Administrator':account.role==='trainer'?'Trainer':account.role==='mentor'?'Mentor':account.role==='leader'?'Club leader':'Community member');
+    }).catch(e=>{if(active){setServerRole(null);setAccessError(e.message);if(e.status===401)signOut();}}).finally(()=>{if(active)setChecked(true);});
+    return()=>{active=false;};
+  },[session?.profileId,location.pathname]);
   if (!session)
     return (
       <Navigate
-        to={`/sign-in?returnTo=${encodeURIComponent(location.pathname + location.search)}`}
+        to={`/auth/login?returnTo=${encodeURIComponent(location.pathname + location.search)}`}
         replace
       />
     );
+  if (!checked) return <div className="hub-content"><p role="status">Checking account access…</p></div>;
+  if (!serverRole) return <div className="hub-access-shell"><Panel><Heading title="Sign in required" description={accessError || "Your account access could not be confirmed."}/><Link className="hub-button" to="/auth/login">Sign in again</Link></Panel></div>;
   if (!isMember) return <Navigate to="/application-status" replace />;
-  if (allowed && !allowed.includes(profile.role))
+  if (allowed && !allowed.includes(serverRole))
     return (
       <div className="hub-content">
         <Empty>
@@ -51,8 +78,9 @@ export function MemberGuard({ allowed }: { allowed?: HubRole[] }) {
 }
 function returnDestination(value: string | null) {
   // Only known local member routes may be used as a post-sign-in destination.
-  return value &&
-    /^\/(hub|academy|alx|opportunities|mentorship|community|clubs|passport|profile|certificates|credits|studio|hub-analytics|memberships|verify|school-members|certificate-centre)(\/[^?#]*)?(\?[^#]*)?$/.test(
+  // Backslashes and double slashes are refused outright: browsers can read them as another site.
+  return value && !/[\\]|\/\//.test(value) &&
+    /^\/(meetings|hub|academy|alx|opportunities|mentorship|community|clubs|passport|profile|certificates|credits|studio|hub-analytics|memberships|verify|school-members|certificate-centre)(\/[^?#]*)?(\?[^#]*)?$/.test(
       value,
     )
     ? value
@@ -64,7 +92,7 @@ function PasswordField({ label, name, creating = false }: { label: string; name:
   return <div className="hub-field">
     <label htmlFor={id}>{label}</label>
     <div style={{ position: 'relative' }}>
-      <input id={id} name={name} required type={visible ? 'text' : 'password'} autoComplete={creating ? 'new-password' : 'current-password'} minLength={creating ? 8 : undefined} maxLength={creating ? 128 : undefined} placeholder={name === 'confirmPassword' ? 'Re-enter your password' : creating ? 'At least 8 characters' : 'Enter your password'} style={{ width: '100%', paddingRight: 48 }} />
+      <input id={id} name={name} required type={visible ? 'text' : 'password'} autoComplete={creating ? 'new-password' : 'current-password'} minLength={creating ? 12 : undefined} maxLength={creating ? 128 : undefined} placeholder={name === 'confirmPassword' ? 'Re-enter your password' : creating ? 'At least 12 characters' : 'Enter your password'} style={{ width: '100%', paddingRight: 48 }} />
       <button type="button" aria-label={`${visible ? 'Hide' : 'Show'} ${label.toLowerCase()}`} aria-controls={id} aria-pressed={visible} onClick={() => setVisible(!visible)} style={{ position: 'absolute', right: 4, top: '50%', transform: 'translateY(-50%)', width: 40, height: 40, display: 'grid', placeItems: 'center', color: '#52677d', borderRadius: 6 }}>
         {visible ? <EyeOff size={19} aria-hidden="true" /> : <Eye size={19} aria-hidden="true" />}
       </button>
@@ -78,13 +106,14 @@ export function SignInPage() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   if (isMember)
-    return <Navigate to={returnDestination(params.get("returnTo"))} replace />;
+    return <Navigate to={returnDestination(params.get("returnTo") || sessionStorage.getItem("plp-meeting-return"))} replace />;
   return (
     <div className="hub-access-shell">
       <Panel>
         <img src="/favicon.svg" alt="" className="mx-auto mb-4 h-14 w-14" />
         <Heading
-          title="Welcome back"
+          title="Log in to your account"
+          description="Enter your credentials to access your PLP Hub."
         />
         <form
           className="hub-form"
@@ -95,14 +124,19 @@ export function SignInPage() {
             const form = new FormData(e.currentTarget);
             try {
               const email = String(form.get("email")).trim().toLowerCase();
-              const member = state.profiles.find((p) => p.email.toLowerCase() === email);
-              if (!member || !await verifyPassword(String(form.get("password")), member.credentialHash)) {
-                setError(
-                  "The email or password is incorrect.",
-                );
-                return;
-              }
+              const account = await authRequest("login", { email, password: String(form.get("password")), remember: form.get("remember") === "on" });
+              if (account.pendingApproval) { navigate('/auth/pending', {replace:true}); return; }
+              const member = { ...(state.profiles.find((p) => p.email.toLowerCase() === email) || {
+                id: account.id, name: account.name, email,
+                role: "Community member" as const, bio: "", skills: [], leadership: [],
+                clubIds: [], managedClubIds: [], joined: today(), membership: "Approved" as const,
+              }) };
+              member.membership = "Approved";
+              member.role = account.role === "admin" ? "Administrator" : account.role === "trainer" ? "Trainer" : account.role === "leader" ? "Club leader" : account.role === "mentor" ? "Mentor" : "Community member";
               update((s) => {
+                const existing = s.profiles.find(p => p.id === member.id);
+                if (existing) { existing.membership = "Approved"; existing.role = member.role; existing.requestedRole = undefined; }
+                else s.profiles.push(member);
                 s.currentId = member.id;
               });
               if (
@@ -113,12 +147,12 @@ export function SignInPage() {
               )
                 navigate(
                   member.membership === "Approved"
-                    ? returnDestination(params.get("returnTo"))
+                    ? returnDestination(params.get("returnTo") || sessionStorage.getItem("plp-meeting-return"))
                     : "/application-status",
                   { replace: true },
                 );
-            } catch {
-              setError("Sign-in could not be completed. Try again.");
+            } catch (error) {
+              setError((error as Error).message);
             } finally {
               setBusy(false);
             }
@@ -134,33 +168,93 @@ export function SignInPage() {
             />
           </Field>
           <PasswordField label="Password" name="password" />
+          <div className="hub-forgot-row">
+            <label className="hub-remember"><input type="checkbox" name="remember" defaultChecked /> Keep me signed in for 30 days</label>
+            <Link to="/auth/forgot-password" className="hub-text-link">
+              Forgot password?
+            </Link>
+          </div>
+          {params.get("reset") === "1" && !error && (
+            <p role="status" className="hub-access-success">
+              Password updated. Sign in with your new password.
+            </p>
+          )}
           {error && (
             <p role="alert" className="hub-access-error">
               {error}
             </p>
           )}
-          <button className="hub-button" disabled={busy}>
+          <button className="hub-button hub-access-submit" disabled={busy}>
             {busy ? "Signing in…" : "Sign in"}
             <ArrowRight size={16} />
           </button>
         </form>
-        <p>
-          New to PLP?{" "}
-          <Link to="/join" className="hub-text-link">
-            Join PLP
+        <p className="hub-access-footnote">
+          Don’t have an account yet?{" "}
+          <Link to="/auth/signup" className="hub-text-link">
+            Sign up here
           </Link>
         </p>
-        <details className="hub-dev-note" open>
-          <summary>Explore demo dashboards</summary>
-          <p className="hub-caption">Demo password: <strong>PlpDemo2026!</strong></p>
-          <div className="ws-demo-grid">{demoAccounts.map(account=><button key={account.id} onClick={()=>{if(openSession(account.id,"member"))navigate("/hub");}}>{account.role === "Community member" ? "Member" : account.role}<small>{account.email}</small></button>)}</div>
-        </details>
       </Panel>
     </div>
   );
 }
+export function ForgotPasswordPage() {
+  const navigate = useNavigate();
+  // A reset link from an email (/auth/reset#<token>) goes straight to choosing a new password.
+  const [linkToken] = useState(() => { const t = window.location.hash.slice(1); return /^[A-Za-z0-9_-]{40,100}$/.test(t) ? t : ""; });
+  const [step, setStep] = useState<"email" | "code" | "password">(linkToken ? "password" : "email");
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [token, setToken] = useState(linkToken);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const countdown = useCountdown();
+  async function send(address: string) {
+    setBusy(true); setError("");
+    try {
+      await authRequest("forgot", { email: address });
+      setEmail(address); setCode(""); setStep("code"); countdown.start();
+    } catch (e) { setError((e as Error).message); }
+    finally { setBusy(false); }
+  }
+  return <div className="hub-access-shell"><Panel>
+    <img src="/favicon.svg" alt="" className="mx-auto mb-4 h-14 w-14" />
+    <Heading title={step === "password" ? "Choose a new password" : step === "code" ? "Check your email" : "Forgot your password?"}
+      description={step === "email" ? "Enter your email and we’ll send you a code to reset your password." : step === "code" ? `If an eligible account uses ${email}, a 6-digit code will arrive shortly. Check your spam folder too.` : "Enter and confirm your new password."} />
+    <form key={step} className="hub-form" onSubmit={async e => {
+      e.preventDefault();
+      const form = new FormData(e.currentTarget);
+      if (step === "email") { await send(String(form.get("email")).trim().toLowerCase()); return; }
+      setError("");
+      if (step === "password" && form.get("password") !== form.get("confirmPassword")) { setError("The two passwords do not match."); return; }
+      setBusy(true);
+      try {
+        if (step === "code") {
+          const result = await authRequest("forgot/verify", { email, code });
+          setToken(result.token); setStep("password");
+        } else {
+          await authRequest("reset", { token, password: form.get("password") });
+          navigate("/auth/login?reset=1", { replace: true });
+        }
+      } catch (e) { setError((e as Error).message); }
+      finally { setBusy(false); }
+    }}>
+      {step === "email" && <Field label="Email address"><input type="email" name="email" autoComplete="email" required maxLength={254} defaultValue={email} /></Field>}
+      {step === "code" && <>
+        <CodeInput value={code} onChange={setCode} disabled={busy} />
+        <p className="hub-code-resend"><button type="button" disabled={busy || countdown.seconds > 0} onClick={() => void send(email)}>{countdown.seconds > 0 ? `Resend in ${countdown.label}` : "Resend code"}</button></p>
+        <button type="button" className="hub-text-link" disabled={busy} onClick={() => { setStep("email"); setError(""); }}>Use a different email</button>
+      </>}
+      {step === "password" && <><PasswordField label="New password" name="password" creating /><PasswordField label="Confirm new password" name="confirmPassword" creating /></>}
+      {error && <p role="alert" className="hub-access-error">{error}</p>}
+      <button className="hub-button hub-access-submit" disabled={busy || (step === "code" && code.length !== 6)}>{busy ? "Please wait…" : step === "password" ? "Update password" : "Continue"}<ArrowRight size={16} /></button>
+    </form>
+    <p className="hub-access-footnote"><Link to="/auth/login" className="hub-text-link">Back to sign in</Link></p>
+  </Panel></div>;
+}
 export function JoinPage() {
-  const { state, isMember, update, openSession } = useHub();
+  const { state, isMember, update } = useHub();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [error, setError] = useState("");
@@ -208,9 +302,9 @@ export function JoinPage() {
             const email = String(f.get("email")).trim().toLowerCase();
             const name = String(f.get("name")).trim();
             const password = String(f.get("password"));
-            if (!name || password.length < 8) {
+            if (!name || password.length < 12) {
               setError(
-                "Enter your name and a password of at least 8 characters.",
+                "Enter your name and a password of at least 12 characters.",
               );
               return;
             }
@@ -232,8 +326,8 @@ export function JoinPage() {
             }
             setBusy(true);
             try {
+              await authRequest("register", { email, name, password, ...(accountRole !== "Member" ? {requested_role: accountRole === "Trainer" ? "trainer" : accountRole === "Mentor" ? "mentor" : "leader"} : {}) });
               const id = uid();
-              const credentialHash = await createPasswordHash(password);
               const next: Profile = {
                 id,
                 name,
@@ -249,8 +343,7 @@ export function JoinPage() {
                 clubIds: validInvitation ? [invitation.clubId] : [],
                 managedClubIds: [],
                 joined: today(),
-                membership: "Approved",
-                credentialHash,
+                membership: "Pending",
               };
               const ok = update((s) => {
                 s.profiles.push(next);
@@ -260,12 +353,11 @@ export function JoinPage() {
                 s.currentId = id;
               });
               if (ok) {
-                if (openSession(id, "member")) navigate("/hub");
+                sessionStorage.setItem("plp-verification-email", email);
+                navigate("/auth/verify-email");
               }
-            } catch {
-              setError(
-                "Your account could not be created. Try again or sign in if it was already saved.",
-              );
+            } catch (error) {
+              setError((error as Error).message);
             } finally {
               setBusy(false);
             }
@@ -290,7 +382,7 @@ export function JoinPage() {
             />
           </Field>
           <Field label="Account type">
-            <select name="accountRole" value={accountRole} onChange={e => setAccountRole(e.target.value)}><option>Member</option><option>School coordinator</option><option>Trainer</option></select>
+            <select name="accountRole" value={accountRole} onChange={e => setAccountRole(e.target.value)}><option>Member</option><option>Club leader</option><option>Trainer</option><option>Mentor</option></select>
           </Field>
           {accountRole === "Member" && <Field label="Member category"><select name="category"><option>Community</option><option>High school</option><option>University</option></select></Field>}
           <Field label="School (if applicable)"><input name="school" list="school-suggestions" maxLength={160} autoCapitalize="characters" placeholder="TYPE YOUR SCHOOL NAME" onChange={e => { e.currentTarget.value = e.currentTarget.value.toUpperCase(); }}/><datalist id="school-suggestions">{demoSchools.map(s=><option key={s.id} value={s.name.toUpperCase()}/>)}</datalist></Field>
@@ -306,54 +398,20 @@ export function JoinPage() {
             <ArrowRight size={17} />
           </button>
         </form>
-        <TextLink to="/sign-in">Already a member? Sign in</TextLink>
+        <TextLink to="/auth/login">Already a member? Sign in</TextLink>
       </Panel>
     </div>
   );
 }
 export function ApplicationStatusPage() {
   const { session, isMember, profile } = useHub();
-  if (!session) return <Navigate to="/sign-in" replace />;
+  if (!session) return <Navigate to="/auth/login" replace />;
   if (isMember) return <Navigate to="/hub" replace />;
   return <div className="hub-section hub-narrow"><Panel>
     <Heading title="Your membership is paused" description="Contact PLP for help restoring access to your account." />
     {profile.reviewNote && <p>{profile.reviewNote}</p>}
     <a className="hub-text-link" href="mailto:info@peaceloveproclaimers.org">Contact PLP</a>
   </Panel></div>;
-}
-export function DevelopmentAccessPage() {
-  const { state, openSession, update } = useHub();
-  const navigate = useNavigate();
-  if (!import.meta.env.DEV) return <Navigate to="/sign-in" replace />;
-  return (
-    <div className="hub-section hub-narrow">
-      <Heading
-        title="Development accounts"
-        description="Only available on the development server. These sample sessions are for testing the interface, not production authentication."
-      />
-      <div className="hub-stack">
-        {state.profiles
-          .filter((p) => p.id.startsWith("demo-"))
-          .map((p) => (
-            <Panel key={p.id}>
-              <h2>{p.name}</h2>
-              <p>{p.role}</p>
-              <button
-                className="hub-button secondary"
-                onClick={() => {
-                  update((s) => {
-                    s.currentId = p.id;
-                  });
-                  if (openSession(p.id, "member")) navigate("/hub");
-                }}
-              >
-                Continue as {p.role}
-              </button>
-            </Panel>
-          ))}
-      </div>
-    </div>
-  );
 }
 export function CoursePreviewPage() {
   const { state } = useHub();
@@ -398,7 +456,7 @@ export function CoursePreviewPage() {
                 {c.level} · {c.duration}
               </p>
               <TextLink
-                to={`/sign-in?returnTo=${encodeURIComponent("/academy/" + c.id)}`}
+                to={`/auth/login?returnTo=${encodeURIComponent("/academy/" + c.id)}`}
               >
                 Member sign-in to learn
               </TextLink>
@@ -410,8 +468,12 @@ export function CoursePreviewPage() {
         <p>
           Join PLP to access learning, guidance, and your own growth record.
         </p>
-        <TextLink to="/join">Join PLP</TextLink>
+        <TextLink to="/auth/signup">Join PLP</TextLink>
       </Panel>
     </div>
   );
+}
+
+export function StaffPendingPage() {
+ return <div className="hub-access-shell"><Panel><Heading title="Application under review" description="Your email is verified. An administrator must approve your staff application before you can access your workspace."/><p>Once approved, sign in again to open your dashboard.</p><Link className="hub-button" to="/auth/login">Back to sign in</Link></Panel></div>;
 }

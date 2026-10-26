@@ -114,7 +114,7 @@ export function ClubsPage() {
                     </div>
                   ))
                 ) : (
-                  <Empty>Be the first member of this sample community.</Empty>
+                  <Empty>Be the first member of this community.</Empty>
                 )}
               </Panel>
             )}

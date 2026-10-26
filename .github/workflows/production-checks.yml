@@ -1,0 +1,126 @@
+name: Production checks
+on:
+  push:
+    paths:
+      [
+        "landing/**",
+        "system/**",
+        "services/**",
+        "deploy/**",
+        "src/**",
+        "public/**",
+        "tests/**",
+        "package*.json",
+        ".github/workflows/production-checks.yml",
+      ]
+  pull_request:
+    paths:
+      [
+        "landing/**",
+        "system/**",
+        "services/**",
+        "deploy/**",
+        "src/**",
+        "public/**",
+        "tests/**",
+        "package*.json",
+        ".github/workflows/production-checks.yml",
+      ]
+jobs:
+  builds:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # "." is the Hub served in production (deploy/hub.Dockerfile).
+        app: [landing, system, "."]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          {
+            node-version: 22,
+            cache: npm,
+            cache-dependency-path: "${{ matrix.app }}/package-lock.json",
+          }
+      - run: npm ci && npm run build && npm audit --audit-level=high
+        working-directory: ${{ matrix.app }}
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          {
+            POSTGRES_USER: plp,
+            POSTGRES_PASSWORD: ci-only-password,
+            POSTGRES_DB: plp_test,
+          }
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U plp -d plp_test" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://plp:ci-only-password@localhost:5432/plp_test
+      TEST_DATABASE_URL: postgresql://plp:ci-only-password@localhost:5432/plp_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          {
+            node-version: 22,
+            cache: npm,
+            cache-dependency-path: services/platform/package-lock.json,
+          }
+      - run: npm ci && npm run migrate && npm test && npm audit --audit-level=high
+        working-directory: services/platform
+      - run: npm test
+        working-directory: services/public-content
+      - run: npm ci && npm audit --audit-level=high
+        working-directory: services/credentials
+  browser:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          {
+            POSTGRES_USER: plp,
+            POSTGRES_PASSWORD: ci-only-password,
+            POSTGRES_DB: plp_browser_test,
+          }
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U plp -d plp_browser_test" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://plp:ci-only-password@localhost:5432/plp_browser_test
+      TEST_DATABASE_URL: postgresql://plp:ci-only-password@localhost:5432/plp_browser_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci --prefix services/platform && npm ci --prefix services/credentials && npm ci --prefix system
+      - run: npm run migrate --prefix services/platform
+      - run: npx playwright install --with-deps chromium
+        working-directory: system
+      - run: APP_ORIGIN=http://127.0.0.1:5176 node services/credentials/server.mjs > /tmp/plp-renderer.log 2>&1 &
+      - run: node system/test/smoke.mjs
+      - run: node system/test/auth.mjs
+  hub:
+    # Academy, proctored assessments and mentorship flows of the production Hub, with the API stubbed.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chrome
+      - run: npx playwright test tests/mentorship-academy.spec.ts
+  containers:
+    runs-on: ubuntu-latest
+    env:
+      DB_PASSWORD: ci-only-password
+      APP_DB_PASSWORD: ci-only-app-password
+      SITE_HOST: website.example.invalid
+      HUB_HOST: hub.example.invalid
+      TLS_EMAIL: ci@example.invalid
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose -f deploy/compose.yml config --quiet
+      - run: docker compose -f deploy/compose.yml build

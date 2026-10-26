@@ -1,0 +1,145 @@
+name: plp
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+services:
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: plp
+      POSTGRES_USER: plp
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U plp -d plp"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    logging: *logging
+    restart: unless-stopped
+    networks: [database]
+  migrate:
+    build: ../services/platform
+    command: [node, src/migrate.mjs]
+    environment:
+      DATABASE_URL: postgresql://plp:${DB_PASSWORD}@database:5432/plp
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?Set APP_DB_PASSWORD}
+    depends_on:
+      database: { condition: service_healthy }
+    networks: [database]
+    restart: "no"
+  platform:
+    build: ../services/platform
+    environment:
+      DATABASE_URL: postgresql://plp_app:${APP_DB_PASSWORD}@database:5432/plp
+      APP_ORIGIN: https://${HUB_HOST:?Set HUB_HOST}
+      CREDENTIAL_URL: http://credentials:8083
+      TRUST_PROXY: "true"
+      UPLOAD_DIR: /app/uploads
+      # Signs session JWTs. Required: the stack will not start without it. Rotate by moving the old value to JWT_SECRET_PREVIOUS.
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET to at least 32 random characters (openssl rand -base64 48)}
+      JWT_SECRET_PREVIOUS: ${JWT_SECRET_PREVIOUS:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+      SMTP_HELO_NAME: ${SMTP_HELO_NAME:-}
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    networks: [database, backend, edge]
+    logging: *logging
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+  mail:
+    build: ../services/platform
+    profiles: [mail]
+    command: [node, src/mail-worker.mjs]
+    environment:
+      DATABASE_URL: postgresql://plp_app:${APP_DB_PASSWORD}@database:5432/plp
+      APP_ORIGIN: https://${HUB_HOST}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+      SMTP_HELO_NAME: ${SMTP_HELO_NAME:-}
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    networks: [database, edge]
+    logging: *logging
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+  credentials:
+    build: ../services/credentials
+    environment:
+      APP_ORIGIN: https://${HUB_HOST}
+    networks: [backend]
+    logging: *logging
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+  content:
+    build: ../services/public-content
+    environment:
+      PUBLIC_SITE_ORIGIN: https://${SITE_HOST:?Set SITE_HOST}
+      PLATFORM_URL: http://platform:8082
+    networks: [edge]
+    logging: *logging
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+  landing:
+    build:
+      context: ../landing
+      args:
+        VITE_HUB_URL: https://${HUB_HOST}
+        VITE_CONTENT_API_URL: /content
+    networks: [edge]
+    logging: *logging
+    restart: unless-stopped
+  # The Hub workspaces from the repository root. The older system/ app is no longer served.
+  hub:
+    build:
+      context: ..
+      dockerfile: deploy/hub.Dockerfile
+    networks: [edge]
+    logging: *logging
+    restart: unless-stopped
+  gateway:
+    image: caddy:2-alpine
+    environment:
+      SITE_HOST: ${SITE_HOST}
+      HUB_HOST: ${HUB_HOST}
+      TLS_EMAIL: ${TLS_EMAIL:?Set TLS_EMAIL}
+    ports: ["80:80", "443:443", "443:443/udp"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [edge]
+    depends_on: [landing, hub, platform, content]
+    logging: *logging
+    restart: unless-stopped
+volumes:
+  uploads:
+  postgres:
+  caddy_data:
+  caddy_config:
+networks:
+  database: { internal: true }
+  backend: { internal: true }
+  edge: {}

@@ -1,0 +1,18 @@
+# Only the root Hub app is built from the repository root (deploy/hub.Dockerfile).
+**/node_modules
+**/dist
+.git
+.env
+.env.*
+frontend
+system
+landing
+services
+deploy
+docs
+tests
+test-results
+playwright-report
+output
+scripts
+*.tsbuildinfo

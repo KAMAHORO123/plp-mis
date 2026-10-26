@@ -150,43 +150,6 @@
 .hub-menu {
   display: none;
 }
-.hub-demo {
-  background: #edf3f8;
-  border-bottom: 1px solid #e0e8ef;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
-  padding: 7px max(28px, calc((100vw - 1340px) / 2));
-  font-size: 11px;
-  color: #566d82;
-}
-.hub-demo > span {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.hub-demo label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-}
-.hub-demo select {
-  padding: 4px 22px 4px 8px !important;
-  font-size: 11px !important;
-  background: transparent !important;
-  max-width: 270px;
-  min-height: 26px !important;
-}
-.hub-dot {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #3da08b;
-  flex-shrink: 0;
-}
 .hub-workspace {
   display: flex;
   max-width: 1500px;
@@ -1041,6 +1004,24 @@
   font-size: 20px;
   font-weight: 650;
   margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(21, 94, 155, 0.1);
+  flex-shrink: 0;
+}
+.hub-mentor-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: 1;
+}
+.hub-mentor-initials {
+  position: relative;
+  z-index: 0;
 }
 .hub-prewrap {
   white-space: pre-wrap;
@@ -1345,18 +1326,6 @@
   .hub-header .hub-button {
     font-size: 11px;
     padding: 9px 12px;
-  }
-  .hub-demo {
-    padding: 8px 18px;
-    flex-wrap: wrap;
-    gap: 5px;
-    font-size: 10px;
-  }
-  .hub-demo select {
-    max-width: 250px;
-  }
-  .hub-demo label {
-    width: 100%;
   }
   .hub-hero {
     display: flex;
@@ -1981,3 +1950,117 @@
     font-size: 22px;
   }
 }
+
+/* Keep course table actions aligned, including the shared delete control. */
+.hub-course-actions,
+.hub-course-actions > .hub-space > .hub-actions {
+  flex-wrap: nowrap;
+  margin-top: 0;
+}
+.hub-course-actions > .hub-space {
+  margin-top: 0;
+  flex-shrink: 0;
+}
+.hub-course-actions button {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.hub-record-icon{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;flex-shrink:0;border:0;border-radius:8px;background:transparent;cursor:pointer}.hub-record-edit{color:#2177bf}.hub-record-delete{color:#dc3545}.hub-record-edit:hover{background:#eaf3fb}.hub-record-delete:hover{background:#fff0f1}.hub-record-icon:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+/* Sign-in and password recovery: full-width primary action directly under the fields. */
+.hub-form .hub-forgot-row { display: flex; justify-content: flex-end; margin: -14px 0 -8px; }
+.hub-forgot-row .hub-text-link { font-size: 13px; }
+.hub-form .hub-button.hub-access-submit { justify-self: stretch; justify-content: center; width: 100%; min-height: 50px; }
+.hub-access-success { padding: 13px 16px; background: #eef7f1; color: #24613f; border: 1px solid #cfe7d8; border-radius: 8px; font-size: 12px; }
+.hub-access-shell .hub-access-footnote { margin: 28px 0 0; padding-top: 20px; border-top: 1px solid #e3eaf1; font-size: 14px; color: #52677d; }
+.hub-auth .hub-access-shell .hub-heading { text-align: center; margin-bottom: 24px; }
+.hub-auth .hub-access-shell .hub-heading p { margin-left: auto; margin-right: auto; }
+.hub-auth .hub-access-shell .hub-access-footnote { text-align: center; border-top: 0; padding-top: 0; margin-top: 22px; }
+.hub-auth .hub-access-shell .hub-heading { display: block; }
+.hub-auth .hub-access-shell .hub-heading p { color: #52677d; font-size: 14px; }
+.hub-access-shell .hub-code-email { text-align: center; color: #1f74d6 !important; font-size: 14px; font-weight: 500; margin: -16px 0 22px; overflow-wrap: anywhere; }
+.code-input { display: grid; grid-template-columns: repeat(6, minmax(0, 52px)); justify-content: center; gap: 10px; }
+.hub-access-shell .hub-form .code-input input { min-height: 54px; padding: 0; text-align: center; font: 600 22px/1 Sora, sans-serif !important; font-variant-numeric: tabular-nums; }
+.hub-code-resend { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; font-size: 13px; color: #52677d; }
+.hub-code-resend button { min-height: 36px; padding: 0 4px; background: none; border: 0; color: #1f74d6; font-weight: 600; cursor: pointer; }
+.hub-code-resend button:disabled { color: #8fb3dc; cursor: default; }
+@media (max-width: 420px) { .code-input { gap: 6px; } }
+
+/* Keep the academy catalogue focused on the courses. */
+.hub-course-art.hub-course-art-compact {
+  height: auto;
+  min-height: 64px;
+  padding: 18px 22px;
+  justify-content: center;
+}
+.hub-course-art.hub-course-art-compact small {
+  max-width: none;
+  font-size: 14px;
+}
+
+/* Spacious member pages: consistent rhythm, readable cards and room for actions. */
+.hub-editorial-page { display: flex; flex-direction: column; gap: 32px; }
+.hub-editorial-page > .hub-heading { margin-bottom: 0; }
+.hub-editorial-page .hub-grid { gap: 28px; }
+.hub-editorial-page .hub-panel { padding: 30px; }
+.hub-editorial-page .hub-panel p { line-height: 1.75; }
+.hub-editorial-page .hub-actions { gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+.hub-editorial-page .hub-section-title { margin: 12px 0 0; }
+.hub-achievements-summary { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 4px 2px; }
+.hub-achievements-summary strong { font-size: 26px; margin-right: 8px; color: #163a57; }
+.hub-achievements-page .hub-certificate { text-align: left; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.hub-achievements-page .hub-certificate > svg { padding: 12px; width: 58px; height: 58px; border-radius: 16px; background: #edf5fc; color: #2475b5; }
+.hub-achievements-page .hub-certificate h2 { font-size: 21px; line-height: 1.4; margin: 4px 0; }
+.hub-achievements-page .hub-certificate p { margin: 0; }
+.hub-achievements-page .hub-certificate .hub-actions { margin-top: auto; padding-top: 18px; }
+.hub-mentor-filters .hub-row { gap: 24px; flex-wrap: wrap; }
+.hub-mentor-filters select { min-width: 220px; max-width: 100%; }
+.hub-mentor-card { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+.hub-mentor-card .hub-mentor-avatar { margin: 0 0 6px; width: 72px; height: 72px; border-radius: 22px; box-shadow: 0 6px 16px -2px rgba(28, 115, 187, 0.16); }
+.hub-mentor-card :is(h2,h3) { margin: 0; font-size: 20px; line-height: 1.3; color: #101828; }
+.hub-mentor-card p { margin: 0; }
+.hub-mentor-card .hub-mentor-role { font-size: 14px; color: #587086; }
+.hub-mentor-card > button { margin-top: auto; width: 100%; justify-content: center; }
+.hub-mentor-card .hub-form { width: 100%; padding-top: 20px; border-top: 1px solid #e2eaf1; }
+.hub-session-card { display: flex; flex-direction: column; gap: 20px; }
+.hub-session-card h3, .hub-session-card p { margin: 0; }
+.hub-meeting-layout { max-width: 900px; margin: 36px auto; padding: 0 20px; }
+.hub-meeting-facts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; margin: 24px 0; }
+.hub-meeting-facts dt { color: #60758b; font-size: 13px; margin-bottom: 6px; }
+.hub-meeting-facts dd { margin: 0; line-height: 1.6; font-weight: 600; }
+.hub-meeting-code { font: 600 22px monospace; letter-spacing: .12em; background: #edf5fc; padding: 18px; border-radius: 12px; overflow-wrap: anywhere; }
+.hub-meeting-map { width: 100%; height: 260px; border: 0; border-radius: 16px; margin-top: 20px; }
+@media(max-width:640px) {
+ .hub-editorial-page { gap: 24px; }
+ .hub-editorial-page .hub-panel { padding: 22px; }
+ .hub-editorial-page .hub-grid { gap: 20px; }
+ .hub-achievements-summary { align-items: flex-start; flex-direction: column; gap: 12px; }
+ .hub-mentor-filters select { width: 100%; min-width: 0; }
+ .hub-meeting-facts { grid-template-columns: 1fr; gap: 18px; }
+ .hub-meeting-layout { margin: 24px auto; padding: 0 12px; }
+}
+.hub-staff-request { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:26px 0; border-bottom:1px solid #e2eaf1; }
+.hub-staff-request:last-child { border-bottom:0; }
+.hub-staff-request h3 { margin:0 0 8px; }
+.hub-staff-request p { margin:0 0 12px; }
+.hub-staff-request .hub-actions { margin:0; }
+@media(max-width:760px){.hub-staff-request { flex-direction:column; align-items:flex-start; }}
+.hub-teaching-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; }
+.hub-teaching-stats .hub-panel { display:flex; flex-direction:column; gap:12px; }
+.hub-teaching-stats svg { color:#2675b9; }
+.hub-teaching-stats strong { font-size:32px; color:#163a57; }
+.hub-teaching-stats span { color:#60758b; }
+.hub-teaching-card { display:flex; flex-direction:column; align-items:flex-start; gap:18px; }
+.hub-teaching-card h2,.hub-teaching-card p { margin:0; }
+.hub-teaching-card >button { margin-top:auto; }
+.hub-teaching-details { display:flex; flex-wrap:wrap; gap:16px; color:#60758b; font-size:13px; }
+.hub-course-builder { display:grid; grid-template-columns:200px minmax(0,1fr); gap:26px; align-items:start; }
+.hub-course-builder nav { display:flex; flex-direction:column; gap:10px; }
+.hub-course-builder nav button { padding:16px; border-radius:12px; display:flex; align-items:center; gap:12px; text-align:left; color:#60758b; }
+.hub-course-builder nav button.active { color:#176db3; background:#eaf3fc; font-weight:600; }
+.hub-course-builder nav span { border:1px solid #c8d9e8; border-radius:50%; width:28px; height:28px; display:grid; place-items:center; }
+.hub-builder-lesson { display:flex; flex-direction:column; gap:18px; padding:24px 0; border-bottom:1px solid #e2eaf1; }
+.hub-builder-footer { display:flex; gap:14px; flex-wrap:wrap; margin-top:30px; padding-top:22px; border-top:1px solid #e2eaf1; }
+.hub-teaching-submission { padding:28px 0; border-bottom:1px solid #e2eaf1; display:flex; flex-direction:column; gap:20px; }
+.hub-lesson-preview { padding:18px 0; border-bottom:1px solid #e2eaf1; }
+@media(max-width:760px){.hub-teaching-stats {grid-template-columns:1fr;gap:14px;}.hub-course-builder{grid-template-columns:1fr;}.hub-course-builder nav{flex-direction:row;overflow:auto;}.hub-course-builder nav button{flex-shrink:0;padding:12px;}}

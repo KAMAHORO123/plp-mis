@@ -10,9 +10,9 @@ interface RowActionProps {
 
 const VARIANT_CLASSES = {
   default: "text-muted-foreground hover:text-foreground",
-  danger: "text-muted-foreground hover:text-destructive",
+  danger: "text-destructive hover:text-destructive",
   success: "text-muted-foreground hover:text-success",
-  primary: "text-muted-foreground hover:text-primary",
+  primary: "text-primary hover:text-primary",
 };
 
 export function RowAction({
@@ -28,11 +28,11 @@ export function RowAction({
       aria-label={label}
       title={label}
       className={cn(
-        "rounded-md p-1.5 transition-colors hover:bg-secondary",
+        "inline-flex min-h-11 min-w-11 items-center justify-center rounded-md p-1.5 transition-colors hover:bg-secondary",
         VARIANT_CLASSES[variant]
       )}
     >
-      <Icon className="h-4 w-4" />
+      <Icon className="h-[18px] w-[18px] [&_*]:[stroke-width:1.5]" />
     </button>
   );
 }

@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu, Bell, User, Settings, LifeBuoy, LogOut } from "lucide-react";
 import { Breadcrumb, type Crumb } from "@/components/shared/breadcrumb";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SignOutDialog } from "@/components/shared/sign-out-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +27,7 @@ export function Topbar({
   notificationCount = 2,
 }: TopbarProps) {
   const { user, logout } = useAuth();
+  const [showSignoutConfirm, setShowSignoutConfirm] = useState(false);
   const navigate = useNavigate();
 
   return (
@@ -85,7 +88,7 @@ export function Topbar({
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={logout}
+              onClick={() => setShowSignoutConfirm(true)}
               className="text-destructive focus:bg-destructive/10 [&_svg]:text-destructive"
             >
               <LogOut /> Log out
@@ -93,6 +96,13 @@ export function Topbar({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+      <SignOutDialog
+        open={showSignoutConfirm}
+        onOpenChange={setShowSignoutConfirm}
+        onConfirm={logout}
+        userName={user?.name}
+        userEmail={user?.email}
+      />
     </header>
   );
 }

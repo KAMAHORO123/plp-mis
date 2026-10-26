@@ -1,3 +1,4 @@
+import "@/features/hub/dashboard-theme.css";
 import { useMemo, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Home } from "lucide-react";
@@ -33,7 +34,7 @@ export function DashboardLayout() {
   }, [location.pathname]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="plp-dashboard flex h-screen overflow-hidden bg-background">
       {/* Desktop sidebar */}
       <div className="hidden lg:block">
         <Sidebar />

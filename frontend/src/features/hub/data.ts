@@ -12,13 +12,22 @@ export const roles = [
   "Community member",
   "Club leader",
   "Trainer",
+  "Mentor",
   "Administrator",
-  "School coordinator",
 ] as const;
 export type HubRole = (typeof roles)[number];
+export interface Question {
+  id: string;
+  prompt: string;
+  options: string[];
+  answer: number;
+}
 export interface Lesson {
   title: string;
   content: string;
+  /** Module knowledge check. Learners complete a module only by passing it. */
+  quiz?: Question[];
+  quizMinutes?: number;
 }
 export interface Course {
   id: string;
@@ -36,6 +45,11 @@ export interface Course {
   published: boolean;
   ownerId?: string;
   documents?: HubFile[];
+  outcomes?: string[];
+  exam?: Question[];
+  examMinutes?: number;
+  passMark?: number;
+  maxAttempts?: number;
 }
 export const courses: Course[] = [
   {
@@ -220,6 +234,11 @@ export interface Opportunity {
   description: string;
   eligibility: string;
   published: boolean;
+  /** "external" sends applicants to the organiser's own application page. */
+  applyMode?: "internal" | "external";
+  applyUrl?: string;
+  format?: "On-site" | "Remote" | "Hybrid";
+  commitment?: string;
 }
 export const opportunities: Opportunity[] = opportunityTypes.map((type, i) => ({
   id: `op-${i}`,
@@ -235,42 +254,83 @@ export const opportunities: Opportunity[] = opportunityTypes.map((type, i) => ({
     "Workplace readiness workshop",
   ][i],
   type,
-  organization: "PLP Hub · Sample listing",
+  organization: "PLP Connect",
   location: i % 2 ? "Online / Rwanda" : "Kigali, Rwanda",
   deadline: "2026-12-15",
   description:
-    "Explore this sample opportunity, save it to your shortlist, and record a practice application. No application is sent to an employer or partner.",
+    "Save this opportunity to your shortlist and prepare your application with your CV, cover letter and supporting documents.",
   eligibility:
-    "Sample eligibility: PLP members interested in learning and community impact. Live requirements will be supplied by the organizer.",
+    "PLP members interested in learning and community impact. Full requirements are provided by the organizer.",
   published: true,
 }));
-export const mentors = [
+export interface Mentor {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  area: string;
+  title: string;
+  bio: string;
+  initials: string;
+  avatar: string;
+  /** False while the mentor has paused new session requests. */
+  accepting?: boolean;
+}
+export const mentors: Mentor[] = [
   {
     id: "mentor-1",
     name: "Aline M.",
+    email: "aline.m@peaceloveproclaimers.org",
     role: "Mentor",
     area: "Leadership Development",
     title: "Community leadership & public speaking",
-    bio: "Sample mentor profile for practicing goal setting and leadership conversations.",
+    bio: "Supports members with goal setting and leadership conversations.",
     initials: "AM",
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&h=400&q=80",
   },
   {
     id: "mentor-2",
     name: "Eric K.",
+    email: "eric.k@peaceloveproclaimers.org",
     role: "Industry expert",
     area: "Digital Skills",
     title: "Digital careers & portfolio reviews",
-    bio: "Sample industry expert profile focused on practical digital skills and career direction.",
+    bio: "Focused on practical digital skills and career direction.",
     initials: "EK",
+    avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=400&h=400&q=80",
   },
   {
     id: "mentor-3",
     name: "Diane U.",
+    email: "diane.u@peaceloveproclaimers.org",
     role: "Coach",
     area: "Entrepreneurship",
     title: "From an idea to your first experiment",
-    bio: "Sample coach profile for venture discovery, customer interviews, and action planning.",
+    bio: "Guides venture discovery, customer interviews, and action planning.",
     initials: "DU",
+    avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=400&h=400&q=80",
+  },
+  {
+    id: "mentor-4",
+    name: "Kevin N.",
+    email: "kevin.n@peaceloveproclaimers.org",
+    role: "Career Advisor",
+    area: "Employability Skills",
+    title: "Resume strategy & workplace readiness",
+    bio: "Helps members prepare for interviews, professional communication, and job applications.",
+    initials: "KN",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&h=400&q=80",
+  },
+  {
+    id: "mentor-5",
+    name: "Sandrine B.",
+    email: "sandrine.b@peaceloveproclaimers.org",
+    role: "Fellow",
+    area: "Civic & Peace Leadership",
+    title: "Community dialogue & conflict resolution",
+    bio: "Passionate about youth peace initiatives and community service facilitation.",
+    initials: "SB",
+    avatar: "https://images.unsplash.com/photo-1589156280159-27698a70f29e?auto=format&fit=crop&w=400&h=400&q=80",
   },
 ];
 export const clubs = [
@@ -279,7 +339,7 @@ export const clubs = [
     name: "Kigali School Club",
     type: "School",
     location: "Kigali, Rwanda",
-    description: "A sample school club learning leadership through service.",
+    description: "A school club learning leadership through service.",
   },
   {
     id: "club-university",
@@ -287,7 +347,7 @@ export const clubs = [
     type: "University",
     location: "Huye, Rwanda",
     description:
-      "A sample university club connecting practical skills to community projects.",
+      "A university club connecting practical skills to community projects.",
   },
   {
     id: "club-homegroup",
@@ -295,7 +355,7 @@ export const clubs = [
     type: "Homegroup",
     location: "Kigali, Rwanda",
     description:
-      "A sample community homegroup for mentorship, dialogue, and volunteering.",
+      "A community homegroup for mentorship, dialogue, and volunteering.",
   },
   {
     id: "club-canada",
@@ -303,7 +363,7 @@ export const clubs = [
     type: "Community",
     location: "Canada",
     description:
-      "A sample chapter workspace inspired by PLP’s international expansion.",
+      "PLP’s international chapter community.",
   },
 ];
 export const rewards = [
@@ -311,25 +371,25 @@ export const rewards = [
     id: "training",
     title: "Premium training pass",
     cost: 100,
-    detail: "Unlock a sample advanced learning workshop.",
+    detail: "Unlock an advanced learning workshop.",
   },
   {
     id: "event",
     title: "Event ticket",
     cost: 75,
-    detail: "Reserve a sample Youth for Change event pass.",
+    detail: "Reserve a Youth for Change event pass.",
   },
   {
     id: "merch",
     title: "PLP merchandise",
     cost: 150,
-    detail: "Record a sample merchandise reward request.",
+    detail: "Request PLP merchandise.",
   },
   {
     id: "mentoring",
     title: "Mentorship session",
     cost: 50,
-    detail: "Unlock a sample focused mentoring session.",
+    detail: "Unlock a focused mentoring session.",
   },
 ];
 export const alxPrograms = [

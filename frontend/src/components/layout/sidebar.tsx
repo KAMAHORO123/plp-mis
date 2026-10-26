@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { LifeBuoy, Settings, LogOut } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SignOutDialog } from "@/components/shared/sign-out-dialog";
 import { getNavForRole } from "@/config/navigation";
 import { useAuth } from "@/features/authentication/auth-context";
 import { cn, getInitials } from "@/lib/utils";
@@ -12,6 +14,7 @@ interface SidebarProps {
 
 export function Sidebar({ onNavigate }: SidebarProps) {
   const { user, logout } = useAuth();
+  const [showSignoutConfirm, setShowSignoutConfirm] = useState(false);
   const navItems = getNavForRole(user?.roleCode);
 
   return (
@@ -80,13 +83,20 @@ export function Sidebar({ onNavigate }: SidebarProps) {
           </p>
         </div>
         <button
-          onClick={logout}
+          onClick={() => setShowSignoutConfirm(true)}
           aria-label="Log out"
           className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
         >
           <LogOut className="h-4 w-4" />
         </button>
       </div>
+      <SignOutDialog
+        open={showSignoutConfirm}
+        onOpenChange={setShowSignoutConfirm}
+        onConfirm={logout}
+        userName={user?.name}
+        userEmail={user?.email}
+      />
     </aside>
   );
 }

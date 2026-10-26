@@ -1,25 +1,25 @@
+import { TrainerWorkspace } from "@/features/hub/trainer-workspace";
+import { MeetingsPage, MeetingManager } from "@/features/hub/meetings";
+import { EmailVerificationPage } from "@/features/hub/verification-page";
 import { useHub } from '@/features/hub/store';
-import { AccountProfilePage, LearningMaterialsPage, ActivitiesPage, OperationsAnalyticsPage, SchoolDirectoryPage, SchoolLeaderDashboard } from '@/features/hub/school-operations';
+import { StaffProfilePage } from '@/features/hub/staff-profile';
+import { LearningMaterialsPage, ActivitiesPage, OperationsAnalyticsPage, SchoolDirectoryPage, SchoolLeaderDashboard } from '@/features/hub/school-operations';
 import { MembershipCertificatesPage } from '@/features/hub/membership-certificates';
 import { RoleDashboard } from '@/features/hub/role-dashboard';
 import { SchoolMembersPage, CertificateCheckPage } from "@/features/hub/workspaces";
 import { lazy, Suspense } from "react";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter, Navigate, useLocation } from "react-router-dom";
 import { RootLayout } from "@/app/root-layout";
 import { ProtectedRoute } from "@/app/protected-route";
-import { AuthLayout } from "@/layouts/auth-layout";
 import { DashboardLayout } from "@/layouts/dashboard-layout";
 import { PageLoader } from "@/components/shared/page-loader";
 
-import { ForgotPasswordPage } from "@/features/authentication/pages/forgot-password-page";
-import { VerifyEmailPage } from "@/features/authentication/pages/verify-email-page";
-import { NewPasswordPage } from "@/features/authentication/pages/new-password-page";
 import {
   HubLayout,
   PublicSiteLayout,
   MemberWorkspaceLayout,
 } from "@/features/hub/layout";
-import { HomePage, AboutPage, StoriesPage, ProgrammesPage } from "@/features/hub/home";
+import { HomePage, AboutPage, StoriesPage, ProgrammesPage, AlbumPage, PublicHubPage, CanadaPage } from "@/features/hub/home";
 import { AcademyPage, CoursePage, AlxPage } from "@/features/hub/academy";
 import {
   PassportPage,
@@ -27,17 +27,16 @@ import {
   VerifyPage,
   CreditsPage,
 } from "@/features/hub/passport";
-import {
-  OpportunitiesPage,
-  MentorshipPage,
-} from "@/features/hub/connect";
+import { OpportunitiesPage } from "@/features/hub/opportunities";
+import { MentorshipPage, MentorDashboard } from "@/features/hub/mentorship";
 import { StudioPage } from "@/features/hub/admin";
 
 import {
   JoinPage,
+  StaffPendingPage,
   SignInPage,
+  ForgotPasswordPage,
   ApplicationStatusPage,
-  DevelopmentAccessPage,
   CoursePreviewPage,
   MemberGuard,
 } from "@/features/hub/access";
@@ -144,9 +143,11 @@ const withSuspense = (node: React.ReactNode) => (
   <Suspense fallback={<PageLoader />}>{node}</Suspense>
 );
 
-function AcademyRoute(){const {profile}=useHub();return profile.role==='School coordinator'?<Navigate to="/learning-materials" replace/>:<AcademyPage/>;}
-function ProfileRoute(){const {profile}=useHub();return ['Administrator','Trainer','School coordinator','Club leader'].includes(profile.role)?<AccountProfilePage/>:<PassportPage/>;}
-function DashboardRoute(){const {profile}=useHub();return ['School coordinator','Club leader'].includes(profile.role)?<SchoolLeaderDashboard/>:<RoleDashboard/>;}
+function AcademyRoute(){const {profile}=useHub();return profile.role==='Club leader'?<Navigate to="/learning-materials" replace/>:<AcademyPage/>;}
+/** Redirects an old address to its new one, keeping ?query and #fragment (returnTo, reset tokens). */
+function MovedTo({path}:{path:string}){const {search,hash}=useLocation();return <Navigate to={{pathname:path,search,hash}} replace/>;}
+function ProfileRoute(){const {profile}=useHub();return ['Administrator','Trainer','Club leader','Mentor'].includes(profile.role)?<StaffProfilePage/>:<PassportPage/>;}
+function DashboardRoute(){const {profile}=useHub();return profile.role==='Trainer'?<TrainerWorkspace overview/>:profile.role==='Club leader'?<SchoolLeaderDashboard/>:profile.role==='Mentor'?<MentorDashboard/>:<RoleDashboard/>;}
 function SchoolRegisterRoute(){const {profile}=useHub();return profile.role==='Administrator'?<SchoolDirectoryPage/>:<SchoolMembersPage/>;}
 export const router = createBrowserRouter([
   {
@@ -160,19 +161,34 @@ export const router = createBrowserRouter([
             children: [
               { index: true, element: <HomePage /> },
               { path: "about", element: <AboutPage /> },
+              { path: "meetings", element: <MeetingsPage /> },
+              { path: "meetings/:id", element: <MeetingsPage /> },
               { path: "programmes", element: <ProgrammesPage /> },
               { path: "stories", element: <StoriesPage /> },
+              { path: "album", element: <AlbumPage /> },
+              { path: "plp-canada", element: <CanadaPage /> },
+              { path: "plp-hub", element: <PublicHubPage /> },
               { path: "courses", element: <CoursePreviewPage /> },
+              { path: "verify/:id", element: <VerifyPage /> },
               { path: "certificate-check/:requestId/:memberId", element: <CertificateCheckPage /> },
-              { path: "join", element: <JoinPage /> },
-              { path: "sign-in", element: <SignInPage /> },
+              // Account pages live under /auth; the older addresses redirect, so bookmarks and emailed links keep working.
+              { path: "auth", element: <Navigate to="/auth/login" replace /> },
+              { path: "auth/login", element: <SignInPage /> },
+              { path: "auth/signup", element: <JoinPage /> },
+              { path: "auth/forgot-password", element: <ForgotPasswordPage /> },
+              { path: "auth/reset", element: <ForgotPasswordPage /> },
+              { path: "auth/verify-email", element: <EmailVerificationPage /> },
+              { path: "auth/pending", element: <StaffPendingPage /> },
+              { path: "sign-in", element: <MovedTo path="/auth/login" /> },
+              { path: "join", element: <MovedTo path="/auth/signup" /> },
+              { path: "forgot-password", element: <MovedTo path="/auth/forgot-password" /> },
+              { path: "reset", element: <MovedTo path="/auth/reset" /> },
+              { path: "verify-email", element: <MovedTo path="/auth/verify-email" /> },
+              { path: "staff-pending", element: <MovedTo path="/auth/pending" /> },
               {
                 path: "application-status",
                 element: <ApplicationStatusPage />,
               },
-              ...(import.meta.env.DEV
-                ? [{ path: "dev/access", element: <DevelopmentAccessPage /> }]
-                : []),
             ],
           },
           {
@@ -187,6 +203,7 @@ export const router = createBrowserRouter([
                   { path: "alx", element: <AlxPage /> },
                   { path: "opportunities", element: <OpportunitiesPage /> },
                   { path: "mentorship", element: <MentorshipPage /> },
+                  { element: <MemberGuard allowed={["Mentor"]} />, children: [{ path: "mentor-sessions", element: <MentorDashboard /> }] },
                   { path: "community", element: <Navigate to="/clubs" replace /> },
                   { path: "clubs", element: <ActivitiesPage /> },
                   { path: "passport", element: <ProfileRoute /> },
@@ -197,8 +214,7 @@ export const router = createBrowserRouter([
                   { path: "certificates", element: <CertificatesPage /> },
                   { path: "certificate-centre", element: <MembershipCertificatesPage /> },
                   { path: "learning-certificates", element: <Navigate to="/certificates" replace /> },
-                  { element: <MemberGuard allowed={["School coordinator", "Administrator"]} />, children: [{path:"school-members",element:<SchoolRegisterRoute/>}, {path:"learning-materials",element:<LearningMaterialsPage/>}] },
-                  { path: "verify/:id", element: <VerifyPage /> },
+                  { element: <MemberGuard allowed={["Club leader", "Administrator"]} />, children: [{path:"school-members",element:<SchoolRegisterRoute/>}, {path:"learning-materials",element:<LearningMaterialsPage/>}] },
                   { path: "credits", element: <CreditsPage /> },
                   {
                     element: (
@@ -209,6 +225,7 @@ export const router = createBrowserRouter([
                   {
                     element: <MemberGuard allowed={["Administrator"]} />,
                     children: [
+                      { path: "meetings/manage", element: <MeetingManager /> },
                       { path: "hub-analytics", element: <OperationsAnalyticsPage /> },
                       { path: "issued-certificates", element: <Navigate to="/hub" replace /> },
                     ],
@@ -228,19 +245,7 @@ export const router = createBrowserRouter([
         ],
       },
       { path: "public", element: <Navigate to="/" replace /> },
-      { path: "student/:qrCode", element: <Navigate to="/sign-in" replace /> },
-      {
-        path: "auth",
-        element: <AuthLayout />,
-        children: [
-          { index: true, element: <Navigate to="login" replace /> },
-          { path: "login", element: <Navigate to="/sign-in" replace /> },
-          { path: "signup", element: <Navigate to="/join" replace /> },
-          { path: "forgot-password", element: <ForgotPasswordPage /> },
-          { path: "verify-email", element: <VerifyEmailPage /> },
-          { path: "new-password", element: <NewPasswordPage /> },
-        ],
-      },
+      { path: "student/:qrCode", element: <Navigate to="/auth/login" replace /> },
       {
         element: <ProtectedRoute />,
         children: [

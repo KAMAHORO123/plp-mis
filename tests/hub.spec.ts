@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { finishPersonalLeadership } from "./academy-helpers";
 const state = (page: Page) =>
   page.evaluate(() => JSON.parse(localStorage.getItem("plp-hub-v1") || "null"));
 const demoRoles: Record<string, string> = {
@@ -26,38 +27,10 @@ test.beforeEach(async ({ page }) => {
   await expect(page).toHaveURL(/\/hub$/);
 });
 
+// Completion now requires passing every timed quiz, the assignment, and the final exam.
 async function complete(page: Page) {
-  await page.goto("/academy/personal-leadership");
-  await page.getByRole("button", { name: "Enroll in this course" }).click();
-  await expect(
-    page.getByRole("button", { name: "Submit & complete course" }),
-  ).toBeDisabled();
-  await page
-    .getByRole("button", { name: "Mark lesson complete", exact: true })
-    .click();
-  await page
-    .getByRole("button", { name: "Mark lesson complete", exact: true })
-    .click();
-  await page
-    .getByLabel(
-      "Describe one strength, one community need, and a measurable action you will take this month.",
-    )
-    .fill(
-      "I will organize a listening circle for five classmates by the end of this month and record their feedback.",
-    );
-  await page.getByLabel("Become a better leader someday").check();
-  await page.getByRole("button", { name: "Submit & complete course" }).click();
-  await expect(page.getByRole("status")).toContainText("Not quite");
-  expect((await state(page)).certificates).toHaveLength(0);
-  await page
-    .getByLabel(
-      "Host one listening circle with five peers by the end of the month",
-    )
-    .check();
-  await page.getByRole("button", { name: "Submit & complete course" }).click();
-  await expect(
-    page.getByRole("heading", { name: "You earned it." }),
-  ).toBeVisible();
+  expect((await state(page))?.certificates ?? []).toHaveLength(0);
+  await finishPersonalLeadership(page);
 }
 test("learning gates, completion, PDF, verification, credits, reload and member isolation", async ({
   page,
@@ -80,7 +53,7 @@ test("learning gates, completion, PDF, verification, credits, reload and member 
   expect(pdf.suggestedFilename()).toMatch(/\.pdf$/);
   await pdf.saveAs("/tmp/plp-test-certificate.pdf");
   await page.getByRole("link", { name: "Verify record" }).click();
-  await expect(page.getByText("Found in this browser")).toBeVisible();
+  await expect(page.getByText("Record found")).toBeVisible();
   await page.goto("/credits");
   await expect(page.getByRole('heading',{name:'Unlock something new'})).toHaveCount(0);
   data = await state(page);
@@ -130,36 +103,7 @@ test("opportunity search, shortlist, application, withdrawal and persistence", a
     page.getByRole("heading", { name: "Community research internship" }),
   ).toBeVisible();
 });
-test("mentor matching, booking, reflection and cancellation", async ({
-  page,
-}) => {
-  await page.goto("/mentorship");
-  await page.getByLabel("Mentor focus area").selectOption("Digital Skills");
-  await page.getByRole("button", { name: "Request a session" }).click();
-  const date = new Date(Date.now() + 86400000 * 5).toISOString().slice(0, 16);
-  await page.getByLabel("Preferred date & time").fill(date);
-  await page
-    .getByLabel("What would you like to work on?")
-    .fill("Review my digital learning goals and portfolio.");
-  await page.getByRole("button", { name: "Save session request" }).click();
-  await page
-    .getByLabel("Session reflection")
-    .fill(
-      "We agreed that I should complete a small portfolio project this month.",
-    );
-  await page.getByRole("button", { name: "Mark completed" }).click();
-  await expect(page.getByText("Completed", { exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Request a session" }).click();
-  await page
-    .getByLabel("Preferred date & time")
-    .fill(new Date(Date.now() + 86400000 * 6).toISOString().slice(0, 16));
-  await page
-    .getByLabel("What would you like to work on?")
-    .fill("Discuss my next project and learning goals.");
-  await page.getByRole("button", { name: "Save session request" }).click();
-  await page.getByRole("button", { name: "Cancel request" }).click();
-  await expect(page.getByText("Cancelled", { exact: true })).toBeVisible();
-});
+// Mentorship request, mentor confirmation, and email notifications: see mentorship-academy.spec.ts.
 test("ALX proof upload and recognition workflow", async ({ page }) => {
   await page.goto("/alx");
   const card = page.locator("section").filter({
@@ -212,7 +156,7 @@ test("mobile routes render without page errors or horizontal overflow and naviga
     "/",
     "/about",
     "/stories",
-    "/join",
+    "/auth/signup",
     "/hub",
     "/academy",
     "/alx",

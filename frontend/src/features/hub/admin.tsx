@@ -1,13 +1,18 @@
-import { CourseManagement } from "./course-management";
+import { AnnouncementEditor } from "./announcement";
+import { useLiveTick } from './live';
+import { TrainerWorkspace } from "./trainer-workspace";
+import { OpportunityAdmin } from "./opportunities";
 import { useSearchParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { confirmAction } from "@/components/shared/confirm-dialog";
+import { platformApi } from "./platform-api";
+import { readRecord, saveRecord } from "./platform-records";
 import { BarChart3, Users } from "lucide-react";
 import {
   alxPrograms,
   categories,
   clubs,
-  opportunityTypes,
 } from "./data";
 import { useHub, uid, today } from "./store";
 import {
@@ -21,211 +26,83 @@ import {
   downloadCSV,
 } from "./ui";
 export function StudioPage() {
-  const { state, profile, update } = useHub();
-  const [searchParams] = useSearchParams();
-  const [tab, setTab] = useState(() => { const requested=searchParams.get("tab"); return requested === "Assignments" || (profile.role === "Administrator" && ["ALX reviews", "Opportunities"].includes(requested ?? "")) ? requested! : "Courses"; });
+  const { state, profile } = useHub();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [tab, setTab] = useState(() => { const requested=searchParams.get("tab"); return (requested === "Assignments" && profile.role !== "Administrator") || (profile.role === "Administrator" && ["ALX certificates", "Opportunities", "Website banner"].includes(requested ?? "")) ? requested! : requested === "ALX reviews" && profile.role === "Administrator" ? "ALX certificates" : "Courses"; });
   const admin = profile.role === "Administrator";
-  const managedCourses = state.courses.filter(
-    (c) => admin || c.ownerId === profile.id,
-  );
-  const assignments = state.enrollments.filter(
-    (e) => e.assignment && managedCourses.some((c) => c.id === e.courseId),
-  );
+  // ALX certificates are recognised on upload; an administrator can revoke one that turns out to be invalid.
+  const [people, setPeople] = useState<{ id: string; name: string }[]>([]);
+  const live = useLiveTick();
+  useEffect(() => { if (admin) platformApi<{ id: string; name: string }[]>("/users").then(setPeople).catch(() => {}); }, [admin, live]);
+  async function reviewProof(id: string, status: "approved" | "returned") {
+    if (status === "returned" && !await confirmAction({ title: "Revoke this ALX certificate?", description: "The member loses the recognition and is notified. Do this only if the certificate is not genuine.", confirmLabel: "Revoke", destructive: true })) return;
+    try { const stored = await readRecord<Record<string, unknown>>("proofs", id); await saveRecord("proofs", { ...stored.data, status, feedback: status === "returned" ? "Revoked by PLP: this certificate could not be verified." : stored.data.feedback }, { id, version: stored.version }); toast.success(status === "approved" ? "Certificate recognised" : "Certificate revoked"); }
+    catch (e) { toast.error((e as Error).message); }
+  }
   if (!admin && profile.role !== "Trainer")
     return (
       <Empty>This workspace is for assigned trainers and administrators.</Empty>
     );
+  if (!admin) return <TrainerWorkspace/>;
   return (
     <>
       <Heading
         eyebrow="MAKE ROOM FOR LEARNING"
         title={admin ? "Content studio" : "Trainer studio"}
-        description="Create learning experiences, review assignments, and support the next generation."
+        description={admin ? "See published courses, ALX certificates members have uploaded, opportunities and the website banner." : "Create learning experiences, review assignments, and support the next generation."}
       />
       <div className="hub-chips">
         {[
           "Courses",
-          "Assignments",
-          ...(admin ? ["ALX reviews", "Opportunities"] : []),
+          // Assignment feedback belongs to the course's trainer.
+          ...(admin ? ["ALX certificates", "Opportunities", "Website banner"] : ["Assignments"]),
         ].map((t) => (
           <button
             key={t}
             className={tab === t ? "active" : ""}
-            onClick={() => setTab(t)}
+            onClick={() => { setTab(t); setSearchParams(t === "Courses" ? {} : { tab: t }, { replace: true }); }}
           >
-            {t}
+            {admin && t === "Courses" ? "Published courses" : t}
           </button>
         ))}
       </div>
-      {tab === "Courses" && <CourseManagement/>}
-      {tab === "Assignments" && (
-        <div className="hub-stack">
-          {assignments.map((e) => (
-            <Panel key={`${e.memberId}-${e.courseId}`}>
-              <Tag>{e.passed ? "Assessment passed" : "Needs review"}</Tag>
-              <h3>{state.courses.find((c) => c.id === e.courseId)?.title}</h3>
-              <p>{state.profiles.find((p) => p.id === e.memberId)?.name}</p>
-              <p className="hub-prewrap">{e.assignment}</p>
-            </Panel>
-          ))}
-          {!assignments.length && (
-            <Empty>Submitted learner assignments will appear here.</Empty>
-          )}
-        </div>
-      )}
-      {tab === "ALX reviews" && admin && (
+      {tab === "Website banner" && admin && <AnnouncementEditor/>}
+      {tab === "Courses" && <TrainerWorkspace embedded={admin}/>}
+      {tab === "Assignments" && !admin && <TrainerWorkspace initialTab="Learners & assignments"/>}
+      {tab === "ALX certificates" && admin && (
         <div className="hub-stack">
           {state.proofs
             .filter((p) => p.file)
             .map((p) => (
               <Panel key={p.id}>
-                <Tag>{p.status}</Tag>
+                <Tag>{p.status === "Recognized" ? "Recognised" : p.status === "Returned" ? "Revoked" : "Processing"}</Tag>
                 <h3>{alxPrograms.find((a) => a.id === p.programId)?.title}</h3>
                 <p>
-                  {state.profiles.find((m) => m.id === p.memberId)?.name}
+                  {people.find((m) => m.id === p.memberId)?.name ?? state.profiles.find((m) => m.id === p.memberId)?.name}
                 </p>
                 <a
                   href={p.file}
                   download={p.fileName}
                   className="hub-text-link"
                 >
-                  Download evidence: {p.fileName}
+                  Download certificate{p.fileName ? `: ${p.fileName}` : ""}
                 </a>
-                {p.status === "Pending review" && (
-                  <div className="hub-actions hub-space">
-                    <button
-                      className="hub-button"
-                      onClick={() =>
-                        update((s) => {
-                          s.proofs.find((x) => x.id === p.id)!.status =
-                            "Recognized";
-                        })
-                      }
-                    >
-                      Recognize completion
-                    </button>
-                    <button
-                      className="hub-button secondary"
-                      onClick={() =>
-                        update((s) => {
-                          s.proofs.find((x) => x.id === p.id)!.status =
-                            "Returned";
-                        })
-                      }
-                    >
-                      Return for revision
-                    </button>
-                  </div>
-                )}
+                <div className="hub-actions hub-space">
+                  {p.status === "Recognized"
+                    ? <button className="hub-button danger" onClick={() => void reviewProof(p.id, "returned")}>Revoke</button>
+                    : <button className="hub-button secondary" onClick={() => void reviewProof(p.id, "approved")}>Recognise</button>}
+                </div>
               </Panel>
             ))}
           {!state.proofs.some((p) => p.file) && (
             <Empty>
-              No evidence submitted yet. Members can upload proof in the ALX
-              learning zone.
+              No ALX certificates yet. Members upload them in the ALX learning
+              zone and they are recognised straight away.
             </Empty>
           )}
         </div>
       )}
-      {tab === "Opportunities" && admin && (
-        <>
-          <div className="hub-stack">
-            {state.opportunities.map((o) => (
-              <Panel key={o.id}>
-                <div className="hub-row">
-                  <div>
-                    <Tag>{o.type}</Tag>
-                    <h3>{o.title}</h3>
-                    <p>
-                      {o.organization} · {o.deadline}
-                    </p>
-                  </div>
-                  <button
-                    className="hub-button secondary"
-                    onClick={() =>
-                      update((s) => {
-                        const row = s.opportunities.find((x) => x.id === o.id)!;
-                        row.published = !row.published;
-                      })
-                    }
-                  >
-                    {o.published ? "Unpublish" : "Publish"}
-                  </button>
-                </div>
-              </Panel>
-            ))}
-          </div>
-          <Panel className="hub-space">
-            <h2>Add an opportunity</h2>
-            <form
-              className="hub-form"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.currentTarget;
-                const f = new FormData(form);
-                const str = (key: string) => String(f.get(key)).trim();
-                if (
-                  update((s) => {
-                    s.opportunities.push({
-                      id: uid(),
-                      title: str("title"),
-                      type: str("type"),
-                      organization: str("organization"),
-                      location: str("location"),
-                      deadline: str("deadline"),
-                      description: str("description"),
-                      eligibility: str("eligibility"),
-                      published: true,
-                    });
-                  })
-                ) {
-                  form.reset();
-                  toast.success("Opportunity added to this preview");
-                }
-              }}
-            >
-              <Field label="Title">
-                <input name="title" required minLength={3} maxLength={100} />
-              </Field>
-              <Field label="Opportunity category">
-                <select name="type">
-                  {opportunityTypes.map((t) => (
-                    <option key={t}>{t}</option>
-                  ))}
-                </select>
-              </Field>
-              <div className="hub-grid two">
-                <Field label="Organization">
-                  <input name="organization" required maxLength={100} />
-                </Field>
-                <Field label="Location">
-                  <input name="location" required maxLength={100} />
-                </Field>
-              </div>
-              <Field label="Application deadline">
-                <input type="date" name="deadline" required min={today()} />
-              </Field>
-              <Field label="Description">
-                <textarea
-                  name="description"
-                  required
-                  minLength={20}
-                  maxLength={2500}
-                />
-              </Field>
-              <Field label="Eligibility">
-                <textarea
-                  name="eligibility"
-                  required
-                  minLength={10}
-                  maxLength={1000}
-                />
-              </Field>
-              <button className="hub-button">Publish opportunity</button>
-            </form>
-          </Panel>
-        </>
-      )}
+      {tab === "Opportunities" && admin && <OpportunityAdmin/>}
 
     </>
   );
@@ -282,7 +159,7 @@ export function AnalyticsPage() {
                 ...metrics.map((m) => [
                   m.label,
                   m.value,
-                  "Local preview records",
+                  "PLP Hub records",
                 ]),
               ])
             }
@@ -292,10 +169,9 @@ export function AnalyticsPage() {
         }
       />
       <p className="hub-caption">
-        These figures are calculated from this browser’s sample profiles and
-        activity. They are separate from historical figures in the organization
-        portfolio. Active = enrolled, attended an activity, or requested
-        mentoring.
+        These figures are calculated from PLP Hub profiles and activity. They
+        are separate from historical figures in the organization portfolio.
+        Active = enrolled, attended an activity, or requested mentoring.
       </p>
       <Stats items={metrics} />
       <div className="hub-grid two">
