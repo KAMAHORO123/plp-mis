@@ -270,6 +270,19 @@
 .plp-team-units dl div:last-child { border-bottom: 0; padding-bottom: 0; }
 .plp-team-units dt { font-size: 11px; color: #61758c; line-height: 1.5; }
 .plp-team-units dd { margin: 0; font-size: 13px; font-weight: 500; color: var(--hub-navy); line-height: 1.65; overflow-wrap: anywhere; }
+/* Team polish: quiet accents, gentle hover, and names as soft chips */
+.plp-team li, .plp-team-units section { transition: border-color .2s ease, box-shadow .2s ease; }
+.plp-team li:hover, .plp-team-units section:hover { border-color: #c9d8e8; box-shadow: 0 12px 26px -20px rgba(16,35,60,.45); }
+.plp-team li.plp-team-lead { background: linear-gradient(180deg,#f3f7fc 0%,#fff 70%); box-shadow: inset 0 3px 0 var(--hub-blue); }
+.plp-team li.plp-team-lead:hover { box-shadow: inset 0 3px 0 var(--hub-blue), 0 12px 26px -20px rgba(16,35,60,.45); }
+.plp-team-monogram { transition: background .2s ease, color .2s ease; }
+.plp-team-lead .plp-team-monogram { position: relative; isolation: isolate; overflow: hidden; width: 46px; height: 46px; font-size: 14px; }
+.plp-team-lead .plp-team-monogram::before { content: ''; position: absolute; inset: 0; z-index: -1; background: url('/images/patterns/imigongo-blue.svg') center/150%; opacity: .28; }
+.plp-team-directors li:hover .plp-team-monogram { background: var(--hub-blue); color: #fff; }
+.plp-team-units section { position: relative; }
+.plp-team-units section::before { content: ''; position: absolute; left: 20px; top: 0; width: 28px; height: 3px; border-radius: 0 0 3px 3px; background: var(--hub-blue); opacity: .7; }
+.plp-team-units dd { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.plp-team-units dd span { padding: 3px 10px; border-radius: 999px; background: #f1f5fa; border: 1px solid #e3eaf2; font-size: 12.5px; line-height: 1.5; }
 @media(min-width:601px) and (max-width:1000px) { .plp-team-leadership,.plp-team-directors,.plp-team-units { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 .plp-source-note,.plp-source-download p { font-size: 11px !important; color: #65788b; }
 .plp-impact-lead { max-width: 1250px; margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; padding: 65px 0 25px; }

@@ -631,3 +631,6 @@
 
 .ws-chat-language { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; font-size: 12px; border-bottom: 1px solid #e1e7ed; }
 .ws-chat-language select { max-width: 160px; padding: 5px; border: 1px solid #cbd5df; border-radius: 6px; background: white; color: #10233c; }
+
+/* Fun corner editor: keep edit and delete side by side so rows stay short */
+.hub-actions.fc-row-actions { flex-wrap: nowrap; margin-top: 0; gap: 8px; }

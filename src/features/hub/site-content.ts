@@ -12,6 +12,15 @@ export const defaultAnnouncement: Announcement = {
  enabled: true, title: 'Sober Campaign · An evening of music & connection',
  date: '2026-11-14', location: 'Kigali', href: '/programmes#wellness', linkLabel: 'Explore event', sample: true,
 };
+/** Shown when no event is scheduled, so the public pages always carry the banner. */
+export const standingAnnouncement: Announcement = {
+ enabled: true, title: 'Peace and Love Proclaimers · Learn, connect and serve with PLP',
+ date: '', location: '', href: '/auth/signup', linkLabel: 'Join PLP', sample: false,
+};
+/** An enabled event that has not finished yet. */
+export function isUpcoming(item: Announcement, today: string) {
+ return item.enabled && !!item.date && (item.endsAt ? new Date(item.endsAt).getTime() > Date.now() : item.date >= today);
+}
 export function safeAnnouncementLink(value: string) {
  if (/^\/(?!\/)/.test(value) && !/[\\\s]/.test(value)) return true;
  try { return new URL(value).protocol === 'https:'; } catch { return false; }

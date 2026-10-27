@@ -1,5 +1,5 @@
 import { translateUi, useSiteLanguage } from '../../i18n/language';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, ArrowLeft, ArrowRight, Sparkles, X } from 'lucide-react';
 import { albums } from './site-content';
 import './community-sections.css';
@@ -14,7 +14,7 @@ export function TestimonialsSection() {
     const item = testimonials[index];
     return <section className="plp-community-section plp-testimonials" id="testimonials" aria-labelledby="voices-title"><div><p className="plp-section-label">{translateUi("PEOPLE. POSSIBILITY. PLP.")}</p><h2 id="voices-title">{translateUi("Every voice.")}<br /><em>{translateUi("A new beginning.")}</em></h2><div className="plp-small-controls"><button aria-label={translateUi("Previous testimonial")} onClick={() => setIndex((index + 2) % 3)}><ArrowLeft size={18}/></button><span>{translateUi("0")}{translateUi(index + 1)}{translateUi(" / 03")}</span><button aria-label={translateUi("Next testimonial")} onClick={() => setIndex((index + 1) % 3)}><ArrowRight size={18}/></button></div></div><figure aria-live="polite"><span className="plp-big-quote" aria-hidden="true">{translateUi("\u201C")}</span><blockquote>{translateUi(item.quote)}</blockquote><figcaption><span className="plp-initials">{translateUi(item.initials)}</span><div><strong>{translateUi(item.name)}</strong><span>{translateUi(item.topic)}{translateUi(" \u00B7 Illustrative story")}</span></div></figcaption></figure></section>;
 }
-const trivia = [
+export const builtInTrivia = [
     {
         "category": "PEACE IN PRACTICE",
         "question": "Two club members disagree. What is a constructive first step?",
@@ -128,7 +128,7 @@ const trivia = [
         "sourceName": "United Nations in Rwanda"
     }
 ];
-const cornerQuotes = [
+export const builtInQuotes = [
     {
         "text": "The central purpose of peace operations is the protection of civilians.",
         "author": "Paul Kagame",
@@ -158,16 +158,36 @@ const cornerQuotes = [
         "sourceName": "White House archives"
     }
 ];
+export type TriviaQuestion = (typeof builtInTrivia)[number];
+export type CornerQuote = (typeof builtInQuotes)[number];
+export interface FunCornerContent { trivia: TriviaQuestion[]; quotes: CornerQuote[] }
+/** The fun corner the administrator published, or the built-in questions and quotes when nothing is saved. */
+export function useFunCornerContent(): FunCornerContent {
+    const [content, setContent] = useState<FunCornerContent>({ trivia: builtInTrivia, quotes: builtInQuotes });
+    useEffect(() => {
+        const controller = new AbortController();
+        const load = () => fetch('/api/public/fun-corner', { signal: controller.signal, cache: 'no-store' })
+            .then(response => response.ok ? response.json() : null)
+            .then(value => { if (value && Array.isArray(value.trivia) && Array.isArray(value.quotes))
+                setContent({ trivia: value.trivia.length ? value.trivia : builtInTrivia, quotes: value.quotes.length ? value.quotes : builtInQuotes }); })
+            .catch(() => { });
+        void load();
+        window.addEventListener('plp:fun-corner-updated', load);
+        return () => { controller.abort(); window.removeEventListener('plp:fun-corner-updated', load); };
+    }, []);
+    return content;
+}
 export function FunCorner() {
     useSiteLanguage();
+    const { trivia, quotes: cornerQuotes } = useFunCornerContent();
     const [index, setIndex] = useState(0);
     const [answer, setAnswer] = useState<number | null>(null);
     const [score, setScore] = useState(0);
     const [finished, setFinished] = useState(false);
     const [quoteIndex, setQuoteIndex] = useState(0);
     const questionRef = useRef<HTMLHeadingElement>(null);
-    const q = trivia[index];
-    const quote = cornerQuotes[quoteIndex];
+    const q = trivia[Math.min(index, trivia.length - 1)];
+    const quote = cornerQuotes[quoteIndex % cornerQuotes.length];
     const choose = (choice: number) => { if (answer !== null)
         return; setAnswer(choice); if (choice === q.answer)
         setScore(value => value + 1); };
@@ -188,10 +208,10 @@ export function FunCorner() {
     {translateUi(finished ? <div className="plp-trivia-result"><p className="plp-section-label">{translateUi("KEEP LEARNING. KEEP BUILDING PEACE.")}</p><h3 ref={questionRef} tabIndex={-1}>{translateUi("You scored ")}{translateUi(score)}{translateUi(" / ")}{translateUi(trivia.length)}{translateUi("!")}</h3><p>{translateUi(score === trivia.length ? 'Thank you for taking time to learn. Carry these lessons into your community.' : 'Every question is an opportunity to understand more. Revisit the explanations and keep learning.')}</p><button className="plp-play-next" onClick={restart}>{translateUi("Review again ")}<ArrowRight size={18}/></button></div> : <>
      <p className="plp-section-label">{translateUi(q.category)}</p><h3 ref={questionRef} tabIndex={-1}>{translateUi(q.question)}</h3>
      <div className="plp-trivia-options" role="group" aria-label={translateUi("Choose your answer")}>{translateUi(q.options.map((option, i) => <button key={option} disabled={answer !== null} className={answer !== null ? (i === q.answer ? 'is-correct' : i === answer ? 'is-incorrect' : '') : ''} onClick={() => choose(i)}><span>{translateUi(String.fromCharCode(65 + i))}</span>{translateUi(option)}{translateUi(answer !== null && i === q.answer && <small>{translateUi("Correct")}</small>)}{translateUi(answer === i && i !== q.answer && <small>{translateUi("Your choice")}</small>)}</button>))}</div>
-     <div className="plp-trivia-feedback" aria-live="polite">{translateUi(answer !== null ? <><strong>{translateUi(answer === q.answer ? 'That’s correct.' : 'Let’s learn more.')}</strong><p>{translateUi(q.detail)}</p><a href={q.source} target="_blank" rel="noopener noreferrer">{translateUi("Explore with ")}{translateUi(q.sourceName)} <ArrowUpRight size={14}/></a><button className="plp-play-next" onClick={next}>{translateUi(index === trivia.length - 1 ? 'See my score' : 'Next question')} <ArrowRight size={18}/></button></> : <p>{translateUi("Take your time. Reflect, choose an answer, and learn more.")}</p>)}</div>
+     <div className="plp-trivia-feedback" aria-live="polite">{translateUi(answer !== null ? <><strong>{translateUi(answer === q.answer ? 'That’s correct.' : 'Let’s learn more.')}</strong><p>{translateUi(q.detail)}</p>{q.source && <a href={q.source} target="_blank" rel="noopener noreferrer">{translateUi("Explore with ")}{translateUi(q.sourceName || "the source")} <ArrowUpRight size={14}/></a>}<button className="plp-play-next" onClick={next}>{translateUi(index === trivia.length - 1 ? 'See my score' : 'Next question')} <ArrowRight size={18}/></button></> : <p>{translateUi("Take your time. Reflect, choose an answer, and learn more.")}</p>)}</div>
     </>)}
    </div>
-   <aside className="plp-quote-card" aria-label={translateUi("A thought to take with you")}><p className="plp-section-label">{translateUi("VOICES FOR PEACE")}</p><span className="plp-quote-mark" aria-hidden="true">{translateUi("\u201C")}</span><div aria-live="polite"><blockquote cite={quote.source}>{translateUi(quote.text)}</blockquote><strong className="plp-quote-author">{translateUi(quote.author)}</strong><p>{translateUi(quote.context)}</p></div><div className="plp-quote-bottom"><a href={quote.source} target="_blank" rel="noopener noreferrer" className="plp-quote-source">{translateUi("Source: ")}{translateUi(quote.sourceName)} <ArrowUpRight size={14}/></a><button onClick={() => setQuoteIndex((quoteIndex + 1) % cornerQuotes.length)} aria-label={translateUi("Next quote")}><ArrowRight size={20}/></button></div></aside>
+   <aside className="plp-quote-card" aria-label={translateUi("A thought to take with you")}><p className="plp-section-label">{translateUi("VOICES FOR PEACE")}</p><span className="plp-quote-mark" aria-hidden="true">{translateUi("\u201C")}</span><div aria-live="polite"><blockquote cite={quote.source || undefined}>{translateUi(quote.text)}</blockquote><strong className="plp-quote-author">{translateUi(quote.author)}</strong><p>{translateUi(quote.context)}</p></div><div className="plp-quote-bottom">{quote.source ? <a href={quote.source} target="_blank" rel="noopener noreferrer" className="plp-quote-source">{translateUi("Source: ")}{translateUi(quote.sourceName || "link")} <ArrowUpRight size={14}/></a> : <span/>}<button onClick={() => setQuoteIndex((quoteIndex + 1) % cornerQuotes.length)} aria-label={translateUi("Next quote")}><ArrowRight size={20}/></button></div></aside>
   </div>
  </section>;
 }
