@@ -1,0 +1,6 @@
+.plp-language-switcher { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; font-size: 12px; color: #334155; }
+.plp-language-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.plp-language-switcher select { width: 125px; min-height: 38px; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: #172b43; font: inherit; cursor: pointer; }
+.plp-language-switcher select:focus-visible { outline: 2px solid #1d75db; outline-offset: 3px; }
+@media (max-width:1500px) { .plp-public-site .hub-top-nav { display: none; } .plp-public-site .hub-menu { display: flex; align-items:center; justify-content:center; } }
+@media (max-width:600px) { .plp-language-switcher select { width: 108px; font-size: 11px; } .plp-public-site .hub-header-actions > .hub-signin,.plp-public-site .hub-header-actions > .hub-button { display: none; } .plp-public-site .hub-header { gap: 10px; } }

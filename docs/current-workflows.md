@@ -50,3 +50,7 @@ Material completion records refer to the school and completing staff member. The
 A school member without a login can receive a certificate and be marked present. Credits require a matching member account. Credit awards are idempotent per activity/member; reversals require a future explicit policy.
 
 Member discovery uses visual community cards, published activity photos, past reports, upcoming activities, and host/date/search filters. Generic illustrations appear when no activity photo is available. Joining a school community does not add someone to its official school register. Activity participation does not count as attendance until recorded by the leader.
+
+### Bilingual public FAQ
+
+The public-layout FAQ supports English and Kinyarwanda for joining PLP, certificates, student accounts, staff roles, greetings, and contacting PLP. It uses curated answers and whole-word/phrase matching, not a trained language model or an external AI service. Auto mode detects supported Kinyarwanda phrases (including mixed-language questions); visitors can explicitly select either language. Unknown or equally matched topics receive a clarification/contact response. Edit `src/features/hub/faq.ts` and its `frontend/` mirror to maintain the answers. Run `node --test tests/faq.test.mjs` to check matching and language selection.
