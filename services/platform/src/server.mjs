@@ -10,6 +10,7 @@ import {
 import { googleClient, googleRoute } from "./google.mjs";
 import { mailConfigured } from "./mail-config.mjs";
 import { schoolCertificates } from "./school-certificates.mjs";
+import { funCornerSchema } from "./fun-corner.mjs";
 import { filesRoute, validateAttachments, avatarRoute } from "./files.mjs";
 import http from "node:http";
 import { isDeepStrictEqual } from "node:util";
@@ -421,6 +422,11 @@ export function createServer({
         ]);
         res.setHeader("Set-Cookie", cookie("", secure));
         return send(200, { ok: true });
+      }
+      if (p === "/public/fun-corner" && req.method === "GET") {
+        // Empty lists tell the site to keep its built-in questions and quotes.
+        const row = (await db.query("SELECT data FROM content WHERE key='fun-corner'")).rows[0];
+        return send(200, row?.data ?? { trivia: [], quotes: [] });
       }
       if (p === "/public/announcement" && req.method === "GET") {
         const row = (
@@ -854,6 +860,26 @@ export function createServer({
           await audit(tx, user, "school.create", id);
         });
         return send(201, { id });
+      }
+      if (p === "/fun-corner" && req.method === "PUT") {
+        requireIt(user.role === "admin", 403, "Administrator required");
+        const input = funCornerSchema.parse(await body(req));
+        await transaction(db, async (tx) => {
+          await tx.query(
+            "INSERT INTO content(key,data) VALUES('fun-corner',$1) ON CONFLICT(key) DO UPDATE SET data=$1,updated_at=now()",
+            [input],
+          );
+          await audit(tx, user, "fun-corner.update", "fun-corner");
+        });
+        return send(200, input);
+      }
+      if (p === "/fun-corner" && req.method === "DELETE") {
+        requireIt(user.role === "admin", 403, "Administrator required");
+        await transaction(db, async (tx) => {
+          await tx.query("DELETE FROM content WHERE key='fun-corner'");
+          await audit(tx, user, "fun-corner.reset", "fun-corner");
+        });
+        return send(200, { trivia: [], quotes: [] });
       }
       if (p === "/announcement" && req.method === "PUT") {
         requireIt(user.role === "admin", 403, "Administrator required");

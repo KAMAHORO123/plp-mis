@@ -16,3 +16,16 @@ output/
 *.log
 .idea/
 .vscode/
+
+# Kept on this computer only: tests, demo data scripts and the old browser-only demo
+frontend/
+tests/
+playwright.config.ts
+services/platform/test/
+services/public-content/server.test.mjs
+system/test/
+services/platform/scripts/
+docs/demo-and-live-updates.md
+docs/demo-workspaces.md
+services/platform/uploads/
+*.tmp.mjs

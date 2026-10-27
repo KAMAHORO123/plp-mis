@@ -3,7 +3,7 @@ import { AnnouncementBanner } from "./announcement";
 import { HelpChat } from "./workspaces";
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate, } from "react-router-dom";
-import { ArrowUpRight, ArrowLeft, BookOpen, BriefcaseBusiness, Users, Award, Coins, LayoutDashboard, Fingerprint, Menu, X, GraduationCap, ChartNoAxesCombined, PenTool, Globe, LogOut, ShieldCheck, } from "lucide-react";
+import { ArrowUpRight, ArrowLeft, BookOpen, BriefcaseBusiness, Users, Award, Coins, LayoutDashboard, Fingerprint, Menu, X, GraduationCap, ChartNoAxesCombined, PenTool, Globe, LogOut, ShieldCheck, Sparkles, } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
 import { SignOutDialog } from "@/components/shared/sign-out-dialog";
 import { AuthLayout } from "@/layouts/auth-layout";
@@ -116,6 +116,7 @@ function Layout({ privateWorkspace = false }: {
                 { to: '/memberships', label: 'Members & staff', icon: ShieldCheck },
                 { to: '/studio', label: 'Content studio', icon: PenTool },
                 { to: '/studio?tab=Website%20banner', label: 'Website banner', icon: PenTool },
+                { to: '/studio?tab=Fun%20corner', label: 'Fun corner', icon: Sparkles },
                 { to: '/meetings/manage', label: 'Meetings & attendance', icon: Globe },
                 { to: '/clubs', label: 'Activities & requests', icon: Globe },
                 { to: '/learning-materials', label: 'Learning materials', icon: BookOpen },
