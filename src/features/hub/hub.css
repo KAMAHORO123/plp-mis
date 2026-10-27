@@ -2015,7 +2015,9 @@
 .hub-achievements-page .hub-certificate .hub-actions { margin-top: auto; padding-top: 18px; }
 .hub-mentor-filters .hub-row { gap: 24px; flex-wrap: wrap; }
 .hub-mentor-filters select { min-width: 220px; max-width: 100%; }
-.hub-mentor-card { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+.hub-mentor-card { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; height: 100%; }
+.hub-mentor-card > * { width: 100%; }
+.hub-grid.three > .hub-mentor-card { height: 100%; }
 .hub-mentor-card .hub-mentor-avatar { margin: 0 0 6px; width: 72px; height: 72px; border-radius: 22px; box-shadow: 0 6px 16px -2px rgba(28, 115, 187, 0.16); }
 .hub-mentor-card :is(h2,h3) { margin: 0; font-size: 20px; line-height: 1.3; color: #101828; }
 .hub-mentor-card p { margin: 0; }

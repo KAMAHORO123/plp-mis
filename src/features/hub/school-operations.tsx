@@ -1,4 +1,4 @@
-import { translateUi, useSiteLanguage } from '../../i18n/language';
+import { translateUi, useSiteLanguage, formatDate } from '../../i18n/language';
 import { BookOpen, CalendarDays, FileText, Users, CheckCircle2, Download, Plus, ArrowUpRight, Clock3, MapPin, HeartHandshake, Trophy, UserPlus, MessagesSquare, Sparkles, Hand } from 'lucide-react';
 import { useLiveTick } from './live';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -45,7 +45,7 @@ export function ActivityCard({ a, going, children }: {
     const Icon = typeIcon(a.type), d = new Date(`${a.date}T00:00:00`), past = a.date < today();
     return <article className={`act-card${past ? ' past' : ''}`}>
   <div className="act-cover">{translateUi(a.photos[0] ? <img src={a.photos[0].data} alt={translateUi("")}/> : <div className="act-cover-art"><Icon size={34} strokeWidth={1.4}/></div>)}
-   <span className="act-date"><b>{translateUi(d.getDate())}</b>{translateUi(d.toLocaleString('en', { month: 'short' }))}</span>
+   <span className="act-date"><b>{translateUi(d.getDate())}</b>{formatDate(d, { month: 'short' })}</span>
    <span className="act-type"><Icon size={13}/>{translateUi(a.type ?? 'Meeting')}</span></div>
   <div className="act-body">
    <h2>{translateUi(a.title)}</h2>

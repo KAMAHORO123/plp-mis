@@ -76,6 +76,7 @@ jobs:
     env:
       DB_PASSWORD: ci-only-password
       APP_DB_PASSWORD: ci-only-app-password
+      JWT_SECRET: ci-only-jwt-secret-that-is-long-enough
       SITE_HOST: website.example.invalid
       HUB_HOST: hub.example.invalid
       TLS_EMAIL: ci@example.invalid

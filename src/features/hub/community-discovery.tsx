@@ -65,7 +65,7 @@ export function CommunityDiscovery({ compact = false }: {
     };
     const grid = (rows: CommunityActivity[]) => <div className="act-grid">{translateUi(rows.map((a) => <ActivityCard key={a.id} a={a}>{translateUi(actions(a))}</ActivityCard>))}</div>;
     if (compact)
-        return (<section className="hub-space">
+        return (<section className="hub-space community-discovery-compact">
       <div className="ws-panel-title"><h2>{translateUi("Coming up")}</h2><Link className="hub-text-link" to="/clubs">{translateUi("All activities ")}<ArrowUpRight size={15}/></Link></div>
       {translateUi(upcoming.length ? grid(upcoming.slice(0, 3)) : <p className="pv-empty">{translateUi("New activities from schools and PLP communities will appear here.")}</p>)}
     </section>);

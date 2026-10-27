@@ -9,6 +9,7 @@ import { downloadPassportPDF } from './passport-pdf';
 import { ProfileCard, ProfilePanel } from './profile-card';
 import { useOverview, figure, type MemberOverview } from './reports';
 import { FormModal } from './modal';
+import { confirmAction } from "@/components/shared/confirm-dialog";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowRight, Award, BookOpen, Clock3, Coins, Download, Fingerprint, Plus, PencilLine, Sparkles, Flag, Users, } from "lucide-react";
@@ -17,19 +18,10 @@ import { clubs, mentors } from "./data";
 import { useHub, balance, type HubCertificate } from "./store";
 import { Empty, Field, Heading, Panel, Progress, Stats, Tag, TextLink, } from "./ui";
 
-const PASSPORT_GRADUATION_KEY = "plp-passport-graduation";
-
-function readGraduation() {
-    try {
-        const value = localStorage.getItem(PASSPORT_GRADUATION_KEY);
-        if (!value) return { status: "In school", year: "" };
-        const parsed = JSON.parse(value) as { status?: string; year?: string };
-        return { status: parsed.status ?? "In school", year: parsed.year ?? "" };
-    }
-    catch {
-        return { status: "In school", year: "" };
-    }
-}
+// Where a member is in their studies, saved on the platform so it follows them to every device.
+type Stage = "high-school" | "university" | "graduated" | "community";
+interface Education { education_stage: Stage; institution: string; graduation_year: number | null; school_id: string | null }
+const stageLabels: Record<Stage, string> = { "high-school": "High school student", university: "University student", graduated: "Graduated", community: "Community member" };
 
 export function JourneyPage() {
     useSiteLanguage();
@@ -159,17 +151,15 @@ export function PassportPage() {
         kind: string;
         revoked_at: string | null;
     }[]>([]);
-    const [graduation, setGraduation] = useState(readGraduation());
+    const [education, setEducation] = useState<Education | null>(null);
+    const [stage, setStage] = useState<Stage>("community");
     const [edit, setEdit] = useState(false);
     useEffect(() => { platformApi<{
         id: string;
         kind: string;
         revoked_at: string | null;
     }[]>("/certificates").then((rows) => setServerCerts(rows.filter((r) => !r.revoked_at))).catch(() => { }); }, [profile.id, live]);
-    useEffect(() => {
-        const next = readGraduation();
-        setGraduation(next);
-    }, [profile.id]);
+    useEffect(() => { platformApi<Education>("/me").then((me) => { setEducation(me); setStage(me.education_stage); }).catch(() => { }); }, [profile.id]);
     const schoolAchievements = state.schoolRecords.requests.filter(r => r.status === 'Issued').flatMap(r => r.members.filter(m => m.email && m.email.toLowerCase() === profile.email.toLowerCase()).map(m => ({ id: `${r.id}/${m.id}`, title: r.programme, name: m.name, issued: r.issued, completed: r.completed, schoolId: r.schoolId, verifyUrl: `/certificate-check/${r.id}/${m.id}` })));
     const enrollments = state.enrollments.filter((e) => e.memberId === profile.id);
     const overview = useOverview<MemberOverview>();
@@ -204,23 +194,30 @@ export function PassportPage() {
     const localCertificates = state.certificates.filter((c) => c.memberId === profile.id && !serverCerts.some((r) => r.id === c.id)).length;
     const courses = overview ? figure(overview.coursesCompleted + enrollments.filter((e) => e.completedAt).length) : "—";
     const certificates = overview ? figure(overview.certificates + localCertificates) : "—";
-    const communities = clubs.filter((c) => profile.clubIds.includes(c.id));
     return (<div className="ws-page pv-page">
       <ProfileCard kicker="PLP DIGITAL YOUTH PASSPORT" bio={profile.bio || "Add a short bio so mentors and communities know what you care about."} actions={<>
           <button className="hub-button secondary" onClick={() => setEdit(true)}><PencilLine size={16}/>{translateUi(" Edit profile")}</button>
           <button className="hub-button" onClick={downloadPassport}><Download size={16}/>{translateUi(" Download PDF")}</button>
         </>} stats={[{ label: "Courses completed", value: courses, icon: BookOpen }, { label: "Certificates", value: certificates, icon: Award }, { label: "Verified credits", value: figure(balance(state, profile.id)), icon: Coins }, { label: "Volunteer hours", value: overview ? figure(volunteerHours) : "—", icon: Clock3 }]}/>
       {translateUi(edit && (<FormModal title={translateUi("Edit your passport")} description={translateUi("Shown on your youth passport and in the PDF you download.")} onClose={() => setEdit(false)}>
-          <form key={profile.id} className="hub-form" onSubmit={(e) => {
+          <form key={profile.id} className="hub-form" onSubmit={async (e) => {
                 e.preventDefault();
                 const f = new FormData(e.currentTarget);
-                const nextStatus = String(f.get("graduationStatus") ?? graduation.status);
-                const nextYear = String(f.get("graduationYear") ?? graduation.year);
-                localStorage.setItem(PASSPORT_GRADUATION_KEY, JSON.stringify({ status: nextStatus, year: nextYear }));
-                setGraduation({ status: nextStatus, year: nextYear });
+                const year = String(f.get("graduationYear") ?? "").trim();
+                const name = String(f.get("name")).trim();
+                const leavingSchool = !!education?.school_id && stage !== "high-school";
+                if (leavingSchool && !await confirmAction({ title: translateUi("Leave your school's register?"), description: translateUi("Your school's club leaders will no longer manage your membership. Your certificates, credits and activity history stay with you."), confirmLabel: translateUi("Save and continue") }))
+                    return;
+                try {
+                    const saved = await platformApi<Education>("/me/profile", "PUT", { name, education_stage: stage, institution: String(f.get("institution") ?? "").trim(), graduation_year: year ? Number(year) : null });
+                    setEducation(saved);
+                }
+                catch (err) {
+                    return toast.error(translateUi((err as Error).message));
+                }
                 if (update((s) => {
                     const p = s.profiles.find((p) => p.id === profile.id)!;
-                    p.name = String(f.get("name")).trim();
+                    p.name = name;
                     p.bio = String(f.get("bio"));
                     p.skills = String(f.get("skills"))
                         .split(",")
@@ -230,9 +227,11 @@ export function PassportPage() {
                         .split(",")
                         .map((x) => x.trim())
                         .filter(Boolean);
+                    p.memberCategory = stage === "high-school" ? "High school" : stage === "university" ? "University" : "Community";
+                    if (leavingSchool) p.schoolId = undefined;
                 })) {
                     setEdit(false);
-                    toast.success(translateUi("Passport updated"));
+                    toast.success(translateUi(leavingSchool ? "Congratulations on graduating! Your profile is updated." : "Passport updated"));
                 }
             }}>
             <Field label={translateUi("Name")}>
@@ -247,17 +246,20 @@ export function PassportPage() {
             <Field label={translateUi("Leadership roles (comma separated)")}>
               <input name="leadership" maxLength={500} defaultValue={profile.leadership.join(", ")}/>
             </Field>
-            <Field label={translateUi("Graduation status")}>
-              <select name="graduationStatus" defaultValue={graduation.status} className="hub-field">
-                <option value="In school">In school</option>
-                <option value="Waiting to graduate">Waiting to graduate</option>
-                <option value="Graduated">Graduated</option>
-                <option value="Completed">Completed</option>
+            <Field label={translateUi("Where are you now?")}>
+              <select value={stage} onChange={(e) => setStage(e.target.value as Stage)}>
+                {(Object.keys(stageLabels) as Stage[]).map((k) => <option key={k} value={k}>{translateUi(stageLabels[k])}</option>)}
               </select>
             </Field>
-            <Field label={translateUi("Graduation year")}>
-              <input name="graduationYear" maxLength={10} defaultValue={graduation.year} placeholder={translateUi("e.g. 2026")}/>
-            </Field>
+            {stage !== "community" && <div className="ws-form-grid">
+              <Field label={translateUi(stage === "high-school" ? "School" : stage === "university" ? "University or college" : "Where you studied")}>
+                <input name="institution" maxLength={120} defaultValue={education?.institution ?? ""}/>
+              </Field>
+              <Field label={translateUi(stage === "graduated" ? "Year you graduated" : "Expected graduation year")}>
+                <input name="graduationYear" type="number" min={1990} max={new Date().getFullYear() + 8} defaultValue={education?.graduation_year ?? ""} placeholder={String(new Date().getFullYear())}/>
+              </Field>
+            </div>}
+            {education?.school_id && stage !== "high-school" && <p className="hub-feedback">{translateUi("Finished high school? Saving this moves you off your school's register. Your certificates, credits and activity history stay on your passport.")}</p>}
             <div className="hub-actions hub-dialog-actions">
               <button type="button" className="hub-button secondary" onClick={() => setEdit(false)}>{translateUi("Cancel")}</button>
               <button className="hub-button">{translateUi("Save profile")}</button>
@@ -277,12 +279,13 @@ export function PassportPage() {
             : <p className="pv-empty">{translateUi("Roles you take on in clubs, schools and events appear here.")}</p>)}
           <TextLink to="/certificates">{translateUi("View my achievements")}</TextLink>
         </ProfilePanel>
-        <ProfilePanel icon={Users} title={translateUi("Graduation")}> 
-          {translateUi(<div className="pv-list">
-            <span>{translateUi("Status")}: {translateUi(graduation.status)}</span>
-            <span>{translateUi("Year")}: {translateUi(graduation.year || "—")}</span>
-          </div>)}
-          <button className="hub-text-button" onClick={() => setEdit(true)}>{translateUi("Update graduation")}</button>
+        <ProfilePanel icon={Users} title={translateUi("Studies")}>
+          <div className="pv-list">
+            <span>{translateUi(education ? stageLabels[education.education_stage] : "—")}</span>
+            {education?.institution && <span>{education.institution}</span>}
+            {education?.graduation_year && <span>{translateUi(education.education_stage === "graduated" ? "Graduated" : "Expected to graduate")} {education.graduation_year}</span>}
+          </div>
+          <button className="hub-text-button" onClick={() => setEdit(true)}>{translateUi("Update studies")}</button>
         </ProfilePanel>
       </div>
     </div>);

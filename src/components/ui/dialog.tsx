@@ -18,7 +18,7 @@ const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.C
     useSiteLanguage();
     return (<DialogPortal>
     <DialogOverlay />
-    <DialogPrimitive.Content ref={ref} className={cn("fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-card p-6 shadow-dropdown duration-200 data-[state=open]:animate-scale-in", className)} {...props}>
+    <DialogPrimitive.Content ref={ref} className={cn("fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-card p-6 shadow-dropdown duration-200 data-[state=open]:animate-fade-in motion-reduce:animate-none", className)} {...props}>
       {translateUi(children)}
       {translateUi(!hideClose && (<DialogPrimitive.Close className="absolute right-5 top-5 rounded-md p-1 text-muted-foreground opacity-70 ring-offset-background transition-opacity hover:bg-secondary hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring">
           <X className="h-4 w-4"/>

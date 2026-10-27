@@ -126,7 +126,7 @@ const recordSchema = z
       .optional(),
   })
   .strict();
-const userFields = "id,email,name,role,status,school_id,created_at,requested_role,role_review,avatar_file_id";
+const userFields = "id,email,name,role,status,school_id,created_at,requested_role,role_review,avatar_file_id,education_stage,institution,graduation_year";
 class HttpError extends Error {
   constructor(status, message) {
     super(message);
@@ -510,6 +510,26 @@ export function createServer({
         return;
       if (await avatarRoute({ req, res, pathname: p, db, user, directory: uploadDirectory })) return;
       if (p === "/me" && req.method === "GET") return send(200, user);
+      if (p === "/me/profile" && req.method === "PUT") {
+        // Members keep their study details current. Moving on from high school leaves the school's
+        // register scope; attendance, certificates and credits stay with the member.
+        const input = z.object({
+          name: z.string().trim().min(2).max(80),
+          education_stage: z.enum(["high-school", "university", "graduated", "community"]),
+          institution: z.string().trim().max(120),
+          graduation_year: z.number().int().min(1990).max(new Date().getFullYear() + 8).nullable(),
+        }).strict().parse(await body(req));
+        const leavesSchool = user.role === "member" && user.school_id && input.education_stage !== "high-school";
+        const updated = await transaction(db, async (tx) => {
+          const row = (await tx.query(
+            `UPDATE users SET name=$2, education_stage=$3, institution=$4, graduation_year=$5${leavesSchool ? ", school_id=NULL" : ""} WHERE id=$1 RETURNING ${userFields}`,
+            [user.id, input.name, input.education_stage, input.institution, input.graduation_year],
+          )).rows[0];
+          await audit(tx, user, leavesSchool ? "member.graduated" : "member.profile", user.id);
+          return row;
+        });
+        return send(200, updated);
+      }
       if (p === "/me/password" && req.method === "PUT") {
         const input = z
           .object({

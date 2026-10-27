@@ -1,4 +1,4 @@
-import { translateUi, useSiteLanguage } from '../../i18n/language';
+import { translateUi, useSiteLanguage, formatDate } from '../../i18n/language';
 import { useEffect, useState } from "react";
 import { useLiveTick } from './live';
 import { Ban, CheckCircle2, XCircle, FilePenLine, GraduationCap, HeartHandshake, RotateCcw, Trash2, UserPlus, UserRoundCheck, Users } from "lucide-react";
@@ -103,7 +103,7 @@ export function MembershipsPage() {
             {translateUi(pending.map((p) => (<tr key={p.id}>
                 <td><strong>{translateUi(p.name)}</strong><small>{translateUi(p.email)}</small></td>
                 <td><span className="ws-status">{translateUi(roleName(p.requested_role || p.role))}</span></td>
-                <td>{translateUi(new Date(p.created_at).toLocaleDateString())}</td>
+                <td>{formatDate(p.created_at)}</td>
                 <td><div className="ms-row-actions">
                   <button className="hub-button" disabled={busy} onClick={() => void approve(p)}><CheckCircle2 size={15}/>{translateUi(" Approve ")}{translateUi(roleName(p.requested_role || p.role).toLowerCase())}</button>
                   <button className="hub-button secondary" disabled={busy} onClick={() => setEditing(p)}>{translateUi("Review")}</button>

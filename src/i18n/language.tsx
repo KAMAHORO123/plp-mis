@@ -34,6 +34,8 @@ export function translateUi<T>(value: T, params?: Record<string, unknown>, local
   if (Array.isArray(value)) return value.map(item => translateUi(item, undefined, locale)) as T;
   if (typeof value !== 'string') return value;
   const key = value.trim().replace(/\s+/g, ' ');
+  // Development only: remember text with no translation so it can be added to the catalogue.
+  if (import.meta.env.DEV && locale !== 'en' && !translations[key] && /[A-Za-z]{2}/.test(key)) ((window as unknown as { __plpMissing?: Set<string> }).__plpMissing ??= new Set()).add(key);
   if (!params && (locale === 'en' || !translations[key])) return value;
   let result = locale === 'en' ? key : translations[key]?.[locale] ?? key;
   if (params) result = result.replace(/\{(\w+)\}/g, (match, name: string) => String(params[name] ?? match));
@@ -52,6 +54,19 @@ export function LanguageSwitcher() {
   return <label className="plp-language-switcher"><span className="plp-language-label">{translateUi('Language')}</span><select aria-label="Language / Ururimi / Langue" value={selected} onChange={event => setSiteLanguage(event.target.value as SiteLanguage)}><option value="en" lang="en">English</option><option value="rw" lang="rw">Kinyarwanda</option><option value="fr" lang="fr">Français</option></select></label>;
 }
 export const dateLocale = () => ({ en: 'en-GB', rw: 'rw-RW', fr: 'fr-FR' }[language]);
+const rwMonths = ['Mutarama', 'Gashyantare', 'Werurwe', 'Mata', 'Gicurasi', 'Kamena', 'Nyakanga', 'Kanama', 'Nzeri', 'Ukwakira', 'Ugushyingo', 'Ukuboza'];
+/**
+ * Dates in the reader's language. Browsers rarely ship Kinyarwanda month names, so they are built in.
+ * Accepts a Date, an ISO string or a YYYY-MM-DD / YYYY-MM value (read as a local date).
+ */
+export function formatDate(value: Date | string, options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }) {
+  const date = typeof value === 'string' ? new Date(/^\d{4}-\d{2}(-\d{2})?$/.test(value) ? `${value.length === 7 ? value + '-15' : value}T12:00:00` : value) : value;
+  if (Number.isNaN(date.getTime())) return String(value);
+  if (language !== 'rw') return date.toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-GB', options).replace(/\bSept\b/, 'Sep');
+  const month = options.month ? (options.month === 'long' ? rwMonths[date.getMonth()] : rwMonths[date.getMonth()].slice(0, 3)) : '';
+  return [options.day ? date.getDate() : '', month, options.year ? date.getFullYear() : ''].filter(Boolean).join(' ');
+}
+
 
 /**
  * Collapses the public header's links into the menu button whenever they do not fit,
