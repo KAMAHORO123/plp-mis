@@ -1,4 +1,4 @@
-import { translateUi, useSiteLanguage } from '../../i18n/language';
+import { translateUi, useSiteLanguage, formatDate } from '../../i18n/language';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell, BellRing, CheckCheck } from "lucide-react";
@@ -16,7 +16,7 @@ const ago = (iso: string) => {
     const h = Math.round(m / 60);
     if (h < 24)
         return `${h} h ago`;
-    return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+    return formatDate(iso, { day: "numeric", month: "short" });
 };
 /** Header bell: unread count, the latest 50 notifications, and live arrivals with a toast (and a desktop alert if allowed). */
 export function NotificationBell() {

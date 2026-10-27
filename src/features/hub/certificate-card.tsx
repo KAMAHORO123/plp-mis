@@ -1,10 +1,10 @@
-import { translateUi, useSiteLanguage } from '../../i18n/language';
+import { translateUi, useSiteLanguage, formatDate } from '../../i18n/language';
 import { useEffect, useState } from 'react';
 import { Copy, Download, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { downloadCertificatePDF, certificateFileName, type CertificateDesignData } from './certificate-pdf';
 const codeOf = (id: string) => `PLP-${id.replace(/[^a-z0-9]/gi, '').slice(0, 8).toUpperCase()}`;
-const longDate = (d: string) => (/^\d{4}-\d{2}-\d{2}$/.test(d) ? new Date(`${d}T12:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : d);
+const longDate = (d: string) => (/^\d{4}-\d{2}-\d{2}$/.test(d) ? formatDate(d) : d);
 /**
  * A compact preview of a certificate: the same wording as the PDF, laid out to read well at card size.
  * The full design (signature, stamp) is in the PDF, which Download saves and Print opens ready to print.
@@ -84,7 +84,7 @@ export function CertificateCard({ design, revoked = false, pending = false, acti
       {translateUi(actions && (<div className="cc-actions">
           <div className="cc-meta">
             <strong>{translateUi(design.programme)}</strong>
-            <span>{translateUi(longDate(design.issued))} <em className={revoked ? 'cc-badge revoked' : 'cc-badge'}>{translateUi(revoked ? 'Revoked' : 'Valid')}</em></span>
+            <span>{translateUi(longDate(design.issued))} {revoked && <em className="cc-badge revoked">{translateUi('Revoked')}</em>}</span>
           </div>
           <div className="cc-buttons">
             <button className="hub-button" disabled={busy || revoked} onClick={() => void download()}><Download size={15}/>{translateUi(busy ? 'Preparing…' : 'Download')}</button>

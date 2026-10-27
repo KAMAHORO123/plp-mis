@@ -42,3 +42,17 @@
 .plp-dashboard .ws-insight-legend i { width:8px; height:8px; border-radius:50%; background:#1c73bb; }
 .plp-dashboard .ws-insight-legend span:nth-child(2) i { background:#8dbce5; }
 @media(max-width:640px) { .plp-dashboard :is(.hub-heading,.ws-page-header,.plp-dashboard-heading) { padding:20px; flex-direction:column; align-items:flex-start; } .plp-dashboard .hub-stats { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; } .plp-dashboard .hub-stats > div { padding:16px; } .plp-dashboard .hub-chips { flex-wrap:nowrap; overflow-x:auto; } .plp-dashboard .hub-chips button { padding:12px; } .plp-dashboard .ws-table-tools { align-items:stretch; } }
+
+/* Phones: tab rows wrap instead of hiding tabs off-screen; the top bar keeps the page title readable */
+@media(max-width:640px) {
+  .plp-dashboard .hub-chips,.plp-dashboard .ws-tabs { flex-wrap:wrap; overflow:visible; gap:2px 4px; }
+  .plp-dashboard .hub-chips button,.plp-dashboard .ws-tabs button { padding:10px 10px; font-size:13px; }
+  .plp-dashboard .plp-language-switcher select { width:92px; min-height:34px; }
+}
+
+/* Stat rows on workspace pages: same compact card as the dashboards, no gap above */
+.plp-dashboard .ws-page > .hub-stats { margin:0 0 24px; }
+.plp-dashboard .hub-stats > div { display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto; column-gap:14px; row-gap:2px; align-items:center; padding:18px 20px; }
+.plp-dashboard .hub-stats > div > svg, .plp-dashboard .hub-stats > div > :is(i,figure,.hub-stat-icon) { grid-row:1 / span 2; }
+.plp-dashboard .hub-stats span { align-self:end; }
+.plp-dashboard .hub-stats strong { align-self:start; font-size:26px; }

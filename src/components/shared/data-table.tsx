@@ -38,12 +38,14 @@ interface DataTableProps<T> {
 }
 export function DataTable<T>({ columns, data, getRowId, loading, selectable, selectedIds = [], onSelectChange, sort, onSortChange, emptyTitle = "No records found", emptyDescription = "Try adjusting your search or filters to find what you're looking for.", skeletonRows = 8, rowClassName, }: DataTableProps<T>) {
     useSiteLanguage();
-    const allSelected = data.length > 0 && selectedIds.length === data.length;
-    const someSelected = selectedIds.length > 0 && !allSelected;
+    const visibleIds = data.map(getRowId);
+    const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
+    const someSelected = visibleIds.some((id) => selectedIds.includes(id)) && !allSelected;
     const toggleAll = () => {
-        if (!onSelectChange)
-            return;
-        onSelectChange(allSelected ? [] : data.map(getRowId));
+        if (!onSelectChange) return;
+        onSelectChange(allSelected
+            ? selectedIds.filter((id) => !visibleIds.includes(id))
+            : Array.from(new Set([...selectedIds, ...visibleIds])));
     };
     const toggleRow = (id: string) => {
         if (!onSelectChange)
@@ -72,8 +74,8 @@ export function DataTable<T>({ columns, data, getRowId, loading, selectable, sel
             {translateUi(selectable && (<th className="w-10 px-4 py-3 text-left">
                 <Checkbox checked={allSelected ? true : someSelected ? "indeterminate" : false} onCheckedChange={toggleAll} aria-label={translateUi("Select all rows")}/>
               </th>))}
-            {translateUi(columns.map((column) => (<th key={column.id} className={cn("px-4 py-3 text-left text-xs font-medium text-muted-foreground", column.headerClassName)}>
-                {translateUi(column.sortable ? (<button onClick={() => handleSort(column)} className="inline-flex items-center gap-1 transition-colors hover:text-foreground">
+            {translateUi(columns.map((column) => (<th key={column.id} aria-sort={column.sortable ? (sort?.id === column.id ? (sort.direction === "asc" ? "ascending" : "descending") : "none") : undefined} className={cn("px-4 py-3 text-left text-xs font-medium text-muted-foreground", column.headerClassName)}>
+                {translateUi(column.sortable ? (<button type="button" onClick={() => handleSort(column)} className="inline-flex items-center gap-1 transition-colors hover:text-foreground">
                     {translateUi(column.header)}
                     {translateUi(sort?.id === column.id ? (sort.direction === "asc" ? (<ChevronUp className="h-3.5 w-3.5"/>) : (<ChevronDown className="h-3.5 w-3.5"/>)) : (<ChevronsUpDown className="h-3.5 w-3.5 opacity-50"/>))}
                   </button>) : (column.header))}

@@ -10,3 +10,4 @@
 .plp-public-site .hub-header.is-nav-collapsed .hub-menu { display: flex; align-items: center; justify-content: center; }
 .plp-public-site .hub-header.is-actions-tight .hub-header-actions > :is(.hub-signin, .hub-button) { display: none; }
 @media (max-width:600px) { .plp-language-switcher select { width: 104px; font-size: 11px; } .plp-public-site .hub-header { gap: 10px; } }
+@media (min-width:1500px) { .plp-public-site .plp-sticky-navigation:not(.is-compact) > .hub-header { width: min(1560px, calc(100% - 48px)); max-width: none; margin-left: auto; margin-right: auto; } .plp-public-site .hub-top-nav a { padding-inline: 10px; } }

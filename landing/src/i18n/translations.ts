@@ -8891,5 +8891,673 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "Need help?": {
     "rw": "Ukeneye ubufasha?",
     "fr": "Besoin d’aide ?"
+  },
+  "Images & Videos": {
+    "rw": "Amafoto n'amashusho",
+    "fr": "Images et vidéos"
+  },
+  "Previous page": {
+    "rw": "Paji ibanza",
+    "fr": "Page précédente"
+  },
+  "Next page": {
+    "rw": "Paji ikurikira",
+    "fr": "Page suivante"
+  },
+  "Click a column header to sort": {
+    "rw": "Kanda ku mutwe w'inkingi kugira ngo utondeke",
+    "fr": "Cliquez sur un en-tête de colonne pour trier"
+  },
+  "All table columns are currently visible": {
+    "rw": "Inkingi zose z'imbonerahamwe ziragaragara",
+    "fr": "Toutes les colonnes du tableau sont actuellement visibles"
+  },
+  "You have an assessment in progress. Finish it before moving on.": {
+    "rw": "Ufite isuzuma utararangiza. Banza urirangize mbere yo gukomeza.",
+    "fr": "Vous avez une évaluation en cours. Terminez-la avant de continuer."
+  },
+  "exam": {
+    "rw": "ikizamini",
+    "fr": "examen"
+  },
+  "quiz": {
+    "rw": "isuzuma",
+    "fr": "quiz"
+  },
+  "correct": {
+    "rw": "ni byo",
+    "fr": "correct"
+  },
+  "incorrect": {
+    "rw": "si byo",
+    "fr": "incorrect"
+  },
+  "See published courses, ALX certificates members have uploaded, opportunities, the website banner and the landing page fun corner.": {
+    "rw": "Reba amasomo yashyizwe ahagaragara, ibyemezo bya ALX abanyamuryango bohereje, amahirwe, itangazo ry'urubuga n'agace k'imyidagaduro ko ku rupapuro rw'imbere.",
+    "fr": "Consultez les cours publiés, les certificats ALX déposés par les membres, les opportunités, la bannière du site et le coin détente de la page d'accueil."
+  },
+  "Choose the event shown above the public navigation. When no event is coming up, the website shows a standing “Join PLP” banner instead.": {
+    "rw": "Hitamo igikorwa kigaragara hejuru y'urutonde rw'urubuga. Iyo nta gikorwa kiri hafi, urubuga rugaragaza itangazo rihoraho rya “Injira muri PLP”.",
+    "fr": "Choisissez l'événement affiché au-dessus de la navigation publique. Lorsqu'aucun événement n'est prévu, le site affiche à la place une bannière permanente « Rejoindre PLP »."
+  },
+  "This event is not shown; visitors see the standing “Join PLP” banner.": {
+    "rw": "Iki gikorwa ntikigaragara; abasura urubuga babona itangazo rihoraho rya “Injira muri PLP”.",
+    "fr": "Cet événement n'est pas affiché ; les visiteurs voient la bannière permanente « Rejoindre PLP »."
+  },
+  "It is removed from the website straight away.": {
+    "rw": "Gihita gikurwa ku rubuga ako kanya.",
+    "fr": "Il est retiré du site immédiatement."
+  },
+  "Restore the original fun corner?": {
+    "rw": "Gusubizaho agace k'imyidagaduro k'umwimerere?",
+    "fr": "Restaurer le coin détente d'origine ?"
+  },
+  "Your questions and quotes are replaced by the ones PLP started with.": {
+    "rw": "Ibibazo n'amagambo yawe bisimburwa n'ibyo PLP yatangiranye.",
+    "fr": "Vos questions et citations sont remplacées par celles de départ de PLP."
+  },
+  "The original fun corner is back on the website": {
+    "rw": "Agace k'imyidagaduro k'umwimerere kagarutse ku rubuga",
+    "fr": "Le coin détente d'origine est de retour sur le site"
+  },
+  "Give at least two answer options.": {
+    "rw": "Tanga nibura ibisubizo bibiri byo guhitamo.",
+    "fr": "Proposez au moins deux options de réponse."
+  },
+  "The correct answer cannot be empty.": {
+    "rw": "Igisubizo cy'ukuri ntigishobora kuba ubusa.",
+    "fr": "La bonne réponse ne peut pas être vide."
+  },
+  "Each answer option must be different.": {
+    "rw": "Buri gisubizo cyo guhitamo kigomba kuba gitandukanye n'ibindi.",
+    "fr": "Chaque option de réponse doit être différente."
+  },
+  "The source must be a link starting with https://": {
+    "rw": "Inkomoko igomba kuba ihuza ritangirana na https://",
+    "fr": "La source doit être un lien commençant par https://"
+  },
+  "Landing page fun corner": {
+    "rw": "Agace k'imyidagaduro ku rupapuro rw'imbere",
+    "fr": "Coin détente de la page d'accueil"
+  },
+  "The quiz and the \"Voices for peace\" quotes visitors see on the home page. Every change is live on the website as soon as you save it.": {
+    "rw": "Isuzuma n'amagambo ya \"Ijwi ry'amahoro\" abasura urubuga babona ku rupapuro rw'imbere. Buri gihinduka gihita kigaragara ku rubuga ukimara kubika.",
+    "fr": "Le quiz et les citations « Voix pour la paix » que les visiteurs voient sur la page d'accueil. Chaque modification est en ligne dès que vous l'enregistrez."
+  },
+  "Restore original": {
+    "rw": "Subizaho umwimerere",
+    "fr": "Restaurer l'original"
+  },
+  "quotes": {
+    "rw": "amagambo yavuzwe",
+    "fr": "citations"
+  },
+  "Two to four answers. Pick the correct one, then explain it so visitors learn something either way.": {
+    "rw": "Ibisubizo biri hagati ya bibiri na bine. Hitamo icy'ukuri, hanyuma ugisobanure kugira ngo abasura urubuga bagire icyo biga uko byagenda kose.",
+    "fr": "De deux à quatre réponses. Choisissez la bonne, puis expliquez-la pour que les visiteurs apprennent quelque chose dans tous les cas."
+  },
+  "Topic label": {
+    "rw": "Izina ry'insanganyamatsiko",
+    "fr": "Libellé du thème"
+  },
+  "Explanation shown after answering": {
+    "rw": "Igisobanuro kigaragara nyuma yo gusubiza",
+    "fr": "Explication affichée après la réponse"
+  },
+  "Source link (optional)": {
+    "rw": "Ihuza ry'inkomoko (si ngombwa)",
+    "fr": "Lien de la source (facultatif)"
+  },
+  "Source name": {
+    "rw": "Izina ry'inkomoko",
+    "fr": "Nom de la source"
+  },
+  "Use words the person really said, and link to where they can be checked.": {
+    "rw": "Koresha amagambo umuntu yavuze koko, kandi ushyireho ihuza aho ashobora kugenzurirwa.",
+    "fr": "Utilisez les mots réellement prononcés par la personne et ajoutez un lien où l'on peut les vérifier."
+  },
+  "Said by": {
+    "rw": "Byavuzwe na",
+    "fr": "Dit par"
+  },
+  "Context (optional)": {
+    "rw": "Aho byavugiwe (si ngombwa)",
+    "fr": "Contexte (facultatif)"
+  },
+  "Where or when it was said": {
+    "rw": "Aho cyangwa igihe byavugiwe",
+    "fr": "Où ou quand cela a été dit"
+  },
+  "Add quote": {
+    "rw": "Ongeraho amagambo",
+    "fr": "Ajouter la citation"
+  },
+  "Add a quiz question": {
+    "rw": "Ongeraho ikibazo cy'isuzuma",
+    "fr": "Ajouter une question de quiz"
+  },
+  "Edit quiz question": {
+    "rw": "Hindura ikibazo cy'isuzuma",
+    "fr": "Modifier la question de quiz"
+  },
+  "Save and publish": {
+    "rw": "Bika kandi ushyire ahagaragara",
+    "fr": "Enregistrer et publier"
+  },
+  "Add a quote": {
+    "rw": "Ongeraho amagambo yavuzwe",
+    "fr": "Ajouter une citation"
+  },
+  "Edit quote": {
+    "rw": "Hindura amagambo yavuzwe",
+    "fr": "Modifier la citation"
+  },
+  "record": {
+    "rw": "inyandiko",
+    "fr": "enregistrement"
+  },
+  "records": {
+    "rw": "inyandiko",
+    "fr": "enregistrements"
+  },
+  "Leave your school's register?": {
+    "rw": "Kuva ku rutonde rw'ishuri ryawe?",
+    "fr": "Quitter le registre de votre école ?"
+  },
+  "Your school's club leaders will no longer manage your membership. Your certificates, credits and activity history stay with you.": {
+    "rw": "Abayobozi ba club y'ishuri ryawe ntibazongera gucunga ubunyamuryango bwawe. Ibyemezo byawe, amanota n'amateka y'ibikorwa byawe bigumana nawe.",
+    "fr": "Les responsables du club de votre école ne gèreront plus votre adhésion. Vos certificats, crédits et historique d'activités restent avec vous."
+  },
+  "Save and continue": {
+    "rw": "Bika ukomeze",
+    "fr": "Enregistrer et continuer"
+  },
+  "Where are you now?": {
+    "rw": "Ubu uri he?",
+    "fr": "Où en êtes-vous maintenant ?"
+  },
+  "Finished high school? Saving this moves you off your school's register. Your certificates, credits and activity history stay on your passport.": {
+    "rw": "Warangije amashuri yisumbuye? Kubika ibi bikuvana ku rutonde rw'ishuri ryawe. Ibyemezo byawe, amanota n'amateka y'ibikorwa byawe biguma kuri pasiporo yawe.",
+    "fr": "Vous avez terminé le lycée ? Enregistrer ceci vous retire du registre de votre école. Vos certificats, crédits et historique d'activités restent sur votre passeport."
+  },
+  "Update studies": {
+    "rw": "Vugurura amasomo",
+    "fr": "Mettre à jour les études"
+  },
+  "Congratulations on graduating! Your profile is updated.": {
+    "rw": "Twishimiye ko warangije amasomo! Umwirondoro wawe wavuguruwe.",
+    "fr": "Félicitations pour votre diplôme ! Votre profil est mis à jour."
+  },
+  "University or college": {
+    "rw": "Kaminuza cyangwa ishuri rikuru",
+    "fr": "Université ou école supérieure"
+  },
+  "Where you studied": {
+    "rw": "Aho wize",
+    "fr": "Où vous avez étudié"
+  },
+  "Year you graduated": {
+    "rw": "Umwaka warangijeho",
+    "fr": "Année d'obtention du diplôme"
+  },
+  "Expected graduation year": {
+    "rw": "Umwaka uteganya kurangiza",
+    "fr": "Année prévue d'obtention du diplôme"
+  },
+  "Expected to graduate": {
+    "rw": "Biteganyijwe kurangiza",
+    "fr": "Fin d'études prévue"
+  },
+  "achievement": {
+    "rw": "igikorwa cyagezweho",
+    "fr": "réussite"
+  },
+  "achievements": {
+    "rw": "ibikorwa byagezweho",
+    "fr": "réussites"
+  },
+  "revoked": {
+    "rw": "byakuweho",
+    "fr": "révoqué"
+  },
+  "requests": {
+    "rw": "ubusabe",
+    "fr": "demandes"
+  },
+  "completions": {
+    "rw": "ibyarangiye",
+    "fr": "achèvements"
+  },
+  "Graduation year": {
+    "rw": "Umwaka wo kurangiza",
+    "fr": "Année d'obtention du diplôme"
+  },
+  "Upload a new photo": {
+    "rw": "Ohereza ifoto nshya",
+    "fr": "Téléverser une nouvelle photo"
+  },
+  "Changes discarded": {
+    "rw": "Impinduka zahagaritswe",
+    "fr": "Modifications annulées"
+  },
+  "Opening documentation": {
+    "rw": "Gufungura inyandiko z'amabwiriza",
+    "fr": "Ouverture de la documentation"
+  },
+  "Peace and Love Proclaimers · Learn, connect and serve with PLP": {
+    "rw": "Peace and Love Proclaimers · Iga, uhure n'abandi kandi ukorere abandi hamwe na PLP",
+    "fr": "Peace and Love Proclaimers · Apprendre, se connecter et servir avec PLP"
+  },
+  "peace & memory": {
+    "rw": "amahoro no kwibuka",
+    "fr": "paix et mémoire"
+  },
+  "leadership & opportunity": {
+    "rw": "ubuyobozi n'amahirwe",
+    "fr": "leadership et opportunités"
+  },
+  "culture & creativity": {
+    "rw": "umuco no guhanga",
+    "fr": "culture et créativité"
+  },
+  "wellness & belonging": {
+    "rw": "ubuzima bwiza no kumva uri kumwe n'abandi",
+    "fr": "bien-être et appartenance"
+  },
+  "community service": {
+    "rw": "umuganda",
+    "fr": "service communautaire"
+  },
+  "Confirm": {
+    "rw": "Emeza",
+    "fr": "Confirmer"
+  },
+  "Civic & Peace Leadership": {
+    "rw": "Ubuyobozi mu mahoro n'imibereho y'igihugu",
+    "fr": "Leadership civique et pour la paix"
+  },
+  "Understand your strengths, find your purpose, and turn intention into action.": {
+    "rw": "Menya imbaraga zawe, ubone intego yawe, kandi uhindure icyifuzo igikorwa.",
+    "fr": "Comprenez vos forces, trouvez votre raison d'être et transformez vos intentions en actions."
+  },
+  "Tell your story with evidence and prepare for your next career conversation.": {
+    "rw": "Vuga inkuru yawe ufite ibimenyetso kandi witegure ikiganiro gikurikira ku mwuga wawe.",
+    "fr": "Racontez votre parcours avec des preuves et préparez votre prochain entretien professionnel."
+  },
+  "Explore a community problem and test an idea before building a venture.": {
+    "rw": "Sesengura ikibazo cy'umuryango mugari kandi ugerageze igitekerezo mbere yo gutangiza umushinga.",
+    "fr": "Explorez un problème de la communauté et testez une idée avant de lancer une entreprise."
+  },
+  "Build confidence with digital tools, reliable information, and responsible AI.": {
+    "rw": "Igirire icyizere mu gukoresha ikoranabuhanga, amakuru yizewe n'ubwenge bw'ubukorano (AI) mu buryo bwiza.",
+    "fr": "Gagnez en confiance avec les outils numériques, l'information fiable et une IA responsable."
+  },
+  "Practice listening, constructive dialogue, and service in your community.": {
+    "rw": "Imenyereze gutega amatwi, ibiganiro byubaka no gukorera umuryango wawe.",
+    "fr": "Pratiquez l'écoute, le dialogue constructif et le service dans votre communauté."
+  },
+  "EXPLORE WHAT YOU COULD LEARN": {
+    "rw": "MENYA IBYO WASHOBORA KWIGA",
+    "fr": "DÉCOUVREZ CE QUE VOUS POURRIEZ APPRENDRE"
+  },
+  "Dashboard": {
+    "rw": "Imbonerahamwe",
+    "fr": "Tableau de bord"
+  },
+  "Courses trainers have published to the academy": {
+    "rw": "Amasomo abatoza bashyize muri academy",
+    "fr": "Cours publiés par les formateurs dans l'académie"
+  },
+  "Account access and assigned responsibilities": {
+    "rw": "Uburenganzira bwo kwinjira n'inshingano zahawe",
+    "fr": "Accès au compte et responsabilités attribuées"
+  },
+  "School and community activity reports": {
+    "rw": "Raporo z'ibikorwa by'amashuri n'umuryango",
+    "fr": "Rapports d'activités des écoles et de la communauté"
+  },
+  "Tasks requiring attention": {
+    "rw": "Imirimo ikeneye kwitabwaho",
+    "fr": "Tâches nécessitant une attention"
+  },
+  "tasks requiring attention": {
+    "rw": "imirimo ikeneye kwitabwaho",
+    "fr": "tâches nécessitant une attention"
+  },
+  "attendances": {
+    "rw": "abitabiriye",
+    "fr": "présences"
+  },
+  "activities": {
+    "rw": "ibikorwa",
+    "fr": "activités"
+  },
+  "Activity types appear once schools publish activities.": {
+    "rw": "Ubwoko bw'ibikorwa buzagaragara amashuri namara gushyira ahagaragara ibikorwa.",
+    "fr": "Les types d'activités apparaissent dès que les écoles publient des activités."
+  },
+  "People recorded at each school's activities": {
+    "rw": "Abantu banditswe mu bikorwa bya buri shuri",
+    "fr": "Personnes enregistrées aux activités de chaque école"
+  },
+  "Schools appear here once they record attendance.": {
+    "rw": "Amashuri azagaragara hano namara kwandika abitabiriye.",
+    "fr": "Les écoles apparaissent ici dès qu'elles enregistrent les présences."
+  },
+  "sessions": {
+    "rw": "amasomo",
+    "fr": "séances"
+  },
+  "Mentoring sessions appear once members book them.": {
+    "rw": "Amasomo y'ubujyanama azagaragara abanyamuryango namara kuyiyandikishamo.",
+    "fr": "Les séances de mentorat apparaissent dès que les membres les réservent."
+  },
+  "Certificate request submitted": {
+    "rw": "Ubusabe bw'icyemezo bwoherejwe",
+    "fr": "Demande de certificat envoyée"
+  },
+  "Activity report submitted": {
+    "rw": "Raporo y'igikorwa yatanzwe",
+    "fr": "Rapport d'activité soumis"
+  },
+  "ALX certificate to review": {
+    "rw": "Icyemezo cya ALX gikeneye gusuzumwa",
+    "fr": "Certificat ALX à examiner"
+  },
+  "Course submitted for publication": {
+    "rw": "Isomo ryoherejwe ngo ritangazwe",
+    "fr": "Cours soumis pour publication"
+  },
+  "mentor": {
+    "rw": "umujyanama",
+    "fr": "mentor"
+  },
+  "MAKE ROOM FOR LEARNING": {
+    "rw": "HA UMWANYA WO KWIGA",
+    "fr": "FAITES DE LA PLACE À L'APPRENTISSAGE"
+  },
+  "Building Trust in Your Club": {
+    "rw": "Kubaka icyizere muri club yawe",
+    "fr": "Instaurer la confiance dans votre club"
+  },
+  "Simple habits that make members trust each other.": {
+    "rw": "Imico yoroshye ituma abanyamuryango bizerana.",
+    "fr": "Des habitudes simples qui aident les membres à se faire confiance."
+  },
+  "Leading a School Peace Club": {
+    "rw": "Kuyobora club y'amahoro y'ishuri",
+    "fr": "Diriger un club de paix scolaire"
+  },
+  "Plan, run and grow a peace club at your school: from the first meeting to a community project.": {
+    "rw": "Tegura, uyobore kandi uteze imbere club y'amahoro ku ishuri ryawe: kuva ku nama ya mbere kugeza ku mushinga w'abaturage.",
+    "fr": "Planifiez, animez et développez un club de paix dans votre école : de la première réunion à un projet communautaire."
+  },
+  "received": {
+    "rw": "byakiriwe",
+    "fr": "reçu"
+  },
+  "tracked": {
+    "rw": "bikurikiranwa",
+    "fr": "suivi"
+  },
+  "When saved, this banner is shown to everyone on the public website.": {
+    "rw": "Nibimara kubikwa, iri tangazo rizagaragarira buri wese ku rubuga rusange.",
+    "fr": "Une fois enregistrée, cette bannière s'affiche pour tout le monde sur le site public."
+  },
+  "Delete quote": {
+    "rw": "Siba amagambo yavuzwe",
+    "fr": "Supprimer la citation"
+  },
+  "activity": {
+    "rw": "igikorwa",
+    "fr": "activité"
+  },
+  "Club meeting guide": {
+    "rw": "Ubuyobozi bw'inama za club",
+    "fr": "Guide des réunions du club"
+  },
+  "material": {
+    "rw": "imfashanyigisho",
+    "fr": "support"
+  },
+  "Certificate of Membership": {
+    "rw": "Icyemezo cy'Ubunyamuryango",
+    "fr": "Certificat d'adhésion"
+  },
+  "Service as a PLP member leader": {
+    "rw": "Umurimo nk'umuyobozi w'abanyamuryango ba PLP",
+    "fr": "Service en tant que leader membre de PLP"
+  },
+  "Certificate of Leadership": {
+    "rw": "Icyemezo cy'Ubuyobozi",
+    "fr": "Certificat de leadership"
+  },
+  "Service as a PLP member": {
+    "rw": "Umurimo nk'umunyamuryango wa PLP",
+    "fr": "Service en tant que membre de PLP"
+  },
+  "Recent activity reports": {
+    "rw": "Raporo z'ibikorwa biheruka",
+    "fr": "Rapports d'activités récents"
+  },
+  "PLP administration": {
+    "rw": "Ubuyobozi bwa PLP",
+    "fr": "Administration de PLP"
+  },
+  "Add a short bio so people know what you care about.": {
+    "rw": "Ongeraho umwirondoro mugufi kugira ngo abantu bamenye ibyo witaho.",
+    "fr": "Ajoutez une courte biographie pour que les gens sachent ce qui vous tient à cœur."
+  },
+  "Add students individually or as a group": {
+    "rw": "Ongeraho abanyeshuri umwe umwe cyangwa nk'itsinda",
+    "fr": "Ajoutez des élèves individuellement ou en groupe"
+  },
+  "Record attendance and submit reports": {
+    "rw": "Andika abitabiriye kandi wohereze raporo",
+    "fr": "Enregistrez les présences et soumettez les rapports"
+  },
+  "Download and complete PLP materials": {
+    "rw": "Kuramo kandi wuzuze imfashanyigisho za PLP",
+    "fr": "Téléchargez et complétez les supports PLP"
+  },
+  "Request certificates for your members": {
+    "rw": "Saba ibyemezo by'abanyamuryango bawe",
+    "fr": "Demandez des certificats pour vos membres"
+  },
+  "Membership certificates issued": {
+    "rw": "Ibyemezo by'ubunyamuryango byatanzwe",
+    "fr": "Certificats d'adhésion délivrés"
+  },
+  "Activity report reviewed": {
+    "rw": "Raporo y'igikorwa yasuzumwe",
+    "fr": "Rapport d'activité examiné"
+  },
+  "Available for your school": {
+    "rw": "Biraboneka ku ishuri ryawe",
+    "fr": "Disponible pour votre école"
+  },
+  "Your account is approved": {
+    "rw": "Konti yawe yemejwe",
+    "fr": "Votre compte est approuvé"
+  },
+  "You now have leader access to the PLP Hub.": {
+    "rw": "Ubu ufite uburenganzira bw'umuyobozi kuri PLP Hub.",
+    "fr": "Vous avez maintenant un accès responsable au PLP Hub."
+  },
+  "School not assigned": {
+    "rw": "Nta shuri ryagenwe",
+    "fr": "Aucune école attribuée"
+  },
+  "No email needed": {
+    "rw": "Nta imeyili ikenewe",
+    "fr": "Aucun e-mail requis"
+  },
+  "member": {
+    "rw": "umunyamuryango",
+    "fr": "membre"
+  },
+  "Upcoming school activities appear here.": {
+    "rw": "Ibikorwa by'ishuri biri imbere bigaragara hano.",
+    "fr": "Les prochaines activités de l'école apparaissent ici."
+  },
+  "Your course is published": {
+    "rw": "Isomo ryawe ryashyizwe ahagaragara",
+    "fr": "Votre cours est publié"
+  },
+  "All levels": {
+    "rw": "Ibyiciro byose",
+    "fr": "Tous niveaux"
+  },
+  "Self-awareness, Goal setting": {
+    "rw": "Kwimenya, Kwishyiriraho intego",
+    "fr": "Connaissance de soi, Définition d'objectifs"
+  },
+  "CV writing, Professional communication": {
+    "rw": "Kwandika CV, Itumanaho ry'umwuga",
+    "fr": "Rédaction de CV, Communication professionnelle"
+  },
+  "Problem discovery, Business modeling": {
+    "rw": "Kuvumbura ibibazo, Gutegura icyitegererezo cy'ubucuruzi",
+    "fr": "Identification de problèmes, Modélisation d'entreprise"
+  },
+  "Digital literacy, AI literacy": {
+    "rw": "Ubumenyi bw'ikoranabuhanga, Ubumenyi kuri AI",
+    "fr": "Littératie numérique, Littératie en IA"
+  },
+  "Active listening, Conflict resolution": {
+    "rw": "Gutega amatwi witonze, Gukemura amakimbirane",
+    "fr": "Écoute active, Résolution de conflits"
+  },
+  "Leadership, Facilitation, Conflict resolution": {
+    "rw": "Ubuyobozi, Kuyobora ibiganiro, Gukemura amakimbirane",
+    "fr": "Leadership, Animation, Résolution de conflits"
+  },
+  "Courses you create in the studio appear here.": {
+    "rw": "Amasomo ukora muri studio agaragara hano.",
+    "fr": "Les cours que vous créez dans le studio apparaissent ici."
+  },
+  "Plan our club's tree planting day so every member has a role.": {
+    "rw": "Tegura umunsi wo gutera ibiti wa club yacu kugira ngo buri munyamuryango agire uruhare.",
+    "fr": "Planifiez la journée de plantation d'arbres de notre club pour que chaque membre ait un rôle."
+  },
+  "Needs notes": {
+    "rw": "Hakenewe ibisobanuro",
+    "fr": "Notes requises"
+  },
+  "My mentees": {
+    "rw": "Abo ndera",
+    "fr": "Mes mentorés"
+  },
+  "Prepare to lead the football for peace tournament.": {
+    "rw": "Witegure kuyobora irushanwa ry'umupira w'amaguru ry'amahoro.",
+    "fr": "Préparez-vous à diriger le tournoi de football pour la paix."
+  },
+  "Accept, reschedule or decline it on your dashboard.": {
+    "rw": "Byemere, wimure igihe cyangwa ubyange ku rubuga rwawe.",
+    "fr": "Acceptez, reprogrammez ou refusez-la depuis votre tableau de bord."
+  },
+  "No sessions waiting for notes. After a confirmed session's time passes, record it here.": {
+    "rw": "Nta biganiro bitegereje inyandiko. Igihe cy'ikiganiro cyemejwe nikirangira, ucyandike hano.",
+    "fr": "Aucune séance en attente de notes. Une fois l'heure d'une séance confirmée passée, enregistrez-la ici."
+  },
+  "Completed, declined and cancelled sessions will appear here.": {
+    "rw": "Ibiganiro byarangiye, byanzwe n'ibyasubitswe bizagaragara hano.",
+    "fr": "Les séances terminées, refusées et annulées apparaîtront ici."
+  },
+  "Any format": {
+    "rw": "Uburyo ubwo ari bwo bwose",
+    "fr": "Tous les formats"
+  },
+  "Conference & Summit": {
+    "rw": "Inama n'ihuriro",
+    "fr": "Conférence et sommet"
+  },
+  "Confirmed sessions appear here.": {
+    "rw": "Ibiganiro byemejwe bigaragara hano.",
+    "fr": "Les séances confirmées apparaissent ici."
+  },
+  "Courses in progress": {
+    "rw": "Amasomo ukomeje",
+    "fr": "Cours en cours"
+  },
+  "Activities attended": {
+    "rw": "Ibikorwa witabiriye",
+    "fr": "Activités suivies"
+  },
+  "Explore external programmes and record progress": {
+    "rw": "Shakisha porogaramu zo hanze kandi wandike aho ugeze",
+    "fr": "Explorez des programmes externes et suivez votre progression"
+  },
+  "Opportunity centre": {
+    "rw": "Ihuriro ry'amahirwe",
+    "fr": "Centre des opportunités"
+  },
+  "Internships, jobs, scholarships, and more": {
+    "rw": "Imenyerezamwuga, akazi, buruse n'ibindi",
+    "fr": "Stages, emplois, bourses et plus encore"
+  },
+  "Digital youth passport": {
+    "rw": "Pasiporo y'urubyiruko y'ikoranabuhanga",
+    "fr": "Passeport numérique des jeunes"
+  },
+  "Skills, achievements, and your development record": {
+    "rw": "Ubumenyi, ibyo wagezeho n'amateka y'iterambere ryawe",
+    "fr": "Compétences, réalisations et votre parcours de développement"
+  },
+  "My completed learning pathways": {
+    "rw": "Inzira z'amasomo narangije",
+    "fr": "Mes parcours d'apprentissage terminés"
+  },
+  "continue learning": {
+    "rw": "komeza kwiga",
+    "fr": "continuer à apprendre"
+  },
+  "You received a membership certificate": {
+    "rw": "Wahawe icyemezo cy'ubunyamuryango",
+    "fr": "Vous avez reçu un certificat d'adhésion"
+  },
+  "See the time and meeting details.": {
+    "rw": "Reba igihe n'ibisobanuro by'inama.",
+    "fr": "Consultez l'heure et les détails de la rencontre."
+  },
+  "You now have member access to the PLP Hub.": {
+    "rw": "Ubu ufite uburenganzira bw'umunyamuryango kuri PLP Hub.",
+    "fr": "Vous avez désormais un accès membre au PLP Hub."
+  },
+  "All focus areas": {
+    "rw": "Ingeri zose",
+    "fr": "Tous les domaines"
+  },
+  "Youth leadership coach": {
+    "rw": "Umutoza w'urubyiruko mu buyobozi",
+    "fr": "Coach en leadership des jeunes"
+  },
+  "Available for mentorship sessions.": {
+    "rw": "Aboneka ku biganiro by'ubujyanama.",
+    "fr": "Disponible pour des séances de mentorat."
+  },
+  "Past activities": {
+    "rw": "Ibikorwa byashize",
+    "fr": "Activités passées"
+  },
+  "In recognition of dedicated service to the Peace and Love Proclaimers community and for helping build a culture of peace at school.": {
+    "rw": "Mu rwego rwo gushimira umurava mu gukorera umuryango wa Peace and Love Proclaimers no gufasha kubaka umuco w'amahoro ku ishuri.",
+    "fr": "En reconnaissance de son engagement au service de la communauté Peace and Love Proclaimers et de sa contribution à une culture de paix à l'école."
+  },
+  "plp digital youth passport": {
+    "rw": "pasiporo y'urubyiruko ya plp y'ikoranabuhanga",
+    "fr": "passeport numérique des jeunes plp"
+  },
+  "PLP DIGITAL YOUTH PASSPORT": {
+    "rw": "PASIPORO Y'URUBYIRUKO YA PLP Y'IKORANABUHANGA",
+    "fr": "PASSEPORT NUMÉRIQUE DES JEUNES PLP"
+  },
+  "Add a short bio so mentors and communities know what you care about.": {
+    "rw": "Ongeraho umwirondoro mugufi kugira ngo abajyanama n'imiryango bamenye ibyo witaho.",
+    "fr": "Ajoutez une courte biographie pour que les mentors et les communautés sachent ce qui vous tient à cœur."
+  },
+  "High school student": {
+    "rw": "Umunyeshuri w'ayisumbuye",
+    "fr": "Élève du secondaire"
   }
 };

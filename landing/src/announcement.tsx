@@ -1,4 +1,4 @@
-import { translateUi, useSiteLanguage } from './i18n/language';
+import { translateUi, useSiteLanguage, formatDate } from './i18n/language';
 import { useEffect, useState } from 'react';
 import { CalendarDays, ArrowUpRight, Pause, Play } from 'lucide-react';
 import { defaultAnnouncement, isUpcoming, safeAnnouncementLink, standingAnnouncement, type Announcement } from './site-content';
@@ -43,7 +43,7 @@ export function AnnouncementBanner() {
     return <aside className={`plp-announcement plp-imigongo-banner${paused ? ' is-paused' : ''}`} aria-label={translateUi(live ? "Upcoming event" : "Peace and Love Proclaimers")}>
   
   <div className="plp-announcement-window"><div className="plp-announcement-track">{translateUi([0, 1].map(copy => <div className="plp-announcement-message" key={copy} aria-hidden={copy === 1 ? true : undefined}><span className="plp-announcement-diamond" aria-hidden="true">{translateUi("\u25C7")}</span><strong>{translateUi(item.title)}</strong><span className="plp-announcement-diamond" aria-hidden="true">{translateUi("\u25C7")}</span><span>{translateUi("PEACE \u00B7 LOVE \u00B7 COMMUNITY")}</span></div>))}</div></div>
-  {live && <span className="plp-announcement-date"><CalendarDays size={16}/><time dateTime={item.date}>{translateUi(new Date(`${item.date}T12:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }))}</time>{translateUi(item.location && <span className="plp-announcement-location">{translateUi(" \u00B7 ")}{translateUi(item.location)}</span>)}</span>}
+  {live && <span className="plp-announcement-date"><CalendarDays size={16}/><time dateTime={item.date}>{formatDate(item.date)}</time>{translateUi(item.location && <span className="plp-announcement-location">{translateUi(" \u00B7 ")}{translateUi(item.location)}</span>)}</span>}
   {translateUi(safeAnnouncementLink(href) && (href.startsWith('/') ? <SiteLink className="plp-announcement-cta" to={href}>{translateUi(item.linkLabel || 'Explore event')} <ArrowUpRight size={15}/></SiteLink> : <a className="plp-announcement-cta" href={href} target="_blank" rel="noopener noreferrer">{translateUi(item.linkLabel || 'Explore event')} <ArrowUpRight size={15}/></a>))}
   <button type="button" className="plp-announcement-pause" aria-label={translateUi(paused ? 'Play announcement' : 'Pause announcement')} aria-pressed={paused} onClick={() => setPaused(!paused)}>{translateUi(paused ? <Play size={15}/> : <Pause size={15}/>)}</button>
  </aside>;

@@ -1,4 +1,4 @@
-import { translateUi, useSiteLanguage } from '../../i18n/language';
+import { translateUi, useSiteLanguage, formatDate } from '../../i18n/language';
 import { useId, type ReactNode } from 'react';
 import { ArrowDownRight, ArrowUpRight, Minus, type LucideIcon } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, type TooltipProps } from 'recharts';
@@ -10,8 +10,8 @@ const OTHER = '#9aa4b2', ACCENT = SERIES[0], GRID = '#eef1f4', MUTED = '#667085'
 /** One measure from monthly rows, for sparklines. */
 export const series = (rows: Record<string, number | string>[] | undefined, key: string) => (rows ?? []).map((r) => Number(r[key]) || 0);
 export const compact = (n: number) => (Math.abs(n) >= 10000 ? new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n) : n.toLocaleString('en'));
-const monthLabel = (m: string) => new Date(`${m}-15T12:00:00`).toLocaleDateString('en-GB', { month: 'short' });
-const monthLong = (m: string) => new Date(`${m}-15T12:00:00`).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+const monthLabel = (m: string) => formatDate(m, { month: 'short' });
+const monthLong = (m: string) => formatDate(m, { month: 'long', year: 'numeric' });
 /** A tiny 12-point trend: earlier months in gray, the current month as an accent dot. */
 function Sparkline({ values }: {
     values: number[];
