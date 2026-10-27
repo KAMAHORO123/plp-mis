@@ -12,7 +12,7 @@ export function FormModal({ title, description, onClose, children, wide = false 
     useSiteLanguage();
     return (<Dialog open onOpenChange={(open) => { if (!open)
         onClose(); }}>
-      <DialogContent className={`hub-app hub-dialog max-h-[90vh] overflow-y-auto ${wide ? "max-w-2xl" : ""}`}>
+      <DialogContent className={`hub-app hub-dialog max-h-[90vh] overflow-y-auto ${wide ? "max-w-3xl" : "max-w-lg"}`}>
         <DialogTitle>{translateUi(title)}</DialogTitle>
         {translateUi(description && <DialogDescription>{translateUi(description)}</DialogDescription>)}
         <div className="hub-space">{translateUi(children)}</div>

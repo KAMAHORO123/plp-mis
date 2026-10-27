@@ -1,4 +1,4 @@
-import { translateUi, useSiteLanguage, LanguageSwitcher } from '../../i18n/language';
+import { translateUi, useSiteLanguage, LanguageSwitcher, useHeaderFit } from '../../i18n/language';
 import { AnnouncementBanner } from "./announcement";
 import { HelpChat } from "./workspaces";
 import { useEffect, useState } from "react";
@@ -45,6 +45,7 @@ function Layout({ privateWorkspace = false }: {
     const location = useLocation();
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
+    const headerRef = useHeaderFit<HTMLElement>();
     const [compactNav, setCompactNav] = useState(false);
     useEffect(() => {
         if (privateWorkspace)
@@ -234,7 +235,7 @@ function Layout({ privateWorkspace = false }: {
     return (<div className="hub-app plp-public-site">
       <div className={`plp-sticky-navigation${compactNav ? " is-compact" : ""}`}>
       <AnnouncementBanner />
-      <header className="hub-header" onKeyDown={(event) => { if (event.key === "Escape") {
+      <header ref={headerRef} className="hub-header" onKeyDown={(event) => { if (event.key === "Escape") {
         setOpen(false);
         event.currentTarget.querySelector<HTMLButtonElement>(".hub-menu")?.focus();
     } }}>

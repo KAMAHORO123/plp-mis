@@ -2,5 +2,20 @@
 .plp-language-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .plp-language-switcher select { width: 125px; min-height: 38px; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: #172b43; font: inherit; cursor: pointer; }
 .plp-language-switcher select:focus-visible { outline: 2px solid #1d75db; outline-offset: 3px; }
-@media (max-width:1500px) { .plp-public-site .hub-top-nav { display: none; } .plp-public-site .hub-menu { display: flex; align-items:center; justify-content:center; } }
-@media (max-width:600px) { .plp-language-switcher select { width: 108px; font-size: 11px; } .plp-public-site .hub-header-actions > .hub-signin,.plp-public-site .hub-header-actions > .hub-button { display: none; } .plp-public-site .hub-header { gap: 10px; } }
+
+/* The header measures itself (useHeaderFit): links move into the menu when they do not fit. */
+.plp-public-site .hub-header { min-width: 0; }
+.plp-public-site .hub-top-nav, .plp-public-site .hub-header-actions { flex-shrink: 0; white-space: nowrap; }
+.plp-public-site .hub-header.is-nav-collapsed .hub-top-nav { display: none; }
+.plp-public-site .hub-header.is-nav-collapsed .hub-menu { display: flex; align-items: center; justify-content: center; }
+.plp-public-site .hub-header.is-actions-tight .hub-header-actions > :is(.hub-signin, .hub-button) { display: none; }
+@media (max-width: 1100px) {
+  .plp-language-switcher { max-width: 100%; }
+  .plp-language-switcher select { width: 108px; }
+}
+@media (max-width: 600px) {
+  .plp-language-switcher { gap: 4px; }
+  .plp-language-switcher select { width: 96px; font-size: 11px; }
+  .plp-public-site .hub-header { gap: 10px; }
+  .plp-public-site .hub-header-actions { gap: 8px; }
+}
