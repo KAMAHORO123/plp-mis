@@ -16,17 +16,32 @@ import { toast } from "sonner";
 import { clubs, mentors } from "./data";
 import { useHub, balance, type HubCertificate } from "./store";
 import { Empty, Field, Heading, Panel, Progress, Stats, Tag, TextLink, } from "./ui";
+
+const PASSPORT_GRADUATION_KEY = "plp-passport-graduation";
+
+function readGraduation() {
+    try {
+        const value = localStorage.getItem(PASSPORT_GRADUATION_KEY);
+        if (!value) return { status: "In school", year: "" };
+        const parsed = JSON.parse(value) as { status?: string; year?: string };
+        return { status: parsed.status ?? "In school", year: parsed.year ?? "" };
+    }
+    catch {
+        return { status: "In school", year: "" };
+    }
+}
+
 export function JourneyPage() {
     useSiteLanguage();
     const { state, profile } = useHub();
     const enrollments = state.enrollments.filter((e) => e.memberId === profile.id);
     const completed = enrollments.filter((e) => e.completedAt);
     return (<>
-      <Heading eyebrow="YOUR SPACE TO GROW" title={translateUi("Welcome, {p0}.", { p0: translateUi(profile.name.split(" ")[0]) })} description={translateUi("You don\u2019t need to have it all figured out. Just take the next step.")} action={<Link to="/passport" className="hub-button secondary">
+      <Heading eyebrow="YOUR SPACE TO GROW" title={translateUi("Welcome, {p0}.", { p0: translateUi(profile.name.split(" ")[0]) })} description={translateUi("You don’t need to have it all figured out. Just take the next step.")} action={<Link to="/passport" className="hub-button secondary">
             <Fingerprint size={18}/>{translateUi(" My youth passport ")}</Link>}/>
       <div className="hub-journey-banner">
         <div>
-          <Tag>{translateUi("Stage 01 \u00B7 Discover & Develop")}</Tag>
+          <Tag>{translateUi("Stage 01 · Discover & Develop")}</Tag>
           <h2>{translateUi("Your next chapter starts with learning.")}</h2>
           <p>{translateUi(" Build your skills, meet your community, and turn curiosity into action. ")}</p>
           <Link to="/academy" className="hub-button">{translateUi(" Find your next course ")}<ArrowRight size={17}/>
@@ -97,7 +112,7 @@ export function JourneyPage() {
                   <div>
                     <strong>{translateUi(a.title)}</strong>
                     <p className="hub-caption">
-                      {translateUi(clubs.find((c) => c.id === a.clubId)?.name)}{translateUi(" \u00B7 ")}{translateUi(a.date)}
+                      {translateUi(clubs.find((c) => c.id === a.clubId)?.name)}{translateUi(" · ")}{translateUi(a.date)}
                     </p>
                   </div>
                   <Tag>{translateUi(a.type)}</Tag>
@@ -105,7 +120,7 @@ export function JourneyPage() {
           <TextLink to="/clubs">{translateUi("Visit my communities")}</TextLink>
         </Panel>
       </div>
-      <h2 className="hub-section-title">{translateUi("Make space for what\u2019s next")}</h2>
+      <h2 className="hub-section-title">{translateUi("Make space for what’s next")}</h2>
       <div className="hub-grid three">
         {translateUi([
             {
@@ -138,22 +153,25 @@ export function JourneyPage() {
 export function PassportPage() {
     useSiteLanguage();
     const { state, profile, update } = useHub();
-    // Server-issued certificates (trainer-built courses and school membership) count alongside local ones.
     const live = useLiveTick();
     const [serverCerts, setServerCerts] = useState<{
         id: string;
         kind: string;
         revoked_at: string | null;
     }[]>([]);
+    const [graduation, setGraduation] = useState(readGraduation());
+    const [edit, setEdit] = useState(false);
     useEffect(() => { platformApi<{
         id: string;
         kind: string;
         revoked_at: string | null;
     }[]>("/certificates").then((rows) => setServerCerts(rows.filter((r) => !r.revoked_at))).catch(() => { }); }, [profile.id, live]);
-    const [edit, setEdit] = useState(false);
+    useEffect(() => {
+        const next = readGraduation();
+        setGraduation(next);
+    }, [profile.id]);
     const schoolAchievements = state.schoolRecords.requests.filter(r => r.status === 'Issued').flatMap(r => r.members.filter(m => m.email && m.email.toLowerCase() === profile.email.toLowerCase()).map(m => ({ id: `${r.id}/${m.id}`, title: r.programme, name: m.name, issued: r.issued, completed: r.completed, schoolId: r.schoolId, verifyUrl: `/certificate-check/${r.id}/${m.id}` })));
     const enrollments = state.enrollments.filter((e) => e.memberId === profile.id);
-    // Learning, attendance and certificates are counted on the server; built-in academy courses live in this browser.
     const overview = useOverview<MemberOverview>();
     const volunteerHours = overview?.volunteerHours ?? 0;
     const downloadPassport = async () => {
@@ -196,6 +214,10 @@ export function PassportPage() {
           <form key={profile.id} className="hub-form" onSubmit={(e) => {
                 e.preventDefault();
                 const f = new FormData(e.currentTarget);
+                const nextStatus = String(f.get("graduationStatus") ?? graduation.status);
+                const nextYear = String(f.get("graduationYear") ?? graduation.year);
+                localStorage.setItem(PASSPORT_GRADUATION_KEY, JSON.stringify({ status: nextStatus, year: nextYear }));
+                setGraduation({ status: nextStatus, year: nextYear });
                 if (update((s) => {
                     const p = s.profiles.find((p) => p.id === profile.id)!;
                     p.name = String(f.get("name")).trim();
@@ -225,6 +247,17 @@ export function PassportPage() {
             <Field label={translateUi("Leadership roles (comma separated)")}>
               <input name="leadership" maxLength={500} defaultValue={profile.leadership.join(", ")}/>
             </Field>
+            <Field label={translateUi("Graduation status")}>
+              <select name="graduationStatus" defaultValue={graduation.status} className="hub-field">
+                <option value="In school">In school</option>
+                <option value="Waiting to graduate">Waiting to graduate</option>
+                <option value="Graduated">Graduated</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </Field>
+            <Field label={translateUi("Graduation year")}>
+              <input name="graduationYear" maxLength={10} defaultValue={graduation.year} placeholder={translateUi("e.g. 2026")}/>
+            </Field>
             <div className="hub-actions hub-dialog-actions">
               <button type="button" className="hub-button secondary" onClick={() => setEdit(false)}>{translateUi("Cancel")}</button>
               <button className="hub-button">{translateUi("Save profile")}</button>
@@ -244,11 +277,12 @@ export function PassportPage() {
             : <p className="pv-empty">{translateUi("Roles you take on in clubs, schools and events appear here.")}</p>)}
           <TextLink to="/certificates">{translateUi("View my achievements")}</TextLink>
         </ProfilePanel>
-        <ProfilePanel icon={Users} title={translateUi("Communities")}>
-          {translateUi(communities.length
-            ? <ul className="pv-list">{translateUi(communities.map((c) => <li key={c.id}><span>{translateUi(c.name)}</span><small>{translateUi(c.type)}</small></li>))}</ul>
-            : <p className="pv-empty">{translateUi("Join a local club or homegroup to grow with others.")}</p>)}
-          <TextLink to="/clubs">{translateUi("Explore communities")}</TextLink>
+        <ProfilePanel icon={Users} title={translateUi("Graduation")}> 
+          {translateUi(<div className="pv-list">
+            <span>{translateUi("Status")}: {translateUi(graduation.status)}</span>
+            <span>{translateUi("Year")}: {translateUi(graduation.year || "—")}</span>
+          </div>)}
+          <button className="hub-text-button" onClick={() => setEdit(true)}>{translateUi("Update graduation")}</button>
         </ProfilePanel>
       </div>
     </div>);

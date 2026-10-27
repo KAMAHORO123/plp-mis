@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/features/authentication/auth-context";
 import { getInitials } from "@/lib/utils";
+
 export function SettingsPage() {
     useSiteLanguage();
     const { user } = useAuth();
@@ -63,7 +64,7 @@ export function SettingsPage() {
         ].map((item) => (<label key={item.key} className="flex items-center gap-3 text-sm text-foreground">
               <Checkbox checked={prefs[item.key as keyof typeof prefs]} onCheckedChange={(c) => setPrefs((p) => ({ ...p, [item.key]: c === true }))}/>
               {translateUi(item.label)}
-            </label>)))}
+            </label>))) }
         </div>
       </Card>
 

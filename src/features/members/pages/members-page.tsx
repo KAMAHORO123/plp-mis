@@ -46,14 +46,21 @@ export function MembersPage() {
     const [toView, setToView] = useState<Member | null>(null);
     const [toEdit, setToEdit] = useState<Member | null>(null);
     const [toDelete, setToDelete] = useState<Member | null>(null);
-    const [editForm, setEditForm] = useState({ name: "", affiliation: "", district: "" });
+    const [editForm, setEditForm] = useState({ name: "", affiliation: "", district: "", status: "active" as Member["status"], role: "Student" as Member["role"], graduationYear: "" });
     const filtered = useMemo(() => {
         const role = TAB_ROLE[tab];
         return role ? data.filter((m) => m.role === role) : data;
     }, [data, tab]);
     const openEdit = (row: Member) => {
         setToEdit(row);
-        setEditForm({ name: row.name, affiliation: row.affiliation, district: row.district });
+        setEditForm({
+            name: row.name,
+            affiliation: row.affiliation,
+            district: row.district,
+            status: row.status,
+            role: row.role,
+            graduationYear: row.graduationYear,
+        });
     };
     const actionCol: Column<Member> = {
         id: "action",
@@ -104,7 +111,17 @@ export function MembersPage() {
         if (!toEdit)
             return;
         try {
-            await updateMember.mutateAsync({ id: toEdit.id, data: editForm });
+            await updateMember.mutateAsync({
+                id: toEdit.id,
+                data: {
+                    name: editForm.name,
+                    affiliation: editForm.affiliation,
+                    district: editForm.district,
+                    role: editForm.role,
+                    status: editForm.status,
+                    graduationYear: editForm.graduationYear,
+                },
+            });
             toast.success(translateUi("Member updated"));
             setToEdit(null);
         }
@@ -171,10 +188,32 @@ export function MembersPage() {
       <Dialog open={!!toEdit} onOpenChange={(open) => !open && setToEdit(null)}>
         <DialogContent>
           <DialogTitle>{translateUi("Edit Member")}</DialogTitle>
-          <div className="mt-4 space-y-3">
-            <div><Label>{translateUi("Name")}</Label><Input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}/></div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="sm:col-span-2"><Label>{translateUi("Name")}</Label><Input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}/></div>
             <div><Label>{translateUi("Affiliation")}</Label><Input value={editForm.affiliation} onChange={(e) => setEditForm({ ...editForm, affiliation: e.target.value })}/></div>
             <div><Label>{translateUi("District")}</Label><Input value={editForm.district} onChange={(e) => setEditForm({ ...editForm, district: e.target.value })}/></div>
+            <div>
+              <Label>{translateUi("Role")}</Label>
+              <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" value={editForm.role} onChange={(e) => setEditForm({ ...editForm, role: e.target.value as Member["role"] })}>
+                <option value="Student">Student</option>
+                <option value="Graduate">Graduate</option>
+                <option value="Coordinator">Coordinator</option>
+                <option value="Facilitator">Facilitator</option>
+              </select>
+            </div>
+            <div>
+              <Label>{translateUi("Status")}</Label>
+              <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value as Member["status"] })}>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="graduated">Graduated</option>
+                <option value="pending">Pending</option>
+              </select>
+            </div>
+            <div className="sm:col-span-2">
+              <Label>{translateUi("Graduation year")}</Label>
+              <Input value={editForm.graduationYear} onChange={(e) => setEditForm({ ...editForm, graduationYear: e.target.value })} placeholder={translateUi("e.g. 2026")}/>
+            </div>
           </div>
           <DialogFooter className="mt-4">
             <Button variant="secondary" onClick={() => setToEdit(null)}>{translateUi("Cancel")}</Button>

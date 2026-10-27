@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { translations } from './translations';
 import './language.css';
 
@@ -52,3 +52,27 @@ export function LanguageSwitcher() {
   return <label className="plp-language-switcher"><span className="plp-language-label">{translateUi('Language')}</span><select aria-label="Language / Ururimi / Langue" value={selected} onChange={event => setSiteLanguage(event.target.value as SiteLanguage)}><option value="en" lang="en">English</option><option value="rw" lang="rw">Kinyarwanda</option><option value="fr" lang="fr">Français</option></select></label>;
 }
 export const dateLocale = () => ({ en: 'en-GB', rw: 'rw-RW', fr: 'fr-FR' }[language]);
+
+/**
+ * Collapses the public header's links into the menu button whenever they do not fit,
+ * whatever the language or screen size. Returns a ref for the <header>.
+ */
+export function useHeaderFit<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  const selected = useSiteLanguage();
+  useEffect(() => {
+    const header = ref.current;
+    if (!header || typeof ResizeObserver === 'undefined') return;
+    const fit = () => {
+      header.classList.remove('is-nav-collapsed', 'is-actions-tight');
+      if (header.scrollWidth > header.clientWidth + 1) header.classList.add('is-nav-collapsed');
+      if (header.scrollWidth > header.clientWidth + 1) header.classList.add('is-actions-tight');
+    };
+    const observer = new ResizeObserver(fit);
+    observer.observe(header);
+    void document.fonts?.ready.then(fit);
+    fit();
+    return () => observer.disconnect();
+  }, [selected]);
+  return ref;
+}
