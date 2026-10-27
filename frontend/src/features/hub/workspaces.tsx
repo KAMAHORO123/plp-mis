@@ -1,3 +1,4 @@
+import { answerFaq, faqEntries, type FaqLanguage, type FaqLanguageChoice } from './faq';
 import { RecordActions } from './record-actions';
 import { downloadCertificatePDF, certificateFileName, schoolCertificateDesign } from './certificate-pdf';
 import { useState, useEffect, useRef } from 'react';
@@ -59,5 +60,32 @@ export async function downloadCertificates(request: CertificateRequest, recipien
  } catch { toast.error('Could not generate the PDF. Please try again.'); }
 }
 export function CertificateCheckPage(){const {requestId,memberId}=useParams();const {state}=useHub();const r=state.schoolRecords.requests.find(r=>r.id===requestId&&r.status==='Issued');const member=r?.members.find(m=>m.id===memberId);return <div className="hub-section hub-narrow"><Panel><Award size={40}/><Heading title={member?'Certificate found':'Certificate not found'} description="PLP certificate verification"/>{member&&r?<><h2>{member.name}</h2><p>{r.programme}</p><p>{schoolName(r.schoolId)}</p><p>Issued {r.issued} · Completed {r.completed}</p><Status status="Issued"/></>:<p>No issued certificate matches this link.</p>}<Link className="hub-text-link" to="/">PLP website</Link></Panel></div>;}
-const answers=[{q:'How do I join PLP?',words:['join','signup','sign up','register','password'],a:'Choose Join PLP, enter your name and email, choose Member, and set a password. Member access is immediate. Staff roles require an authorized assignment by an administrator.'},{q:'How do I get a certificate?',words:['certificate','pdf','download','approve','request'],a:'Academy course certificates are awarded automatically when you complete the required lessons, assignment, and assessment. Club leaders add students in School members, then select recipients to request standard PLP membership certificates. An administrator approves and issues the request. The coordinator can then download one PDF or the full batch. Members with a matching email can see their own issued certificates.'},{q:'Do students need an account?',words:['student','account','school'],a:'Students do not need an account for a coordinator to request their certificates. An optional matching email connects an issued certificate to a member account.'},{q:'Who is the administrator?',words:['admin','coordinator','role','trainer'],a:'The administrator manages staff access and issues certificates. Coordinators manage their assigned school only. Trainers manage their assigned courses.'}];
-export function HelpChat(){const logRef=useRef<HTMLDivElement>(null);const [open,setOpen]=useState(false),[input,setInput]=useState(''),[messages,setMessages]=useState<{who:string;text:string}[]>([{who:'PLP help',text:'Hi! I can explain joining, roles, and school certificates. What would you like to know?'}]);useEffect(()=>{if(logRef.current)logRef.current.scrollTop=logRef.current.scrollHeight;},[messages,open]);function ask(text:string){const clean=text.trim();if(!clean)return;const scores=answers.map(a=>({a,score:a.words.filter(w=>clean.toLowerCase().includes(w)).length})).sort((a,b)=>b.score-a.score);setMessages(m=>[...m,{who:'You',text:clean},{who:'PLP help',text:scores[0].score?scores[0].a.a:'I can help with joining, roles, and certificates. For other questions, contact info@peaceloveproclaimers.org.'}]);setInput('');}return <div className="ws-chat">{open&&<section className="ws-chat-panel" aria-label="PLP help chat"><header><div><strong>PLP help</strong><small>Quick answers · Automated FAQ</small></div><button aria-label="Close help chat" onClick={()=>setOpen(false)}><X size={18}/></button></header><div ref={logRef} className="ws-chat-messages" role="log" aria-live="polite">{messages.map((m,i)=><div className={m.who==='You'?'ws-chat-you':''} key={i}><small>{m.who}</small><p>{m.text}</p></div>)}</div><div className="ws-chat-suggestions">{answers.slice(0,3).map(a=><button key={a.q} onClick={()=>ask(a.q)}>{a.q}</button>)}</div><form onSubmit={e=>{e.preventDefault();ask(input);}}><input aria-label="Ask PLP help" value={input} onChange={e=>setInput(e.target.value)} maxLength={400} placeholder="Ask a simple question…"/><button aria-label="Send question"><Send size={18}/></button></form></section>}<button className="ws-chat-toggle" aria-expanded={open} onClick={()=>setOpen(!open)}><MessageCircle size={21}/> {open?'Close help':'Need a hand?'}</button></div>;}
+export function HelpChat() {
+  const logRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [input, setInput] = useState('');
+  const [choice, setChoice] = useState<FaqLanguageChoice>('auto');
+  const [lastLanguage, setLastLanguage] = useState<FaqLanguage>('en');
+  const [messages, setMessages] = useState<{who: 'help' | 'you'; text: string; language?: FaqLanguage}[]>([
+    {who: 'help', text: 'Muraho! Baza mu Kinyarwanda cyangwa mu Cyongereza. Hi! Ask about joining PLP, certificates, or roles in Kinyarwanda or English.'},
+  ]);
+  const language = choice === 'auto' ? lastLanguage : choice;
+  const rw = language === 'rw';
+  useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight; }, [messages, open]);
+  function ask(text: string) {
+    const clean = text.trim();
+    if (!clean) return;
+    const answer = answerFaq(clean, choice, lastLanguage);
+    setLastLanguage(answer.language);
+    setMessages(m => [...m, {who: 'you', text: clean}, {who: 'help', text: answer.text, language: answer.language}]);
+    setInput('');
+  }
+  return <div className="ws-chat">{open && <section className="ws-chat-panel" aria-label={rw ? 'Ubufasha bwa PLP' : 'PLP help chat'}>
+    <header><div><strong>{rw ? 'Ubufasha bwa PLP' : 'PLP help'}</strong><small>{rw ? 'Ibisubizo byikora ku bibazo bikunze kubazwa' : 'Quick answers · Automated FAQ'}</small></div><button aria-label={rw ? 'Funga ubufasha' : 'Close help chat'} onClick={() => setOpen(false)}><X size={18}/></button></header>
+    <label className="ws-chat-language">Language / Ururimi <select value={choice} onChange={e => setChoice(e.target.value as FaqLanguageChoice)}><option value="auto">Auto / Byikora</option><option value="rw">Kinyarwanda</option><option value="en">English</option></select></label>
+    <div ref={logRef} className="ws-chat-messages" role="log" aria-live="polite">{messages.map((m,i) => <div className={m.who === 'you' ? 'ws-chat-you' : ''} key={i}><small>{m.who === 'you' ? (rw ? 'Wowe' : 'You') : 'PLP'}</small><p lang={m.language}>{m.text}</p></div>)}</div>
+    <div className="ws-chat-suggestions">{faqEntries.slice(0,3).map(a => <button key={a.id} onClick={() => ask(a.q[language])}>{a.q[language]}</button>)}</div>
+    <form onSubmit={e => {e.preventDefault(); ask(input);}}><input aria-label={rw ? 'Baza PLP' : 'Ask PLP help'} value={input} onChange={e => setInput(e.target.value)} maxLength={400} placeholder={rw ? 'Andika ikibazo cyawe…' : 'Ask in English or Kinyarwanda…'}/><button aria-label={rw ? 'Ohereza ikibazo' : 'Send question'}><Send size={18}/></button></form>
+  </section>}<button className="ws-chat-toggle" aria-expanded={open} onClick={() => setOpen(!open)}><MessageCircle size={21}/>{open ? (rw ? 'Funga' : 'Close help') : 'Need help? / Ubufasha'}</button></div>;
+}
+

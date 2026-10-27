@@ -51,11 +51,20 @@ const directors = [
   ["Giramata Sandra","Director of Finance","Budgeting, accounting, and financial reporting."],
   ["Rita Sandrine","Director of Partnerships","Strategy, research, and resource mobilization."],
 ];
+const teams: [string, string, [string, string][]][] = [
+  ["IT & Digital Systems","PLP Hub and digital tools",[["IT managers","Kamahoro Linda Kellia · Livia · Kelly Gisubizo"]]],
+  ["Discover & Develop","PLP Hub",[["PLP Clubs","Mutabazi · Amelia"],["Homegroups","Patrick · Phocas"],["Youth Learning Hub","Arnold M. · Beline"]]],
+  ["Demonstrate","Signature initiatives",[["Boardroom","Shema Dan · Amanda Lelsie"],["Walk to Remember & Ku Gicaniro","ABI · Princess R."],["Anda Art Festival","Danny Kaberuka · Eviddy"],["MegaCare","Dalynah · Micha"],["Sober Nights & Entertainment","Colin K. · Biggy · Maxine"]]],
+  ["Do","PLP Connect",[["Jobs & Internships","Parfine · Eunice"],["Mentorship","Natacha K."],["Membership & Engagement","Hirwa Djasiri · Ikaze Team"]]],
+  ["Executive office","With the Executive Secretary",[["Administration","Divine Kayonga"]]],
+  ["Creative","Organizational branding",[["Copyright","J-Yane · Caessy Ngarambe"],["Account manager","Ornella Nene"]]],
+  ["Partnerships","Strategy and resources",[["Strategy & Research","Shema Dan"],["Resource Mobilization & Strategic Outreach","Caessy Ngarambe"]]],
+];
 const initials = (name: string) => name.replace(/^[A-Z]\.\s*/, "").split(/\s+/).filter(w => /^[A-Z]/.test(w)).slice(0, 2).map(w => w[0]).join("");
-function Person({person: [name, role, remit], lead = false}: {person: string[]; lead?: boolean}) { return <li className={lead ? "plp-team-lead" : undefined}><span className="plp-team-monogram" aria-hidden="true">{initials(name)}</span><div><h3>{name}</h3><p className="plp-team-role">{role}</p><p>{remit}</p></div></li>; }
+function Person({person: [name, role], lead = false}: {person: string[]; lead?: boolean}) { return <li className={lead ? "plp-team-lead" : undefined}><span className="plp-team-monogram" aria-hidden="true">{initials(name)}</span><div><h3>{name}</h3><p className="plp-team-role">{role}</p></div></li>; }
 function Team() { return <section className="plp-team" id="team" aria-labelledby="team-title">
-  <div className="plp-team-intro"><p className="plp-section-label">YOUTH-LED, FROM STRATEGY TO SERVICE</p><h2 id="team-title">Meet our team</h2><p>The people who guide PLP’s programmes, partnerships, and day-to-day work, with the support of club leaders, mentors, and volunteers across every community.</p></div>
-  <div className="plp-team-groups"><p className="plp-team-group-label">Leadership</p><ul className="plp-team-leadership">{leadership.map(p=><Person key={p[0]} person={p} lead/>)}</ul><p className="plp-team-group-label">Directors</p><ul className="plp-team-directors">{directors.map(p=><Person key={p[0]} person={p}/>)}</ul><p className="plp-source-note">PLP is governed by a Board of Directors and supported by an Advisory Council.</p></div>
+  <div className="plp-team-intro"><p className="plp-section-label">THE PEOPLE BEHIND PLP</p><h2 id="team-title">Meet our team</h2><p>Working together for young people, with our club leaders, mentors, and volunteers.</p></div>
+  <div className="plp-team-groups"><p className="plp-team-group-label">Leadership</p><ul className="plp-team-leadership">{leadership.map(p=><Person key={p[0]} person={p} lead/>)}</ul><p className="plp-team-group-label">Directors</p><ul className="plp-team-directors">{directors.map(p=><Person key={p[0]} person={p}/>)}</ul><p className="plp-team-group-label">Programmes and teams</p><div className="plp-team-units">{teams.map(([area,,units])=><section key={area}><h3>{area === "Do" ? "PLP Connect" : area}</h3><dl>{units.map(([unit,people])=><div key={unit}><dt>{unit}</dt><dd>{people}</dd></div>)}</dl></section>)}</div><p className="plp-source-note">PLP is governed by a Board of Directors and supported by an Advisory Council.</p></div>
 </section>; }
 export function HomePage() { return <>
   <section className="plp-landing-hero plp-restored-hero">
@@ -64,8 +73,8 @@ export function HomePage() { return <>
     <p>Peace, leadership, culture, wellness, and service.<br className="plp-desktop-break"/> A youth-led community rooted in Rwanda, reaching beyond borders.</p>
     <div className="hub-actions"><Link to="/programmes" className="hub-button">Explore our work <ArrowRight size={18}/></Link><Link to="/about" className="plp-quiet-link">The story of PLP <ArrowUpRight size={18}/></Link></div>
     <div className="plp-photo-stage">
-      <figure className="plp-side-photo plp-side-left"><img src="/images/plp/icyeza-home-hd.png" alt="Two PLP ICYEZA members holding a Peace and Love Proclaimers photo frame" width="1135" height="1386" fetchPriority="high"/><figcaption>Peace, love & belonging.</figcaption></figure>
-      <figure className="plp-main-photo"><span className="plp-photo-word" aria-hidden="true">together.</span><img src="/images/plp/plp-youth.webp" alt="PLP members together in their MegaCare shirts" width="1500" height="1001" fetchPriority="high"/><figcaption>Peace and Love Proclaimers · Youth for Change</figcaption></figure>
+      <figure className="plp-side-photo plp-side-left"><img src="/images/plp/icyeza-home-hd.png" alt="Two PLP ICYEZA members holding a Peace and Love Proclaimers photo frame" width="1135" height="1386" {...{fetchpriority: "high"}}/><figcaption>Peace, love & belonging.</figcaption></figure>
+      <figure className="plp-main-photo"><span className="plp-photo-word" aria-hidden="true">together.</span><img src="/images/plp/plp-youth.webp" alt="PLP members together in their MegaCare shirts" width="1500" height="1001" {...{fetchpriority: "high"}}/><figcaption>Peace and Love Proclaimers · Youth for Change</figcaption></figure>
       <figure className="plp-side-photo plp-side-right"><img src="/images/plp/plp-remembrance.webp" alt="A community gathered in an arena for remembrance" width="523" height="452"/><figcaption>Remembering together.</figcaption></figure>
     </div><div className="plp-hero-baseline"><span>Rwanda · Canada · One community</span><a href="#our-work">Discover PLP <ArrowRight size={16}/></a></div>
   </section>
