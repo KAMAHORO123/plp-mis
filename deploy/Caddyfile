@@ -16,6 +16,9 @@
   reverse_proxy landing:80
  }
 }
+www.{$SITE_HOST} {
+ redir https://{$SITE_HOST}{uri} permanent
+}
 {$HUB_HOST} {
  # Lesson videos and photos are already compressed and must keep byte ranges intact; the live stream must not be buffered.
  @compressible not path /api/files/* /api/avatars/* /api/live
