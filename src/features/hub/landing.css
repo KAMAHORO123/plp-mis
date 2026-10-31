@@ -749,3 +749,30 @@ html[data-theme="dark"] .plp-art-footer::after { background-color: #0f0f0f; opac
 @media (max-width: 700px) {
   .plp-public-site .plp-art-footer .plp-footer-columns a { display: flex; width: fit-content; margin-bottom: 2px; }
 }
+/* A shorter footer: tighter spacing, a smaller invitation, compact link lists. */
+.plp-art-footer { margin-top: 72px; }
+.plp-art-footer .plp-footer-inner { padding: 46px 55px 20px; }
+.plp-art-footer .plp-footer-invitation { padding-bottom: 28px; }
+.plp-art-footer .plp-footer-invitation > a { margin-top: 10px; font-size: clamp(26px, 3vw, 40px); }
+.plp-art-footer .plp-footer-invitation a > svg { width: 30px; height: 30px; margin-left: 14px; }
+.plp-art-footer .plp-footer-spark { width: 56px; top: 30px; }
+.plp-art-footer .plp-footer-columns { gap: 24px; padding: 28px 0; }
+.plp-art-footer .plp-footer-columns h2 { margin-bottom: 12px; }
+.plp-art-footer .plp-footer-columns a { margin-bottom: 8px; }
+.plp-art-footer .plp-footer-brand p { margin-top: 12px; }
+.plp-art-footer .plp-footer-wordmark { display: none; }
+.plp-art-footer .plp-footer-bottom { padding-top: 14px; }
+@media (max-width: 700px) {
+  .plp-art-footer { margin-top: 48px; }
+  .plp-art-footer .plp-footer-inner { padding: 34px 20px 16px; }
+  .plp-art-footer .plp-footer-invitation { padding-bottom: 20px; }
+  .plp-art-footer .plp-footer-invitation > a { font-size: 26px; }
+  .plp-art-footer .plp-footer-spark { width: 30px; top: 0; }
+  .plp-art-footer .plp-footer-columns { grid-template-columns: 1fr; gap: 18px; padding: 20px 0; }
+  .plp-art-footer .plp-footer-brand p { display: none; }
+  /* Links flow in rows, wrapping as needed, instead of one long column. */
+  .plp-art-footer .plp-footer-columns > :not(.plp-footer-brand) { display: flex; flex-wrap: wrap; align-items: center; gap: 0 18px; }
+  .plp-art-footer .plp-footer-columns > * > h2 { flex: 0 0 100%; margin-bottom: 4px; }
+  .plp-public-site .plp-art-footer .plp-footer-columns a { margin-bottom: 0; min-height: 40px; }
+  .plp-art-footer .plp-footer-bottom { flex-wrap: wrap; gap: 6px 16px; }
+}
