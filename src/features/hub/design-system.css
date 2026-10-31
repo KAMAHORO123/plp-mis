@@ -1,0 +1,258 @@
+/* ───────────────── PLP workspace design system ─────────────────
+   One set of tokens and one look for every dashboard page: cards, stat tiles, tabs, controls, tables,
+   status pills, empty states and dialogs. Loaded after the older theme files; the `:root .hub-app.hub-mis`
+   prefix gives these rules the final say without !important. */
+.plp-dashboard {
+  --ds-bg: #f5f7fb; --ds-surface: #fff; --ds-surface-2: #f8fafc; --ds-line: #e5eaf1; --ds-line-2: #eef2f7;
+  --ds-ink: #0f2a43; --ds-text: #334155; --ds-muted: #5b6b7d;
+  --ds-accent: #1c73bb; --ds-accent-strong: #155e96; --ds-accent-soft: #eaf3fc;
+  --ds-ok: #0f7a4f; --ds-ok-soft: #e7f6ee; --ds-warn: #92400e; --ds-warn-soft: #fff4dc; --ds-bad: #b42318; --ds-bad-soft: #fdecea;
+  --ds-r-card: 16px; --ds-r-ctl: 10px;
+  --ds-shadow: 0 1px 2px rgba(15, 42, 67, .04), 0 8px 24px -16px rgba(15, 42, 67, .18);
+  --ds-shadow-lift: 0 2px 4px rgba(15, 42, 67, .05), 0 16px 32px -18px rgba(15, 42, 67, .28);
+  --ds-segment: #eef2f7;
+}
+:root[data-theme="dark"] .plp-dashboard, :root[data-theme="dark"] .hub-app.hub-dialog {
+  --ds-bg: #0b0f14; --ds-surface: #111821; --ds-surface-2: #0f151d; --ds-line: #222c38; --ds-line-2: #1b2430;
+  --ds-ink: #f1f5f9; --ds-text: #cbd5e1; --ds-muted: #94a3b8;
+  --ds-accent: #60a5fa; --ds-accent-strong: #93c5fd; --ds-accent-soft: #142436;
+  --ds-ok: #6ee7a8; --ds-ok-soft: #10271b; --ds-warn: #fcd34d; --ds-warn-soft: #2a2212; --ds-bad: #fca5a5; --ds-bad-soft: #2c1414;
+  --ds-shadow: 0 1px 2px rgba(0, 0, 0, .3); --ds-shadow-lift: 0 12px 28px -16px rgba(0, 0, 0, .7);
+  --ds-segment: #18212c;
+}
+.hub-app.hub-dialog { --ds-surface: #fff; --ds-surface-2: #f8fafc; --ds-line: #e5eaf1; --ds-ink: #0f2a43; --ds-muted: #5b6b7d; --ds-accent: #1c73bb; --ds-accent-soft: #eaf3fc; --ds-r-ctl: 10px; }
+
+/* Surfaces */
+:root .hub-app.hub-mis.plp-dashboard :is(.hub-panel, .plp-stat-card, .dv-tile, .dv-card) { background: var(--ds-surface); border: 1px solid var(--ds-line); border-radius: var(--ds-r-card); box-shadow: var(--ds-shadow); }
+:root .hub-app.hub-mis.plp-dashboard :is(.act-card, .ac-card, .hub-mentor-card, .ms-session, .dv-totals a, .ws-shortcuts a:has(> span)) { border-radius: var(--ds-r-card); }
+:root .hub-app.hub-mis.plp-dashboard .ws-panel-title h2 { font-family: Sora, sans-serif; font-size: 16px; font-weight: 600; letter-spacing: -.02em; color: var(--ds-ink); }
+:root .hub-app.hub-mis.plp-dashboard .ws-count { display: inline-grid; place-items: center; min-width: 22px; height: 20px; padding: 0 7px; margin-left: 6px; border-radius: 999px; background: var(--ds-accent-soft); color: var(--ds-accent-strong); font-size: 11px; font-weight: 600; vertical-align: 2px; }
+
+/* Sidebar */
+:root .hub-app.hub-mis.plp-dashboard > aside nav a { border-radius: var(--ds-r-ctl); color: var(--ds-muted); }
+:root .hub-app.hub-mis.plp-dashboard > aside nav a svg { opacity: .8; }
+:root .hub-app.hub-mis.plp-dashboard > aside nav a:not([aria-current="page"]):hover { background: var(--ds-surface-2); color: var(--ds-ink); }
+:root .hub-app.hub-mis.plp-dashboard > aside nav a[aria-current="page"] { background: var(--ds-accent-soft); color: var(--ds-accent); font-weight: 600; box-shadow: inset 3px 0 0 var(--ds-accent); }
+:root .hub-app.hub-mis.plp-dashboard > aside nav a[aria-current="page"] svg { opacity: 1; }
+:root .hub-app.hub-mis.plp-dashboard .hub-nav-count { margin-left: auto; min-width: 20px; height: 20px; padding: 0 6px; display: inline-grid; place-items: center; border-radius: 999px; background: #e5372b; color: #fff; font-size: 11px; font-weight: 700; }
+
+/* Page titles */
+:root .hub-app.hub-mis.plp-dashboard :is(.ws-page-header, .hub-heading) h1 { font-family: Sora, sans-serif; font-size: 28px; font-weight: 600; letter-spacing: -.035em; line-height: 1.2; color: var(--ds-ink); }
+:root .hub-app.hub-mis.plp-dashboard :is(.ws-page-header, .hub-heading) p { color: var(--ds-muted); }
+
+/* Dashboard greeting: a banner that anchors each role's home page. */
+:root .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero {
+  position: relative; isolation: isolate; overflow: hidden; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  padding: 30px 32px; border: 0; border-radius: 20px;
+  background: linear-gradient(120deg, #0d3a63 0%, #1c73bb 62%, #3d93d8 100%) !important;
+  box-shadow: 0 18px 40px -24px rgba(13, 58, 99, .8) !important;
+}
+:root .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero::before { content: ""; position: absolute; z-index: -1; inset: auto -60px -120px auto; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, .16), transparent 68%); }
+:root .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero::after { content: ""; position: absolute; z-index: -1; inset: -90px 160px auto auto; width: 220px; height: 220px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .14); background: none; }
+:root .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero h1 { color: #fff; font-size: 30px; }
+:root .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero p { color: rgba(255, 255, 255, .82); margin-top: 6px; font-size: 14px; }
+:root .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero .hub-button { background: #fff; color: #0d3a63 !important; /* the base .hub-button forces white text */ border-color: #fff; box-shadow: 0 8px 20px -10px rgba(0, 0, 0, .45); }
+:root .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero .hub-button:hover { background: #eef6fd; }
+:root .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero .hub-button.secondary { background: rgba(255, 255, 255, .12); color: #fff !important; border-color: rgba(255, 255, 255, .35); box-shadow: none; }
+:root[data-theme="dark"] .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero { background: linear-gradient(120deg, #0c2238 0%, #164a7c 70%, #1f5f9c 100%) !important; }
+@media (max-width: 640px) { :root .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero { padding: 22px 20px; border-radius: 16px; } :root .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero h1 { font-size: 22px; } }
+
+/* Stat tiles: each position in a row gets its own colour, the same on every page. */
+:root .hub-app.hub-mis.plp-dashboard :is(.ws-stats > *, .hub-stats > div) { --tone: #1c73bb; }
+:root .hub-app.hub-mis.plp-dashboard :is(.ws-stats > :nth-child(4n+2), .hub-stats > div:nth-child(4n+2)) { --tone: #7c3aed; }
+:root .hub-app.hub-mis.plp-dashboard :is(.ws-stats > :nth-child(4n+3), .hub-stats > div:nth-child(4n+3)) { --tone: #0f9488; }
+:root .hub-app.hub-mis.plp-dashboard :is(.ws-stats > :nth-child(4n+4), .hub-stats > div:nth-child(4n+4)) { --tone: #d97706; }
+:root .hub-app.hub-mis.plp-dashboard .plp-stat-card { padding: 18px 20px; }
+:root .hub-app.hub-mis.plp-dashboard .plp-stat-card .plp-stat-icon,
+:root .hub-app.hub-mis.plp-dashboard .hub-stats .hub-stat-icon { width: 38px; height: 38px; border: 0; border-radius: 11px; color: var(--tone); background: color-mix(in srgb, var(--tone) 12%, transparent); }
+:root .hub-app.hub-mis.plp-dashboard .plp-stat-card .font-display,
+:root .hub-app.hub-mis.plp-dashboard .hub-stats strong { font-family: Sora, sans-serif; font-size: 28px; font-weight: 600; letter-spacing: -.03em; color: var(--ds-ink); }
+:root .hub-app.hub-mis.plp-dashboard .hub-stats > div { background: var(--ds-surface); border: 1px solid var(--ds-line); border-radius: var(--ds-r-card); box-shadow: var(--ds-shadow); }
+:root .hub-app.hub-mis.plp-dashboard .hub-stats > div > svg { color: var(--tone); }
+
+/* Tabs: a segmented control. Filter chips: pills. */
+:root .hub-app.hub-mis.plp-dashboard .ws-tabs { display: inline-flex; width: fit-content; max-width: 100%; overflow-x: auto; gap: 2px; padding: 4px; border: 0; border-radius: 12px; background: var(--ds-segment); scrollbar-width: none; }
+:root .hub-app.hub-mis.plp-dashboard .ws-tabs > button { flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border: 0; border-radius: 9px; background: transparent; color: var(--ds-muted); font-size: 13px; font-weight: 500; white-space: nowrap; }
+:root .hub-app.hub-mis.plp-dashboard .ws-tabs > button:hover { color: var(--ds-ink); }
+:root .hub-app.hub-mis.plp-dashboard .ws-tabs > button:is(.active, [aria-selected="true"]) { background: var(--ds-surface); color: var(--ds-ink); font-weight: 600; box-shadow: 0 1px 3px rgba(15, 42, 67, .14); }
+:root .hub-app.hub-mis.plp-dashboard .ws-tabs > button > span { min-width: 18px; padding: 0 6px; border-radius: 999px; background: color-mix(in srgb, var(--ds-muted) 14%, transparent); font-size: 11px; line-height: 18px; text-align: center; }
+:root .hub-app.hub-mis.plp-dashboard .ws-tabs > button.active > span { background: var(--ds-accent-soft); color: var(--ds-accent); }
+:root .hub-app.hub-mis.plp-dashboard .hub-chips { display: flex; flex-wrap: wrap; gap: 8px; border: 0; padding: 0; }
+:root .hub-app.hub-mis.plp-dashboard .hub-chips > button { padding: 7px 14px; border: 1px solid var(--ds-line); border-radius: 999px; background: var(--ds-surface); color: var(--ds-muted); font-size: 13px; font-weight: 500; }
+:root .hub-app.hub-mis.plp-dashboard .hub-chips > button:hover { border-color: color-mix(in srgb, var(--ds-accent) 40%, var(--ds-line)); color: var(--ds-ink); }
+:root .hub-app.hub-mis.plp-dashboard .hub-chips > button.active { background: var(--ds-accent); border-color: var(--ds-accent); color: #fff; }
+:root[data-theme="dark"] .hub-app.hub-mis.plp-dashboard .hub-chips > button.active { color: #0b0f14; }
+@media (max-width: 640px) { :root .hub-app.hub-mis.plp-dashboard .ws-tabs { width: 100%; } }
+
+/* Buttons */
+:root .hub-app.hub-mis.plp-dashboard .hub-button, :root .hub-app.hub-dialog .hub-button { min-height: 40px; padding: 0 16px; border-radius: var(--ds-r-ctl); font-size: 13.5px; font-weight: 600; gap: 8px; transition: background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .1s ease; }
+:root .hub-app.hub-mis.plp-dashboard .hub-button:active, :root .hub-app.hub-dialog .hub-button:active { transform: translateY(1px); }
+:root .hub-app.hub-mis.plp-dashboard .hub-button.secondary, :root .hub-app.hub-dialog .hub-button.secondary { background: var(--ds-surface); color: var(--ds-ink); border: 1px solid var(--ds-line); box-shadow: none; }
+:root .hub-app.hub-mis.plp-dashboard .hub-button.secondary:hover, :root .hub-app.hub-dialog .hub-button.secondary:hover { border-color: color-mix(in srgb, var(--ds-accent) 45%, var(--ds-line)); background: var(--ds-surface-2); }
+:root .hub-app.hub-mis.plp-dashboard .hub-button.danger, :root .hub-app.hub-dialog .hub-button.danger { background: var(--ds-bad); border-color: var(--ds-bad); color: #fff; box-shadow: none; }
+:root .hub-app.hub-mis.plp-dashboard .hub-button:disabled, :root .hub-app.hub-dialog .hub-button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+/* Table toolbar: search, filters, sort, page size and export share one height and shape. */
+:root .hub-app.hub-mis.plp-dashboard .ws-table-tools { gap: 10px; margin-bottom: 14px; }
+:root .hub-app.hub-mis.plp-dashboard .ws-table-tools > :is(input, select) { height: 40px; min-height: 40px; padding: 0 12px; border: 1px solid var(--ds-line); border-radius: var(--ds-r-ctl); background-color: var(--ds-surface); color: var(--ds-text); font-size: 13px; }
+:root .hub-app.hub-mis.plp-dashboard .ws-table-tools > input { padding-left: 36px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: 12px center; }
+:root .hub-app.hub-mis.plp-dashboard .ws-table-tools > :is(input, select):focus { outline: none; border-color: var(--ds-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-accent) 18%, transparent); }
+:root .hub-app.hub-mis.plp-dashboard .ws-table-tools > .hub-text-button { height: 40px; padding: 0 14px; border: 1px solid var(--ds-line); border-radius: var(--ds-r-ctl); background: var(--ds-surface); color: var(--ds-ink); font-size: 13px; font-weight: 500; text-decoration: none; }
+:root .hub-app.hub-mis.plp-dashboard .ws-table-tools > .hub-text-button:hover { border-color: color-mix(in srgb, var(--ds-accent) 45%, var(--ds-line)); color: var(--ds-accent); }
+:root .hub-app.hub-mis.plp-dashboard .ws-table-tools > span { color: var(--ds-muted); font-size: 12px; }
+
+/* Tables */
+:root .hub-app.hub-mis.plp-dashboard .ws-table { border-collapse: separate; border-spacing: 0; }
+:root .hub-app.hub-mis.plp-dashboard .ws-table th { padding: 11px 12px; border: 0; background: var(--ds-surface-2); color: var(--ds-muted); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+:root .hub-app.hub-mis.plp-dashboard .ws-table th:first-child { border-radius: 10px 0 0 10px; }
+:root .hub-app.hub-mis.plp-dashboard .ws-table th:last-child { border-radius: 0 10px 10px 0; }
+:root .hub-app.hub-mis.plp-dashboard .ws-table td { padding: 14px 12px; border-bottom: 1px solid var(--ds-line-2); color: var(--ds-text); font-size: 13px; line-height: 1.5; vertical-align: middle; }
+:root .hub-app.hub-mis.plp-dashboard .ws-table tbody tr:last-child td { border-bottom: 0; }
+:root .hub-app.hub-mis.plp-dashboard .ws-table tbody tr:hover td { background: color-mix(in srgb, var(--ds-accent) 4%, transparent); }
+:root .hub-app.hub-mis.plp-dashboard .ws-table td strong { color: var(--ds-ink); font-weight: 600; }
+:root .hub-app.hub-mis.plp-dashboard .ws-table td small { display: block; margin-top: 2px; color: var(--ds-muted); font-size: 12px; }
+
+/* Status pills carry a dot so state reads at a glance. */
+:root .hub-app.hub-mis.plp-dashboard .ws-status, :root .hub-app.hub-dialog .ws-status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 0; border-radius: 999px; background: var(--ds-accent-soft); color: var(--ds-accent-strong); font-size: 11.5px; font-weight: 600; line-height: 1.4; white-space: nowrap; }
+:root .hub-app.hub-mis.plp-dashboard .ws-status::before, :root .hub-app.hub-dialog .ws-status::before { content: ""; width: 6px; height: 6px; flex: 0 0 6px; border-radius: 50%; background: currentColor; }
+:root .hub-app.hub-mis.plp-dashboard .ws-status.ws-status-issued { background: var(--ds-ok-soft); color: var(--ds-ok); }
+:root .hub-app.hub-mis.plp-dashboard .ws-status.ws-status-returned { background: var(--ds-warn-soft); color: var(--ds-warn); }
+
+/* Pagination */
+:root .hub-app.hub-mis.plp-dashboard .ws-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--ds-line-2); color: var(--ds-muted); font-size: 12.5px; }
+:root .hub-app.hub-mis.plp-dashboard .ws-pagination button { height: 34px; padding: 0 14px; border: 1px solid var(--ds-line); border-radius: 999px; background: var(--ds-surface); color: var(--ds-ink); font-size: 12.5px; font-weight: 500; }
+:root .hub-app.hub-mis.plp-dashboard .ws-pagination button:not(:disabled):hover { border-color: var(--ds-accent); color: var(--ds-accent); }
+:root .hub-app.hub-mis.plp-dashboard .ws-pagination button:disabled { opacity: .45; }
+
+/* Empty states: quiet, centred, with a small mark instead of a large dashed box. */
+:root .hub-app.hub-mis.plp-dashboard .hub-empty { display: grid; justify-items: center; gap: 10px; padding: 32px 20px; border: 1px dashed var(--ds-line); border-radius: 14px; background: var(--ds-surface-2); color: var(--ds-muted); font-size: 13.5px; text-align: center; }
+:root .hub-app.hub-mis.plp-dashboard .hub-empty::before { content: ""; width: 40px; height: 40px; border-radius: 12px; background: var(--ds-accent-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%231c73bb' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='M22 12h-6l-2 3h-4l-2-3H2'/%3E%3Cpath d='M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z'/%3E%3C/svg%3E") center no-repeat; }
+
+/* Shortcut links */
+:root .hub-app.hub-mis.plp-dashboard .ws-shortcuts a:not(:has(> span)) { border: 1px solid var(--ds-line); border-radius: 999px; background: var(--ds-surface); }
+:root .hub-app.hub-mis.plp-dashboard .ws-shortcuts a:not(:has(> span)):hover { border-color: color-mix(in srgb, var(--ds-accent) 45%, var(--ds-line)); }
+
+/* Dialogs */
+:root .hub-app.hub-dialog { border: 1px solid var(--ds-line); border-radius: 20px; padding: 28px; box-shadow: 0 30px 80px -30px rgba(15, 42, 67, .45); }
+:root .hub-app.hub-dialog h2:first-child, :root .hub-app.hub-dialog [role="heading"] { font-family: Sora, sans-serif; letter-spacing: -.025em; }
+:root .hub-app.hub-dialog :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]), select, textarea) { border: 1px solid var(--ds-line); border-radius: var(--ds-r-ctl); background-color: var(--ds-surface); }
+:root .hub-app.hub-dialog :is(input, select, textarea):focus { outline: none; border-color: var(--ds-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-accent) 18%, transparent); }
+:root .hub-app.hub-dialog .hub-dialog-actions { padding-top: 16px; margin-top: 8px; border-top: 1px solid var(--ds-line); justify-content: flex-end; }
+:root[data-theme="dark"] .hub-app.hub-dialog { --ds-surface: #111821; --ds-surface-2: #0f151d; --ds-line: #222c38; --ds-ink: #f1f5f9; --ds-muted: #94a3b8; --ds-accent: #60a5fa; --ds-accent-soft: #142436; }
+
+/* Page rhythm */
+:root .hub-app.hub-mis.plp-dashboard .ws-page { gap: 24px; }
+:root .hub-app.hub-mis.plp-dashboard .ws-stats { gap: 16px; }
+@media (max-width: 640px) { :root .hub-app.hub-mis.plp-dashboard .ws-page { gap: 18px; } :root .hub-app.hub-mis.plp-dashboard .ws-stats { gap: 10px; } }
+@media (prefers-reduced-motion: reduce) { :root .hub-app.hub-mis.plp-dashboard .hub-button { transition: none; } }
+/* Activity, course and mentor cards share the card surface. */
+:root .hub-app.hub-mis.plp-dashboard :is(.act-card, .hub-mentor-card) { background: var(--ds-surface); border: 1px solid var(--ds-line); box-shadow: var(--ds-shadow); }
+:root .hub-app.hub-mis.plp-dashboard .ws-bulk-bar { border-radius: var(--ds-r-ctl); border-color: var(--ds-line); background: var(--ds-surface-2); }
+/* Mentor cards: same rhythm in every card; the tag hugs its text and the actions sit on one line at the bottom. */
+:root .hub-app.hub-mis.plp-dashboard .hub-mentor-card { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; height: 100%; padding: 22px; }
+:root .hub-app.hub-mis.plp-dashboard .hub-mentor-card > * { width: auto; max-width: 100%; }
+:root .hub-app.hub-mis.plp-dashboard .hub-mentor-card .hub-mentor-avatar { width: 60px; height: 60px; margin: 0 0 6px; border-radius: 16px; overflow: hidden; box-shadow: none; border: 1px solid var(--ds-line); }
+:root .hub-app.hub-mis.plp-dashboard .hub-mentor-card .hub-tag { width: fit-content; padding: 3px 10px; border: 0; border-radius: 999px; background: var(--ds-accent-soft); color: var(--ds-accent-strong); font-size: 11.5px; font-weight: 600; }
+:root .hub-app.hub-mis.plp-dashboard .hub-mentor-card :is(h2, h3) { margin: 2px 0 0; font-family: Sora, sans-serif; font-size: 18px; letter-spacing: -.02em; color: var(--ds-ink); }
+:root .hub-app.hub-mis.plp-dashboard .hub-mentor-card .hub-mentor-role { margin-top: -6px; font-size: 13px; color: var(--ds-muted); }
+:root .hub-app.hub-mis.plp-dashboard .hub-mentor-card > p:not(.hub-mentor-role) { font-size: 13.5px; line-height: 1.6; color: var(--ds-text); }
+:root .hub-app.hub-mis.plp-dashboard .hub-mentor-card > :is(.hub-actions, button) { width: 100%; margin: auto 0 0; padding: 14px 0 0; border-top: 1px solid var(--ds-line-2); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+:root .hub-app.hub-mis.plp-dashboard .hub-mentor-card > button { padding: 0; border-top: 0; justify-content: center; }
+:root .hub-app.hub-mis.plp-dashboard .hub-mentor-card .hub-actions .hub-button { flex: 1 1 auto; justify-content: center; background: var(--ds-accent); border-color: var(--ds-accent); color: #fff; }
+:root .hub-app.hub-mis.plp-dashboard .hub-mentor-card .hub-actions .hub-text-button { flex-shrink: 0; font-size: 13px; }
+:root .hub-app.hub-mis.plp-dashboard .hub-mentor-card .hub-actions { flex-wrap: nowrap; }
+:root .hub-app.hub-mis.plp-dashboard .hub-mentor-card .hub-actions .hub-button { flex: 1 1 0; min-width: 0; color: #fff !important; white-space: nowrap; }
+:root .hub-app.hub-mis.plp-dashboard .hub-mentor-card .hub-actions .hub-button:hover { background: var(--ds-accent-strong); border-color: var(--ds-accent-strong); }
+:root .hub-app.hub-mis.plp-dashboard .ws-pill { padding: 3px 10px; border: 0; border-radius: 999px; background: var(--ds-segment); color: var(--ds-muted); font-size: 11.5px; font-weight: 500; }
+
+/* Opportunities: same stat tiles, pill filters and card language as the rest of the workspace. */
+:root .hub-app.hub-mis.plp-dashboard.plp-dashboard .opportunities-page .ws-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .plp-stat-card { border: 1px solid var(--ds-line); border-radius: var(--ds-r-card); padding: 18px 20px; box-shadow: var(--ds-shadow); }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .plp-stat-card .plp-stat-icon { display: flex; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-filters { display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 10px; margin: 0; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-filters :is(input, select) { height: 42px; border: 1px solid var(--ds-line); border-radius: var(--ds-r-ctl); background-color: var(--ds-surface); font-size: 13.5px; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-filters select { padding: 0 12px; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-types { display: flex; flex-wrap: nowrap; gap: 8px; overflow-x: auto; margin: -8px 0 0; padding-bottom: 2px; scrollbar-width: none; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-types button { flex-shrink: 0; padding: 7px 14px; border: 1px solid var(--ds-line); border-radius: 999px; background: var(--ds-surface); color: var(--ds-muted); font-size: 13px; font-weight: 500; white-space: nowrap; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-types button:hover { color: var(--ds-ink); border-color: color-mix(in srgb, var(--ds-accent) 40%, var(--ds-line)); }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-types button.active { background: var(--ds-accent); border-color: var(--ds-accent); color: #fff; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-grid { gap: 16px; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-card { display: flex; flex-direction: column; padding: 22px; border: 1px solid var(--ds-line); border-radius: var(--ds-r-card); background: var(--ds-surface); box-shadow: var(--ds-shadow); transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-card:hover { border-color: color-mix(in srgb, var(--ds-accent) 30%, var(--ds-line)); box-shadow: var(--ds-shadow-lift); transform: translateY(-2px); }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-card header { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-icon { width: 40px; height: 40px; border-radius: 11px; background: var(--ds-accent-soft); color: var(--ds-accent); }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-type { display: block; color: var(--ds-accent); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-org { display: block; color: var(--ds-muted); font-size: 12.5px; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-save { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid var(--ds-line); border-radius: 10px; background: var(--ds-surface); color: var(--ds-muted); }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-save.on { color: var(--ds-accent); border-color: color-mix(in srgb, var(--ds-accent) 40%, var(--ds-line)); background: var(--ds-accent-soft); }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-card h2 { margin: 16px 0 10px; font-family: Sora, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: -.02em; line-height: 1.35; color: var(--ds-ink); }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; padding: 0; list-style: none; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-meta li { display: inline-flex; align-items: center; gap: 5px; width: auto; padding: 4px 10px; border-radius: 999px; background: var(--ds-segment); color: var(--ds-text); font-size: 12px; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-meta li.urgent { background: var(--ds-warn-soft); color: var(--ds-warn); }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-meta li.closed { background: var(--ds-bad-soft); color: var(--ds-bad); }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-desc { margin: 0 0 18px; color: var(--ds-text); font-size: 13.5px; line-height: 1.6; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-card footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--ds-line-2); }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-cta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-cta small { color: var(--ds-muted); font-size: 11px; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-card .hub-button { min-height: 38px; padding: 0 16px; font-size: 13px; box-shadow: none; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-applied { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: var(--ds-ok-soft); color: var(--ds-ok); font-size: 12.5px; font-weight: 600; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-applied.is-rejected { background: var(--ds-segment); color: var(--ds-muted); }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-applied.is-pending { background: var(--ds-accent-soft); color: var(--ds-accent-strong); }
+@media (max-width: 760px) {
+  :root .hub-app.hub-mis.plp-dashboard.plp-dashboard .opportunities-page .ws-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  :root .hub-app.hub-mis.plp-dashboard .opportunities-page .plp-stat-card { padding: 14px; }
+  :root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-filters { grid-template-columns: 1fr; }
+  :root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-grid { grid-template-columns: 1fr; }
+  :root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-card { padding: 18px; }
+  :root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-card footer { flex-direction: row; }
+}
+/* Opportunities tiles use the same icon-beside-label layout as every other page. */
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .ws-stats > .plp-stat-card { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; align-items: center; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .ws-stats > .plp-stat-card .plp-stat-icon { grid-row: span 2; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .ws-stats > .plp-stat-card p { margin-top: 0; }
+:root .hub-app.hub-mis.plp-dashboard .opportunities-page .op-card footer .hub-text-button { white-space: nowrap; }
+@media (max-width: 640px) {
+  :root .hub-app.hub-mis.plp-dashboard .ws-tabs { flex-wrap: nowrap; }
+  :root .hub-app.hub-mis.plp-dashboard .opportunities-page .ws-stats > .plp-stat-card .plp-stat-icon { display: none; }
+}
+
+/* Summary cards whose forms open in a pop-up (website banner, course modules). */
+:root .hub-app.hub-mis.plp-dashboard .an-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 14px 0 0; }
+:root .hub-app.hub-mis.plp-dashboard .an-facts > div { padding: 10px 12px; border: 1px solid var(--ds-line); border-radius: var(--ds-r-ctl); background: var(--ds-segment); min-width: 0; }
+:root .hub-app.hub-mis.plp-dashboard .an-facts dt { font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--ds-muted); }
+:root .hub-app.hub-mis.plp-dashboard .an-facts dd { margin: 3px 0 0; font-size: 14px; font-weight: 600; color: var(--ds-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:root .hub-app.hub-mis.plp-dashboard .ws-panel-title .hub-actions { flex-wrap: wrap; }
+:root .hub-app.hub-mis.plp-dashboard .tw-modules { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+:root .hub-app.hub-mis.plp-dashboard .tw-module-card { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1px solid var(--ds-line); border-radius: var(--ds-r-card); background: var(--ds-surface); box-shadow: var(--ds-shadow); transition: box-shadow .15s ease, border-color .15s ease; }
+:root .hub-app.hub-mis.plp-dashboard .tw-module-card:hover { box-shadow: var(--ds-shadow-lift); border-color: var(--ds-accent-soft); }
+:root .hub-app.hub-mis.plp-dashboard .tw-module-num { flex: 0 0 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--ds-accent-soft); color: var(--ds-accent); font-weight: 700; font-size: 14px; }
+:root .hub-app.hub-mis.plp-dashboard .tw-module-body { flex: 1; min-width: 0; display: grid; gap: 2px; }
+:root .hub-app.hub-mis.plp-dashboard .tw-module-body strong { color: var(--ds-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:root .hub-app.hub-mis.plp-dashboard .tw-module-body small { color: var(--ds-muted); font-size: 12.5px; }
+:root .hub-app.hub-mis.plp-dashboard .tw-module-body .tw-module-todo { color: var(--ds-warn); }
+:root .hub-app.hub-dialog .tw-module-form { border: 0; padding: 0; margin: 0; min-width: 0; }
+@media (max-width: 640px) {
+  :root .hub-app.hub-mis.plp-dashboard .tw-module-card { flex-wrap: wrap; }
+  :root .hub-app.hub-mis.plp-dashboard .tw-module-card .hub-actions { width: 100%; justify-content: flex-end; }
+}
+
+/* Lesson video picker and player. */
+:root .hub-app .lv-editor { display: grid; gap: 10px; margin-top: 8px; }
+:root .hub-app .lv-tabs { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: var(--ds-r-ctl, 10px); background: var(--ds-segment, #f2f4f7); width: fit-content; max-width: 100%; }
+:root .hub-app .lv-tabs button { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 0; border-radius: 8px; background: transparent; color: var(--ds-muted, #475467); font-size: 13px; font-weight: 600; cursor: pointer; }
+:root .hub-app .lv-tabs button.on { background: var(--ds-surface, #fff); color: var(--ds-accent, #1d6fb8); box-shadow: 0 1px 3px rgba(16, 24, 40, .12); }
+:root .hub-app .lv-field input { width: 100%; }
+:root .hub-app .lv-drop { display: grid; justify-items: center; gap: 4px; padding: 22px 16px; border: 1.5px dashed var(--ds-line, #d0d5dd); border-radius: var(--ds-r-card, 16px); color: var(--ds-muted, #475467); text-align: center; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+:root .hub-app .lv-drop:hover { border-color: var(--ds-accent, #1d6fb8); background: var(--ds-accent-soft, #eaf3fb); }
+:root .hub-app .lv-drop strong { color: var(--ds-ink, #101828); font-size: 14px; }
+:root .hub-app .lv-drop.busy { cursor: progress; }
+:root .hub-app .lv-progress { width: 100%; max-width: 280px; height: 6px; border-radius: 999px; background: var(--ds-line, #e4e7ec); overflow: hidden; }
+:root .hub-app .lv-progress span { display: block; height: 100%; background: var(--ds-accent, #1d6fb8); transition: width .2s ease; }
+:root .hub-app .lv-error { color: var(--ds-bad, #b42318); font-size: 13px; }
+:root .hub-app .lv-preview { display: grid; gap: 10px; justify-items: start; }
+:root .hub-app .lv-player { margin: 0; width: 100%; }
+:root .hub-app .lv-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: var(--ds-r-card, 16px); overflow: hidden; background: #000; }
+:root .hub-app .lv-frame iframe, :root .hub-app .lv-frame video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+:root .hub-app.hub-dialog .tw-quiz-head { padding-top: 14px; border-top: 1px solid var(--ds-line, #eef1f4); }
+:root .hub-app.hub-dialog .tw-inline-field { white-space: nowrap; }
+:root .hub-app .lv-player figcaption { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; color: var(--ds-muted, #475467); }

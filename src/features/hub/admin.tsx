@@ -1,7 +1,8 @@
 import { translateUi, useSiteLanguage } from '../../i18n/language';
-import { AnnouncementEditor } from "./announcement";
+import { AnnouncementEditor, WelcomePopupEditor } from "./announcement";
 import { FunCornerEditor } from "./fun-corner-editor";
 import { useLiveTick } from './live';
+import { RecordTable } from "./management-ui";
 import { TrainerWorkspace } from "./trainer-workspace";
 import { OpportunityAdmin } from "./opportunities";
 import { useSearchParams } from "react-router-dom";
@@ -18,7 +19,9 @@ export function StudioPage() {
     useSiteLanguage();
     const { state, profile } = useHub();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [tab, setTab] = useState(() => { const requested = searchParams.get("tab"); return (requested === "Assignments" && profile.role !== "Administrator") || (profile.role === "Administrator" && ["ALX certificates", "Opportunities", "Website banner", "Fun corner"].includes(requested ?? "")) ? requested! : requested === "ALX reviews" && profile.role === "Administrator" ? "ALX certificates" : "Courses"; });
+    // The section lives in the URL, so sidebar links, back/forward and shared links all land on the right one.
+    const requested = searchParams.get("tab");
+    const tab = (requested === "Assignments" && profile.role !== "Administrator") || (profile.role === "Administrator" && ["ALX certificates", "Opportunities", "Website banner", "Fun corner"].includes(requested ?? "")) ? requested! : requested === "ALX reviews" && profile.role === "Administrator" ? "ALX certificates" : "Courses";
     const admin = profile.role === "Administrator";
     // ALX certificates are recognised on upload; an administrator can revoke one that turns out to be invalid.
     const [people, setPeople] = useState<{
@@ -31,17 +34,24 @@ export function StudioPage() {
             id: string;
             name: string;
         }[]>("/users").then(setPeople).catch(() => { }); }, [admin, live]);
-    async function reviewProof(id: string, status: "approved" | "returned") {
-        if (status === "returned" && !await confirmAction({ title: "Revoke this ALX certificate?", description: "The member loses the recognition and is notified. Do this only if the certificate is not genuine.", confirmLabel: "Revoke", destructive: true }))
+    async function reviewProofs(ids: string[], status: "approved" | "returned") {
+        if (!ids.length)
             return;
-        try {
-            const stored = await readRecord<Record<string, unknown>>("proofs", id);
-            await saveRecord("proofs", { ...stored.data, status, feedback: status === "returned" ? "Revoked by PLP: this certificate could not be verified." : stored.data.feedback }, { id, version: stored.version });
-            toast.success(translateUi(status === "approved" ? "Certificate recognised" : "Certificate revoked"));
+        if (status === "returned" && !await confirmAction({ title: ids.length === 1 ? "Revoke this ALX certificate?" : `Revoke ${ids.length} ALX certificates?`, description: "Members lose the recognition and are notified. Do this only if a certificate is not genuine.", confirmLabel: "Revoke", destructive: true }))
+            return;
+        let done = 0;
+        for (const id of ids) {
+            try {
+                const stored = await readRecord<Record<string, unknown>>("proofs", id);
+                await saveRecord("proofs", { ...stored.data, status, feedback: status === "returned" ? "Revoked by PLP: this certificate could not be verified." : stored.data.feedback }, { id, version: stored.version });
+                done++;
+            }
+            catch (e) {
+                toast.error(translateUi((e as Error).message));
+            }
         }
-        catch (e) {
-            toast.error(translateUi((e as Error).message));
-        }
+        if (done)
+            toast.success(translateUi(status === "approved" ? `${done} certificate${done === 1 ? "" : "s"} recognised` : `${done} certificate${done === 1 ? "" : "s"} revoked`));
     }
     if (!admin && profile.role !== "Trainer")
         return (<Empty>{translateUi("This workspace is for assigned trainers and administrators.")}</Empty>);
@@ -54,33 +64,29 @@ export function StudioPage() {
             "Courses",
             // Assignment feedback belongs to the course's trainer.
             ...(admin ? ["ALX certificates", "Opportunities", "Website banner", "Fun corner"] : ["Assignments"]),
-        ].map((t) => (<button key={t} className={tab === t ? "active" : ""} onClick={() => { setTab(t); setSearchParams(t === "Courses" ? {} : { tab: t }, { replace: true }); }}>
+        ].map((t) => (<button key={t} className={tab === t ? "active" : ""} onClick={() => setSearchParams(t === "Courses" ? {} : { tab: t })}>
             {translateUi(admin && t === "Courses" ? "Published courses" : t)}
           </button>)))}
       </div>
-      {translateUi(tab === "Website banner" && admin && <AnnouncementEditor />)}
+      {tab === "Website banner" && admin && <div className="hub-stack"><AnnouncementEditor /><WelcomePopupEditor /></div>}
       {tab === "Fun corner" && admin && <FunCornerEditor />}
       {translateUi(tab === "Courses" && <TrainerWorkspace embedded={admin}/>)}
       {translateUi(tab === "Assignments" && !admin && <TrainerWorkspace initialTab="Learners & assignments"/>)}
-      {translateUi(tab === "ALX certificates" && admin && (<div className="hub-stack">
-          {translateUi(state.proofs
-                .filter((p) => p.file)
-                .map((p) => (<Panel key={p.id}>
-                <Tag>{translateUi(p.status === "Recognized" ? "Recognised" : p.status === "Returned" ? "Revoked" : "Processing")}</Tag>
-                <h3>{translateUi(alxPrograms.find((a) => a.id === p.programId)?.title)}</h3>
-                <p>
-                  {translateUi(people.find((m) => m.id === p.memberId)?.name ?? state.profiles.find((m) => m.id === p.memberId)?.name)}
-                </p>
-                <a href={p.file} download={p.fileName} className="hub-text-link">{translateUi(" Download certificate")}{translateUi(p.fileName ? `: ${p.fileName}` : "")}
-                </a>
-                <div className="hub-actions hub-space">
-                  {translateUi(p.status === "Recognized"
-                    ? <button className="hub-button danger" onClick={() => void reviewProof(p.id, "returned")}>{translateUi("Revoke")}</button>
-                    : <button className="hub-button secondary" onClick={() => void reviewProof(p.id, "approved")}>{translateUi("Recognise")}</button>)}
-                </div>
-              </Panel>)))}
-          {translateUi(!state.proofs.some((p) => p.file) && (<Empty>{translateUi(" No ALX certificates yet. Members upload them in the ALX learning zone and they are recognised straight away. ")}</Empty>))}
-        </div>))}
+      {translateUi(tab === "ALX certificates" && admin && (() => {
+            const statusOf = (p: { status: string }) => p.status === "Recognized" ? "Recognised" : p.status === "Returned" ? "Revoked" : "Processing";
+            const rows = state.proofs.filter((p) => p.file).map((p) => ({ ...p, member: people.find((m) => m.id === p.memberId)?.name ?? state.profiles.find((m) => m.id === p.memberId)?.name ?? "Member", programme: alxPrograms.find((a) => a.id === p.programId)?.title ?? "ALX programme" }));
+            type Row = typeof rows[number];
+            return <Panel>{translateUi(rows.length ? <RecordTable title={translateUi("ALX certificates")} rows={rows} searchText={(p) => `${p.member} ${p.programme} ${statusOf(p)}`}
+              filters={[{ label: "Status", options: ["Processing", "Recognised", "Revoked"].map((v) => ({ label: v, test: (p: Row) => statusOf(p) === v })) }, { label: "Programme", options: [...new Set(rows.map((p) => p.programme))].map((v) => ({ label: v, test: (p: Row) => p.programme === v })) }]}
+              bulkActions={[{ label: "Recognise", run: (picked) => reviewProofs(picked.filter((p) => p.status !== "Recognized").map((p) => p.id), "approved") }, { label: "Revoke", tone: "danger", run: (picked) => reviewProofs(picked.filter((p) => p.status !== "Returned").map((p) => p.id), "returned") }]}
+              columns={[
+                { label: "Member", render: (p) => <strong>{translateUi(p.member)}</strong> },
+                { label: "Programme", render: (p) => translateUi(p.programme) },
+                { label: "Status", render: (p) => <Tag>{translateUi(statusOf(p))}</Tag> },
+                { label: "Certificate", render: (p) => <a href={p.file} download={p.fileName} className="hub-text-link">{translateUi("Download")}</a> },
+                { label: "Actions", render: (p) => p.status === "Recognized" ? <button className="hub-text-button" onClick={() => void reviewProofs([p.id], "returned")}>{translateUi("Revoke")}</button> : <button className="hub-text-button" onClick={() => void reviewProofs([p.id], "approved")}>{translateUi("Recognise")}</button> },
+              ]}/> : <Empty>{translateUi(" No ALX certificates yet. Members upload them in the ALX learning zone and they are recognised straight away. ")}</Empty>)}</Panel>;
+        })())}
       {translateUi(tab === "Opportunities" && admin && <OpportunityAdmin />)}
 
     </>);

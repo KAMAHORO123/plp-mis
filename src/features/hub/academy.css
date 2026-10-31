@@ -134,3 +134,19 @@
 :fullscreen .hub-content, :fullscreen main { background: #f7f9fb; }
 @media (max-width: 640px) { .pr-camera { width: 128px; right: 12px; bottom: 12px; } }
 @media (prefers-reduced-motion: reduce) { .pr-camera i { animation: none; } }
+
+.pr-preview { position:relative; }
+.pr-preview video { display:block; width:100%; height:auto; transform:scaleX(-1); }
+.pr-face-guide { position:absolute; width:48%; height:72%; left:26%; top:12%; border:2px dashed #f0c879; border-radius:48%; pointer-events:none; }
+.pr-camera.in-position .pr-face-guide { border-color:#80dcad; border-style:solid; }
+.pr-camera > span { display:block; white-space:normal; line-height:1.5; padding:8px 10px 2px; }
+.pr-camera > small { display:block; padding:0 10px 8px; font-size:10px; color:#bac9d8; }
+.ac-timer { position:sticky; top:0; z-index:5; font-variant-numeric:tabular-nums; }
+.pr-face-position { position:absolute; border:1px solid #a2e9c3; border-radius:8px; pointer-events:none; transition:inset .2s,width .2s,height .2s; }
+/* Next-step bar under a finished quiz, assignment or exam. */
+.ac-step-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding:14px 16px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}
+.ac-step-nav .hub-text-button{display:inline-flex;align-items:center;gap:6px}
+.ac-step-nav .hub-button{display:inline-flex;align-items:center;gap:12px;text-align:left;max-width:min(420px,70%)}
+.ac-step-nav .hub-button>span{display:grid;min-width:0}.ac-step-nav .hub-button>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ac-step-nav .hub-button small{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.8}
+html[data-theme=dark] .ac-step-nav{background:#111827;border-color:#273449}
+@media(max-width:560px){.ac-step-nav .hub-button{max-width:none;flex:1}}

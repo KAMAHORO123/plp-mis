@@ -9,7 +9,9 @@ import { confirmAction } from "@/components/shared/confirm-dialog";
 import { StatCard } from "@/components/shared/stat-card";
 import { platformApi } from "./platform-api";
 import { LessonVideoEditor, LessonVideoPlayer } from "./lesson-video";
-import { Empty, Field, Panel, Tag } from "./ui";
+import { Empty, Field, Panel, Tag, greeting, dashboardSubtitle } from "./ui";
+import { FormModal } from "./modal";
+import { RecordTable, usePaged, Pager } from "./management-ui";
 import { categories } from "./data";
 import { courseChecklist, serverAssessments, EXAM_PASS_MARK, MAX_ATTEMPTS, QUIZ_PASS_MARK, type TeachingData, type TeachingQuestion } from "./teaching-types";
 import "./academy.css";
@@ -72,21 +74,23 @@ export function TrainerWorkspace({ overview = false, initialTab = "Courses", emb
         }>("/me"), platformApi<CourseRow[]>("/teaching/courses"), platformApi<LearnerRow[]>("/teaching/enrollments")]).then(([me, rows, people]) => { setAccount(me); setCourses(rows); setLearners(people); return rows; });
     const live = useLiveTick();
     useEffect(() => { load().catch((e) => setError(e.message)).finally(() => setLoaded(true)); }, [live]);
-    if (!loaded)
-        return <div className="ws-page"><p role="status">{translateUi("Loading your teaching workspace\u2026")}</p></div>;
-    if (!account || !["trainer", "admin"].includes(account.role))
-        return <div className="ws-page"><header className="ws-page-header"><div><h1>{translateUi("Trainer access pending")}</h1><p>{translateUi("An administrator must approve your trainer application before the course studio and learner tools become available.")}</p></div></header>{translateUi(error && <p role="alert" className="hub-access-error">{translateUi(error)}</p>)}</div>;
-    const admin = account.role === "admin";
+    const admin = account?.role === "admin";
     // Administrators see published courses (and can unpublish one); drafts stay private to their trainer.
     const visible = admin ? courses.filter((c) => c.data.published) : courses;
+    const [courseSearch,setCourseSearch] = useState('');
     const activeFilter = filter || "All";
-    if (editing)
-        return <CourseBuilder row={editing === "new" ? null : editing} admin={admin} onExit={async (savedId) => { const rows = await load(); setEditing(savedId ? rows.find((c) => c.id === savedId) ?? null : null); }} onClose={() => { setEditing(null); void load(); }}/>;
     const published = visible.filter((c) => c.data.published);
     const enrolled = learners.length, completed = learners.filter((l) => l.completed_at).length;
     const scored = learners.filter((l) => l.exam_best !== null);
     const toReview = learners.filter((l) => l.assignment && !l.reviewed_at);
-    const shown = visible.filter((c) => activeFilter === "All" || stateLabel(c.data) === activeFilter);
+    const shown = visible.filter((c) => (activeFilter === "All" || stateLabel(c.data) === activeFilter) && `${c.data.title} ${c.data.category} ${c.trainer_name}`.toLowerCase().includes(courseSearch.toLowerCase()));
+    const coursePage = usePaged(shown, 9, `${courseSearch}|${activeFilter}`);
+    if (!loaded)
+        return <div className="ws-page"><p role="status">{translateUi("Loading your teaching workspace\u2026")}</p></div>;
+    if (!account || !["trainer", "admin"].includes(account.role))
+        return <div className="ws-page"><header className="ws-page-header"><div><h1>{translateUi("Trainer access pending")}</h1><p>{translateUi("An administrator must approve your trainer application before the course studio and learner tools become available.")}</p></div></header>{translateUi(error && <p role="alert" className="hub-access-error">{translateUi(error)}</p>)}</div>;
+    if (editing)
+        return <CourseBuilder row={editing === "new" ? null : editing} admin={admin} onExit={async (savedId) => { const rows = await load(); setEditing(savedId ? rows.find((c) => c.id === savedId) ?? null : null); }} onClose={() => { setEditing(null); void load(); }}/>;
     const tasks = [
         ...courses.filter((c) => !c.data.published).map((c) => { const missing = courseChecklist({ ...blank(), ...c.data }).filter((x) => !x.done); return { key: `draft-${c.id}`, tag: "Draft", tone: "", title: c.data.title || "Untitled course", detail: missing.length ? `Still needed: ${missing.map((x) => x.label.toLowerCase()).join(", ")}` : "Ready — publish it to the academy.", cta: missing.length ? "Continue building" : "Submit", action: () => setEditing(c) }; }),
         ...(toReview.length ? [{ key: "review", tag: "Learners", tone: "ws-status-issued", title: `${toReview.length} assignment${toReview.length === 1 ? "" : "s"} to review`, detail: "Give feedback so learners know how to improve.", cta: "Review now", action: () => setTab("Learners & assignments") }] : []),
@@ -116,11 +120,12 @@ export function TrainerWorkspace({ overview = false, initialTab = "Courses", emb
         }
     };
     return (<div className="ws-page">
-      {translateUi(!embedded && <header className="ws-page-header">
+      {translateUi(!embedded && <header className={`ws-page-header${overview && !admin ? " ws-hero" : ""}`}>
         <div>
           <p className="ws-kicker">{translateUi(admin ? "CONTENT STUDIO · Administrator" : "TRAINER WORKSPACE · Approved trainer")}</p>
-          <h1>{translateUi(admin ? "Published courses" : overview ? `Welcome back, ${account.name.split(" ")[0]}` : "Course studio")}</h1>
-          <p>{translateUi(admin ? "Trainers publish their own courses once every requirement is met. Open any course to view it, or unpublish it if something is wrong." : "Design structured courses with readings, timed knowledge checks, a graded assignment and a final exam — then follow your learners' progress.")}</p>
+          <h1>{admin ? translateUi("Published courses") : overview ? greeting(account.name) : translateUi("Course studio")}</h1>
+          {translateUi(overview && !admin && <p>{dashboardSubtitle("Teaching overview")}</p>)}
+          {translateUi(admin && <p>{translateUi("Trainers publish their own courses once every requirement is met. Open any course to view it, or unpublish it if something is wrong.")}</p>)}
         </div>
         {translateUi(!admin && <button className="hub-button" onClick={() => setEditing("new")}><Plus size={16}/>{translateUi(" Create course")}</button>)}
       </header>)}
@@ -134,7 +139,7 @@ export function TrainerWorkspace({ overview = false, initialTab = "Courses", emb
       </div>
       {translateUi(overview && !admin && (courses.length ? (<Panel>
           <div className="ws-panel-title"><h2>{translateUi("Next steps")}</h2><span className="ws-pill">{translateUi(tasks.length)}{translateUi(" to do")}</span></div>
-          {translateUi(tasks.length ? <ul className="tw-tasks">{translateUi(tasks.map((t) => <li key={t.key}><span className={`ws-status ${t.tone}`}>{translateUi(t.tag)}</span><div><strong>{translateUi(t.title)}</strong><small>{translateUi(t.detail)}</small></div><button className="hub-text-button" onClick={t.action}>{translateUi(t.cta)}</button></li>))}</ul> : <Empty>{translateUi("You're up to date. Create a new course or check back when learners submit work.")}</Empty>)}
+          {translateUi(tasks.length ? <RecordTable title="tasks" rows={tasks.map(t=>({...t,id:t.key}))} searchText={t=>`${t.title} ${t.tag} ${t.detail}`} filters={[{label:'Status',options:[...new Set(tasks.map(t=>t.tag))].map(tag=>({label:tag,test:(t:{tag:string})=>t.tag===tag}))}]} columns={[{label:'Status',render:t=><span className={`ws-status ${t.tone}`}>{translateUi(t.tag)}</span>},{label:'Task',render:t=><><strong>{t.title}</strong><small>{t.detail}</small></>},{label:'Action',render:t=><button className="hub-text-button" onClick={t.action}>{translateUi(t.cta)}</button>}]}/> : <Empty>{translateUi("You're up to date. Create a new course or check back when learners submit work.")}</Empty>)}
         </Panel>) : (<div className="ws-shortcuts ws-shortcuts-4">
           {translateUi([
                 ["Plan the course", "Title, outcomes, skills and pathway"],
@@ -149,8 +154,9 @@ export function TrainerWorkspace({ overview = false, initialTab = "Courses", emb
         </div>
         {translateUi(tab === "Courses" ? (<>
             <div className="hub-chips hub-space">{translateUi((admin ? [] : ["All", "Draft", "Published"]).map((f) => <button key={f} className={activeFilter === f ? "active" : ""} onClick={() => setFilter(f)}>{translateUi(f)} <span className="ws-count">{translateUi(f === "All" ? visible.length : visible.filter((c) => stateLabel(c.data) === f).length)}</span></button>))}</div>
+<Field label={translateUi("Search courses")}><input value={courseSearch} onChange={e=>setCourseSearch(e.target.value)} placeholder={translateUi("Course, pathway or trainer")}/></Field>
             <div className="ac-grid hub-space">
-              {translateUi(shown.map((c, i) => {
+              {translateUi(coursePage.items.map((c, i) => {
                 const checks = courseChecklist({ ...blank(), ...c.data }), ready = checks.filter((x) => x.done).length;
                 return (<article key={c.id} className="ac-card tw-course-card">
                     <div className={`ac-card-art tone-${i % 5}`}><Layers aria-hidden="true"/><span>{translateUi(c.data.category || "PLP ACADEMY")}</span><small>{translateUi(stateLabel(c.data))}</small></div>
@@ -178,25 +184,26 @@ export function TrainerWorkspace({ overview = false, initialTab = "Courses", emb
                   </article>);
             }))}
             </div>
+            <Pager {...coursePage}/>
             {translateUi(!shown.length && (admin
                 ? <Empty><BookOpen size={36}/><h2>{translateUi("No published courses yet")}</h2><p>{translateUi("Approved trainers publish courses from their studio once every requirement is met. They appear here as soon as they go live.")}</p></Empty>
                 : <Empty><BookOpen size={36}/><h2>{translateUi(courses.length ? "No courses in this view" : "Create your first course")}</h2><p>{translateUi("Plan outcomes, write module readings, add a knowledge check to each module, set a final exam, then submit for publication.")}</p>{translateUi(!courses.length && <button className="hub-button hub-space" onClick={() => setEditing("new")}>{translateUi("Create a course")}</button>)}</Empty>))}
-          </>) : learners.length ? (<div className="ws-table-wrap hub-space">
-            <table className="ws-table">
-              <thead><tr><th>{translateUi("Learner")}</th><th>{translateUi("Course")}</th><th>{translateUi("Module quizzes")}</th><th>{translateUi("Assignment")}</th><th>{translateUi("Final exam")}</th><th>{translateUi("Status")}</th><th>{translateUi("Action")}</th></tr></thead>
-              <tbody>{translateUi(learners.map((l) => {
-                const course = courses.find((c) => c.id === l.course_id), modules = course?.data.lessons?.length ?? 0;
-                return (<tr key={l.id}>
-                    <td><strong>{translateUi(l.learner_name)}</strong><small>{translateUi(l.learner_email)}</small></td>
-                    <td>{translateUi(l.course_title)}</td>
-                    <td>{translateUi(modules ? `${l.quizzes_passed}/${modules} passed` : "—")}</td>
-                    <td>{translateUi(l.assignment ? (l.reviewed_at ? "Reviewed" : "Awaiting review") : "Not submitted")}</td>
-                    <td>{translateUi(l.exam_best !== null ? `${l.exam_best}% best` : "Not attempted")}<small>{translateUi(l.attempts)}{translateUi(" attempts in total")}</small></td>
-                    <td><span className={`ws-status ${l.completed_at ? "ws-status-issued" : ""}`}>{translateUi(l.completed_at ? "Completed" : "In progress")}</span></td>
-                    <td>{translateUi(admin ? (l.review_feedback ? "Trainer gave feedback" : "—") : l.assignment ? <button className="hub-text-button" onClick={() => setReviewing(l)}><FilePenLine size={15}/> {translateUi(l.reviewed_at ? "Edit feedback" : "Review")}</button> : "—")}</td>
-                  </tr>);
-            }))}</tbody>
-            </table>
+          </>) : learners.length ? (<div className="hub-space">
+            <RecordTable title={translateUi("learners")} rows={learners} searchText={(l) => `${l.learner_name} ${l.learner_email} ${l.course_title}`}
+              filters={[
+                { label: "Course", options: [...new Set(learners.map((l) => l.course_title))].map((t) => ({ label: t, test: (l: LearnerRow) => l.course_title === t })) },
+                { label: "Assignment", options: [{ label: "Awaiting review", test: (l: LearnerRow) => !!l.assignment && !l.reviewed_at }, { label: "Reviewed", test: (l: LearnerRow) => !!l.reviewed_at }, { label: "Not submitted", test: (l: LearnerRow) => !l.assignment }] },
+                { label: "Status", options: [{ label: "In progress", test: (l: LearnerRow) => !l.completed_at }, { label: "Completed", test: (l: LearnerRow) => !!l.completed_at }] },
+              ]}
+              columns={[
+                { label: "Learner", render: (l) => <><strong>{translateUi(l.learner_name)}</strong><small>{translateUi(l.learner_email)}</small></> },
+                { label: "Course", render: (l) => translateUi(l.course_title) },
+                { label: "Module quizzes", render: (l) => { const modules = courses.find((c) => c.id === l.course_id)?.data.lessons?.length ?? 0; return translateUi(modules ? `${l.quizzes_passed}/${modules} passed` : "—"); } },
+                { label: "Assignment", render: (l) => translateUi(l.assignment ? (l.reviewed_at ? "Reviewed" : "Awaiting review") : "Not submitted") },
+                { label: "Final exam", render: (l) => <>{translateUi(l.exam_best !== null ? `${l.exam_best}% best` : "Not attempted")}<small>{translateUi(l.attempts)}{translateUi(" attempts in total")}</small></> },
+                { label: "Status", render: (l) => <span className={`ws-status ${l.completed_at ? "ws-status-issued" : ""}`}>{translateUi(l.completed_at ? "Completed" : "In progress")}</span> },
+                { label: "Action", render: (l) => translateUi(admin ? (l.review_feedback ? "Trainer gave feedback" : "—") : l.assignment ? <button className="hub-text-button" onClick={() => setReviewing(l)}><FilePenLine size={15}/> {translateUi(l.reviewed_at ? "Edit feedback" : "Review")}</button> : "—") },
+              ]}/>
             {translateUi(scored.length > 0 && <p className="hub-caption hub-space">{translateUi("Average best final exam score: ")}{translateUi(Math.round(scored.reduce((n, l) => n + (l.exam_best ?? 0), 0) / scored.length))}{translateUi("%")}</p>)}
           </div>) : <Empty>{translateUi("Learners appear here once they enrol in one of your published courses.")}</Empty>)}
       </Panel>
@@ -237,6 +244,7 @@ function CourseBuilder({ row, admin, onExit, onClose }: {
     const [draft, setDraft] = useState<TeachingData>(() => ({ ...blank(), ...structuredClone(row?.data ?? {}) }));
     const [step, setStep] = useState<Step>("Overview");
     const [busy, setBusy] = useState(false), [dirty, setDirty] = useState(false);
+    const [module, setModule] = useState<number | null>(null);
     const locked = !!row?.learners;
     // Administrators review content as submitted; only the publication decision is theirs.
     const readOnly = admin || locked;
@@ -315,30 +323,23 @@ function CourseBuilder({ row, admin, onExit, onClose }: {
               </div>
             </Panel>))}
           {translateUi(step === "Modules" && (<div className="hub-stack">
-              {translateUi(draft.lessons.map((l, i) => (<Panel key={i} className="tw-module">
-                  <div className="ws-panel-title">
-                    <h2>{translateUi("Module ")}{translateUi(i + 1)}{translateUi(l.title ? ` · ${l.title}` : "")}</h2>
-                    <div className="hub-actions">
-                      <button type="button" className="hub-record-icon hub-record-edit" aria-label={translateUi("Move module up")} title={translateUi("Move up")} disabled={i === 0} onClick={() => { const rows = [...draft.lessons]; [rows[i - 1], rows[i]] = [rows[i], rows[i - 1]]; change("lessons", rows); }}><ArrowUp size={17}/></button>
-                      <button type="button" className="hub-record-icon hub-record-edit" aria-label={translateUi("Move module down")} title={translateUi("Move down")} disabled={i === draft.lessons.length - 1} onClick={() => { const rows = [...draft.lessons]; [rows[i + 1], rows[i]] = [rows[i], rows[i + 1]]; change("lessons", rows); }}><ArrowDown size={17}/></button>
-                      <button type="button" className="hub-record-icon hub-record-delete" aria-label={translateUi("Delete module")} title={translateUi("Delete module")} onClick={async () => { if (await confirmAction({ title: `Delete module ${i + 1}?`, description: "Its reading and quiz questions will be removed from this draft.", confirmLabel: "Delete module", destructive: true }))
+              {draft.lessons.length > 0 && <ol className="tw-modules">{draft.lessons.map((l, i) => { const words = l.content.trim() ? l.content.trim().split(/\s+/).length : 0; return (<li key={i} className="tw-module-card">
+                  <span className="tw-module-num">{i + 1}</span>
+                  <div className="tw-module-body">
+                    <strong>{l.title || translateUi("Untitled module")}</strong>
+                    <small>{translateUi("{p0} words", { p0: words })} · {translateUi("{p0} quiz questions", { p0: l.quiz?.length ?? 0 })}{l.video ? <> · {translateUi("Video")}</> : null}</small>
+                    {(!l.title.trim() || !words || !(l.quiz?.length)) && <small className="tw-module-todo">{translateUi("Still needed: {p0}", { p0: [!l.title.trim() && translateUi("title"), !words && translateUi("reading"), !(l.quiz?.length) && translateUi("quiz questions")].filter(Boolean).join(", ") })}</small>}
+                  </div>
+                  <div className="hub-actions">
+                    <button type="button" className="hub-record-icon hub-record-edit" aria-label={translateUi("Move module up")} title={translateUi("Move up")} disabled={i === 0} onClick={() => { const rows = [...draft.lessons]; [rows[i - 1], rows[i]] = [rows[i], rows[i - 1]]; change("lessons", rows); }}><ArrowUp size={17}/></button>
+                    <button type="button" className="hub-record-icon hub-record-edit" aria-label={translateUi("Move module down")} title={translateUi("Move down")} disabled={i === draft.lessons.length - 1} onClick={() => { const rows = [...draft.lessons]; [rows[i + 1], rows[i]] = [rows[i], rows[i + 1]]; change("lessons", rows); }}><ArrowDown size={17}/></button>
+                    <button type="button" className="hub-record-icon hub-record-delete" aria-label={translateUi("Delete module")} title={translateUi("Delete module")} onClick={async () => { if (await confirmAction({ title: `Delete module ${i + 1}?`, description: "Its reading and quiz questions will be removed from this draft.", confirmLabel: "Delete module", destructive: true }))
                 change("lessons", draft.lessons.filter((_, n) => n !== i)); }}><Trash2 size={17}/></button>
-                    </div>
+                    <button type="button" className="hub-button secondary" onClick={() => setModule(i)}><FilePenLine size={15}/>{translateUi(readOnly ? "View" : "Edit")}</button>
                   </div>
-                  <div className="hub-form">
-                    <Field label={translateUi("Module {p0} title", { p0: translateUi(i + 1) })}><input maxLength={200} value={l.title} onChange={(e) => setLesson(i, { title: e.target.value })}/></Field>
-                    <Field label={translateUi("Reading")}><textarea rows={8} maxLength={20000} value={l.content} onChange={(e) => setLesson(i, { content: e.target.value })} placeholder={translateUi("Explain the concept, give a concrete example, and say what learners should do with it.")}/></Field>
-                    <div className="hub-field"><span>{translateUi("Lesson video (optional)")}</span><p className="hub-caption">{translateUi("Add a YouTube link or upload your own recording. Learners watch it above the reading.")}</p><LessonVideoEditor video={l.video} onChange={(video) => setLesson(i, { video })}/></div>
-                    <div className="tw-quiz-head">
-                      <h3>{translateUi("Knowledge check ")}<span className="ws-count">{translateUi(l.quiz?.length ?? 0)}{translateUi(" questions")}</span></h3>
-                      <label className="tw-inline-field">{translateUi("Time limit ")}<input type="number" min={1} max={120} value={l.quiz_minutes ?? Math.max(3, (l.quiz?.length ?? 0) * 2)} onChange={(e) => setLesson(i, { quiz_minutes: Number(e.target.value) })}/>{translateUi(" min")}</label>
-                    </div>
-                    <p className="hub-caption">{translateUi("Learners complete this module only by scoring at least ")}{translateUi(QUIZ_PASS_MARK)}{translateUi("%.")}</p>
-                    <QuestionBank questions={l.quiz ?? []} onChange={(quiz) => setLesson(i, { quiz })}/>
-                  </div>
-                </Panel>)))}
+                </li>); })}</ol>}
               {translateUi(!draft.lessons.length && <Empty>{translateUi("No modules yet. A good course has 3\u20136 focused modules, each with a short reading and a knowledge check.")}</Empty>)}
-              <button type="button" className="hub-button secondary" disabled={draft.lessons.length >= 100} onClick={() => change("lessons", [...draft.lessons, { title: "", content: "", quiz: [], quiz_minutes: 5 }])}><Plus size={16}/>{translateUi(" Add module")}</button>
+              <button type="button" className="hub-button secondary" disabled={draft.lessons.length >= 100} onClick={() => { change("lessons", [...draft.lessons, { title: "", content: "", quiz: [], quiz_minutes: 5 }]); setModule(draft.lessons.length); }}><Plus size={16}/>{translateUi(" Add module")}</button>
             </div>))}
           {translateUi(step === "Assessment" && (<div className="hub-stack">
               <Panel>
@@ -347,10 +348,10 @@ function CourseBuilder({ row, admin, onExit, onClose }: {
                 <Field label={translateUi("Assignment brief")}><textarea rows={4} value={draft.assignment || ""} onChange={(e) => change("assignment", e.target.value)} placeholder={translateUi("What should learners produce or reflect on?")} maxLength={4000}/></Field>
               </Panel>
               <Panel>
-                <h2>{translateUi("Final exam")}</h2>
+                <h2>{translateUi("Final exam")}</h2><p className="hub-caption">{translateUi("You set the time limit. The countdown starts when the learner begins and cannot be paused.")}</p>
                 <p className="hub-caption">{translateUi("Unlocks after every module quiz is passed and the assignment is submitted. Answers are never shown to learners.")}</p>
                 <div className="ws-form-grid hub-space">
-                  <Field label={translateUi("Time limit (minutes)")}><input type="number" min={2} max={240} value={draft.exam_minutes ?? 15} onChange={(e) => change("exam_minutes", Number(e.target.value))}/></Field>
+                  <Field label={translateUi("Time limit (minutes)")}><input required step={1} type="number" min={2} max={240} value={draft.exam_minutes ?? 15} onChange={(e) => change("exam_minutes", Number(e.target.value))}/></Field>
                   <Field label={translateUi("Pass mark (%)")}><input type="number" min={50} max={100} value={draft.pass_mark ?? EXAM_PASS_MARK} onChange={(e) => change("pass_mark", Number(e.target.value))}/></Field>
                   <Field label={translateUi("Attempts per 24 hours")}><input type="number" min={1} max={5} value={draft.max_attempts ?? MAX_ATTEMPTS} onChange={(e) => change("max_attempts", Number(e.target.value))}/></Field>
                 </div>
@@ -373,6 +374,23 @@ function CourseBuilder({ row, admin, onExit, onClose }: {
           </div>
         </fieldset>
       </div>
+      {module !== null && draft.lessons[module] && (() => { const i = module, l = draft.lessons[i]; return <FormModal wide title={translateUi("Module {p0}", { p0: i + 1 }) + (l.title ? ` · ${l.title}` : "")} description={translateUi("Changes are kept in this draft. Save the course to keep them.")} onClose={() => setModule(null)}>
+        <fieldset className="hub-form tw-module-form" disabled={readOnly}>
+          <Field label={translateUi("Module title")}><input maxLength={200} value={l.title} onChange={(e) => setLesson(i, { title: e.target.value })} autoFocus/></Field>
+          <Field label={translateUi("Reading")}><textarea rows={9} maxLength={20000} value={l.content} onChange={(e) => setLesson(i, { content: e.target.value })} placeholder={translateUi("Explain the concept, give a concrete example, and say what learners should do with it.")}/></Field>
+          <div className="hub-field"><span>{translateUi("Lesson video (optional)")}</span><p className="hub-caption">{translateUi("Add a YouTube link or upload your own recording. Learners watch it above the reading.")}</p><LessonVideoEditor video={l.video} onChange={(video) => setLesson(i, { video })}/></div>
+          <div className="tw-quiz-head">
+            <h3>{translateUi("Knowledge check ")}<span className="ws-count">{translateUi(l.quiz?.length ?? 0)}{translateUi(" questions")}</span></h3>
+            <label className="tw-inline-field">{translateUi("Time limit ")}<input aria-label={translateUi(`Module ${i + 1} quiz time limit (minutes)`)} required step={1} type="number" min={1} max={120} value={l.quiz_minutes ?? Math.max(3, (l.quiz?.length ?? 0) * 2)} onChange={(e) => setLesson(i, { quiz_minutes: Number(e.target.value) })}/>{translateUi(" min")}</label>
+          </div>
+          <p className="hub-caption">{translateUi("Learners complete this module only by scoring at least ")}{translateUi(QUIZ_PASS_MARK)}{translateUi("%.")}</p>
+          <QuestionBank questions={l.quiz ?? []} onChange={(quiz) => setLesson(i, { quiz })}/>
+        </fieldset>
+        <div className="hub-actions hub-dialog-actions">
+          {i < draft.lessons.length - 1 && <button type="button" className="hub-button secondary" onClick={() => setModule(i + 1)}>{translateUi("Next module \u2192")}</button>}
+          <button type="button" className="hub-button" onClick={() => setModule(null)}>{translateUi("Done")}</button>
+        </div>
+      </FormModal>; })()}
     </div>);
 }
 function ListEditor({ label, hint, items, onChange }: {

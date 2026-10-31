@@ -1,5 +1,25 @@
 // Shared UI catalogue. Personal names and user-entered content retain their original text.
 export const translations: Record<string, {rw: string; fr: string}> = {
+"Switch to dark theme": {"rw": "Koresha insanganyamatsiko yijimye", "fr": "Activer le thème sombre"},
+"Switch to light theme": {"rw": "Koresha insanganyamatsiko yaka", "fr": "Activer le thème clair"},
+"Essential cookies only.": {"rw": "Cookies za ngombwa gusa.", "fr": "Cookies essentiels uniquement."},
+"We use a cookie to keep you signed in. No ads or tracking.": {"rw": "Dukoresha cookie kugira ngo ukomeze kwinjira. Nta matangazo cyangwa gukurikirana.", "fr": "Un cookie maintient votre connexion. Sans publicité ni suivi."},
+"Opportunity help": {"rw": "Ubufasha ku mahirwe", "fr": "Aide aux candidatures"},
+"Ask about applications, eligibility, documents or saved opportunities.": {"rw": "Baza ku gusaba, ibisabwa, inyandiko cyangwa amahirwe wabitse.", "fr": "Posez vos questions sur les candidatures, les critères, les documents ou les offres enregistrées."},
+"Find your next role, scholarship or learning experience.": {"rw": "Shaka akazi, buruse cyangwa amahirwe yo kwiga.", "fr": "Trouvez un poste, une bourse ou une formation."},
+"Face in position": {"rw": "Isura iri mu mwanya mwiza", "fr": "Visage bien positionné"},
+"No face visible — look towards the camera": {"rw": "Isura ntigaragara — reba kamera", "fr": "Aucun visage visible — regardez la caméra"},
+"More than one face visible": {"rw": "Hagaragara isura zirenze imwe", "fr": "Plusieurs visages visibles"},
+"Move a little closer": {"rw": "Egera kamera gato", "fr": "Rapprochez-vous un peu"},
+"Move a little further back": {"rw": "Subira inyuma gato", "fr": "Éloignez-vous un peu"},
+"Centre your face in the guide": {"rw": "Shyira isura hagati mu kimenyetso", "fr": "Centrez votre visage dans le cadre"},
+"Starting position check…": {"rw": "Kugenzura umwanya w’isura…", "fr": "Vérification de la position…"},
+"Position check unavailable — keep your face visible": {"rw": "Kugenzura umwanya ntibikora — komeza werekane isura", "fr": "Vérification indisponible — gardez le visage visible"},
+"On-device check · not recorded": {"rw": "Bigenzurwa ku gikoresho · ntibibikwa", "fr": "Vérification locale · sans enregistrement"},
+"You left the assessment. Your attempt has been terminated.": {"rw": "Wavuye mu isuzuma. Igerageza ryawe ryarangiye.", "fr": "Vous avez quitté l’évaluation. Votre tentative a été arrêtée."},
+"Leaving this tab, exiting full screen or turning off your camera immediately ends the attempt. Terminated attempts do not pass.": {"rw": "Kuva kuri iyi tab, kuva muri ecran yuzuye cyangwa kuzimya kamera bihita bihagarika isuzuma. Igerageza ryahagaritswe ntiritsinda.", "fr": "Quitter cet onglet ou le plein écran, ou éteindre la caméra, arrête immédiatement la tentative. Une tentative arrêtée ne peut pas être validée."},
+"You set the time limit. The countdown starts when the learner begins and cannot be paused.": {"rw": "Ugena igihe ntarengwa. Gitangira kubarwa iyo umunyeshuri atangiye kandi ntigishobora guhagarikwa.", "fr": "Vous fixez la durée. Le compte à rebours démarre avec la tentative et ne peut pas être mis en pause."},
+
   "Certification Issuance": {
     "rw": "Gutanga ibyemezo",
     "fr": "Délivrance de la certification"
@@ -30,7 +50,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Review, approve, and manage PLP certificate requests.": {
     "rw": "Suzuma, wemeze kandi ucunge ubusabe bw’ibyemezo bya PLP.",
-    "fr": "examiner, approuver et gérer les demandes de certificat PLP."
+    "fr": "Examiner, approuver et gérer les demandes de certificat PLP."
   },
   "View Pending Approvals": {
     "rw": "Reba ibitegereje kwemezwa",
@@ -86,15 +106,15 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "PLP youth speaker": {
     "rw": "Umuvugizi w’urubyiruko rwa PLP",
-    "fr": "conférencier jeunesse du PLP"
+    "fr": "Conférencier jeunesse du PLP"
   },
   "PLP sports activity": {
     "rw": "Igikorwa cya siporo ya PLP",
-    "fr": "activité sportive PLP"
+    "fr": "Activité sportive PLP"
   },
   "PLP Icyeza students": {
     "rw": "Abanyeshuri ba PLP Icyeza",
-    "fr": "étudiants du PLP Icyeza"
+    "fr": "Étudiants du PLP Icyeza"
   },
   "PLP celebration": {
     "rw": "Kwizihiza PLP",
@@ -134,7 +154,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Generate, view, and download national reports.": {
     "rw": "Tegura, urebe kandi ukuremo raporo zo ku rwego rw’igihugu.",
-    "fr": "générez, consultez et téléchargez des rapports nationaux."
+    "fr": "Générez, consultez et téléchargez des rapports nationaux."
   },
   "Generate a Report": {
     "rw": "Tegura raporo",
@@ -222,11 +242,11 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Select all rows": {
     "rw": "Hitamo imirongo yose",
-    "fr": "sélectionner toutes les lignes"
+    "fr": "Sélectionner toutes les lignes"
   },
   "Select row": {
     "rw": "Hitamo umurongo",
-    "fr": "sélectionner la ligne"
+    "fr": "Sélectionner la ligne"
   },
   "Pagination": {
     "rw": "Guhitamo urupapuro",
@@ -254,7 +274,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "You will need to sign in again to access your workspace, upcoming meetings, and verified attendance credits.": {
     "rw": "Uzongera kwinjira kugira ngo ugere ku rubuga rwawe, inama ziri imbere n’amanota y’ubwitabire bwemejwe.",
-    "fr": "vous devrez vous reconnecter pour accéder à votre espace de travail, aux réunions à venir et aux crédits de participation vérifiés."
+    "fr": "Vous devrez vous reconnecter pour accéder à votre espace de travail, aux réunions à venir et aux crédits de participation vérifiés."
   },
   "Stay signed in": {
     "rw": "Guma winjiye",
@@ -354,7 +374,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Request certificates for graduated members and download approved certificates.": {
     "rw": "Sabira ibyemezo abanyamuryango barangije kandi ukuremo ibyemejwe.",
-    "fr": "demandez des certificats pour les membres diplômés et téléchargez les certificats approuvés."
+    "fr": "Demandez des certificats pour les membres diplômés et téléchargez les certificats approuvés."
   },
   "Download All": {
     "rw": "Kuramo Byose",
@@ -362,7 +382,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Request Certificates": {
     "rw": "Gusaba ibyemezo",
-    "fr": "demander des certificats"
+    "fr": "Demander des certificats"
   },
   "Certificate program / activity": {
     "rw": "Gahunda cyangwa igikorwa icyemezo kigenewe",
@@ -562,7 +582,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Archive": {
     "rw": "Shyira mu bubiko",
-    "fr": "archiver"
+    "fr": "Archiver"
   },
   "Downloading {p0}": {
     "rw": "Gukuramo {p0}",
@@ -622,7 +642,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Email (Optional)": {
     "rw": "Imeri (Si ngombwa)",
-    "fr": "e-mail (facultatif)"
+    "fr": "E-mail (facultatif)"
   },
   "Close": {
     "rw": "Funga",
@@ -638,7 +658,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Verified PLP chapters nationwide": {
     "rw": "Amashami ya PLP yemejwe mu gihugu hose",
-    "fr": "chapitres PLP vérifiés dans tout le pays"
+    "fr": "Chapitres PLP vérifiés dans tout le pays"
   },
   "School Activity Trend": {
     "rw": "Uko ibikorwa by’amashuri bigenda bihinduka",
@@ -725,7 +745,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "fr": "Taille du fichier"
   },
   "Curriculum": {
-    "rw": "integanyanyigisho",
+    "rw": "Integanyanyigisho",
     "fr": "Programme d'études"
   },
   "Leadership Manual": {
@@ -762,7 +782,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Real-time system updates and governance alerts.": {
     "rw": "Amakuru agezweho ya sisitemu n’imenyesha ry’ubuyobozi.",
-    "fr": "mises à jour du système en temps réel et alertes de gouvernance."
+    "fr": "Mises à jour du système en temps réel et alertes de gouvernance."
   },
   "Generate Events Report": {
     "rw": "Tegura raporo y’ibikorwa",
@@ -782,7 +802,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Frequently asked questions": {
     "rw": "Ibibazo bikunze kubazwa",
-    "fr": "questions fréquemment posées"
+    "fr": "Questions fréquemment posées"
   },
   "National Events & Community Visibility": {
     "rw": "Ibikorwa byo mu gihugu no kumenyekanisha ibikorwa by’abaturage",
@@ -842,11 +862,11 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "System and governance updates": {
     "rw": "Kuvugurura sisitemu n'imiyoborere",
-    "fr": "mises à jour du système et de la gouvernance"
+    "fr": "Mises à jour du système et de la gouvernance"
   },
   "Search notifications": {
     "rw": "Amatangazo yo gushakisha",
-    "fr": "notifications de recherche"
+    "fr": "Notifications de recherche"
   },
   "Dismiss": {
     "rw": "Funga",
@@ -930,7 +950,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Peace & Love Proclaimers": {
     "rw": "Peace & Love Proclaimers",
-    "fr": "Proclamateurs de paix et d'amour"
+    "fr": "Peace and Love Proclaimers"
   },
   "PLP Public Portal": {
     "rw": "Urubuga rusange rwa PLP",
@@ -994,7 +1014,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Leave all schools unchecked to share with every school.": {
     "rw": "Ntugire ishuri uhitamo kugira ngo ubisangize amashuri yose.",
-    "fr": "laissez toutes les écoles décochées pour partager avec chaque école."
+    "fr": "Laissez toutes les écoles décochées pour partager avec chaque école."
   },
   "Material title": {
     "rw": "Umutwe w’inyandiko",
@@ -1142,11 +1162,11 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "From date": {
     "rw": "Guhera ku munsi",
-    "fr": "à partir de la date"
+    "fr": "À partir de la date"
   },
   "To date": {
     "rw": "Kugeza ku itariki",
-    "fr": "à ce jour"
+    "fr": "À ce jour"
   },
   "Activities and reports by community": {
     "rw": "Ibikorwa na raporo byabaturage",
@@ -1326,7 +1346,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Quick links": {
     "rw": "Amahuza yihuse",
-    "fr": "liens rapides"
+    "fr": "Liens rapides"
   },
   "This workspace is for assigned trainers and administrators.": {
     "rw": "Uru rubuga ni urw’abatoza n’abayobozi bahawe izo nshingano.",
@@ -1354,7 +1374,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Track learning, participation, and outcomes across the Hub’s local records.": {
     "rw": "Kurikirana imyigire, ubwitabire n’ibyagezweho mu makuru ya Hub abitswe hano.",
-    "fr": "suivez l’apprentissage, la participation et les résultats dans les archives locales du Hub."
+    "fr": "Suivez l’apprentissage, la participation et les résultats dans les archives locales du Hub."
   },
   "Export impact report": {
     "rw": "Kuramo raporo y’impinduka zagezweho",
@@ -1394,7 +1414,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Capture a placement, venture, or community outcome for donor reporting.": {
     "rw": "Andika akazi kabonetse, umushinga watangijwe cyangwa icyo abaturage bagezeho, kugira ngo bikoreshwe muri raporo zihabwa abaterankunga.",
-    "fr": "capturez un placement, une entreprise ou un résultat communautaire pour les rapports avec les donateurs."
+    "fr": "Capturez un placement, une entreprise ou un résultat communautaire pour les rapports avec les donateurs."
   },
   "Member": {
     "rw": "Umunyamuryango",
@@ -1414,11 +1434,11 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Record outcome": {
     "rw": "Andika icyagezweho",
-    "fr": "résultat record"
+    "fr": "Résultat record"
   },
   "Outcome records": {
     "rw": "Ibyanditswe ku byagezweho",
-    "fr": "enregistrements de résultats"
+    "fr": "Enregistrements de résultats"
   },
   "No outcomes recorded yet.": {
     "rw": "Nta byagezweho birandikwa.",
@@ -1434,11 +1454,11 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "PLP meetings": {
     "rw": "Inama za PLP",
-    "fr": "réunions du PLP"
+    "fr": "Réunions du PLP"
   },
   "Show up, connect, and earn verified credits.": {
     "rw": "Itabire, uhure n’abandi kandi ubone amanota yemejwe.",
-    "fr": "présentez-vous, connectez-vous et gagnez des crédits vérifiés."
+    "fr": "Présentez-vous, connectez-vous et gagnez des crédits vérifiés."
   },
   "Manage meetings": {
     "rw": "Cunga inama",
@@ -1538,7 +1558,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Schedule PLP meetings, share the host code at the venue, and see who checked in.": {
     "rw": "Teganya inama za PLP, utangire kode aho inama ibera kandi urebe abiyandikishije nk’abitabiriye.",
-    "fr": "planifiez des réunions PLP, partagez le code de l'hôte sur place et voyez qui s'est enregistré."
+    "fr": "Planifiez des réunions PLP, partagez le code de l'hôte sur place et voyez qui s'est enregistré."
   },
   "Create meeting": {
     "rw": "Tegura inama",
@@ -1626,7 +1646,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Open check-in page for {p0}": {
     "rw": "Fungura urupapuro rwo kwandika ubwitabire bwa {p0}",
-    "fr": "ouvrir la page d'enregistrement pour {p0}"
+    "fr": "Ouvrir la page d'enregistrement pour {p0}"
   },
   "Edit date & details": {
     "rw": "Hindura itariki & ibisobanuro",
@@ -1702,7 +1722,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Times use your device’s timezone (": {
     "rw": "Amasaha akurikiza akarere k’igihe k’igikoresho cyawe (",
-    "fr": "les heures utilisent le fuseau horaire de votre appareil ("
+    "fr": "Les heures utilisent le fuseau horaire de votre appareil ("
   },
   "). Members see Kigali time.": {
     "rw": "). Abanyamuryango babona igihe cya Kigali.",
@@ -1738,7 +1758,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "ALX hub directory": {
     "rw": "Urutonde rw’ibigo bya ALX",
-    "fr": "répertoire du hub ALX"
+    "fr": "Répertoire du hub ALX"
   },
   "graded assessments": {
     "rw": "amasuzuma atangirwa amanota",
@@ -1754,7 +1774,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Earn a verified certificate and 50 PLP credits when you pass every assessment.": {
     "rw": "Bona icyemezo cyemejwe n’amanota 50 ya PLP iyo utsinze amasuzuma yose.",
-    "fr": "obtenez un certificat vérifié et 50 crédits PLP lorsque vous réussissez chaque évaluation."
+    "fr": "Obtenez un certificat vérifié et 50 crédits PLP lorsque vous réussissez chaque évaluation."
   },
   "Enroll in this course": {
     "rw": "Iyandikishe muri aya masomo",
@@ -1778,7 +1798,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Module": {
     "rw": "Igice cy’isomo",
-    "fr": "module"
+    "fr": "Module"
   },
   "Assignment": {
     "rw": "Umukoro",
@@ -1882,7 +1902,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Item": {
     "rw": "Ingingo",
-    "fr": "élément"
+    "fr": "Élément"
   },
   "Best score": {
     "rw": "Amanota aruta ayandi",
@@ -1954,7 +1974,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Submit the graded assignment (": {
     "rw": "Tanga umukoro utangirwa amanota (",
-    "fr": "soumettre le devoir noté ("
+    "fr": "Soumettre le devoir noté ("
   },
   "+ words) to unlock the final exam.": {
     "rw": "+ amagambo) kugira ngo ikizamini gisoza gifunguke.",
@@ -2006,15 +2026,15 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Last submitted": {
     "rw": "Iheruka gutangwa",
-    "fr": "dernière soumission"
+    "fr": "Dernière soumission"
   },
   "Trainer feedback": {
     "rw": "Ibitekerezo by'abatoza",
-    "fr": "retour du formateur"
+    "fr": "Retour du formateur"
   },
   "Passed with {p0}%.": {
     "rw": "Watsinze n’amanota {p0}%.",
-    "fr": "réussi avec {p0} %."
+    "fr": "Réussi avec {p0} %."
   },
   "{p0}% — the pass mark is {p1}%.{p2}": {
     "rw": "{p0}% — amanota asabwa kugira ngo utsinde ni {p1}%.{p2}",
@@ -2114,7 +2134,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "An administrator must approve your trainer application before the course studio and learner tools become available.": {
     "rw": "Umuyobozi agomba kubanza kwemeza ubusabe bwawe bw’ubutoza kugira ngo ubone ibikoresho byo gutegura amasomo no gukurikirana abiga.",
-    "fr": "un administrateur doit approuver votre candidature de formateur avant que le studio de cours et les outils de l'apprenant ne soient disponibles."
+    "fr": "Un administrateur doit approuver votre candidature de formateur avant que le studio de cours et les outils de l'apprenant ne soient disponibles."
   },
   "Create course": {
     "rw": "Tegura isomo",
@@ -2142,7 +2162,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Next steps": {
     "rw": "Intambwe ikurikira",
-    "fr": "étapes suivantes"
+    "fr": "Étapes suivantes"
   },
   "to do": {
     "rw": "gukora",
@@ -2226,7 +2246,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Live schedule": {
     "rw": "Gahunda igezweho",
-    "fr": "horaire en direct"
+    "fr": "Horaire en direct"
   },
   "Events moving from local schools to national momentum.": {
     "rw": "Ibikorwa byo mu mashuri bigeza ku mpinduka ku rwego rw’igihugu.",
@@ -2234,7 +2254,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Featured next": {
     "rw": "Igikorwa gikurikira cyatoranyijwe",
-    "fr": "présenté ensuite"
+    "fr": "Présenté ensuite"
   },
   "Recent activity": {
     "rw": "Igikorwa giherutse",
@@ -2282,7 +2302,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "What learners will learn": {
     "rw": "Ibyo abiga baziga",
-    "fr": "ce que les apprenants apprendront"
+    "fr": "Ce que les apprenants apprendront"
   },
   "Move module up": {
     "rw": "Himura module hejuru",
@@ -2342,7 +2362,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Learners are enrolled in this course, so its content is locked to protect their progress. Create a new version from the course card to make changes.": {
     "rw": "Abiga biyandikishije muri aya masomo, ibikubiyemo rero bifunze kugirango barinde iterambere ryabo. Kora verisiyo nshya uhereye ku ikarita yamasomo kugirango uhindure.",
-    "fr": "les apprenants sont inscrits à ce cours, son contenu est donc verrouillé pour protéger leur progression. Créez une nouvelle version à partir de la fiche de cours pour apporter des modifications."
+    "fr": "Les apprenants sont inscrits à ce cours, son contenu est donc verrouillé pour protéger leur progression. Créez une nouvelle version à partir de la fiche de cours pour apporter des modifications."
   },
   "Administrator feedback:": {
     "rw": "Ibitekerezo byabayobozi:",
@@ -2350,7 +2370,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Course builder steps": {
     "rw": "Intambwe zubaka amasomo",
-    "fr": "étapes de création de cours"
+    "fr": "Étapes de création de cours"
   },
   "Course overview": {
     "rw": "Incamake y'amasomo",
@@ -2358,7 +2378,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "This is what learners see on the course card and landing page.": {
     "rw": "Ibi nibyo abiga babona ku ikarita yamasomo no kurupapuro.",
-    "fr": "c'est ce que voient les apprenants sur la carte de cours et la page de destination."
+    "fr": "C'est ce que voient les apprenants sur la carte de cours et la page de destination."
   },
   "Course title": {
     "rw": "Umutwe w'amasomo",
@@ -2414,7 +2434,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Action": {
     "rw": "Igikorwa",
-    "fr": "action"
+    "fr": "Action"
   },
   "attempts in total": {
     "rw": "kugerageza muri rusange",
@@ -2426,7 +2446,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Learners appear here once they enrol in one of your published courses.": {
     "rw": "Abiga bagaragara hano nibamara kwiyandikisha mumasomo yawe yatangajwe.",
-    "fr": "les apprenants apparaissent ici une fois qu'ils s'inscrivent à l'un de vos cours publiés."
+    "fr": "Les apprenants apparaissent ici une fois qu'ils s'inscrivent à l'un de vos cours publiés."
   },
   "Review": {
     "rw": "Suzuma",
@@ -2478,7 +2498,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Unlocks after every module quiz is passed and the assignment is submitted. Answers are never shown to learners.": {
     "rw": "Bifunguka ari uko uwiga atsinze amasuzuma y’ibice byose kandi yatanze umukoro. Ibisubizo ntibyerekwa abiga.",
-    "fr": "se déverrouille une fois que chaque quiz de module est réussi et que le devoir est soumis. Les réponses ne sont jamais présentées aux apprenants."
+    "fr": "Se déverrouille une fois que chaque quiz de module est réussi et que le devoir est soumis. Les réponses ne sont jamais présentées aux apprenants."
   },
   "Time limit (minutes)": {
     "rw": "Igihe ntarengwa (iminota)",
@@ -2610,7 +2630,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Internships, scholarships, fellowships and more — matched to young people in the PLP community.": {
     "rw": "Kwimenyereza umwuga, buruse, gahunda zo kwiyungura ubumenyi n’andi mahirwe agenewe urubyiruko rwo mu muryango wa PLP.",
-    "fr": "stages, bourses d'études, bourses d'études et plus encore – jumelés aux jeunes de la communauté PLP."
+    "fr": "Stages, bourses d'études, bourses d'études et plus encore – jumelés aux jeunes de la communauté PLP."
   },
   "Open opportunities": {
     "rw": "Amahirwe agifunguye",
@@ -2650,7 +2670,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Publish roles that members apply for through PLP, or link to an organiser's own application page.": {
     "rw": "Tangaza inshingano abanyamuryango basaba binyuze muri PLP, cyangwa guhuza page yumushinga wenyine.",
-    "fr": "publiez les rôles pour lesquels les membres postulent via PLP, ou créez un lien vers la propre page de candidature d'un organisateur."
+    "fr": "Publiez les rôles pour lesquels les membres postulent via PLP, ou créez un lien vers la propre page de candidature d'un organisateur."
   },
   "Add opportunity": {
     "rw": "Ongeraho amahirwe",
@@ -2742,7 +2762,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "I've applied": {
     "rw": "Nasabye",
-    "fr": "j’ai postulé"
+    "fr": "J’ai postulé"
   },
   "Apply: {p0}": {
     "rw": "Saba: {p0}",
@@ -2774,7 +2794,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Through PLP": {
     "rw": "Binyuze muri PLP",
-    "fr": "via PLP"
+    "fr": "Via PLP"
   },
   "Members submit a statement and CV here; you review applicants in this table.": {
     "rw": "Abanyamuryango batanga ibisobanuro by’ubusabe na CV hano; usuzuma abasabye muri iyi mbonerahamwe.",
@@ -2786,7 +2806,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Members are sent to an external link and can mark the opportunity as applied.": {
     "rw": "Abanyamuryango boherejwe kumurongo wo hanze kandi barashobora kwerekana amahirwe nkuko byasabwe.",
-    "fr": "les membres sont envoyés vers un lien externe et peuvent marquer l'opportunité comme appliquée."
+    "fr": "Les membres sont envoyés vers un lien externe et peuvent marquer l'opportunité comme appliquée."
   },
   "Application link": {
     "rw": "Ihuza ryo gusaba",
@@ -2814,7 +2834,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Saved, but no email was sent to {p0}: {p1}": {
     "rw": "Byabitswe, ariko nta imeri yoherejwe kuri {p0}: {p1}",
-    "fr": "enregistré, mais aucun e-mail n'a été envoyé à {p0} : {p1}"
+    "fr": "Enregistré, mais aucun e-mail n'a été envoyé à {p0} : {p1}"
   },
   "Request a session with a PLP mentor. Your mentor is emailed and confirms the time and meeting details.": {
     "rw": "Saba ikiganiro n’umujyanama wa PLP. Yohererezwa imeri akemeza igihe n’ibisobanuro by’ikiganiro.",
@@ -3046,11 +3066,11 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Emails you send to mentees from this device are listed here.": {
     "rw": "Imeri wohereje kuri mentes kuva iki gikoresho urutonde hano.",
-    "fr": "les e-mails que vous envoyez aux mentorés depuis cet appareil sont répertoriés ici."
+    "fr": "Les e-mails que vous envoyez aux mentorés depuis cet appareil sont répertoriés ici."
   },
   "Mentee": {
     "rw": "Uhabwa ubujyanama",
-    "fr": "mentoré"
+    "fr": "Mentoré"
   },
   "Sessions": {
     "rw": "Ibiganiro",
@@ -3062,7 +3082,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Rescheduling a request also confirms it at the new time.": {
     "rw": "Guhindura icyifuzo nabyo birabyemeza mugihe gishya.",
-    "fr": "la reprogrammation d'une demande la confirme également à la nouvelle heure."
+    "fr": "La reprogrammation d'une demande la confirme également à la nouvelle heure."
   },
   "Message (optional)": {
     "rw": "Ubutumwa (si ngombwa)",
@@ -3082,7 +3102,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "What you discussed and agreed next steps": {
     "rw": "Ibyo mwaganiriyeho kandi mwumvikanyeho intambwe ikurikira",
-    "fr": "ce dont vous avez discuté et convenu des prochaines étapes"
+    "fr": "Ce dont vous avez discuté et convenu des prochaines étapes"
   },
   "Your mentor profile": {
     "rw": "Umwirondoro wawe w’umujyanama",
@@ -3134,7 +3154,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Session time": {
     "rw": "Igihe cy’ikiganiro",
-    "fr": "heure de la séance"
+    "fr": "Heure de la séance"
   },
   "Topic & goal": {
     "rw": "Ingingo & intego",
@@ -3190,7 +3210,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Peace and Love Proclaimers — Youth For Change": {
     "rw": "Peace and Love Proclaimers — Urubyiruko ruharanira impinduka",
-    "fr": "Proclamateurs de paix et d'amour — Youth For Change"
+    "fr": "Peace and Love Proclaimers — Youth For Change"
   },
   "Your member workspace": {
     "rw": "Urubuga rwawe rw’umunyamuryango",
@@ -3242,7 +3262,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Digit {p0}": {
     "rw": "Umubare {p0}",
-    "fr": "chiffre {p0}"
+    "fr": "Chiffre {p0}"
   },
   "Lesson video": {
     "rw": "Amashusho y'isomo",
@@ -3250,7 +3270,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "YouTube link": {
     "rw": "Ihuza rya YouTube",
-    "fr": "lien YouTube"
+    "fr": "Lien YouTube"
   },
   "MP4 or WebM, up to 500 MB": {
     "rw": "MP4 cyangwa WebM, kugeza kuri 500 MB",
@@ -3302,7 +3322,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Turn on camera": {
     "rw": "Fungura kamera",
-    "fr": "allumer la caméra"
+    "fr": "Allumer la caméra"
   },
   "Website announcement": {
     "rw": "Itangazo ryurubuga",
@@ -3445,8 +3465,8 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "fr": "Cochez qui est venu, décrivez ce qui s'est passé et ajoutez des photos. Les participants possédant un compte gagnent"
   },
   "PLP credits.": {
-    "rw": "amanota ya PLP.",
-    "fr": "crédits PLP."
+    "rw": "Amanota ya PLP.",
+    "fr": "Crédits PLP."
   },
   "Take attendance & report": {
     "rw": "Andika ubwitabire na raporo",
@@ -3482,7 +3502,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "The course is marked complete only when every assessment is passed. There is no manual \"mark as complete\".": {
     "rw": "Isomo ryandikwa nk’iryarangiye ari uko amasuzuma yose yatsinzwe neza. Nta buryo bwo kuryandika nk’iryarangiye ubwawe.",
-    "fr": "le cours est marqué comme terminé uniquement lorsque chaque évaluation est réussie. Il n'y a pas de manuel \"marquer comme terminé\"."
+    "fr": "Le cours est marqué comme terminé uniquement lorsque chaque évaluation est réussie. Il n'y a pas de manuel \"marquer comme terminé\"."
   },
   "Every assessment is passed. Completion recorded on": {
     "rw": "Amasuzuma yose yatsinzwe neza. Kurangiza byanditswe ku wa",
@@ -3586,7 +3606,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Complete a course’s lessons, assignment, and assessment to earn a certificate.": {
     "rw": "Uzuza amasomo y'amasomo, umukoro, hamwe no gusuzuma kugirango ubone icyemezo.",
-    "fr": "terminez les leçons, les devoirs et l'évaluation d'un cours pour obtenir un certificat."
+    "fr": "Terminez les leçons, les devoirs et l'évaluation d'un cours pour obtenir un certificat."
   },
   "Find a course": {
     "rw": "Shaka isomo",
@@ -3666,7 +3686,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "No matching records.": {
     "rw": "Nta nyandiko zihuye.",
-    "fr": "aucun enregistrement correspondant."
+    "fr": "Aucun enregistrement correspondant."
   },
   "← Previous": {
     "rw": "← Mbere",
@@ -3674,7 +3694,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Page": {
     "rw": "Urupapuro",
-    "fr": "page"
+    "fr": "Page"
   },
   "Next →": {
     "rw": "Ibikurikira →",
@@ -3762,7 +3782,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Enter your signup email and we’ll send you a 6-digit code.": {
     "rw": "Injira imeri yawe yo kwiyandikisha hanyuma twohereze kode yimibare 6.",
-    "fr": "saisissez votre e-mail d'inscription et nous vous enverrons un code à 6 chiffres."
+    "fr": "Saisissez votre e-mail d'inscription et nous vous enverrons un code à 6 chiffres."
   },
   "Email address": {
     "rw": "Aderesi imeri",
@@ -3770,7 +3790,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Enter the 6-digit code we sent to your email.": {
     "rw": "Injiza kode 6 yimibare twohereje kuri imeri yawe.",
-    "fr": "saisissez le code à 6 chiffres que nous avons envoyé à votre adresse e-mail."
+    "fr": "Saisissez le code à 6 chiffres que nous avons envoyé à votre adresse e-mail."
   },
   "Didn’t receive a code?": {
     "rw": "Ntabwo wakiriye kode?",
@@ -3781,7 +3801,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "fr": "Vous n’avez pas encore de compte ?"
   },
   "Credits are awarded when PLP confirms course completion or activity participation. Self-reported progress does not add verified credits.": {
-    "rw": "amanota zitangwa mugihe PLP yemeje kurangiza amasomo cyangwa kwitabira ibikorwa. Kwiyitirira iterambere ntabwo byongera amanota zemejwe.",
+    "rw": "Amanota zitangwa mugihe PLP yemeje kurangiza amasomo cyangwa kwitabira ibikorwa. Kwiyitirira iterambere ntabwo byongera amanota zemejwe.",
     "fr": "Les crédits sont accordés lorsque le PLP confirme la réussite du cours ou la participation à une activité. Les progrès autodéclarés n’ajoutent pas de crédits vérifiés."
   },
   "Your credit history": {
@@ -3810,7 +3830,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Post reply": {
     "rw": "Kohereza igisubizo",
-    "fr": "poster la réponse"
+    "fr": "Poster la réponse"
   },
   "Remove discussion": {
     "rw": "Kuraho ibiganiro",
@@ -3842,7 +3862,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Record found": {
     "rw": "Inyandiko yabonetse",
-    "fr": "enregistrement trouvé"
+    "fr": "Enregistrement trouvé"
   },
   "Awarded to": {
     "rw": "Yahawe",
@@ -3857,7 +3877,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "fr": "Vos crédits PLP"
   },
   "Credits confirmed by PLP and saved to your account.": {
-    "rw": "amanota zemejwe na PLP kandi zabitswe kuri konte yawe.",
+    "rw": "Amanota zemejwe na PLP kandi zabitswe kuri konte yawe.",
     "fr": "Crédits confirmés par PLP et enregistrés sur votre compte."
   },
   "AVAILABLE BALANCE": {
@@ -3866,7 +3886,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "PLP credits": {
     "rw": "Amanota ya PLP",
-    "fr": "crédits PLP"
+    "fr": "Crédits PLP"
   },
   "Verified attendance.": {
     "rw": "Byemejwe ko witabye.",
@@ -3982,7 +4002,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Course completions": {
     "rw": "Kurangiza amasomo",
-    "fr": "achèvement des cours"
+    "fr": "Achèvement des cours"
   },
   "Mentoring sessions": {
     "rw": "Ibiganiro by’ubujyanama",
@@ -3997,19 +4017,19 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "fr": "Lire les faits saillants"
   },
   "You're going": {
-    "rw": "Uzitabira",
-    "fr": "Tu pars"
+    "rw": "Nzitabira",
+    "fr": "Je participe"
   },
   "Can't make it": {
     "rw": "Sinzashobora kwitabira",
-    "fr": "Je ne peux pas venir"
+    "fr": "Je ne pourrai pas venir"
   },
   "I'll participate": {
     "rw": "Nzitabira",
-    "fr": "je participerai"
+    "fr": "Je participerai"
   },
   "Coming up": {
-    "rw": "Kuza",
+    "rw": "Ibiri imbere",
     "fr": "À venir"
   },
   "All activities": {
@@ -4022,7 +4042,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "See what schools and PLP communities are organising, and let them know you'll be there.": {
     "rw": "Reba ibyo amashuri nabaturage ba PLP bategura, hanyuma ubamenyeshe ko uzaba uhari.",
-    "fr": "découvrez ce que les écoles et les communautés PLP organisent et faites-leur savoir que vous serez là."
+    "fr": "Découvrez ce que les écoles et les communautés PLP organisent et faites-leur savoir que vous serez là."
   },
   "Activity, school or type": {
     "rw": "Igikorwa, ishuri cyangwa ubwoko",
@@ -4153,7 +4173,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "fr": "Mes certificats scolaires"
   },
   "Certificates issued to you for your service as a PLP member. Only your own certificates appear here.": {
-    "rw": "ibyemezo zahawe kubikorwa byawe nkumunyamuryango wa PLP. Gusa ibyemezo byawe bwite bigaragara hano.",
+    "rw": "Ibyemezo zahawe kubikorwa byawe nkumunyamuryango wa PLP. Gusa ibyemezo byawe bwite bigaragara hano.",
     "fr": "Certificats qui vous ont été délivrés pour votre service en tant que membre du PLP. Seuls vos propres certificats apparaissent ici."
   },
   "Loading your certificates…": {
@@ -4198,7 +4218,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Enter your credentials to access your PLP Hub.": {
     "rw": "Andika imeri n’ijambo ry’ibanga kugira ngo winjire kuri PLP Hub.",
-    "fr": "saisissez vos informations d'identification pour accéder à votre hub PLP."
+    "fr": "Saisissez vos informations d'identification pour accéder à votre hub PLP."
   },
   "Choose the members, write the wording, and check the preview. PLP approves the request before certificates are issued.": {
     "rw": "Hitamo abanyamuryango, andika amagambo, hanyuma urebe ibiboneka. PLP yemeje icyifuzo mbere yuko ibyemezo bitangwa.",
@@ -4270,11 +4290,11 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Turn on desktop alerts for when this tab is in the background": {
     "rw": "Fungura kuri desktop imenyesha mugihe iyi tab iri inyuma",
-    "fr": "activez les alertes sur le bureau lorsque cet onglet est en arrière-plan"
+    "fr": "Activez les alertes sur le bureau lorsque cet onglet est en arrière-plan"
   },
   "You're all caught up. New activities, requests and reviews will appear here.": {
     "rw": "Wasomye byose. Ibikorwa bishya, ubusabe n’isuzuma bizagaragara hano.",
-    "fr": "Vous êtes tous rattrapés. De nouvelles activités, demandes et avis apparaîtront ici."
+    "fr": "Tout est à jour. Les nouvelles activités, demandes et évaluations apparaîtront ici."
   },
   "Every member matters.": {
     "rw": "Buri munyamuryango afite akamaro.",
@@ -4350,7 +4370,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Contact PLP for help restoring access to your account.": {
     "rw": "Menyesha PLP kugirango igufashe kugarura kwinjira kuri konte yawe.",
-    "fr": "contactez PLP pour obtenir de l'aide pour restaurer l'accès à votre compte."
+    "fr": "Contactez PLP pour obtenir de l'aide pour restaurer l'accès à votre compte."
   },
   "Learning with PLP": {
     "rw": "Kwiga hamwe na PLP",
@@ -4362,7 +4382,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Member sign-in to learn": {
     "rw": "Kwinjira kwabanyamuryango kugirango bige",
-    "fr": "connexion du membre pour apprendre"
+    "fr": "Connexion du membre pour apprendre"
   },
   "Your next chapter starts here.": {
     "rw": "Igice cyawe gikurikira gitangirira hano.",
@@ -4390,15 +4410,15 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "No members match this view.": {
     "rw": "Nta banyamuryango bahuye niki gitekerezo.",
-    "fr": "aucun membre ne correspond à cette vue."
+    "fr": "Aucun membre ne correspond à cette vue."
   },
   "PLP certificate verification": {
     "rw": "Kugenzura icyemezo cya PLP",
-    "fr": "vérification du certificat PLP"
+    "fr": "Vérification du certificat PLP"
   },
   "Issued": {
     "rw": "Yatanzwe",
-    "fr": "émis"
+    "fr": "Émis"
   },
   "· Completed": {
     "rw": "· Byarangiye",
@@ -4410,7 +4430,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "PLP website": {
     "rw": "Urubuga rwa PLP",
-    "fr": "site Web du PLP"
+    "fr": "Site Web du PLP"
   },
   "Language / Ururimi": {
     "rw": "Ururimi / Ururimi",
@@ -4422,11 +4442,11 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Kinyarwanda": {
     "rw": "Kinyarwanda",
-    "fr": "kinyarwanda"
+    "fr": "Kinyarwanda"
   },
   "English": {
     "rw": "Icyongereza",
-    "fr": "anglais"
+    "fr": "Anglais"
   },
   "Clubs & homegroups": {
     "rw": "Clubs n’amatsinda yo mu baturanyi",
@@ -4446,7 +4466,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Mark report reviewed": {
     "rw": "Garagaza ko raporo yasuzumwe",
-    "fr": "rapport de marquage révisé"
+    "fr": "Rapport de marquage révisé"
   },
   "Create a club activity": {
     "rw": "Kora ibikorwa bya club",
@@ -4726,19 +4746,19 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Pending Requests": {
     "rw": "Ubusabe butegereje",
-    "fr": "demandes en attente"
+    "fr": "Demandes en attente"
   },
   "QR Verification Scans": {
     "rw": "Isuzuma rya QR",
-    "fr": "analyses de vérification QR"
+    "fr": "Analyses de vérification QR"
   },
   "Certificates Issued (This Year)": {
-    "rw": "ibyemezo zatanzwe (Uyu mwaka)",
+    "rw": "Ibyemezo zatanzwe (Uyu mwaka)",
     "fr": "Certificats délivrés (cette année)"
   },
   "Rejected Requests": {
     "rw": "Ibyifuzo byanze",
-    "fr": "demandes rejetées"
+    "fr": "Demandes rejetées"
   },
   "Total Events (This Year)": {
     "rw": "Ibyabaye byose (Uyu mwaka)",
@@ -4750,7 +4770,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Pending Event Requests": {
     "rw": "Ubusabe bw’ibikorwa butegereje",
-    "fr": "demandes d'événements en attente"
+    "fr": "Demandes d'événements en attente"
   },
   "Pending Event Reports": {
     "rw": "Raporo z’ibikorwa zitegerejwe",
@@ -4802,7 +4822,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Verification Success Rate": {
     "rw": "Igipimo cy’igenzura ryagenze neza",
-    "fr": "taux de réussite de la vérification"
+    "fr": "Taux de réussite de la vérification"
   },
   "Rejected / Returned Activities": {
     "rw": "Ibikorwa Byanze / Byagarutse",
@@ -4877,7 +4897,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "fr": "Total des réunions"
   },
   "Certificates Issued": {
-    "rw": "ibyemezo zatanzwe",
+    "rw": "Ibyemezo zatanzwe",
     "fr": "Certificats délivrés"
   },
   "Activities Completed": {
@@ -4938,7 +4958,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Download failed": {
     "rw": "Gukuramo byarananiranye",
-    "fr": "échec du téléchargement"
+    "fr": "Échec du téléchargement"
   },
   "Report generated": {
     "rw": "Raporo yakozwe",
@@ -4946,14 +4966,14 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Generation failed": {
     "rw": "Gutegura byanze",
-    "fr": "échec de la génération"
+    "fr": "Échec de la génération"
   },
   "Date Range": {
     "rw": "Igihe kiva ku itariki kikagera ku yindi",
     "fr": "Plage de dates"
   },
   "Certificates issued": {
-    "rw": "ibyemezo zatanzwe",
+    "rw": "Ibyemezo zatanzwe",
     "fr": "Certificats délivrés"
   },
   "Request Date": {
@@ -4978,7 +4998,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Notification marked read": {
     "rw": "Imenyesha ryashyizwe ku byasomwe",
-    "fr": "notification marquée comme lue"
+    "fr": "Notification marquée comme lue"
   },
   "Could not mark notification read": {
     "rw": "Ntushobora gushyira ikimenyetso cyo gusoma",
@@ -5002,11 +5022,11 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Update failed": {
     "rw": "Kuvugurura byarananiranye",
-    "fr": "échec de la mise à jour"
+    "fr": "Échec de la mise à jour"
   },
   "Delete failed": {
     "rw": "Gusiba byarananiranye",
-    "fr": "échec de la suppression"
+    "fr": "Échec de la suppression"
   },
   "Show All Schools": {
     "rw": "Erekana Amashuri Yose",
@@ -5022,7 +5042,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Email us": {
     "rw": "Twandikire",
-    "fr": "envoyez-nous un e-mail"
+    "fr": "Envoyez-nous un e-mail"
   },
   "Call us": {
     "rw": "Hamagara",
@@ -5070,7 +5090,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Recorded completions": {
     "rw": "Abarangije byanditswe",
-    "fr": "achèvements enregistrés"
+    "fr": "Achèvements enregistrés"
   },
   "Learning material published": {
     "rw": "Ibikoresho byo kwiga byatangajwe",
@@ -5098,7 +5118,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Upcoming": {
     "rw": "Ibizaza",
-    "fr": "à venir"
+    "fr": "À venir"
   },
   "Activity participation": {
     "rw": "Uruhare rwibikorwa",
@@ -5202,7 +5222,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "PDF report": {
     "rw": "Raporo ya PDF",
-    "fr": "rapport PDF"
+    "fr": "Rapport PDF"
   },
   "Awaiting school assignment": {
     "rw": "Ategereje guhabwa ishuri ashinzwe",
@@ -5210,7 +5230,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "PLP trainer": {
     "rw": "Umutoza wa PLP",
-    "fr": "formateur PLP"
+    "fr": "Formateur PLP"
   },
   "Courses created": {
     "rw": "Amasomo yashizweho",
@@ -5286,7 +5306,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "PLP mentor": {
     "rw": "Umujyanama wa PLP",
-    "fr": "mentor PLP"
+    "fr": "Mentor PLP"
   },
   "Sessions completed": {
     "rw": "Ibiganiro byarangiye",
@@ -5317,8 +5337,8 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "fr": "En pause"
   },
   "ALX certificates": {
-    "rw": "ibyemezo ya ALX",
-    "fr": "certificats ALX"
+    "rw": "Ibyemezo ya ALX",
+    "fr": "Certificats ALX"
   },
   "Courses": {
     "rw": "Amasomo",
@@ -5338,11 +5358,11 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Location is unavailable on this device. Please use a phone with location enabled.": {
     "rw": "Iki gikoresho ntigishobora kwerekana aho uri. Koresha telefone ifite uburyo bwo kwerekana aho uri bufunguye.",
-    "fr": "la localisation n'est pas disponible sur cet appareil. Veuillez utiliser un téléphone avec la localisation activée."
+    "fr": "La localisation n'est pas disponible sur cet appareil. Veuillez utiliser un téléphone avec la localisation activée."
   },
   "Allow location access to confirm you are at the venue.": {
     "rw": "Emera ko hagenzurwa aho uri kugira ngo hemezwe ko uri aho igikorwa kibera.",
-    "fr": "autorisez l'accès à l'emplacement pour confirmer que vous êtes sur place."
+    "fr": "Autorisez l'accès à l'emplacement pour confirmer que vous êtes sur place."
   },
   "Could not get an accurate location. Enable precise location and try again.": {
     "rw": "Aho uri ntihashoboye kumenyekana neza. Fungura uburyo bwo kwerekana aho uri neza, wongere ugerageze.",
@@ -5366,7 +5386,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Scheduled": {
     "rw": "Biteganyijwe",
-    "fr": "programmé"
+    "fr": "Programmé"
   },
   "Meeting shown in the website banner": {
     "rw": "Inama yerekanwe kumurongo wurubuga",
@@ -5398,7 +5418,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Complete the previous step to unlock this item.": {
     "rw": "Uzuza intambwe ibanza yo gufungura iki kintu.",
-    "fr": "terminez l’étape précédente pour déverrouiller cet élément."
+    "fr": "Terminez l’étape précédente pour déverrouiller cet élément."
   },
   "Enroll to start this course.": {
     "rw": "Iyandikishe kugirango utangire aya masomo.",
@@ -5474,7 +5494,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Allow pop-ups for this site to print, or download the PDF instead.": {
     "rw": "Emerera pop-up kururu rubuga gucapa, cyangwa gukuramo PDF aho.",
-    "fr": "autorisez l'impression des fenêtres contextuelles de ce site ou téléchargez le PDF à la place."
+    "fr": "Autorisez l'impression des fenêtres contextuelles de ce site ou téléchargez le PDF à la place."
   },
   "The certificate could not be prepared for printing.": {
     "rw": "Icyemezo ntigishobora gutegurwa kugirango icapwe.",
@@ -5482,11 +5502,11 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Verification link copied": {
     "rw": "Ihuza ryo kugenzura ryimuwe",
-    "fr": "lien de vérification copié"
+    "fr": "Lien de vérification copié"
   },
   "Copy the link from the certificate page instead.": {
     "rw": "Gukoporora umurongo kuva kurupapuro rwicyemezo.",
-    "fr": "copiez plutôt le lien de la page du certificat."
+    "fr": "Copiez plutôt le lien de la page du certificat."
   },
   "Valid": {
     "rw": "Byemewe",
@@ -5549,12 +5569,12 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "fr": "Continuer la construction"
   },
   "New version created as a draft. Edit it, then publish it.": {
-    "rw": "verisiyo nshya yashizweho nkumushinga. Hindura, hanyuma ubitangaze.",
+    "rw": "Verisiyo nshya yashizweho nkumushinga. Hindura, hanyuma ubitangaze.",
     "fr": "Nouvelle version créée en tant que brouillon. Modifiez-le, puis publiez-le."
   },
   "This permanently deletes the course draft and all of its modules and questions.": {
     "rw": "Ibi bisiba burundu umushinga wamasomo hamwe na module zose hamwe nibibazo.",
-    "fr": "cela supprime définitivement le brouillon du cours ainsi que tous ses modules et questions."
+    "fr": "Cela supprime définitivement le brouillon du cours ainsi que tous ses modules et questions."
   },
   "Course deleted": {
     "rw": "Amasomo yasibwe",
@@ -5570,7 +5590,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Add at least two answer options.": {
     "rw": "Ongeraho byibuze inzira ebyiri zo gusubiza.",
-    "fr": "ajoutez au moins deux options de réponse."
+    "fr": "Ajoutez au moins deux options de réponse."
   },
   "The correct answer must be one of the filled options.": {
     "rw": "Igisubizo cyukuri kigomba kuba kimwe muburyo bwuzuye.",
@@ -5590,7 +5610,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "This permanently removes the record and cannot be undone.": {
     "rw": "Ibi bivanaho burundu inyandiko kandi ntibishobora gusubirwaho.",
-    "fr": "cela supprime définitivement l'enregistrement et ne peut pas être annulé."
+    "fr": "Cela supprime définitivement l'enregistrement et ne peut pas être annulé."
   },
   "Complete all required fields.": {
     "rw": "Uzuza ahasabwa amakuru hose.",
@@ -5598,7 +5618,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Use a JPG, PNG or WebP image up to 1.5 MB.": {
     "rw": "Koresha ishusho ya JPG, PNG cyangwa WebP kugeza kuri 1.5 MB.",
-    "fr": "utilisez une image JPG, PNG ou WebP jusqu'à 1,5 Mo."
+    "fr": "Utilisez une image JPG, PNG ou WebP jusqu'à 1,5 Mo."
   },
   "Use a PDF, DOC, DOCX, PNG or JPG file up to 1.5 MB.": {
     "rw": "Koresha dosiye ya PDF, DOC, DOCX, PNG cyangwa JPG kugeza kuri 1.5 MB.",
@@ -5650,7 +5670,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Draft saved.": {
     "rw": "Inyandiko y’agateganyo yabitswe.",
-    "fr": "brouillon enregistré."
+    "fr": "Brouillon enregistré."
   },
   "Leave the course builder?": {
     "rw": "Uve mu gice cyo gutegura isomo?",
@@ -5658,7 +5678,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Unsaved changes will be lost.": {
     "rw": "Impinduka zitabitswe zirabura.",
-    "fr": "les modifications non enregistrées seront perdues."
+    "fr": "Les modifications non enregistrées seront perdues."
   },
   "· unsaved changes": {
     "rw": "· impinduka zitabitswe",
@@ -5754,7 +5774,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "This only removes it here; contact the organiser to withdraw your external application.": {
     "rw": "Ibi bikuraho ibyanditswe hano gusa; vugana n’uwateguye amahirwe kugira ngo ukureho ubusabe watanze ku rundi rubuga.",
-    "fr": "cela le supprime uniquement ici ; contactez l'organisateur pour retirer votre candidature externe."
+    "fr": "Cela le supprime uniquement ici ; contactez l'organisateur pour retirer votre candidature externe."
   },
   "Your application and its documents will be withdrawn.": {
     "rw": "Gusaba kwawe hamwe ninyandiko zayo bizakurwaho.",
@@ -5818,7 +5838,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Opportunity deleted": {
     "rw": "Amahirwe yasibwe",
-    "fr": "opportunité supprimée"
+    "fr": "Opportunité supprimée"
   },
   "Hidden": {
     "rw": "Hihishe",
@@ -5842,15 +5862,15 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Opportunity updated": {
     "rw": "Amahirwe aravugururwa",
-    "fr": "opportunité mise à jour"
+    "fr": "Opportunité mise à jour"
   },
   "Opportunity published": {
     "rw": "Amahirwe yatangajwe",
-    "fr": "opportunité publiée"
+    "fr": "Opportunité publiée"
   },
   "Publish opportunity": {
     "rw": "Tangaza amahirwe",
-    "fr": "opportunité de publication"
+    "fr": "Opportunité de publication"
   },
   "Members who recorded that they applied on the organiser's website.": {
     "rw": "Abanyamuryango banditse ko basabye kurubuga rwabashinzwe gutegura.",
@@ -5966,7 +5986,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Enter a title, link label, and a local path or HTTPS link.": {
     "rw": "Andika umutwe, amagambo agaragara ku ihuza, n’inzira y’urupapuro rwo kuri uru rubuga cyangwa ihuza rya HTTPS.",
-    "fr": "saisissez un titre, une étiquette de lien et un chemin local ou un lien HTTPS."
+    "fr": "Saisissez un titre, une étiquette de lien et un chemin local ou un lien HTTPS."
   },
   "Choose today or a future date for an active banner.": {
     "rw": "Hitamo uyumunsi cyangwa itariki izaza kuri banneri ikora.",
@@ -6042,7 +6062,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Use a secure https:// meeting link, or type the venue.": {
     "rw": "Koresha https: // ihuza ryinama, cyangwa wandike ahazabera.",
-    "fr": "utilisez un lien de réunion sécurisé https:// ou saisissez le lieu."
+    "fr": "Utilisez un lien de réunion sécurisé https:// ou saisissez le lieu."
   },
   "Choose a future time.": {
     "rw": "Hitamo igihe kizaza.",
@@ -6102,7 +6122,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "YouTube video": {
     "rw": "Video ya YouTube",
-    "fr": "vidéo YouTube"
+    "fr": "Vidéo YouTube"
   },
   "Choose an MP4 or WebM video.": {
     "rw": "Hitamo amashusho ya MP4 cyangwa WebM.",
@@ -6110,7 +6130,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Videos must be 500 MB or smaller. Long recordings work best on YouTube.": {
     "rw": "Amashusho agomba kuba 500 MB cyangwa ntoya. Amajwi maremare akora neza kuri YouTube.",
-    "fr": "les vidéos doivent faire 500 Mo ou moins. Les enregistrements longs fonctionnent mieux sur YouTube."
+    "fr": "Les vidéos doivent faire 500 Mo ou moins. Les enregistrements longs fonctionnent mieux sur YouTube."
   },
   "That doesn't look like a YouTube video link.": {
     "rw": "Ntabwo bisa nkaho bihuza amashusho ya YouTube.",
@@ -6122,7 +6142,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Time expired on your open assessment. It was submitted automatically.": {
     "rw": "Igihe cyararangiye mugusuzuma kwawe. Yatanzwe mu buryo bwikora.",
-    "fr": "délai écoulé pour votre évaluation ouverte. Il a été soumis automatiquement."
+    "fr": "Délai écoulé pour votre évaluation ouverte. Il a été soumis automatiquement."
   },
   "This module has no quiz; reading it completes the module.": {
     "rw": "Iyi module nta kibazo; kuyisoma irangiza module.",
@@ -6158,7 +6178,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Use a PDF, PNG, or JPG.": {
     "rw": "Koresha PDF, PNG, cyangwa JPG.",
-    "fr": "utilisez un fichier PDF, PNG ou JPG."
+    "fr": "Utilisez un fichier PDF, PNG ou JPG."
   },
   "Certificate uploaded and recognised": {
     "rw": "Icyemezo cyoherejwe kandi cyemewe",
@@ -6213,7 +6233,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "fr": "les images sont"
   },
   "Certificates earned": {
-    "rw": "ibyemezo zabonetse",
+    "rw": "Ibyemezo zabonetse",
     "fr": "Certificats obtenus"
   },
   "Communities joined": {
@@ -6245,12 +6265,12 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "fr": "Le PDF du passeport n'a pas pu être créé. Essayer à nouveau."
   },
   "Verified credits": {
-    "rw": "amanota zemejwe",
+    "rw": "Amanota zemejwe",
     "fr": "Crédits vérifiés"
   },
   "Volunteer hours": {
     "rw": "Amasaha y'abakorerabushake",
-    "fr": "heures de bénévolat"
+    "fr": "Heures de bénévolat"
   },
   "Passport updated": {
     "rw": "Passeport ivuguruye",
@@ -6278,7 +6298,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "No issued course certificates match this view.": {
     "rw": "Nta mpamyabumenyi yatanzwe yatanzwe ihuye niki gitekerezo.",
-    "fr": "aucun certificat de cours délivré ne correspond à cette vue."
+    "fr": "Aucun certificat de cours délivré ne correspond à cette vue."
   },
   "Your first milestone is waiting.": {
     "rw": "Intambwe yawe yambere irategereje.",
@@ -6297,7 +6317,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "fr": "L'historique de crédit n'est pas disponible."
   },
   "Your verified credits will appear here.": {
-    "rw": "amanota zawe zemewe zizagaragara hano.",
+    "rw": "Amanota zawe zemewe zizagaragara hano.",
     "fr": "Vos crédits vérifiés apparaîtront ici."
   },
   "Remove this discussion?": {
@@ -6454,11 +6474,11 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Completions": {
     "rw": "Kurangiza",
-    "fr": "achèvements"
+    "fr": "Achèvements"
   },
   "The term must end after it starts.": {
     "rw": "Igihe cy’inshingano kigomba kurangira nyuma y’uko gitangira.",
-    "fr": "le terme doit se terminer après avoir commencé."
+    "fr": "Le terme doit se terminer après avoir commencé."
   },
   "Each certificate has its own QR code": {
     "rw": "Buri cyemezo kigira kode ya QR",
@@ -6554,7 +6574,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "At least 12 characters": {
     "rw": "Nibura inyuguti 12",
-    "fr": "au moins 12 caractères"
+    "fr": "Au moins 12 caractères"
   },
   "Enter your password": {
     "rw": "Andika ijambo ryibanga",
@@ -6634,7 +6654,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Use plain text without < or >.": {
     "rw": "Koresha inyandiko isanzwe idafite <cyangwa>.",
-    "fr": "utilisez du texte brut sans < ou >."
+    "fr": "Utilisez du texte brut sans < ou >."
   },
   "You": {
     "rw": "Wowe",
@@ -6730,7 +6750,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Passwords do not match. Please confirm your password.": {
     "rw": "Ijambobanga ntirihuye. Nyamuneka wemeze ijambo ryibanga.",
-    "fr": "les mots de passe ne correspondent pas. Veuillez confirmer votre mot de passe."
+    "fr": "Les mots de passe ne correspondent pas. Veuillez confirmer votre mot de passe."
   },
   "An account already uses this email. Sign in with your password.": {
     "rw": "Konti isanzwe ikoresha iyi imeri. Injira ukoresheje ijambo ryibanga.",
@@ -6738,7 +6758,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Use the email address on the invitation, or join without the invitation link.": {
     "rw": "Koresha aderesi imeri kubutumire, cyangwa winjire udafite ubutumire.",
-    "fr": "utilisez l'adresse e-mail figurant sur l'invitation ou rejoignez-nous sans le lien d'invitation."
+    "fr": "Utilisez l'adresse e-mail figurant sur l'invitation ou rejoignez-nous sans le lien d'invitation."
   },
   "Student member": {
     "rw": "Umunyeshuri",
@@ -6818,7 +6838,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "This permanently removes the account. Accounts with learning, attendance or authored records are kept — suspend those instead.": {
     "rw": "Ibi bisiba konti burundu. Konti zifite amakuru y’imyigire, ubwitabire cyangwa inyandiko zakozwe ziragumanwa — izo wazihagarika.",
-    "fr": "cela supprime définitivement le compte. Les comptes contenant des enregistrements d'apprentissage, de présence ou de création sont conservés – suspendez-les à la place."
+    "fr": "Cela supprime définitivement le compte. Les comptes contenant des enregistrements d'apprentissage, de présence ou de création sont conservés – suspendez-les à la place."
   },
   "Account deleted": {
     "rw": "Konti yasibwe",
@@ -6894,7 +6914,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "PLP’s international chapter community.": {
     "rw": "Umuryango mpuzamahanga wa PLP.",
-    "fr": "communauté du chapitre international de PLP."
+    "fr": "Communauté du chapitre international de PLP."
   },
   "Premium training pass": {
     "rw": "Uruhushya rwo kwitabira amahugurwa yihariye",
@@ -6906,7 +6926,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "PLP merchandise": {
     "rw": "Ibicuruzwa bya PLP",
-    "fr": "marchandise PLP"
+    "fr": "Marchandise PLP"
   },
   "Digital Literacy & AI Tools": {
     "rw": "Ubumenyi bw’ikoranabuhanga n’ibikoresho by’ubwenge buhangano",
@@ -6962,7 +6982,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "AI Career Essentials": {
     "rw": "Ibyingenzi byumwuga wa AI",
-    "fr": "essentiels de carrière en IA"
+    "fr": "Essentiels de carrière en IA"
   },
   "Explore practical AI skills through the official ALX programme catalogue.": {
     "rw": "Shakisha ubuhanga bufatika bwa AI ukoresheje urutonde rwa porogaramu ya ALX.",
@@ -6986,15 +7006,15 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Resource uploaded": {
     "rw": "Ibikoresho byoherejwe",
-    "fr": "ressource téléchargée"
+    "fr": "Ressource téléchargée"
   },
   "Upload failed": {
     "rw": "Kohereza byanze",
-    "fr": "échec du téléchargement"
+    "fr": "Échec du téléchargement"
   },
   "Resource updated": {
     "rw": "Ibikoresho byavuguruwe",
-    "fr": "ressource mise à jour"
+    "fr": "Ressource mise à jour"
   },
   "Resource archived": {
     "rw": "Ibikoresho byabitswe",
@@ -7002,7 +7022,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Archive failed": {
     "rw": "Ububiko bwarananiranye",
-    "fr": "échec de l'archivage"
+    "fr": "Échec de l'archivage"
   },
   "Failed to add facilitator": {
     "rw": "Kongeramo umufashamyumvire byanze",
@@ -7026,11 +7046,11 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Report failed": {
     "rw": "Raporo yananiwe",
-    "fr": "échec du rapport"
+    "fr": "Échec du rapport"
   },
   "Event Requests": {
     "rw": "Ubusabe bw’ibikorwa",
-    "fr": "demandes d'événements"
+    "fr": "Demandes d'événements"
   },
   "Events Archive": {
     "rw": "Ububiko bw’ibikorwa",
@@ -7078,7 +7098,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Failed to add member": {
     "rw": "Kunanirwa kongera abanyamuryango",
-    "fr": "échec de l'ajout du membre"
+    "fr": "Échec de l'ajout du membre"
   },
   "Confirmed": {
     "rw": "Byemejwe",
@@ -7090,7 +7110,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Certificate download started": {
     "rw": "Gukuramo ibyemezo byatangiye",
-    "fr": "le téléchargement du certificat a démarré"
+    "fr": "Le téléchargement du certificat a démarré"
   },
   "Certificate request sent to PLP National": {
     "rw": "Gusaba ibyemezo byoherejwe muri PLP National",
@@ -7098,7 +7118,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Failed to request certificates": {
     "rw": "Kunanirwa gusaba ibyemezo",
-    "fr": "échec de la demande de certificats"
+    "fr": "Échec de la demande de certificats"
   },
   "School profile updated": {
     "rw": "Umwirondoro w'ishuri wavuguruwe",
@@ -7150,7 +7170,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "To be announced": {
     "rw": "Gutangazwa",
-    "fr": "à annoncer"
+    "fr": "À annoncer"
   },
   "Upcoming events": {
     "rw": "Ibikorwa biri imbere",
@@ -7178,7 +7198,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Approved activities will appear here": {
     "rw": "Ibikorwa byemewe bizagaragara hano",
-    "fr": "les activités approuvées apparaîtront ici"
+    "fr": "Les activités approuvées apparaîtront ici"
   },
   "Once coordinators approve activity reports, they are ready for public visibility and national reporting.": {
     "rw": "Abahuzabikorwa nibamara kwemeza raporo y'ibikorwa, baba biteguye kugaragara no gutanga raporo y'igihugu.",
@@ -7190,7 +7210,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Email alerts for pending approvals": {
     "rw": "Imeri imenyesha kugirango utegereze ibyemezo",
-    "fr": "alertes par e-mail pour les approbations en attente"
+    "fr": "Alertes par e-mail pour les approbations en attente"
   },
   "Weekly activity digest": {
     "rw": "Incamake y’ibikorwa bya buri cyumweru",
@@ -7198,7 +7218,7 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   },
   "Product updates and announcements": {
     "rw": "Kuvugurura ibicuruzwa n'amatangazo",
-    "fr": "mises à jour et annonces de produits"
+    "fr": "Mises à jour et annonces de produits"
   },
   "All pathways": {
     "rw": "Inzira zose",
@@ -8161,8 +8181,8 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "fr": "Prenez part à"
   },
   "PLP’s next chapter.": {
-    "rw": "ntambwe ikurikira ya PLP.",
-    "fr": "la prochaine étape de PLP."
+    "rw": "Ntambwe ikurikira ya PLP.",
+    "fr": "La prochaine étape de PLP."
   },
   "PLP home": {
     "rw": "Ahabanza ha PLP",
@@ -9559,5 +9579,1057 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "High school student": {
     "rw": "Umunyeshuri w'ayisumbuye",
     "fr": "Élève du secondaire"
+  },
+  "question": {
+    "rw": "ikibazo",
+    "fr": "question"
+  },
+  "quote": {
+    "rw": "amagambo yavuzwe",
+    "fr": "citation"
+  },
+  "opportunity": {
+    "rw": "amahirwe",
+    "fr": "opportunité"
+  },
+  "course": {
+    "rw": "isomo",
+    "fr": "cours"
+  },
+  "request": {
+    "rw": "ubusabe",
+    "fr": "demande"
+  },
+  "approved": {
+    "rw": "byemejwe",
+    "fr": "approuvé"
+  },
+  "returned": {
+    "rw": "byagaruwe",
+    "fr": "renvoyé"
+  },
+  "registered": {
+    "rw": "biyandikishije",
+    "fr": "inscrits"
+  },
+  "declined": {
+    "rw": "byanzwe",
+    "fr": "refusé"
+  },
+  "pending": {
+    "rw": "birategereje",
+    "fr": "en attente"
+  },
+  "issued": {
+    "rw": "byatanzwe",
+    "fr": "délivré"
+  },
+  "cancelled": {
+    "rw": "byahagaritswe",
+    "fr": "annulé"
+  },
+  "confirmed": {
+    "rw": "byemejwe",
+    "fr": "confirmé"
+  },
+  "Volunteering": {
+    "rw": "Ubukorerabushake",
+    "fr": "Bénévolat"
+  },
+  "Challenge": {
+    "rw": "Irushanwa",
+    "fr": "Défi"
+  },
+  "Other": {
+    "rw": "Ibindi",
+    "fr": "Autre"
+  },
+  "Workshop": {
+    "rw": "Amahugurwa",
+    "fr": "Atelier"
+  },
+  "Training": {
+    "rw": "Amahugurwa",
+    "fr": "Formation"
+  },
+  "Event": {
+    "rw": "Igikorwa",
+    "fr": "Événement"
+  },
+  "Attendance": {
+    "rw": "Ukwitabira",
+    "fr": "Présence"
+  },
+  "certificates": {
+    "rw": "ibyemezo",
+    "fr": "certificats"
+  },
+  "hours": {
+    "rw": "amasaha",
+    "fr": "heures"
+  },
+  "assignments": {
+    "rw": "imikoro",
+    "fr": "devoirs"
+  },
+  "lessons": {
+    "rw": "amasomo",
+    "fr": "leçons"
+  },
+  "recipients": {
+    "rw": "abahabwa",
+    "fr": "destinataires"
+  },
+  "Past": {
+    "rw": "Ibyarangiye",
+    "fr": "Passés"
+  },
+  "Yesterday": {
+    "rw": "Ejo hashize",
+    "fr": "Hier"
+  },
+  "trainer": {
+    "rw": "umwarimu",
+    "fr": "formateur"
+  },
+  "leader": {
+    "rw": "umuyobozi",
+    "fr": "responsable"
+  },
+  "administrator": {
+    "rw": "umuyobozi mukuru",
+    "fr": "administrateur"
+  },
+  "account": {
+    "rw": "konti",
+    "fr": "compte"
+  },
+  "application": {
+    "rw": "ubusabe",
+    "fr": "candidature"
+  },
+  "CV": {
+    "rw": "CV",
+    "fr": "CV"
+  },
+  "Cover letter": {
+    "rw": "Ibaruwa isaba akazi",
+    "fr": "Lettre de motivation"
+  },
+  "Supporting letter": {
+    "rw": "Ibaruwa y'inyongera",
+    "fr": "Lettre de soutien"
+  },
+  "password": {
+    "rw": "ijambo ry'ibanga",
+    "fr": "mot de passe"
+  },
+  "Activity": {
+    "rw": "Igikorwa",
+    "fr": "Activité"
+  },
+  "Certificate": {
+    "rw": "Icyemezo",
+    "fr": "Certificat"
+  },
+  "Register members": {
+    "rw": "Abanditswe mu gitabo",
+    "fr": "Membres inscrits"
+  },
+  "Reports filed": {
+    "rw": "Raporo zatanzwe",
+    "fr": "Rapports déposés"
+  },
+  "Give feedback so learners know how to improve.": {
+    "rw": "Tanga ibitekerezo kugira ngo abiga bamenye uko bakwiteza imbere.",
+    "fr": "Donnez un retour pour que les apprenants sachent comment progresser."
+  },
+  "Send request": {
+    "rw": "Ohereza ubusabe",
+    "fr": "Envoyer la demande"
+  },
+  "Cancelled": {
+    "rw": "Byahagaritswe",
+    "fr": "Annulé"
+  },
+  "Open": {
+    "rw": "Fungura",
+    "fr": "Ouvrir"
+  },
+  "File storage is not configured": {
+    "rw": "Ububiko bw'amadosiye ntiburashyirwaho",
+    "fr": "Le stockage des fichiers n'est pas configuré"
+  },
+  "Choose a PDF, PNG, JPEG, MP4 or WebM file": {
+    "rw": "Hitamo dosiye ya PDF, PNG, JPEG, MP4 cyangwa WebM",
+    "fr": "Choisissez un fichier PDF, PNG, JPEG, MP4 ou WebM"
+  },
+  "Only trainers can upload videos": {
+    "rw": "Abarimu bonyine ni bo bashobora kohereza amashusho",
+    "fr": "Seuls les formateurs peuvent téléverser des vidéos"
+  },
+  "File is too large": {
+    "rw": "Dosiye ni nini cyane",
+    "fr": "Le fichier est trop volumineux"
+  },
+  "File not found": {
+    "rw": "Dosiye ntiyabonetse",
+    "fr": "Fichier introuvable"
+  },
+  "Remove this file from its records before deleting it": {
+    "rw": "Banza ukure iyi dosiye mu nyandiko ziyikoresha mbere yo kuyisiba",
+    "fr": "Retirez ce fichier de ses enregistrements avant de le supprimer"
+  },
+  "Attachment does not belong to you": {
+    "rw": "Iyi dosiye yometseho si iyawe",
+    "fr": "Cette pièce jointe ne vous appartient pas"
+  },
+  "Request too large": {
+    "rw": "Ubusabe ni bunini cyane",
+    "fr": "Requête trop volumineuse"
+  },
+  "Invalid JSON": {
+    "rw": "JSON itemewe",
+    "fr": "JSON non valide"
+  },
+  "Invalid file": {
+    "rw": "Dosiye itemewe",
+    "fr": "Fichier non valide"
+  },
+  "Upload the photo from your own account": {
+    "rw": "Ohereza ifoto ukoresheje konti yawe bwite",
+    "fr": "Téléversez la photo depuis votre propre compte"
+  },
+  "Profile pictures must be PNG or JPEG images": {
+    "rw": "Amafoto y'umwirondoro agomba kuba amashusho ya PNG cyangwa JPEG",
+    "fr": "Les photos de profil doivent être des images PNG ou JPEG"
+  },
+  "Profile pictures must be 2 MB or smaller": {
+    "rw": "Amafoto y'umwirondoro ntagomba kurenza MB 2",
+    "fr": "Les photos de profil ne doivent pas dépasser 2 MB"
+  },
+  "No profile picture": {
+    "rw": "Nta foto y'umwirondoro ihari",
+    "fr": "Aucune photo de profil"
+  },
+  "Invalid answer": {
+    "rw": "Igisubizo kitemewe",
+    "fr": "Réponse non valide"
+  },
+  "Published courses need modules with quizzes, an assignment and at least three final exam questions": {
+    "rw": "Amasomo yatangajwe agomba kugira ibice birimo ibibazo by'isuzuma, umukoro n'ibibazo nibura bitatu by'ikizamini cya nyuma",
+    "fr": "Les cours publiés doivent comporter des modules avec des quiz, un devoir et au moins trois questions d'examen final"
+  },
+  "Published courses need lessons and an assessment": {
+    "rw": "Amasomo yatangajwe agomba kugira amasomo n'isuzuma",
+    "fr": "Les cours publiés doivent comporter des leçons et une évaluation"
+  },
+  "Origin not allowed": {
+    "rw": "Inkomoko ntiyemewe",
+    "fr": "Origine non autorisée"
+  },
+  "Too many attempts. Try later.": {
+    "rw": "Wagerageje inshuro nyinshi cyane. Ongera ugerageze nyuma.",
+    "fr": "Trop de tentatives. Réessayez plus tard."
+  },
+  "Password recovery is temporarily unavailable. Contact PLP support.": {
+    "rw": "Kugarura ijambo ry'ibanga ntibishoboka by'agateganyo. Vugana n'ubufasha bwa PLP.",
+    "fr": "La récupération du mot de passe est temporairement indisponible. Contactez l'assistance PLP."
+  },
+  "This code is incorrect, expired or has too many attempts. Request a new code.": {
+    "rw": "Iyi kode si yo, yararangiye cyangwa yagerageje inshuro nyinshi cyane. Saba kode nshya.",
+    "fr": "Ce code est incorrect, a expiré ou a fait l'objet de trop de tentatives. Demandez un nouveau code."
+  },
+  "Recovery link is invalid or expired": {
+    "rw": "Ihuza ryo kugarura konti ntiryemewe cyangwa ryarangiye",
+    "fr": "Le lien de récupération est invalide ou a expiré"
+  },
+  "Email delivery is currently unavailable. Please try again later.": {
+    "rw": "Kohereza imeyili ntibishoboka ubu. Turabasaba kongera kugerageza nyuma.",
+    "fr": "L'envoi d'e-mails est actuellement indisponible. Veuillez réessayer plus tard."
+  },
+  "Too many failed sign-in attempts for this account. Wait 15 minutes or reset your password.": {
+    "rw": "Iyi konti yagerageje kwinjira inshuro nyinshi binanirana. Tegereza iminota 15 cyangwa uhindure ijambo ry'ibanga.",
+    "fr": "Trop de tentatives de connexion échouées pour ce compte. Patientez 15 minutes ou réinitialisez votre mot de passe."
+  },
+  "Email or password is incorrect": {
+    "rw": "Imeyili cyangwa ijambo ry'ibanga si byo",
+    "fr": "L'adresse e-mail ou le mot de passe est incorrect"
+  },
+  "Verify your email before signing in. Request a code on the email verification page.": {
+    "rw": "Emeza imeyili yawe mbere yo kwinjira. Saba kode ku rupapuro rwo kwemeza imeyili.",
+    "fr": "Vérifiez votre adresse e-mail avant de vous connecter. Demandez un code sur la page de vérification de l'e-mail."
+  },
+  "Your account is not approved. Contact PLP for help.": {
+    "rw": "Konti yawe ntiremezwa. Vugana na PLP ngo igufashe.",
+    "fr": "Votre compte n'est pas approuvé. Contactez PLP pour obtenir de l'aide."
+  },
+  "Current password is incorrect": {
+    "rw": "Ijambo ry'ibanga usanzwe ukoresha si ryo",
+    "fr": "Le mot de passe actuel est incorrect"
+  },
+  "Administrator required": {
+    "rw": "Bisaba umuyobozi",
+    "fr": "Administrateur requis"
+  },
+  "Certificate renderer unavailable": {
+    "rw": "Igikoresho gikora ibyemezo ntikiboneka",
+    "fr": "Le générateur de certificats est indisponible"
+  },
+  "School management access required": {
+    "rw": "Bisaba uburenganzira bwo gucunga ishuri",
+    "fr": "Accès à la gestion de l'école requis"
+  },
+  "School not found": {
+    "rw": "Ishuri ntiryabonetse",
+    "fr": "École introuvable"
+  },
+  "Cannot change your own access": {
+    "rw": "Ntushobora guhindura uburenganzira bwawe bwite",
+    "fr": "Vous ne pouvez pas modifier votre propre accès"
+  },
+  "User not found": {
+    "rw": "Ukoresha ntiyabonetse",
+    "fr": "Utilisateur introuvable"
+  },
+  "An account with this email already exists": {
+    "rw": "Hari konti isanzwe ikoresha iyi meyili",
+    "fr": "Un compte avec cette adresse e-mail existe déjà"
+  },
+  "You cannot delete your own account": {
+    "rw": "Ntushobora gusiba konti yawe bwite",
+    "fr": "Vous ne pouvez pas supprimer votre propre compte"
+  },
+  "School leadership access required": {
+    "rw": "Bisaba uburenganzira bw'ubuyobozi bw'ishuri",
+    "fr": "Accès à la direction de l'école requis"
+  },
+  "School outside your assignment": {
+    "rw": "Ishuri riri hanze y'ayo washinzwe",
+    "fr": "École hors de votre affectation"
+  },
+  "Material not found": {
+    "rw": "Imfashanyigisho ntiyabonetse",
+    "fr": "Support introuvable"
+  },
+  "Material is not assigned to this school": {
+    "rw": "Iyi mfashanyigisho ntiyagenewe iri shuri",
+    "fr": "Ce support n'est pas attribué à cette école"
+  },
+  "Reporting access required": {
+    "rw": "Bisaba uburenganzira bwo gukora raporo",
+    "fr": "Accès aux rapports requis"
+  },
+  "Unknown resource": {
+    "rw": "Ikintu kitazwi",
+    "fr": "Ressource inconnue"
+  },
+  "Record not found": {
+    "rw": "Inyandiko ntiyabonetse",
+    "fr": "Enregistrement introuvable"
+  },
+  "Not allowed": {
+    "rw": "Ntibyemewe",
+    "fr": "Non autorisé"
+  },
+  "Courses are created by approved trainers": {
+    "rw": "Amasomo akorwa n'abarimu bemejwe",
+    "fr": "Les cours sont créés par des formateurs approuvés"
+  },
+  "Only administrators approve courses": {
+    "rw": "Abayobozi bonyine ni bo bemeza amasomo",
+    "fr": "Seuls les administrateurs approuvent les cours"
+  },
+  "Only administrators can write publication feedback": {
+    "rw": "Abayobozi bonyine ni bo bashobora gutanga ibitekerezo ku itangazwa",
+    "fr": "Seuls les administrateurs peuvent rédiger des commentaires sur la publication"
+  },
+  "Only administrators can review submissions": {
+    "rw": "Abayobozi bonyine ni bo bashobora gusuzuma ibyoherejwe",
+    "fr": "Seuls les administrateurs peuvent examiner les soumissions"
+  },
+  "Only administrators can write review feedback": {
+    "rw": "Abayobozi bonyine ni bo bashobora gutanga ibitekerezo ku isuzuma",
+    "fr": "Seuls les administrateurs peuvent rédiger des commentaires d'examen"
+  },
+  "Activity not found": {
+    "rw": "Igikorwa ntikyabonetse",
+    "fr": "Activité introuvable"
+  },
+  "This activity has already taken place.": {
+    "rw": "Iki gikorwa cyamaze kuba.",
+    "fr": "Cette activité a déjà eu lieu."
+  },
+  "You have already said you'll participate.": {
+    "rw": "Wamaze kuvuga ko uzitabira.",
+    "fr": "Vous avez déjà indiqué que vous participerez."
+  },
+  "A school is required for register entries": {
+    "rw": "Ishuri rirakenewe kugira ngo wandike mu gitabo cy'abanyamuryango",
+    "fr": "Une école est requise pour les inscriptions au registre"
+  },
+  "External opportunities need an https:// application link": {
+    "rw": "Amahirwe yo hanze akenera ihuza ryo gusaba ritangirwa na https://",
+    "fr": "Les opportunités externes nécessitent un lien de candidature en https://"
+  },
+  "Opportunity not found": {
+    "rw": "Amahirwe ntiyabonetse",
+    "fr": "Opportunité introuvable"
+  },
+  "Applications for this opportunity are closed": {
+    "rw": "Gusaba aya mahirwe byarafunzwe",
+    "fr": "Les candidatures pour cette opportunité sont closes"
+  },
+  "You have already applied": {
+    "rw": "Wamaze gusaba",
+    "fr": "Vous avez déjà postulé"
+  },
+  "School assignment cannot be changed here": {
+    "rw": "Ishuri washinzwe ntirishobora guhindurirwa hano",
+    "fr": "L'affectation à l'école ne peut pas être modifiée ici"
+  },
+  "Record changed. Reload before editing": {
+    "rw": "Inyandiko yahindutse. Ongera ufungure mbere yo guhindura",
+    "fr": "L'enregistrement a changé. Rechargez avant de le modifier"
+  },
+  "Administrators review courses but cannot change their content": {
+    "rw": "Abayobozi basuzuma amasomo ariko ntibashobora guhindura ibiyakubiyemo",
+    "fr": "Les administrateurs examinent les cours mais ne peuvent pas modifier leur contenu"
+  },
+  "Enrolled course content is locked. Create a new course version.": {
+    "rw": "Ibikubiye mu isomo ryiyandikishijwemo byarafunzwe. Kora indi verisiyo nshya y'isomo.",
+    "fr": "Le contenu d'un cours avec des inscrits est verrouillé. Créez une nouvelle version du cours."
+  },
+  "Courses with enrolled learners cannot be deleted. Unpublish it instead.": {
+    "rw": "Amasomo afite abanyeshuri biyandikishije ntashobora gusibwa. Ahubwo, hagarika kuyatangaza.",
+    "fr": "Les cours avec des apprenants inscrits ne peuvent pas être supprimés. Dépubliez-le plutôt."
+  },
+  "This opportunity has applications. Unpublish it instead.": {
+    "rw": "Aya mahirwe afite abayasabye. Ahubwo, hagarika kuyatangaza.",
+    "fr": "Cette opportunité a reçu des candidatures. Dépubliez-la plutôt."
+  },
+  "Published course not found": {
+    "rw": "Isomo ryatangajwe ntiryabonetse",
+    "fr": "Cours publié introuvable"
+  },
+  "Enrollment not found": {
+    "rw": "Kwiyandikisha ntikwabonetse",
+    "fr": "Inscription introuvable"
+  },
+  "Course unavailable": {
+    "rw": "Isomo ntiriboneka",
+    "fr": "Cours indisponible"
+  },
+  "Modules and the final exam are completed by passing their timed assessments": {
+    "rw": "Ibice n'ikizamini cya nyuma birangizwa no gutsinda isuzuma ryabyo rifite igihe ntarengwa",
+    "fr": "Les modules et l'examen final sont validés en réussissant leurs évaluations chronométrées"
+  },
+  "Pass every module quiz before submitting the assignment": {
+    "rw": "Tsinda ibibazo by'isuzuma by'igice cyose mbere yo kohereza umukoro",
+    "fr": "Réussissez chaque quiz de module avant de soumettre le devoir"
+  },
+  "The assignment is locked after the final exam is passed": {
+    "rw": "Umukoro urafungwa nyuma yo gutsinda ikizamini cya nyuma",
+    "fr": "Le devoir est verrouillé une fois l'examen final réussi"
+  },
+  "Write at least 60 words": {
+    "rw": "Andika nibura amagambo 60",
+    "fr": "Écrivez au moins 60 mots"
+  },
+  "Unknown lesson": {
+    "rw": "Isomo ritazwi",
+    "fr": "Leçon inconnue"
+  },
+  "Complete lessons and assignment first": {
+    "rw": "Banza urangize amasomo n'umukoro",
+    "fr": "Terminez d'abord les leçons et le devoir"
+  },
+  "You have used all 3 attempts for this knowledge check. Ask the course trainer for help.": {
+    "rw": "Wakoresheje inshuro 3 zose wemerewe kuri iri suzuma ry'ubumenyi. Saba umwarimu w'isomo agufashe.",
+    "fr": "Vous avez utilisé vos 3 tentatives pour ce contrôle des connaissances. Demandez de l'aide au formateur du cours."
+  },
+  "After a wrong answer, you can try again in 24 hours. Review the lessons in the meantime.": {
+    "rw": "Nyuma y'igisubizo kitari cyo, ushobora kongera kugerageza nyuma y'amasaha 24. Hagati aho, subira mu masomo.",
+    "fr": "Après une mauvaise réponse, vous pourrez réessayer dans 24 heures. Révisez les leçons en attendant."
+  },
+  "Event management access required": {
+    "rw": "Bisaba uburenganzira bwo gucunga ibikorwa",
+    "fr": "Accès à la gestion des événements requis"
+  },
+  "Register member outside your school": {
+    "rw": "Umunyamuryango wanditswe uri hanze y'ishuri ryawe",
+    "fr": "Membre du registre hors de votre école"
+  },
+  "Member outside your school": {
+    "rw": "Umunyamuryango uri hanze y'ishuri ryawe",
+    "fr": "Membre hors de votre école"
+  },
+  "You can submit the report on or after the activity date.": {
+    "rw": "Ushobora kohereza raporo ku munsi w'igikorwa cyangwa nyuma yawo.",
+    "fr": "Vous pouvez soumettre le rapport à la date de l'activité ou après."
+  },
+  "Approved member required": {
+    "rw": "Bisaba umunyamuryango wemejwe",
+    "fr": "Membre approuvé requis"
+  },
+  "Active certificate not found": {
+    "rw": "Icyemezo gikora ntikyabonetse",
+    "fr": "Certificat actif introuvable"
+  },
+  "Not found": {
+    "rw": "Ntibyabonetse",
+    "fr": "Introuvable"
+  },
+  "Invalid input": {
+    "rw": "Ibyinjijwe ntibyemewe",
+    "fr": "Saisie non valide"
+  },
+  "Record is referenced or linked record does not exist": {
+    "rw": "Inyandiko irakoreshwa ahandi cyangwa inyandiko ihujwe na yo ntibaho",
+    "fr": "L'enregistrement est référencé ou l'enregistrement lié n'existe pas"
+  },
+  "Record already exists": {
+    "rw": "Inyandiko isanzwe ibaho",
+    "fr": "L'enregistrement existe déjà"
+  },
+  "Use at least 12 characters.": {
+    "rw": "Koresha nibura inyuguti 12.",
+    "fr": "Utilisez au moins 12 caractères."
+  },
+  "Use 128 characters or fewer.": {
+    "rw": "Koresha inyuguti 128 cyangwa munsi yazo.",
+    "fr": "Utilisez 128 caractères ou moins."
+  },
+  "Use a password with more variety than repeated characters.": {
+    "rw": "Koresha ijambo ry'ibanga rifite inyuguti zitandukanye, aho gusubiramo inyuguti imwe.",
+    "fr": "Utilisez un mot de passe plus varié que des caractères répétés."
+  },
+  "Add some letters: a number on its own is quick to guess.": {
+    "rw": "Ongeramo inyuguti: umubare wonyine woroshye gukekwa.",
+    "fr": "Ajoutez des lettres : un nombre seul est facile à deviner."
+  },
+  "Avoid keyboard or number sequences.": {
+    "rw": "Irinde gukurikiranya inyuguti zo kuri mudasobwa cyangwa imibare.",
+    "fr": "Évitez les suites de touches du clavier ou de chiffres."
+  },
+  "This password is too common. Try a short sentence or a few unrelated words.": {
+    "rw": "Iri jambo ry'ibanga rirakoreshwa cyane. Gerageza interuro ngufi cyangwa amagambo make adafitanye isano.",
+    "fr": "Ce mot de passe est trop courant. Essayez une courte phrase ou quelques mots sans rapport."
+  },
+  "Activity hours must be between 0.5 and 24, in half hours.": {
+    "rw": "Amasaha y'igikorwa agomba kuba hagati ya 0.5 na 24, mu bice by'igice cy'isaha.",
+    "fr": "Les heures d'activité doivent être comprises entre 0.5 et 24, par demi-heure."
+  },
+  "Opportunity title": {
+    "rw": "Umutwe w'amahirwe",
+    "fr": "Titre de l'opportunité"
+  },
+  "Choose an ALX programme.": {
+    "rw": "Hitamo porogaramu ya ALX.",
+    "fr": "Choisissez un programme ALX."
+  },
+  "Upload exactly one certificate file.": {
+    "rw": "Ohereza dosiye imwe gusa y'icyemezo.",
+    "fr": "Téléversez exactement un fichier de certificat."
+  },
+  "Before publishing, add a title and lessons with content.": {
+    "rw": "Mbere yo gutangaza, ongeraho umutwe n'amasomo afite ibiyakubiyemo.",
+    "fr": "Avant de publier, ajoutez un titre et des leçons avec du contenu."
+  },
+  "Use a real date": {
+    "rw": "Koresha itariki nyayo",
+    "fr": "Utilisez une date réelle"
+  },
+  "The term cannot start in the future.": {
+    "rw": "Igihembwe ntigishobora gutangira mu gihe kizaza.",
+    "fr": "Le trimestre ne peut pas commencer dans le futur."
+  },
+  "Choose members from this school register": {
+    "rw": "Hitamo abanyamuryango bo mu gitabo cy'iri shuri",
+    "fr": "Choisissez des membres du registre de cette école"
+  },
+  "Request not found": {
+    "rw": "Ubusabe ntibwabonetse",
+    "fr": "Demande introuvable"
+  },
+  "Only returned requests can be corrected": {
+    "rw": "Ubusabe bwagaruwe ni bwo bwonyine bushobora gukosorwa",
+    "fr": "Seules les demandes renvoyées peuvent être corrigées"
+  },
+  "Explain the required correction": {
+    "rw": "Sobanura ikosora rikenewe",
+    "fr": "Expliquez la correction requise"
+  },
+  "Request has already been reviewed": {
+    "rw": "Ubusabe bwamaze gusuzumwa",
+    "fr": "La demande a déjà été examinée"
+  },
+  "Attendance must close after it opens": {
+    "rw": "Kwandika ubwitabire bigomba gufunga nyuma yo gufungura",
+    "fr": "La prise de présence doit se fermer après son ouverture"
+  },
+  "Meeting not found": {
+    "rw": "Inama ntiyabonetse",
+    "fr": "Réunion introuvable"
+  },
+  "Sign in to mark your attendance": {
+    "rw": "Injira kugira ngo wandike ko witabiriye",
+    "fr": "Connectez-vous pour enregistrer votre présence"
+  },
+  "Choose a future attendance window": {
+    "rw": "Hitamo igihe kizaza cyo kwandika ubwitabire",
+    "fr": "Choisissez une plage de présence future"
+  },
+  "Create a new meeting after closing attendance": {
+    "rw": "Kora inama nshya nyuma yo gufunga kwandika ubwitabire",
+    "fr": "Créez une nouvelle réunion après la clôture de la présence"
+  },
+  "Credits cannot change after attendance has been recorded": {
+    "rw": "Amanota ntashobora guhinduka nyuma y'uko ubwitabire bwanditswe",
+    "fr": "Les crédits ne peuvent pas changer une fois la présence enregistrée"
+  },
+  "This meeting has ended": {
+    "rw": "Iyi nama yarangiye",
+    "fr": "Cette réunion est terminée"
+  },
+  "Too many attempts. Try again in 15 minutes.": {
+    "rw": "Wagerageje inshuro nyinshi cyane. Ongera ugerageze mu minota 15.",
+    "fr": "Trop de tentatives. Réessayez dans 15 minutes."
+  },
+  "Attendance is not open for this meeting": {
+    "rw": "Kwandika ubwitabire ntibifunguye kuri iyi nama",
+    "fr": "La présence n'est pas ouverte pour cette réunion"
+  },
+  "Incorrect attendance code. Ask your host for the current code.": {
+    "rw": "Kode y'ubwitabire si yo. Saba uyoboye inama kode iriho ubu.",
+    "fr": "Code de présence incorrect. Demandez le code actuel à votre hôte."
+  },
+  "Refresh your location and try again": {
+    "rw": "Vugurura aho uri hanyuma wongere ugerageze",
+    "fr": "Actualisez votre position et réessayez"
+  },
+  "Your location is not precise enough. Enable precise location and try again near the entrance.": {
+    "rw": "Aho uri ntihagaragara neza bihagije. Fungura uburyo bwo kwerekana aho uri neza hanyuma wongere ugerageze uri hafi y'umuryango.",
+    "fr": "Votre position n'est pas assez précise. Activez la localisation précise et réessayez près de l'entrée."
+  },
+  "You need to be at the meeting venue to mark attendance": {
+    "rw": "Ugomba kuba uri aho inama ibera kugira ngo wandike ko witabiriye",
+    "fr": "Vous devez être sur le lieu de la réunion pour enregistrer votre présence"
+  },
+  "New session request": {
+    "rw": "Ubusabe bushya bw'ikiganiro",
+    "fr": "Nouvelle demande de séance"
+  },
+  "Review the request": {
+    "rw": "Suzuma ubusabe",
+    "fr": "Examiner la demande"
+  },
+  "Accept, reschedule or decline it from your mentor dashboard.": {
+    "rw": "Bwemere, uhindure igihe cyangwa ubwange uhereye ku rubuga rwawe rw'umujyanama.",
+    "fr": "Acceptez-la, reprogrammez-la ou refusez-la depuis votre tableau de bord de mentor."
+  },
+  "Session cancelled": {
+    "rw": "Ikiganiro cyahagaritswe",
+    "fr": "Séance annulée"
+  },
+  "Open your dashboard": {
+    "rw": "Fungura urubuga rwawe",
+    "fr": "Ouvrir votre tableau de bord"
+  },
+  "Your session is confirmed": {
+    "rw": "Ikiganiro cyawe cyemejwe",
+    "fr": "Votre séance est confirmée"
+  },
+  "View my sessions": {
+    "rw": "Reba ibiganiro byanjye",
+    "fr": "Voir mes séances"
+  },
+  "Your request was declined": {
+    "rw": "Ubusabe bwawe bwanzwe",
+    "fr": "Votre demande a été refusée"
+  },
+  "Request another time or mentor": {
+    "rw": "Saba ikindi gihe cyangwa undi mujyanama",
+    "fr": "Demandez un autre horaire ou un autre mentor"
+  },
+  "Your session has a new time": {
+    "rw": "Ikiganiro cyawe gifite igihe gishya",
+    "fr": "Votre séance a un nouvel horaire"
+  },
+  "Thank you for meeting": {
+    "rw": "Murakoze ku bw'ikiganiro",
+    "fr": "Merci pour la rencontre"
+  },
+  "Add your takeaway": {
+    "rw": "Ongeraho icyo wakuyemo",
+    "fr": "Ajoutez ce que vous en retenez"
+  },
+  "Approved mentor access required": {
+    "rw": "Bisaba uburenganzira bw'umujyanama wemejwe",
+    "fr": "Accès mentor approuvé requis"
+  },
+  "Method not allowed": {
+    "rw": "Uburyo ntibwemewe",
+    "fr": "Méthode non autorisée"
+  },
+  "Choose an approved mentor": {
+    "rw": "Hitamo umujyanama wemejwe",
+    "fr": "Choisissez un mentor approuvé"
+  },
+  "Choose another mentor": {
+    "rw": "Hitamo undi mujyanama",
+    "fr": "Choisissez un autre mentor"
+  },
+  "This mentor is not taking new requests right now": {
+    "rw": "Uyu mujyanama ntarimo kwakira ubusabe bushya ubu",
+    "fr": "Ce mentor n'accepte pas de nouvelles demandes pour le moment"
+  },
+  "Session already exists": {
+    "rw": "Ikiganiro gisanzwe kibaho",
+    "fr": "La séance existe déjà"
+  },
+  "Choose a future session time": {
+    "rw": "Hitamo igihe kizaza cy'ikiganiro",
+    "fr": "Choisissez un horaire de séance futur"
+  },
+  "Session not found": {
+    "rw": "Ikiganiro ntikyabonetse",
+    "fr": "Séance introuvable"
+  },
+  "This session can no longer be changed": {
+    "rw": "Iki kiganiro ntikigishobora guhindurwa",
+    "fr": "Cette séance ne peut plus être modifiée"
+  },
+  "This session is already closed": {
+    "rw": "Iki kiganiro cyamaze gufungwa",
+    "fr": "Cette séance est déjà clôturée"
+  },
+  "Only a confirmed session that has started can be completed": {
+    "rw": "Ikiganiro cyemejwe kandi cyatangiye ni cyo cyonyine gishobora kurangizwa",
+    "fr": "Seule une séance confirmée et commencée peut être terminée"
+  },
+  "Use an HTTPS meeting link, or type the venue": {
+    "rw": "Koresha ihuza ry'inama rya HTTPS, cyangwa wandike aho izabera",
+    "fr": "Utilisez un lien de réunion HTTPS ou saisissez le lieu"
+  },
+  "Hourly email limit reached": {
+    "rw": "Umubare ntarengwa w'imeyili mu isaha wagezweho",
+    "fr": "Limite horaire d'e-mails atteinte"
+  },
+  "Complete the previous module first": {
+    "rw": "Banza urangize igice kibanziriza iki",
+    "fr": "Terminez d'abord le module précédent"
+  },
+  "Assessment not found": {
+    "rw": "Isuzuma ntiryabonetse",
+    "fr": "Évaluation introuvable"
+  },
+  "Finish your open assessment first": {
+    "rw": "Banza urangize isuzuma ufite rifunguye",
+    "fr": "Terminez d'abord votre évaluation en cours"
+  },
+  "You have already passed this assessment": {
+    "rw": "Wamaze gutsinda iri suzuma",
+    "fr": "Vous avez déjà réussi cette évaluation"
+  },
+  "Read the module before taking its quiz": {
+    "rw": "Soma igice mbere yo gukora ibibazo byacyo by'isuzuma",
+    "fr": "Lisez le module avant de passer son quiz"
+  },
+  "Pass every module quiz first": {
+    "rw": "Banza utsinde ibibazo by'isuzuma by'ibice byose",
+    "fr": "Réussissez d'abord chaque quiz de module"
+  },
+  "Submit the graded assignment first": {
+    "rw": "Banza wohereze umukoro uhabwa amanota",
+    "fr": "Soumettez d'abord le devoir noté"
+  },
+  "Attempt not found": {
+    "rw": "Igerageza ntiryabonetse",
+    "fr": "Tentative introuvable"
+  },
+  "Approved trainer access required": {
+    "rw": "Bisaba uburenganzira bw'umwarimu wemejwe",
+    "fr": "Accès formateur approuvé requis"
+  },
+  "Learner submission not found": {
+    "rw": "Icyoherejwe n'umunyeshuri ntikyabonetse",
+    "fr": "Soumission de l'apprenant introuvable"
+  },
+  "No assignment has been submitted": {
+    "rw": "Nta mukoro woherejwe",
+    "fr": "Aucun devoir n'a été soumis"
+  },
+  "Videos must be 500 MB or smaller": {
+    "rw": "Amashusho ntagomba kurenza MB 500",
+    "fr": "Les vidéos ne doivent pas dépasser 500 MB"
+  },
+  "Files must be 10 MB or smaller": {
+    "rw": "Amadosiye ntagomba kurenza MB 10",
+    "fr": "Les fichiers ne doivent pas dépasser 10 MB"
+  },
+  "Preview certificate": {
+    "rw": "Reba icyemezo",
+    "fr": "Aperçu du certificat"
+  },
+  "Preview": {
+    "rw": "Reba",
+    "fr": "Aperçu"
+  },
+  "Show photo {p0}": {
+    "rw": "Erekana ifoto ya {p0}",
+    "fr": "Afficher la photo {p0}"
+  },
+  "remember.": {
+    "rw": "twibuke.",
+    "fr": "se souvenir."
+  },
+  "create.": {
+    "rw": "guhanga.",
+    "fr": "créer."
+  },
+  "learn.": {
+    "rw": "kwiga.",
+    "fr": "apprendre."
+  },
+  "speak up.": {
+    "rw": "kuvuga.",
+    "fr": "s'exprimer."
+  },
+  "A large crowd of young people walking together along a tree-lined road": {
+    "rw": "Imbaga y'urubyiruko igenda hamwe ku muhanda uteyeho ibiti",
+    "fr": "Une foule de jeunes marchant ensemble le long d'une route bordée d'arbres"
+  },
+  "Young people painting at easels during a PLP arts session": {
+    "rw": "Urubyiruko rushushanya mu gikorwa cy'ubuhanzi cya PLP",
+    "fr": "Des jeunes peignent sur des chevalets lors d'un atelier artistique PLP"
+  },
+  "A facilitator presenting photos on a screen to young people at a PLP workshop": {
+    "rw": "Umuhuzabikorwa yerekana amafoto ku rubyiruko mu mahugurwa ya PLP",
+    "fr": "Un animateur présente des photos à des jeunes lors d'un atelier PLP"
+  },
+  "Young people in the audience of a youth dialogue forum": {
+    "rw": "Urubyiruko ruri mu biganiro by'urubyiruko",
+    "fr": "Des jeunes dans le public d'un forum de dialogue"
+  },
+  "In {p0} days": {
+    "rw": "Mu minsi {p0}",
+    "fr": "Dans {p0} jours"
+  },
+  "Not now": {
+    "rw": "Si ubu",
+    "fr": "Plus tard"
+  },
+  "Flyer: {p0}": {
+    "rw": "Itangazo: {p0}",
+    "fr": "Affiche : {p0}"
+  },
+  "Short description (shown in the popup flyer)": {
+    "rw": "Ibisobanuro bigufi (bigaragara ku itangazo)",
+    "fr": "Courte description (affichée dans l'affiche)"
+  },
+  "Flyer image (PNG or JPEG, portrait works best)": {
+    "rw": "Ifoto y'itangazo (PNG cyangwa JPEG, ihagaze ni yo nziza)",
+    "fr": "Image de l'affiche (PNG ou JPEG, format portrait conseillé)"
+  },
+  "Flyer uploaded. Save the announcement to publish it.": {
+    "rw": "Itangazo ryoherejwe. Bika itangazo kugira ngo rigaragare.",
+    "fr": "Affiche importée. Enregistrez l'annonce pour la publier."
+  },
+  "Remove flyer": {
+    "rw": "Kuraho itangazo",
+    "fr": "Retirer l'affiche"
+  },
+  "Add a headline and bio so mentees can find you.": {
+    "rw": "Ongeraho umutwe n'ibisobanuro kugira ngo abo ufasha bakubone.",
+    "fr": "Ajoutez un titre et une bio pour que les mentorés vous trouvent."
+  },
+  "Remember together.": {
+    "rw": "Twibuke hamwe.",
+    "fr": "Se souvenir ensemble."
+  },
+  "We honour our history and walk as one for unity.": {
+    "rw": "Twubaha amateka yacu kandi tugendera hamwe ku bumwe.",
+    "fr": "Nous honorons notre histoire et marchons ensemble pour l'unité."
+  },
+  "Create freely.": {
+    "rw": "Hanga nta mbibi.",
+    "fr": "Créer librement."
+  },
+  "Art, music and expression that bring young people together.": {
+    "rw": "Ubuhanzi, umuziki n'imvugo bihuza urubyiruko.",
+    "fr": "L'art, la musique et l'expression qui rassemblent les jeunes."
+  },
+  "Learn and lead.": {
+    "rw": "Iga kandi uyobore.",
+    "fr": "Apprendre et diriger."
+  },
+  "Courses, mentoring and real opportunities through the PLP Hub.": {
+    "rw": "Amasomo, ubujyanama n'amahirwe nyayo binyuze kuri PLP Hub.",
+    "fr": "Des cours, du mentorat et de vraies opportunités grâce au PLP Hub."
+  },
+  "Discover the Hub": {
+    "rw": "Menya Hub",
+    "fr": "Découvrir le Hub"
+  },
+  "Speak up.": {
+    "rw": "Vuga.",
+    "fr": "Prenez la parole."
+  },
+  "Dialogue that turns young voices into action.": {
+    "rw": "Ibiganiro bihindura amajwi y'urubyiruko ibikorwa.",
+    "fr": "Un dialogue qui transforme la voix des jeunes en action."
+  },
+  "{p0} of {p1}": {
+    "rw": "{p0} kuri {p1}",
+    "fr": "{p0} sur {p1}"
+  },
+  "Show slide {p0}": {
+    "rw": "Erekana igice cya {p0}",
+    "fr": "Afficher la diapositive {p0}"
+  },
+  "Previous slide": {
+    "rw": "Igice kibanza",
+    "fr": "Diapositive précédente"
+  },
+  "Next slide": {
+    "rw": "Igice gikurikira",
+    "fr": "Diapositive suivante"
+  },
+  "Play slideshow": {
+    "rw": "Komeza amafoto",
+    "fr": "Lire le diaporama"
+  },
+  "Pause slideshow": {
+    "rw": "Hagarika amafoto",
+    "fr": "Mettre le diaporama en pause"
+  },
+  "We honour our history and stand as one for unity.": {
+    "rw": "Twubaha amateka yacu kandi duhagararira hamwe ubumwe.",
+    "fr": "Nous honorons notre histoire et restons unis."
+  },
+  "Thousands gathered in an arena for a remembrance event": {
+    "rw": "Ibihumbi by'abantu bateraniye mu nzu y'imikino mu gikorwa cyo kwibuka",
+    "fr": "Des milliers de personnes réunies dans une salle pour une commémoration"
+  },
+  "Young people running together on a sports court at a PLP camp": {
+    "rw": "Urubyiruko rwiruka hamwe ku kibuga mu nkambi ya PLP",
+    "fr": "Des jeunes courent ensemble sur un terrain lors d'un camp PLP"
+  },
+  "Join the movement": {
+    "rw": "Injira mu rugendo",
+    "fr": "Rejoignez le mouvement"
+  },
+  "Happening today": {
+    "rw": "Biraba uyu munsi",
+    "fr": "Aujourd'hui"
+  },
+  "Days": {
+    "rw": "Iminsi",
+    "fr": "Jours"
+  },
+  "Hours": {
+    "rw": "Amasaha",
+    "fr": "Heures"
+  },
+  "Min": {
+    "rw": "Imin",
+    "fr": "Min"
+  },
+  "Sec": {
+    "rw": "Iseg",
+    "fr": "Sec"
+  },
+  "Maybe later": {
+    "rw": "Nyuma",
+    "fr": "Plus tard"
+  },
+  "Be part of something bigger.": {
+    "rw": "Ba umwe mu bintu bikomeye.",
+    "fr": "Faites partie de quelque chose de plus grand."
+  },
+  "Join thousands of young people learning, leading and serving their communities with PLP.": {
+    "rw": "Ifatanye n'ibihumbi by'urubyiruko rwiga, ruyobora kandi rukorera abaturage hamwe na PLP.",
+    "fr": "Rejoignez des milliers de jeunes qui apprennent, dirigent et servent leur communauté avec PLP."
+  },
+  "young people": {
+    "rw": "urubyiruko",
+    "fr": "jeunes"
+  },
+  "schools": {
+    "rw": "amashuri",
+    "fr": "écoles"
+  },
+  "since": {
+    "rw": "kuva",
+    "fr": "depuis"
+  },
+  "Welcome popup": {
+    "rw": "Itangazo ry'ikaze",
+    "fr": "Fenêtre d'accueil"
+  },
+  "Visitors see this popup when they open the website and no event is live. During an event, the event popup is shown instead.": {
+    "rw": "Abasura urubuga babona iri tangazo iyo nta gikorwa kiriho. Iyo hari igikorwa, hagaragara itangazo ry'igikorwa.",
+    "fr": "Les visiteurs voient cette fenêtre en ouvrant le site lorsqu'aucun événement n'est en cours. Pendant un événement, la fenêtre de l'événement s'affiche à la place."
+  },
+  "Show the welcome popup": {
+    "rw": "Erekana itangazo ry'ikaze",
+    "fr": "Afficher la fenêtre d'accueil"
+  },
+  "Button label": {
+    "rw": "Inyandiko ya buto",
+    "fr": "Texte du bouton"
+  },
+  "Button link": {
+    "rw": "Ihuza rya buto",
+    "fr": "Lien du bouton"
+  },
+  "Image (PNG or JPEG, landscape works best)": {
+    "rw": "Ifoto (PNG cyangwa JPEG, iryamye ni yo nziza)",
+    "fr": "Image (PNG ou JPEG, format paysage conseillé)"
+  },
+  "Image uploaded. Save to publish it.": {
+    "rw": "Ifoto yoherejwe. Bika kugira ngo igaragare.",
+    "fr": "Image importée. Enregistrez pour la publier."
+  },
+  "Use the default photo": {
+    "rw": "Koresha ifoto isanzwe",
+    "fr": "Utiliser la photo par défaut"
+  },
+  "Save welcome popup": {
+    "rw": "Bika itangazo ry'ikaze",
+    "fr": "Enregistrer la fenêtre d'accueil"
+  },
+  "Welcome popup saved": {
+    "rw": "Itangazo ry'ikaze ryabitswe",
+    "fr": "Fenêtre d'accueil enregistrée"
+  },
+  "Popup preview": {
+    "rw": "Uko itangazo rizagaragara",
+    "fr": "Aperçu de la fenêtre"
+  },
+  "Enter a local path or HTTPS link.": {
+    "rw": "Andika inzira y'imbere cyangwa ihuza rya HTTPS.",
+    "fr": "Saisissez un chemin local ou un lien HTTPS."
+  },
+  "Nothing here yet.": {
+    "rw": "Nta kintu kirahari.",
+    "fr": "Rien pour l'instant."
+  },
+  "Good morning, {p0}": {
+    "rw": "Mwaramutse, {p0}",
+    "fr": "Bonjour, {p0}"
+  },
+  "Good afternoon, {p0}": {
+    "rw": "Mwiriwe, {p0}",
+    "fr": "Bon après-midi, {p0}"
+  },
+  "Good evening, {p0}": {
+    "rw": "Muraho, {p0}",
+    "fr": "Bonsoir, {p0}"
+  },
+  "Programme": {
+    "rw": "Gahunda",
+    "fr": "Programme"
   }
 };

@@ -20,6 +20,8 @@ const notifySchema = z.object({
   date: z.string().datetime(),
   goal: z.string().trim().max(1200).default(""),
   meeting_link: z.string().trim().max(300).default(""),
+  session_type: z.enum(["Online", "In person", "Visit"]).default("Online"),
+  location: z.string().trim().max(300).default(""),
   note: z.string().trim().max(2000).default(""),
 }).strict();
 const toMentor = new Set(["requested", "updated", "cancelled"]);
@@ -37,16 +39,16 @@ const kigaliTime = (iso) => new Intl.DateTimeFormat("en-GB", { dateStyle: "full"
 export function composeMentorshipEmail(input, origin, replyTo = "") {
   const when = kigaliTime(input.date);
   const dashboard = new URL("/mentor-sessions", origin).href, mine = new URL("/mentorship", origin).href;
-  const details = [["Session time", when], ...(input.topic ? [["Topic", input.topic]] : []), ...(input.goal ? [["Goal", input.goal]] : [])];
+  const details = [["Session time", when], ["Format", input.session_type || "Online"], ...(input.location ? [["Location", input.location]] : []), ...(input.meeting_link ? [["Meeting", input.meeting_link]] : []), ...(input.topic ? [["Topic", input.topic]] : []), ...(input.goal ? [["Goal", input.goal]] : [])];
   const message = input.note ? { label: "Message", text: input.note } : undefined;
   const toMentorGreeting = `Hello ${input.mentor_name},`, toMenteeGreeting = `Hello ${input.mentee_name},`;
   const spec = {
     requested: { subject: `New mentorship session request from ${input.mentee_name}`, greeting: toMentorGreeting, heading: "New session request", paragraphs: [`${input.mentee_name} has requested a mentorship session with you on PLP Hub.`], details, button: { label: "Review the request", url: dashboard }, footnote: "Accept, reschedule or decline it from your mentor dashboard." },
     updated: { subject: `${input.mentee_name} updated their mentorship request`, greeting: toMentorGreeting, heading: "A session request was updated", paragraphs: [`${input.mentee_name} changed their session request.`], details, button: { label: "Review the request", url: dashboard } },
     cancelled: { subject: `${input.mentee_name} cancelled a mentorship session`, greeting: toMentorGreeting, heading: "Session cancelled", paragraphs: [`${input.mentee_name} cancelled the session planned for ${when}.`], button: { label: "Open your dashboard", url: dashboard } },
-    confirmed: { subject: `${input.mentor_name} confirmed your mentorship session`, greeting: toMenteeGreeting, heading: "Your session is confirmed", paragraphs: [`${input.mentor_name} confirmed your mentorship session.`], details: [...details, ...(input.meeting_link ? [["Meeting", input.meeting_link]] : [])], note: message, button: { label: "View my sessions", url: mine } },
+    confirmed: { subject: `${input.mentor_name} confirmed your mentorship session`, greeting: toMenteeGreeting, heading: "Your session is confirmed", paragraphs: [`${input.mentor_name} confirmed your mentorship session.`], details, note: message, button: { label: "View my sessions", url: mine } },
     declined: { subject: `${input.mentor_name} is unable to take your session request`, greeting: toMenteeGreeting, heading: "Your request was declined", paragraphs: [`${input.mentor_name} cannot take the session requested for ${when}.`], note: message, button: { label: "Request another time or mentor", url: mine } },
-    rescheduled: { subject: `${input.mentor_name} proposed a new time for your session`, greeting: toMenteeGreeting, heading: "Your session has a new time", paragraphs: [`${input.mentor_name} moved your session.`], details: [["New time", when], ...details.slice(1)], note: message, button: { label: "View my sessions", url: mine } },
+    rescheduled: { subject: `${input.mentor_name} updated the time of your session`, greeting: toMenteeGreeting, heading: "Your session has a new time", paragraphs: [`${input.mentor_name} moved your session.`], details: [["New time", when], ...details.slice(1)], note: message, button: { label: "View my sessions", url: mine } },
     completed: { subject: `Your session with ${input.mentor_name} is complete`, greeting: toMenteeGreeting, heading: "Thank you for meeting", paragraphs: [`Thank you for meeting with ${input.mentor_name}.`], note: input.note ? { label: "Session notes", text: input.note } : undefined, button: { label: "Add your takeaway", url: mine } },
   }[input.kind];
   if (replyTo) spec.footnote = [spec.footnote, `Reply to the mentee at ${replyTo}.`].filter(Boolean).join(" ");
@@ -72,6 +74,7 @@ export async function mentorshipRoute({ p, req, db, user, body, send, origin, ma
   demand(req.method === "POST", 405, "Method not allowed");
 
   const input = notifySchema.parse(await body());
+  if (/^[a-z][a-z0-9+.-]*:/i.test(input.meeting_link)) demand(URL.canParse(input.meeting_link) && new URL(input.meeting_link).protocol === 'https:', 400, 'Use an HTTPS meeting link');
   const parties=await transaction(db,async tx=>{
     const existing=(await tx.query('SELECT * FROM mentor_sessions WHERE id=$1 FOR UPDATE',[input.session_id])).rows[0];
     if(toMentor.has(input.kind)) {
@@ -81,12 +84,12 @@ export async function mentorshipRoute({ p, req, db, user, body, send, origin, ma
       if(input.kind==='requested') {
         demand(!(await tx.query('SELECT 1 FROM mentor_profiles WHERE user_id=$1 AND NOT accepting',[mentor.id])).rowCount,409,'This mentor is not taking new requests right now');
         demand(!existing,409,'Session already exists');demand(new Date(input.date)>new Date(),400,'Choose a future session time');
-        await tx.query("INSERT INTO mentor_sessions(id,member_id,mentor_id,date,topic,goal) VALUES($1,$2,$3,$4,$5,$6)",[input.session_id,user.id,mentor.id,input.date,input.topic,input.goal]);
+        await tx.query("INSERT INTO mentor_sessions(id,member_id,mentor_id,date,topic,goal,session_type,location,meeting_link) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)",[input.session_id,user.id,mentor.id,input.date,input.topic,input.goal,input.session_type,input.location,input.meeting_link]);
       } else {
         demand(existing&&existing.member_id===user.id&&existing.mentor_id===mentor.id,404,'Session not found');
         demand(['Requested','Confirmed'].includes(existing.status),409,'This session can no longer be changed');
         if(input.kind==='updated')demand(new Date(input.date)>new Date(),400,'Choose a future session time');
-        await tx.query("UPDATE mentor_sessions SET date=$2,topic=$3,goal=$4,status=$5,meeting_link='',updated_at=now() WHERE id=$1",[input.session_id,input.date,input.topic,input.goal,input.kind==='cancelled'?'Cancelled':'Requested']);
+        await tx.query("UPDATE mentor_sessions SET date=$2,topic=$3,goal=$4,status=$5,meeting_link=$6,session_type=$7,location=$8,updated_at=now() WHERE id=$1",[input.session_id,input.date,input.topic,input.goal,input.kind==='cancelled'?'Cancelled':'Requested',input.meeting_link,input.session_type,input.location]);
       }
       return {mentor_name:mentor.name,mentee_name:user.name,recipient_email:mentor.email};
     }
@@ -98,7 +101,7 @@ export async function mentorshipRoute({ p, req, db, user, body, send, origin, ma
     // A venue may be plain text; anything that looks like a link must be HTTPS.
     if(/^[a-z][a-z0-9+.-]*:/i.test(input.meeting_link))demand(URL.canParse(input.meeting_link)&&new URL(input.meeting_link).protocol==='https:',400,'Use an HTTPS meeting link, or type the venue');
     const status={confirmed:'Confirmed',rescheduled:'Confirmed',declined:'Declined',completed:'Completed'}[input.kind];
-    await tx.query('UPDATE mentor_sessions SET status=$2,date=$3,meeting_link=$4,mentor_notes=$5,decline_reason=$6,updated_at=now() WHERE id=$1',[input.session_id,status,input.date,input.meeting_link,input.kind==='completed'?input.note:existing.mentor_notes,input.kind==='declined'?input.note:'']);
+    await tx.query('UPDATE mentor_sessions SET status=$2,date=$3,meeting_link=$4,mentor_notes=$5,decline_reason=$6,session_type=$7,location=$8,updated_at=now() WHERE id=$1',[input.session_id,status,input.date,input.meeting_link,input.kind==='completed'?input.note:existing.mentor_notes,input.kind==='declined'?input.note:'',input.session_type,input.location]);
     const member=(await tx.query('SELECT name,email FROM users WHERE id=$1',[existing.member_id])).rows[0];
     return {mentor_name:user.name,mentee_name:member.name,recipient_email:member.email};
   });

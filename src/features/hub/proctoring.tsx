@@ -1,3 +1,4 @@
+import { facePosition } from "./face-position";
 import { translateUi, useSiteLanguage } from '../../i18n/language';
 import { useEffect, useRef, useState } from "react";
 import { useBlocker } from "react-router-dom";
@@ -33,17 +34,19 @@ export function useProctoring(active: boolean, onDeparture: (reason: Departure) 
         if (blocker.state !== "blocked")
             return;
         blocker.reset();
-        toast.error(translateUi("Finish and submit your assessment before leaving this page."));
+        if (!ending.current) report.current("tab");
     }, [blocker.state]);
     useEffect(() => {
         if (!active)
             return;
-        const warn = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
+        const warn = () => { if (!ending.current) report.current("tab"); };
+        const hidden = () => { if (document.visibilityState === "hidden" && !ending.current) report.current("tab"); };
         const fullscreen = () => { if (!ending.current && document.fullscreenEnabled && !document.fullscreenElement)
             report.current("fullscreen"); };
         window.addEventListener("beforeunload", warn);
+        document.addEventListener("visibilitychange", hidden);
         document.addEventListener("fullscreenchange", fullscreen);
-        return () => { window.removeEventListener("beforeunload", warn); document.removeEventListener("fullscreenchange", fullscreen); };
+        return () => { window.removeEventListener("beforeunload", warn); document.removeEventListener("visibilitychange", hidden); document.removeEventListener("fullscreenchange", fullscreen); };
     }, [active]);
     useEffect(() => {
         const track = stream?.getVideoTracks()[0];
@@ -72,17 +75,45 @@ export function useProctoring(active: boolean, onDeparture: (reason: Departure) 
         end: () => { ending.current = true; release(stream); setStream(null); },
     };
 }
-export function ProctorCamera({ stream }: {
-    stream: MediaStream;
-}) {
+export function ProctorCamera({ stream }: { stream: MediaStream }) {
     useSiteLanguage();
     const video = useRef<HTMLVideoElement>(null);
-    useEffect(() => { if (video.current)
-        video.current.srcObject = stream; }, [stream]);
-    return (<div className="pr-camera" aria-label={translateUi("Camera is on for this assessment")}>
-      <video ref={video} autoPlay muted playsInline/>
-      <span><i />{translateUi(" Proctored \u00B7 camera on")}</span>
-    </div>);
+    const [status, setStatus] = useState("Starting position check…");
+    const [position, setPosition] = useState<{left: string; top: string; width: string; height: string} | null>(null);
+    useEffect(() => {
+        if (video.current) video.current.srcObject = stream;
+        let stopped = false;
+        let detector: import('@mediapipe/tasks-vision').FaceDetector | undefined;
+        let timer: number | undefined;
+        const unavailable = () => { setPosition(null); setStatus("Position check unavailable — keep your face visible"); };
+        void (async () => {
+            try {
+                const { FaceDetector, FilesetResolver } = await import('@mediapipe/tasks-vision');
+                detector = await FaceDetector.createFromOptions(await FilesetResolver.forVisionTasks('/mediapipe'), {
+                    baseOptions: { modelAssetPath: '/models/face-detector.tflite' },
+                    runningMode: 'VIDEO', minDetectionConfidence: .6,
+                });
+                if (stopped) { detector.close(); return; }
+                // Two small camera checks a second keep the preview useful without analysing every frame.
+                timer = window.setInterval(() => {
+                    const element = video.current;
+                    if (!element || element.readyState < 2 || !detector) return;
+                    try {
+                        const boxes = detector.detectForVideo(element, performance.now()).detections.flatMap(d => d.boundingBox ? [d.boundingBox] : []);
+                        setStatus(facePosition(boxes, element.videoWidth, element.videoHeight));
+                        const b = boxes.length === 1 ? boxes[0] : null;
+                        setPosition(b ? { left: `${100 - (b.originX + b.width) / element.videoWidth * 100}%`, top: `${b.originY / element.videoHeight * 100}%`, width: `${b.width / element.videoWidth * 100}%`, height: `${b.height / element.videoHeight * 100}%` } : null);
+                    } catch { window.clearInterval(timer); unavailable(); }
+                }, 500);
+            } catch { if (!stopped) unavailable(); }
+        })();
+        return () => { stopped = true; window.clearInterval(timer); detector?.close(); };
+    }, [stream]);
+    return <div className={`pr-camera ${status === "Face in position" ? "in-position" : "adjust-position"}`} aria-label={translateUi("Assessment camera")}>
+      <div className="pr-preview"><video ref={video} autoPlay muted playsInline/><div className="pr-face-guide" aria-hidden="true"/>{position && <div className="pr-face-position" style={position} aria-hidden="true"/>}</div>
+      <span role="status">{translateUi(status)}</span>
+      <small>{translateUi("On-device check · not recorded")}</small>
+    </div>;
 }
 /** Shown when an attempt is open but the camera is off (for example after a reload); questions stay hidden. */
 export function CameraRequired({ onEnable }: {

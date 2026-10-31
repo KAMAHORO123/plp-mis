@@ -1,9 +1,12 @@
+import { useOverview, type AdminOverview, type MemberOverview } from "./reports";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { ProfilePhoto } from "./profile-photo";
 import { translateUi, useSiteLanguage, LanguageSwitcher, useHeaderFit } from '../../i18n/language';
 import { AnnouncementBanner } from "./announcement";
 import { HelpChat } from "./workspaces";
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate, } from "react-router-dom";
-import { ArrowUpRight, ArrowLeft, BookOpen, BriefcaseBusiness, Users, Award, Coins, LayoutDashboard, Fingerprint, Menu, X, GraduationCap, ChartNoAxesCombined, PenTool, Globe, LogOut, ShieldCheck, Sparkles, } from "lucide-react";
+import { ArrowUpRight, ArrowLeft, BookOpen, BriefcaseBusiness, Users, Award, Coins, LayoutDashboard, Fingerprint, Menu, X, GraduationCap, ChartNoAxesCombined, PenTool, Globe, LogOut, ShieldCheck, Inbox, CalendarDays } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
 import { SignOutDialog } from "@/components/shared/sign-out-dialog";
 import { AuthLayout } from "@/layouts/auth-layout";
@@ -14,6 +17,8 @@ import { CookieNotice } from "./cookie-notice";
 import "./hub.css";
 import "./landing.css";
 import "./dashboard-theme.css";
+import "./design-system.css";
+import { PhotoViewer } from "./photo-viewer";
 import { LandingFooter } from "./landing-art";
 export const hubNav = [
     { to: "/hub", label: "My journey", icon: LayoutDashboard },
@@ -93,8 +98,6 @@ function Layout({ privateWorkspace = false }: {
                 ]
                 : [];
     const [showSignoutConfirm, setShowSignoutConfirm] = useState(false);
-    const [brokenAvatar, setBrokenAvatar] = useState(false);
-    useEffect(() => setBrokenAvatar(false), [profile.avatarUrl]);
     const signout = () => {
         setShowSignoutConfirm(true);
     };
@@ -108,16 +111,17 @@ function Layout({ privateWorkspace = false }: {
         : session
             ? "/application-status"
             : "/auth/login";
-    const pendingCount = state.profiles.filter((p) => p.membership === "Pending").length;
+    // Accounts awaiting approval, counted on the server (the browser's own profile list never sees them).
+    const overview = useOverview<AdminOverview | MemberOverview>();
+    const pendingCount = overview?.role === "admin" ? (overview as AdminOverview).pendingAccounts : 0;
     if (privateWorkspace) {
         const admin = profile.role === 'Administrator', trainer = profile.role === 'Trainer', mentor = profile.role === 'Mentor', coordinator = profile.role === 'Club leader', leader = profile.role === 'Club leader';
         const links = [
             { to: '/hub', label: 'Dashboard', icon: LayoutDashboard },
             ...(admin ? [
                 { to: '/memberships', label: 'Members & staff', icon: ShieldCheck },
+                { to: '/applications', label: 'Applications', icon: Inbox },
                 { to: '/studio', label: 'Content studio', icon: PenTool },
-                { to: '/studio?tab=Website%20banner', label: 'Website banner', icon: PenTool },
-                { to: '/studio?tab=Fun%20corner', label: 'Fun corner', icon: Sparkles },
                 { to: '/meetings/manage', label: 'Meetings & attendance', icon: Globe },
                 { to: '/clubs', label: 'Activities & requests', icon: Globe },
                 { to: '/learning-materials', label: 'Learning materials', icon: BookOpen },
@@ -142,6 +146,7 @@ function Layout({ privateWorkspace = false }: {
                 { to: '/certificates', label: 'My achievements', icon: Award },
                 { to: '/credits', label: 'PLP credits', icon: Coins },
             ]),
+            { to: '/calendar', label: 'Calendar', icon: CalendarDays },
             { to: '/passport', label: admin || trainer || mentor || coordinator ? 'My profile' : 'Youth passport', icon: Fingerprint },
         ];
         // Several links can share a path (e.g. studio tabs); the one whose query matches wins.
@@ -158,7 +163,7 @@ function Layout({ privateWorkspace = false }: {
           {translateUi(links.map((item) => (<Link key={item.to} to={item.to} aria-current={current === item ? "page" : undefined} className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium ${current === item ? "bg-sidebar-active text-sidebar-active-foreground" : "text-sidebar-foreground hover:bg-sidebar-active"}`}>
               <item.icon size={18}/>
               <span>{translateUi(item.label)}</span>
-              {translateUi(item.to === "/memberships" &&
+              {translateUi(item.to === "/applications" &&
                     profile.role === "Administrator" &&
                     pendingCount > 0 && (<span className="hub-nav-count">{translateUi(pendingCount)}</span>))}
             </Link>)))}
@@ -181,12 +186,13 @@ function Layout({ privateWorkspace = false }: {
         </div>
       </>);
         return (<div className="hub-app hub-mis plp-dashboard flex h-screen overflow-hidden">
+        <PhotoViewer />
         <aside className="hidden h-full w-64 shrink-0 flex-col border-r border-border bg-sidebar lg:flex">
           {translateUi(sidebar())}
         </aside>
-        {translateUi(open && (<div className="fixed inset-0 z-50 lg:hidden">
+        {translateUi(open && (<div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label={translateUi("Navigation")} onKeyDown={(e) => { if (e.key === "Escape") setOpen(false); }}>
             <button className="absolute inset-0 bg-black/40" aria-label={translateUi("Close navigation")} onClick={() => setOpen(false)}/>
-            <aside className="relative flex h-full w-64 flex-col bg-sidebar shadow-xl">
+            <aside className="relative flex h-full w-64 flex-col bg-sidebar shadow-xl" ref={(el) => { if (el && !el.contains(document.activeElement)) el.querySelector<HTMLElement>("a,button")?.focus(); }}>
               {translateUi(sidebar(true))}
             </aside>
           </div>))}
@@ -197,7 +203,7 @@ function Layout({ privateWorkspace = false }: {
                 <Menu size={20}/>
               </button>
               <span className="hidden text-sm text-muted-foreground sm:inline">{translateUi(" Hub / ")}</span>
-              <span className="truncate text-sm font-medium">
+              <span className="hidden truncate text-sm font-medium sm:inline">
                 {translateUi(current?.label ?? "Member workspace")}
               </span>
             </div>
@@ -205,14 +211,8 @@ function Layout({ privateWorkspace = false }: {
               <LogOut size={18}/>
             </button>
             <div className="flex shrink-0 items-center gap-2">
-              <LanguageSwitcher/><NotificationBell />
-              <Link to="/passport" aria-label={translateUi("Your profile")} className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-sm font-semibold text-primary ring-2 ring-border">
-                {translateUi(profile.avatarUrl && !brokenAvatar ? <img src={profile.avatarUrl} alt={translateUi("")} className="h-full w-full object-cover" onError={() => setBrokenAvatar(true)}/> : profile.name
-                .split(" ")
-                .map((n) => n[0])
-                .slice(0, 2)
-                .join(""))}
-              </Link>
+              <LanguageSwitcher compact/><ThemeToggle/><NotificationBell />
+              <Link to="/passport" aria-label={translateUi("Your profile")}><ProfilePhoto size={36} editable={false}/></Link>
             </div>
           </header>
           <main className="relative min-h-0 flex-1 overflow-y-auto">
@@ -226,9 +226,7 @@ function Layout({ privateWorkspace = false }: {
     }
     if (["/auth/login", "/auth/signup", "/auth/forgot-password", "/auth/verify-email", "/application-status", "/dev/access"].includes(location.pathname)) {
         return (<div className="hub-app hub-mis hub-auth">
-        <AuthLayout actions={session ? (<button className="text-sm text-primary" onClick={signout}>{translateUi(" Sign out ")}</button>) : (<Link className="inline-flex h-10 w-10 items-center justify-center rounded-md text-primary hover:bg-secondary" to="/" aria-label={translateUi("Back to website")} title={translateUi("Back to website")}>
-                <ArrowLeft size={20} aria-hidden="true"/>
-              </Link>)}/>
+        <AuthLayout actions={session && <button className="text-sm text-primary" onClick={signout}>{translateUi(" Sign out ")}</button>}/>
         <SignOutDialog open={showSignoutConfirm} onOpenChange={setShowSignoutConfirm} onConfirm={handleConfirmSignout} userName={profile.name} userEmail={profile.email}/>
       </div>);
     }
@@ -240,7 +238,7 @@ function Layout({ privateWorkspace = false }: {
         event.currentTarget.querySelector<HTMLButtonElement>(".hub-menu")?.focus();
     } }}>
         <Link to={privateWorkspace ? "/hub" : "/"} className="hub-brand">
-          <img className="plp-full-nav-logo" src="/logo.svg" alt={translateUi("Peace and Love Proclaimers \u2014 Youth For Change")} width="174" height="98"/>
+          <img className="plp-logo-light plp-full-nav-logo" src="/logo.svg" alt={translateUi("Peace and Love Proclaimers \u2014 Youth For Change")} width="174" height="98"/><img className="plp-logo-dark plp-full-nav-logo" src="/logo-dark.svg" alt="" aria-hidden="true" width="174" height="98"/>
         </Link>
         {translateUi(!privateWorkspace ? (<nav aria-label={translateUi("Main navigation")} className="hub-top-nav">
             {translateUi(publicNav.map((n) => (<NavLink key={n.to} to={n.to} end={n.to === "/"}>
@@ -248,7 +246,7 @@ function Layout({ privateWorkspace = false }: {
               </NavLink>)))}
           </nav>) : (<p className="hub-workspace-label">
             <ShieldCheck size={16}/>{translateUi(" Your member workspace ")}</p>))}
-        <div className="hub-header-actions"><LanguageSwitcher/>
+        <div className="hub-header-actions"><LanguageSwitcher compact/><ThemeToggle/>
           {translateUi(privateWorkspace ? (<>
               <Link to="/" className="hub-website-link" aria-label={translateUi("Back to website")} title={translateUi("Back to website")}>
                 <ArrowLeft size={20} aria-hidden="true"/>

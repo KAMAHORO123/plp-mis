@@ -9,10 +9,13 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "test:hub": "playwright test",
-    "build:resources": "node scripts/build-hub-resources.mjs"
+    "build:resources": "node scripts/build-hub-resources.mjs",
+    "predev": "node scripts/prepare-vision.mjs",
+    "prebuild": "node scripts/prepare-vision.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.2",
+    "@mediapipe/tasks-vision": "^1.2.0",
     "@radix-ui/react-avatar": "^1.1.2",
     "@radix-ui/react-checkbox": "^1.1.3",
     "@radix-ui/react-dialog": "^1.1.4",

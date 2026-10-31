@@ -1,3 +1,4 @@
+import { useAssessmentClock } from "./use-assessment-clock";
 import { translateUi, useSiteLanguage } from '../../i18n/language';
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -6,13 +7,12 @@ import { toast } from "sonner";
 import { confirmAction } from "@/components/shared/confirm-dialog";
 import { platformApi, refreshVerifiedCredits } from "./platform-api";
 import { Empty, Field, Panel, Progress, Tag } from "./ui";
-import { OutlineItem, formatClock, type Item } from "./academy";
+import { OutlineItem, StepNav, formatClock, type Item } from "./academy";
 import { LessonVideoPlayer } from "./lesson-video";
-import { CameraRequired, ProctorCamera, departureLabel, startProctoring, useProctoring, type Departure } from "./proctoring";
+import { CameraRequired, ProctorCamera, startProctoring, useProctoring, type Departure } from "./proctoring";
 import { serverAssessments, wordCount, MIN_ASSIGNMENT_WORDS, type ServerAssessment, type TeachingData } from "./teaching-types";
 import "./academy.css";
 export const isPlatformId = (id: string) => /^[a-f0-9]{8}-[a-f0-9-]{27}$/i.test(id);
-const MAX_FOCUS_LOSSES = 3;
 type Attempt = {
     id: string;
     assessment_id: string;
@@ -27,6 +27,7 @@ type Attempt = {
     results?: boolean[];
 };
 type Active = {
+    server_time?: string;
     id: string;
     assessment_id: string;
     started_at: string;
@@ -68,6 +69,7 @@ export function PlatformCoursePage() {
     const [error, setError] = useState("");
     const [tab, setTab] = useState("Overview");
     const [item, setItem] = useState("reading-0");
+    const [assessmentRunning, setAssessmentRunning] = useState(false);
     const load = useCallback(async () => {
         const [record, rows] = await Promise.all([platformApi<{
                 data: TeachingData;
@@ -144,7 +146,7 @@ export function PlatformCoursePage() {
           {translateUi(e ? <>
             <Progress value={pct} label={translateUi(e.completed_at ? "Completed" : "Your progress")}/>
             {translateUi(e.completed_at ? <Link className="hub-button" to="/certificates"><Award size={16}/>{translateUi(" View certificate")}</Link>
-                : <button className="hub-button" onClick={() => { setTab("Modules"); const next = items.find((x) => !x.done && !x.locked); if (next)
+                : <button className="hub-button" disabled={assessmentRunning} onClick={() => { setTab("Modules"); const next = items.find((x) => !x.done && !x.locked); if (next)
                     setItem(next.key); }}>{translateUi("Resume course ")}<ArrowRight size={16}/></button>)}
           </> : <>
             <p>{translateUi("Earn a verified certificate and 50 PLP credits when you pass every assessment.")}</p>
@@ -154,7 +156,7 @@ export function PlatformCoursePage() {
       </section>
       {translateUi(error && <p role="alert" className="hub-access-error">{translateUi(error)}</p>)}
       <div className="ws-tabs" role="tablist" aria-label={translateUi("Course sections")}>
-        {translateUi(["Overview", "Modules", "Grades"].map((t) => <button key={t} role="tab" aria-selected={tab === t} className={tab === t ? "active" : ""} onClick={() => setTab(t)}>{translateUi(t)}</button>))}
+        {translateUi(["Overview", "Modules", "Grades"].map((t) => <button key={t} disabled={assessmentRunning && t !== tab} role="tab" aria-selected={tab === t} className={tab === t ? "active" : ""} onClick={() => setTab(t)}>{translateUi(t)}</button>))}
       </div>
       {translateUi(tab === "Overview" && (<div className="ac-overview">
           <Panel>
@@ -174,7 +176,7 @@ export function PlatformCoursePage() {
               <li>{translateUi("Modules unlock in order. Read each module, then pass its knowledge check with at least 80%.")}</li>
               <li>{translateUi("Quizzes and the exam are timed by the server. The timer cannot be paused, and only answers saved before time runs out are graded.")}</li>
               <li>{translateUi("Quizzes and exams are proctored: your camera must stay on, the assessment opens in full screen, and you cannot leave the page until you submit. The camera feed is not recorded.")}</li>
-              <li>{translateUi("Leaving the tab, leaving full screen or turning off the camera is recorded. After ")}{translateUi(MAX_FOCUS_LOSSES)}{translateUi(" departures your attempt is submitted.")}</li>
+              <li>{translateUi("Leaving this tab, exiting full screen or turning off your camera immediately ends the attempt. Terminated attempts do not pass.")}</li>
               <li>{translateUi("You have ")}{translateUi(exam.maxAttempts)}{translateUi(" attempts per assessment every 24 hours.")}</li>
               <li>{translateUi("Submit the graded assignment (")}{translateUi(MIN_ASSIGNMENT_WORDS)}{translateUi("+ words) to unlock the final exam.")}</li>
               <li>{translateUi("The course completes only when every assessment is passed.")}</li>
@@ -185,15 +187,16 @@ export function PlatformCoursePage() {
           <aside className="ac-outline" aria-label={translateUi("Course outline")}>
             {translateUi(lessons.map((_, i) => (<div key={i} className="ac-outline-module">
                 <p>{translateUi("Module ")}{translateUi(i + 1)}{translateUi(moduleDone(i) && <CheckCircle2 size={14}/>)}</p>
-                {translateUi(items.filter((x) => x.key.endsWith(`-${i}`)).map((x) => <OutlineItem key={x.key} item={x} active={current.key === x.key} onOpen={(it) => it.locked ? toast.error(translateUi(e ? "Complete the previous step to unlock this item." : "Enroll to start this course.")) : setItem(it.key)}/>))}
+                {translateUi(items.filter((x) => x.key.endsWith(`-${i}`)).map((x) => <OutlineItem key={x.key} item={x} active={current.key === x.key} onOpen={(it) => assessmentRunning ? toast.error(translateUi("Submit your assessment before changing modules.")) : it.locked ? toast.error(translateUi(e ? "Complete the previous step to unlock this item." : "Enroll to start this course.")) : setItem(it.key)}/>))}
               </div>)))}
             <div className="ac-outline-module">
               <p>{translateUi("Final assessment")}</p>
-              {translateUi(items.filter((x) => x.key === "assignment" || x.key === "final").map((x) => <OutlineItem key={x.key} item={x} active={current.key === x.key} onOpen={(it) => it.locked ? toast.error(translateUi("Complete the previous step to unlock this item.")) : setItem(it.key)}/>))}
+              {translateUi(items.filter((x) => x.key === "assignment" || x.key === "final").map((x) => <OutlineItem key={x.key} item={x} active={current.key === x.key} onOpen={(it) => assessmentRunning ? toast.error(translateUi("Submit your assessment before changing modules.")) : it.locked ? toast.error(translateUi("Complete the previous step to unlock this item.")) : setItem(it.key)}/>))}
             </div>
           </aside>
           <div className="ac-stage">
-            {translateUi(!e || !enrollment ? (<Panel><h2>{translateUi("Enroll to begin")}</h2><p>{translateUi("Enroll to unlock module readings, quizzes, and the final exam.")}</p><button className="hub-button hub-space" onClick={() => void enroll()}>{translateUi("Enroll in this course ")}<ArrowRight size={17}/></button></Panel>) : current.locked ? (<Panel><h2><LockKeyhole size={18}/> {translateUi(current.label)}</h2><p>{translateUi("This item unlocks after you finish the previous step.")}</p></Panel>) : current.key.startsWith("reading-") ? (<ServerReading key={current.key} enrollmentId={enrollment.id} data={data} index={Number(current.key.split("-")[1])} seen={e.viewed.includes(Number(current.key.split("-")[1]))} onViewed={() => void load()} onNext={setItem}/>) : current.key === "assignment" ? (<ServerAssignment enrollmentId={enrollment.id} brief={data.assignment || ""} saved={e.assignment} submittedAt={e.assignment_at} locked={e.passed} feedback={enrollment.review_feedback} onSubmitted={async () => { await load(); setItem("final"); }}/>) : (<ServerAssessmentPanel key={current.key} enrollmentId={enrollment.id} assessment={assessments.find((a) => (current.key === "final" ? a.kind === "exam" : a.moduleIndex === Number(current.key.split("-")[1])))!} progress={progress!} onChange={afterGrade}/>))}
+            {translateUi(!e || !enrollment ? (<Panel><h2>{translateUi("Enroll to begin")}</h2><p>{translateUi("Enroll to unlock module readings, quizzes, and the final exam.")}</p><button className="hub-button hub-space" onClick={() => void enroll()}>{translateUi("Enroll in this course ")}<ArrowRight size={17}/></button></Panel>) : current.locked ? (<Panel><h2><LockKeyhole size={18}/> {translateUi(current.label)}</h2><p>{translateUi("This item unlocks after you finish the previous step.")}</p></Panel>) : current.key.startsWith("reading-") ? (<ServerReading key={current.key} enrollmentId={enrollment.id} data={data} index={Number(current.key.split("-")[1])} seen={e.viewed.includes(Number(current.key.split("-")[1]))} onViewed={() => void load()} onNext={setItem}/>) : current.key === "assignment" ? (<ServerAssignment enrollmentId={enrollment.id} brief={data.assignment || ""} saved={e.assignment} submittedAt={e.assignment_at} locked={e.passed} feedback={enrollment.review_feedback} onSubmitted={async () => { await load(); setItem("final"); }}/>) : (<ServerAssessmentPanel key={current.key} enrollmentId={enrollment.id} assessment={assessments.find((a) => (current.key === "final" ? a.kind === "exam" : a.moduleIndex === Number(current.key.split("-")[1])))!} progress={progress!} onChange={afterGrade} onActiveChange={setAssessmentRunning}/>))}
+            {e && <StepNav items={items} current={current} onOpen={(it) => it.locked ? toast.error(translateUi("Complete the previous step to unlock this item.")) : setItem(it.key)} busy={assessmentRunning}/>}
             {translateUi(e?.completed_at && (<div className="hub-success hub-space"><Award /><div><h3>{translateUi("You earned it.")}</h3><p>{translateUi("Every assessment is passed. Your certificate and 50 verified credits are ready.")}</p><Link className="hub-text-link" to="/certificates">{translateUi("View your certificate")}</Link></div></div>))}
           </div>
         </div>))}
@@ -272,7 +275,8 @@ function ServerAssignment({ enrollmentId, brief, saved, submittedAt, locked, fee
       {translateUi(feedback && <div className="hub-feedback hub-space"><h3>{translateUi("Trainer feedback")}</h3><p className="hub-prewrap">{translateUi(feedback)}</p></div>)}
     </Panel>);
 }
-function ServerAssessmentPanel({ enrollmentId, assessment, progress, onChange }: {
+function ServerAssessmentPanel({ enrollmentId, assessment, progress, onChange, onActiveChange }: {
+    onActiveChange: (active: boolean) => void;
     enrollmentId: string;
     assessment: ServerAssessment;
     progress: Progress;
@@ -280,29 +284,35 @@ function ServerAssessmentPanel({ enrollmentId, assessment, progress, onChange }:
 }) {
     useSiteLanguage();
     const [active, setActive] = useState<Active | null>(progress.active?.assessment_id === assessment.id ? progress.active : null);
+    useEffect(() => { onActiveChange(!!active); return () => onActiveChange(false); }, [!!active, onActiveChange]);
     const [now, setNow] = useState(Date.now());
     const [busy, setBusy] = useState(false);
+    const [terminated, setTerminated] = useState(() => !!active && !!sessionStorage.getItem(`plp-terminated-${active.id}`));
+    const sending = useRef(false);
     const answers = useRef<Record<string, number>>(active?.answers ?? {});
     const attempts = progress.attempts.filter((a) => a.assessment_id === assessment.id);
     const passed = attempts.some((a) => a.passed), last = attempts.at(-1);
     const recentFails = attempts.filter((a) => !a.passed && now - Date.parse(a.submitted_at) < 86400000);
     const lockedUntil = recentFails.length >= assessment.maxAttempts ? new Date(Math.min(...recentFails.map((a) => Date.parse(a.submitted_at))) + 86400000) : null;
     const otherActive = progress.active && progress.active.assessment_id !== assessment.id;
-    const remaining = active ? Date.parse(active.ends_at) - now : 0;
+    const remaining = useAssessmentClock(active?.ends_at, active?.server_time);
     const finish = async (reason: Attempt["reason"]) => {
-        if (!active || busy)
+        if (!active || sending.current)
             return;
+        sending.current = true;
         setBusy(true);
         proctor.end();
         try {
             const r = await platformApi<{
                 submitted: Attempt;
             }>(`/assessment-attempts/${active.id}/submit`, "POST", { answers: answers.current, reason });
+            sessionStorage.removeItem(`plp-terminated-${active.id}`);
             setActive(null);
+            setTerminated(false);
             if (r.submitted.passed)
                 toast.success(translateUi("Passed with {p0}%.", { p0: translateUi(r.submitted.percent) }));
             else
-                toast.error(translateUi("{p0}% \u2014 the pass mark is {p1}%.{p2}", { p0: translateUi(r.submitted.percent), p1: translateUi(assessment.passMark), p2: translateUi(r.submitted.reason === "time" ? " Time expired." : r.submitted.reason === "focus" ? " Submitted after too many departures." : "") }));
+                toast.error(translateUi("{p0}% \u2014 the pass mark is {p1}%.{p2}", { p0: translateUi(r.submitted.percent), p1: translateUi(assessment.passMark), p2: translateUi(r.submitted.reason === "time" ? " Time expired." : r.submitted.reason === "focus" ? " Terminated after leaving the assessment." : "") }));
             await onChange();
         }
         catch (err) {
@@ -310,46 +320,33 @@ function ServerAssessmentPanel({ enrollmentId, assessment, progress, onChange }:
             await onChange();
         }
         finally {
+            sending.current = false;
             setBusy(false);
         }
     };
     useEffect(() => { if (!active)
         return; const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, [active?.id]);
     useEffect(() => { if (active && remaining <= 0)
-        void finish("time"); }, [active && remaining <= 0]);
-    // Leaving the tab, leaving full screen and turning the camera off all count towards the server-enforced limit.
-    const losses = useRef(active?.focus_losses ?? 0);
-    const depart = async (reason: Departure) => {
-        if (!active)
-            return;
-        const count = ++losses.current;
-        setActive((a) => (a ? { ...a, focus_losses: count } : a));
-        try {
-            const r = await platformApi<{
-                submitted?: Attempt;
-            }>(`/assessment-attempts/${active.id}`, "PUT", { answers: answers.current, focus_losses: count });
-            if (r.submitted) {
-                proctor.end();
-                setActive(null);
-                toast.error(translateUi("Too many departures from the assessment. It was submitted."));
-                await onChange();
-            }
-            else
-                toast.warning(translateUi("{p0} ({p1}/{p2}). Stay on this page, in full screen, with your camera on.", { p0: translateUi(departureLabel[reason]), p1: translateUi(count), p2: translateUi(MAX_FOCUS_LOSSES) }));
-        }
-        catch { /* The server still enforces the deadline. */ }
+        void finish(terminated ? "focus" : "time"); }, [active && remaining <= 0]);
+    const depart = (_reason: Departure) => {
+        if (!active || terminated) return;
+        sessionStorage.setItem(`plp-terminated-${active.id}`, "focus");
+        setTerminated(true);
+        void finish("focus");
     };
-    const proctor = useProctoring(!!active, (reason) => void depart(reason));
+    const proctor = useProctoring(!!active && !terminated, depart);
     useEffect(() => {
-        if (!active)
-            return;
-        const onHide = () => { if (document.visibilityState === "hidden")
-            void depart("tab"); };
-        document.addEventListener("visibilitychange", onHide);
-        return () => document.removeEventListener("visibilitychange", onHide);
+        if (!active || !sessionStorage.getItem(`plp-terminated-${active.id}`)) return;
+        setTerminated(true);
+        void finish("focus");
     }, [active?.id]);
+    useEffect(() => {
+        if (!terminated || !active) return;
+        const retry = window.setInterval(() => void finish("focus"), 3000);
+        return () => window.clearInterval(retry);
+    }, [terminated, active?.id]);
     const start = async () => {
-        if (!await confirmAction({ title: `Start ${assessment.title.toLowerCase()}?`, description: `You will have ${assessment.minutes} minutes for ${assessment.questions.length} questions. Your camera must stay on and the assessment opens in full screen. The timer cannot be paused, you cannot leave the page, only answers saved before time runs out count, and leaving full screen or this tab is recorded.`, confirmLabel: "Turn on camera & start" }))
+        if (!await confirmAction({ title: `Start ${assessment.title.toLowerCase()}?`, description: `You will have ${assessment.minutes} minutes for ${assessment.questions.length} questions. Your camera must stay on and the assessment opens in full screen. The timer cannot be paused, you cannot leave the page, only answers saved before time runs out count, and leaving full screen or this tab immediately terminates your attempt. Keep your face visible and centred; camera checks run on your device without recording.`, confirmLabel: "Turn on camera & start" }))
             return;
         let stream: MediaStream;
         try {
@@ -362,7 +359,7 @@ function ServerAssessmentPanel({ enrollmentId, assessment, progress, onChange }:
         try {
             const a = await platformApi<Active>(`/enrollments/${enrollmentId}/assessments/${assessment.id}/start`, "POST", {});
             answers.current = {};
-            losses.current = 0;
+            setTerminated(false);
             proctor.attach(stream);
             setActive(a);
             setNow(Date.now());
@@ -374,6 +371,7 @@ function ServerAssessmentPanel({ enrollmentId, assessment, progress, onChange }:
             toast.error(translateUi((err as Error).message));
         }
     };
+    if (active && terminated) return <Panel className="ac-exam"><h2>Attempt terminated</h2><p>You left the assessment. Your answers are locked while the result is saved.</p><button className="hub-button" disabled={busy} onClick={() => void finish("focus")}>{busy ? "Saving…" : "Retry saving"}</button></Panel>;
     if (active) {
         const answered = active.questions.filter((q) => answers.current[q.id] !== undefined).length;
         if (!proctor.stream)
@@ -381,7 +379,7 @@ function ServerAssessmentPanel({ enrollmentId, assessment, progress, onChange }:
         return (<Panel className="ac-exam">
         <ProctorCamera stream={proctor.stream}/>
         <div className={`ac-timer ${remaining < 60000 ? "urgent" : ""}`} role="timer" aria-live="off">
-          <div><strong>{translateUi(assessment.title)}</strong><small>{translateUi(answered)}{translateUi(" of ")}{translateUi(active.questions.length)}{translateUi(" answered \u00B7 ")}{translateUi(active.focus_losses)}{translateUi("/")}{translateUi(MAX_FOCUS_LOSSES)}{translateUi(" departures \u00B7 camera on \u00B7 answers save automatically")}</small></div>
+          <div><strong>{translateUi(assessment.title)}</strong><small>{translateUi(answered)}{translateUi(" of ")}{translateUi(active.questions.length)}{translateUi(" answered · stay on this tab · answers save automatically")}</small></div>
           <span><Timer size={18}/> {translateUi(formatClock(remaining))}</span>
         </div>
         <form className="hub-form" onSubmit={async (ev) => {
@@ -418,7 +416,7 @@ function ServerAssessmentPanel({ enrollmentId, assessment, progress, onChange }:
           {translateUi(last.passed ? <CheckCircle2 /> : <XCircle />)}
           <div>
             <strong>{translateUi("Latest attempt: ")}{translateUi(last.percent)}{translateUi("% (")}{translateUi(last.score)}{translateUi("/")}{translateUi(last.total)}{translateUi(") \u00B7 ")}{translateUi(last.passed ? "Passed" : "Not passed")}</strong>
-            <small>{translateUi("Submitted ")}{translateUi(new Date(last.submitted_at).toLocaleString())}{translateUi(last.reason === "time" ? " · time expired" : last.reason === "focus" ? " · submitted after leaving the tab" : "")}</small>
+            <small>{translateUi("Submitted ")}{translateUi(new Date(last.submitted_at).toLocaleString())}{translateUi(last.reason === "time" ? " · time expired" : last.reason === "focus" ? " · terminated after leaving the assessment" : "")}</small>
             {translateUi(last.results && <p>{translateUi(last.results.map((ok, i) => <span key={i} className={ok ? "ok" : "no"}>{translateUi("Q")}{translateUi(i + 1)} {translateUi(ok ? "correct" : "incorrect")}</span>))}</p>)}
             {translateUi(assessment.kind === "exam" && !last.passed && <p className="hub-caption">{translateUi("Exam answers are not revealed. Review the modules before your next attempt.")}</p>)}
           </div>

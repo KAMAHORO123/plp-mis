@@ -1,7 +1,8 @@
 import { translateUi, useSiteLanguage, formatDate } from '../../i18n/language';
 import { useEffect, useState } from 'react';
-import { Copy, Download, Printer } from 'lucide-react';
+import { Copy, Download, Eye, Printer } from 'lucide-react';
 import { toast } from 'sonner';
+import { FormModal } from './modal';
 import { downloadCertificatePDF, certificateFileName, type CertificateDesignData } from './certificate-pdf';
 const codeOf = (id: string) => `PLP-${id.replace(/[^a-z0-9]/gi, '').slice(0, 8).toUpperCase()}`;
 const longDate = (d: string) => (/^\d{4}-\d{2}-\d{2}$/.test(d) ? formatDate(d) : d);
@@ -92,5 +93,32 @@ export function CertificateCard({ design, revoked = false, pending = false, acti
             <button className="hub-button secondary" onClick={() => void copy()} title={translateUi("Copy verification link")}><Copy size={15}/>{translateUi("Copy link")}</button>
           </div>
         </div>))}
+    </article>);
+}
+
+/** A short preview for lists: a small certificate, its title and date. The full certificate opens in a popup. */
+export function CertificateSummary({ design, revoked = false }: { design: CertificateDesignData; revoked?: boolean }) {
+    useSiteLanguage();
+    const [open, setOpen] = useState(false);
+    const [busy, setBusy] = useState(false);
+    const download = async () => {
+        setBusy(true);
+        try { await downloadCertificatePDF([design], certificateFileName(design.recipient, design.title)); }
+        catch { toast.error(translateUi('The certificate could not be created. Try again.')); }
+        finally { setBusy(false); }
+    };
+    return (<article className={`cs-row${revoked ? ' is-revoked' : ''}`}>
+      <button type="button" className="cs-thumb" onClick={() => setOpen(true)} aria-label={translateUi('Preview certificate')}>
+        <span className="cs-mini" aria-hidden="true"><img src="/images/plp/certificates/plp-dove.png" alt=""/><i/><b/><i/><i/></span>
+      </button>
+      <div className="cs-text">
+        <strong>{translateUi(design.programme)}</strong>
+        <span>{translateUi(design.title ?? 'Certificate of Achievement')} · {translateUi(longDate(design.issued))}{revoked && <em className="cc-badge revoked">{translateUi('Revoked')}</em>}</span>
+      </div>
+      <div className="cs-actions">
+        <button type="button" className="hub-button secondary" onClick={() => setOpen(true)}><Eye size={15}/>{translateUi('Preview')}</button>
+        <button type="button" className="hub-button" disabled={busy || revoked} onClick={() => void download()}><Download size={15}/>{translateUi(busy ? 'Preparing…' : 'Download')}</button>
+      </div>
+      {open && <FormModal title={translateUi(design.programme)} onClose={() => setOpen(false)}><CertificateCard design={design} revoked={revoked}/></FormModal>}
     </article>);
 }

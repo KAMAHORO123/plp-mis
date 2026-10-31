@@ -8,11 +8,18 @@ frontend
 system
 landing
 services
-deploy
+deploy/*
+!deploy/hub-nginx.conf
 docs
 tests
 test-results
 playwright-report
 output
-scripts
+scripts/*
+!scripts/prepare-vision.mjs
 *.tsbuildinfo
+
+# Generated assets are recreated from the locked dependency inside the image.
+public/mediapipe
+**/.env
+**/.env.*

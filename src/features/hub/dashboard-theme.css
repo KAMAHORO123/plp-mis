@@ -56,3 +56,170 @@
 .plp-dashboard .hub-stats > div > svg, .plp-dashboard .hub-stats > div > :is(i,figure,.hub-stat-icon) { grid-row:1 / span 2; }
 .plp-dashboard .hub-stats span { align-self:end; }
 .plp-dashboard .hub-stats strong { align-self:start; font-size:26px; }
+
+/* Minimal dashboard: open page titles, no decorative patterns, quieter cards and one accent colour. */
+.plp-dashboard aside > :first-child { padding-bottom:20px; }
+.plp-dashboard aside > :first-child::after,
+.plp-dashboard .plp-stat-card::after,
+.plp-dashboard :is(.hub-heading,.ws-page-header,.plp-dashboard-heading)::before,
+.plp-dashboard :is(.hub-heading,.ws-page-header,.plp-dashboard-heading)::after { content:none; }
+.plp-dashboard :is(.hub-heading,.ws-page-header,.plp-dashboard-heading) { min-height:0; padding:0 0 4px; border:0; border-radius:0; background:transparent; }
+.plp-dashboard :is(.hub-heading,.ws-page-header,.plp-dashboard-heading) h1 { margin:0; font-size:24px; }
+.plp-dashboard .ws-page-header p { margin-top:4px; font-size:13px; }
+.plp-dashboard .ws-page-header .hub-button { min-height:40px; padding:0 16px; font-size:13px; }
+.plp-dashboard :is(.hub-panel,.plp-stat-card,.dv-tile) { border-color:#e8edf3; box-shadow:none; }
+.plp-dashboard .plp-stat-card { padding:18px 20px; }
+.plp-dashboard .plp-stat-card .plp-stat-icon, .plp-dashboard .plp-stat-card:nth-child(n) .plp-stat-icon { width:32px; height:32px; color:#1c73bb; background:#f3f8fd; border-color:transparent; }
+.plp-dashboard .ws-shortcuts { display:flex; flex-wrap:wrap; gap:8px; }
+.plp-dashboard .ws-shortcuts a { padding:9px 14px; border-radius:999px; }
+.plp-dashboard .ws-shortcuts strong { gap:8px; align-items:center; font-weight:500; }
+.plp-dashboard .ws-shortcuts svg { width:14px; height:14px; }
+.plp-dashboard .ws-panel-title h2 { font-size:15px; font-weight:600; }
+@media(max-width:640px) {
+  .plp-dashboard .hub-content { padding:20px 16px; }
+  /* Title and actions share a row when they fit; otherwise the actions wrap underneath at full width. */
+  .plp-dashboard :is(.hub-heading,.ws-page-header,.plp-dashboard-heading) { flex-direction:row; flex-wrap:wrap; align-items:center; gap:12px; padding:0; }
+  .plp-dashboard :is(.hub-heading,.ws-page-header,.plp-dashboard-heading) > div:first-child { flex:1 1 180px; min-width:0; }
+  .plp-dashboard .ws-page-header > .hub-actions { flex:1 1 100%; flex-wrap:wrap; gap:8px; margin:0; }
+  .plp-dashboard .ws-page-header > .hub-actions > .hub-button { flex:1 1 auto; justify-content:center; }
+  .plp-dashboard :is(.hub-heading,.ws-page-header,.plp-dashboard-heading) h1 { font-size:20px; }
+  .plp-dashboard .ws-page-header .hub-button { min-height:36px; padding:0 12px; font-size:12px; }
+  .plp-dashboard .ws-stats { gap:10px; }
+  .plp-dashboard .plp-stat-card { padding:14px; }
+  .plp-dashboard .plp-stat-card .plp-stat-icon { display:none; }
+  .plp-dashboard .plp-stat-card p:first-of-type { margin-top:0; font-size:12px; }
+}
+@media(max-width:560px) {
+  .plp-dashboard .dv-grid.kpis { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  .plp-dashboard .dv-tile { gap:6px; padding:14px; }
+  .plp-dashboard .dv-tile-icon, .plp-dashboard .dv-tile .dv-spark { display:none; }
+  .plp-dashboard .dv-tile-head { font-size:12px; }
+  .plp-dashboard .dv-tile-body strong { font-size:22px; }
+}
+/* Shortcuts that carry a description are cards, not pills. */
+.plp-dashboard .ws-shortcuts a:has(> span) { border-radius:12px; padding:16px 18px; }
+
+/* "Complete your profile" is a slim prompt, not a full card. */
+.plp-dashboard .hub-panel.ms-callout { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 18px; border-color:#cfe2f3; background:#f4f9fe; }
+.plp-dashboard .ms-callout h2 { margin:0 0 2px; font-size:14px; font-weight:600; }
+.plp-dashboard .ms-callout p { margin:0; font-size:13px; color:#52677d; }
+.plp-dashboard .ms-callout .hub-button { flex-shrink:0; min-height:36px; padding:0 14px; font-size:13px; }
+@media(max-width:640px) { .plp-dashboard .hub-panel.ms-callout { flex-direction:column; align-items:stretch; } .plp-dashboard .ms-callout .hub-button { justify-content:center; } }
+/* One header style everywhere: title first, no small-caps label above it. */
+.plp-dashboard .ws-page-header .ws-kicker, .plp-dashboard .ws-page-header .hub-eyebrow { display:none; }
+/* Step cards keep their even grid; only plain link rows become pills. */
+.plp-dashboard .ws-shortcuts.ws-shortcuts-4 { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.plp-dashboard .ws-shortcuts.ws-shortcuts-4 > * { border-radius:12px; }
+@media(max-width:900px) { .plp-dashboard .ws-shortcuts.ws-shortcuts-4 { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+/* Readable text (WCAG 2.1 AA, at least 4.5:1) for the light theme. Each colour replaces one that measured
+   2.4–4.49:1 against its background in the UAT accessibility audit; dark mode keeps its own palette. */
+html:not([data-theme="dark"]) .hub-app :is(.dv-delta small, td small, .ms-goal) { color: #5b6b7d; }
+html:not([data-theme="dark"]) .hub-app .hub-empty { color: #52627a; }
+html:not([data-theme="dark"]) .hub-app .ws-table-tools > span { color: #52627a; }
+html:not([data-theme="dark"]) .hub-app .ws-table th { color: #475569; }
+html:not([data-theme="dark"]) .hub-app :is(.hub-heading > div > p, .ws-page-header p, .hub-caption) { color: #52627a; }
+html:not([data-theme="dark"]) .hub-app .hub-tag { color: #155e96; }
+html:not([data-theme="dark"]) .hub-app .act-going { color: #0b6646; }
+html:not([data-theme="dark"]) .hub-app .hub-credit-hero > p { color: #d4e2f0; }
+html:not([data-theme="dark"]) .hub-app .hub-mentor-initials { color: #3a4f8f; }
+html:not([data-theme="dark"]) .hub-app .tone-0 > :is(span, small) { color: #2f5c56; }
+html:not([data-theme="dark"]) .hub-app .tone-1 > :is(span, small) { color: #34558a; }
+html:not([data-theme="dark"]) .hub-app .tone-2 > :is(span, small) { color: #6b4c18; }
+
+/* Tap targets (WCAG 2.2 target size): text links and buttons are at least 24px, 32px on touch screens. */
+.hub-app main :is(.hub-text-button, .hub-text-link, .ws-pagination button) { display: inline-flex; align-items: center; min-height: 24px; min-width: 24px; }
+@media (pointer: coarse) { .hub-app main :is(.hub-text-button, .hub-text-link, .ws-pagination button) { min-height: 32px; } }
+/* Course-card art labels: full opacity so their darker tone keeps 4.5:1 on the pastel art. */
+html:not([data-theme="dark"]) .hub-app .ac-card-art span, html:not([data-theme="dark"]) .hub-app :is(.tone-0, .tone-1, .tone-2) > span { opacity: 1; }
+/* The workspace never scrolls sideways; wide tables scroll inside their own wrappers. */
+.plp-dashboard main { overflow-x: hidden; }
+
+/* Mentor dashboard: next session and the week's agenda (these had no styles, so their text ran together). */
+.ms-next { display: grid; gap: 8px; }
+.ms-next > strong { font-size: 16px; color: #17334b; }
+.ms-next > span, .ms-next .ms-detail { display: inline-flex; align-items: center; gap: 6px; margin: 0; color: #52627a; font-size: 13px; }
+.ms-next > p { margin: 4px 0 0; color: #52627a; line-height: 1.6; }
+.ms-next > p b { color: #17334b; }
+.ms-next .hub-actions { margin-top: 8px; }
+.ms-agenda { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.ms-agenda li { display: grid; grid-template-columns: 72px minmax(0, 1fr); align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #edf1f5; }
+.ms-agenda li:last-child { border-bottom: 0; }
+.ms-agenda li > span { display: flex; flex-direction: column; align-items: center; padding: 8px 4px; border-radius: 10px; background: #f1f7fc; color: #155e96; font-weight: 600; font-size: 13px; text-align: center; }
+.ms-agenda li > span small { margin-top: 2px; color: #52627a; font-weight: 500; font-size: 11px; }
+.ms-agenda li > div { display: flex; flex-direction: column; min-width: 0; }
+.ms-agenda li > div strong { color: #17334b; }
+.ms-agenda li > div small { color: #5b6b7d; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html[data-theme="dark"] .ms-agenda li > span { background: #18212b; color: #85bff4; }
+html[data-theme="dark"] :is(.ms-next > strong, .ms-next > p b, .ms-agenda li > div strong) { color: #f2f6fa; }
+html[data-theme="dark"] .ms-agenda li { border-color: #232c35; }
+
+/* ───────────────── Refined workspace design: calm, airy, one accent colour ───────────────── */
+.plp-dashboard { --d-line: #e6ebf1; --d-ink: #0f2a43; --d-muted: #5b6b7d; --d-accent: #1c73bb; --d-soft: #eef5fc; --d-radius: 16px; --d-shadow: 0 1px 2px rgba(15, 42, 67, .04), 0 6px 20px -12px rgba(15, 42, 67, .12); --d-shadow-hover: 0 2px 4px rgba(15, 42, 67, .05), 0 14px 32px -14px rgba(15, 42, 67, .22); }
+/* Shapes, spacing and motion (both themes) */
+.plp-dashboard .hub-content { padding-top: 34px; padding-bottom: 56px; }
+.plp-dashboard :is(.hub-panel, .plp-stat-card, .dv-tile, .dv-card) { border-radius: var(--d-radius); }
+.plp-dashboard :is(.plp-stat-card, .dv-tile) { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+.plp-dashboard :is(.plp-stat-card, .dv-tile):hover { transform: translateY(-2px); box-shadow: var(--d-shadow-hover); }
+.plp-dashboard .ws-page { gap: 22px; }
+.plp-dashboard .ws-page-header h1 { font-family: Sora, sans-serif; font-size: 28px; font-weight: 600; letter-spacing: -.035em; line-height: 1.2; }
+.plp-dashboard .ws-page-header p { margin-top: 6px; font-size: 13px; }
+.plp-dashboard .plp-stat-card .font-display { font-family: Sora, sans-serif; font-size: 28px; font-weight: 600; letter-spacing: -.03em; }
+.plp-dashboard .plp-stat-card .plp-stat-icon, .plp-dashboard .dv-tile-icon { border-radius: 11px; }
+.plp-dashboard .hub-button { border-radius: 10px; }
+.plp-dashboard .ws-panel-title { margin-bottom: 16px; }
+.plp-dashboard .ws-panel-title h2 { font-family: Sora, sans-serif; font-size: 16px; font-weight: 600; letter-spacing: -.02em; }
+.plp-dashboard .ws-table th { text-transform: none; letter-spacing: .01em; font-weight: 600; }
+.plp-dashboard .ws-table tbody tr { transition: background .15s ease; }
+.plp-dashboard aside nav a { border-radius: 10px; transition: background .15s ease, color .15s ease; }
+.plp-dashboard .ws-shortcuts a { transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+.plp-dashboard .ws-shortcuts a:hover { transform: translateY(-1px); box-shadow: var(--d-shadow); }
+@media (prefers-reduced-motion: reduce) { .plp-dashboard :is(.plp-stat-card, .dv-tile, .ws-shortcuts a) { transition: none; } .plp-dashboard :is(.plp-stat-card, .dv-tile, .ws-shortcuts a):hover { transform: none; } }
+
+/* Colour (light theme only; dark mode keeps its palette) */
+html:not([data-theme="dark"]) .plp-dashboard main { background: radial-gradient(1100px 360px at 18% -140px, rgba(28, 115, 187, .09), transparent 70%), radial-gradient(800px 300px at 100% -160px, rgba(245, 184, 46, .06), transparent 70%), #f6f8fb; }
+html:not([data-theme="dark"]) .plp-dashboard :is(.hub-panel, .plp-stat-card, .dv-tile, .dv-card) { background: #fff; border: 1px solid var(--d-line); box-shadow: var(--d-shadow); }
+html:not([data-theme="dark"]) .plp-dashboard :is(.plp-stat-card, .dv-tile):hover { border-color: #d3e3f2; }
+html:not([data-theme="dark"]) .plp-dashboard .ws-page-header h1 { color: var(--d-ink); }
+html:not([data-theme="dark"]) .plp-dashboard .ws-page-header p { color: var(--d-muted); }
+html:not([data-theme="dark"]) .plp-dashboard .plp-stat-card .font-display { color: var(--d-ink); }
+html:not([data-theme="dark"]) .plp-dashboard :is(.plp-stat-card .plp-stat-icon, .plp-stat-card:nth-child(n) .plp-stat-icon, .dv-tile-icon) { background: linear-gradient(145deg, #f1f7fd, #e2eef9); color: var(--d-accent); border-color: transparent; }
+html:not([data-theme="dark"]) .plp-dashboard .ws-panel-title h2 { color: var(--d-ink); }
+html:not([data-theme="dark"]) .plp-dashboard .ws-table th { background: #f8fafc; border-color: var(--d-line); }
+html:not([data-theme="dark"]) .plp-dashboard .ws-table tbody tr:hover { background: #f7fafd; }
+html:not([data-theme="dark"]) .plp-dashboard .ws-table td { border-color: #eef2f6; }
+html:not([data-theme="dark"]) .plp-dashboard > aside { background: #fff; border-color: var(--d-line); }
+html:not([data-theme="dark"]) .plp-dashboard aside nav a[aria-current="page"] { background: var(--d-soft); color: var(--d-accent); font-weight: 600; box-shadow: inset 3px 0 0 var(--d-accent); }
+html:not([data-theme="dark"]) .plp-dashboard aside nav a:not([aria-current="page"]):hover { background: #f4f7fb; color: var(--d-ink); }
+html:not([data-theme="dark"]) .plp-dashboard > div > header { background: rgba(255, 255, 255, .82); backdrop-filter: saturate(1.4) blur(10px); border-color: var(--d-line); }
+html:not([data-theme="dark"]) .plp-dashboard .ws-shortcuts a { background: #fff; border-color: var(--d-line); }
+html:not([data-theme="dark"]) .plp-dashboard .ws-shortcuts a:hover { border-color: #b9d4ec; }
+html:not([data-theme="dark"]) .plp-dashboard .hub-empty { background: #fbfcfe; border-color: #dfe7ef; }
+html:not([data-theme="dark"]) .plp-dashboard .hub-button:not(.secondary):not(.danger) { box-shadow: 0 6px 16px -8px rgba(28, 115, 187, .7); }
+@media (max-width: 640px) { .plp-dashboard .ws-page-header h1 { font-size: 22px; } .plp-dashboard .hub-content { padding-top: 22px; } }
+
+/* Workspace pages that use the older Heading block match the dashboard headers: no small-caps label. */
+.plp-dashboard .hub-heading .hub-eyebrow, .plp-dashboard .hub-heading > div > p:first-child:not(:only-child):is(.hub-eyebrow, .ws-kicker) { display: none; }
+.plp-dashboard .hub-heading h1 { font-family: Sora, sans-serif; font-size: 28px; font-weight: 600; letter-spacing: -.035em; line-height: 1.2; }
+html:not([data-theme="dark"]) .plp-dashboard .hub-heading h1 { color: var(--d-ink); }
+/* Tabs: readable size, and no stray gap between a panel title and its table. */
+.plp-dashboard :is(.hub-chips, .ws-tabs) > button { font-size: 13px; }
+.plp-dashboard .ws-panel-title + div > .ws-table-tools, .plp-dashboard .ws-panel-title + .ws-table-tools { margin-top: 0; }
+.plp-dashboard .hub-stack > .ws-panel-title { margin-bottom: 0; }
+@media (max-width: 640px) { .plp-dashboard .hub-heading h1 { font-size: 22px; } }
+
+/* Dark mode: headers and card titles sit on the page, not in leftover boxes. */
+html[data-theme="dark"] .plp-dashboard :is(.ws-page-header, .hub-heading, .ws-panel-title, .dv-card-head, .dv-card-head > div) { background: transparent !important; box-shadow: none !important; border-color: transparent; }
+html[data-theme="dark"] .plp-dashboard main { background: radial-gradient(1100px 360px at 18% -140px, rgba(133, 191, 244, .07), transparent 70%), #0b0b0b; }
+
+/* Trainer "Next steps": tag, then what to do and why, then the action on the right. */
+.tw-tasks { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.tw-tasks li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid #eef2f6; }
+.tw-tasks li:last-child { border-bottom: 0; }
+.tw-tasks li > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tw-tasks li > div strong { font-size: 14px; }
+.tw-tasks li > div small { color: #5b6b7d; font-size: 13px; }
+html[data-theme="dark"] .tw-tasks li { border-color: #232c35; }
+html[data-theme="dark"] .tw-tasks li > div small { color: #9fb2c4; }
+@media (max-width: 640px) { .tw-tasks li { grid-template-columns: 1fr; gap: 6px; } .tw-tasks li > .ws-status { justify-self: start; } }
+html[data-theme="dark"] .plp-dashboard :is(.ws-page-header, .hub-heading) { border: 0 !important; padding-left: 0; padding-right: 0; }

@@ -29,3 +29,6 @@ docs/demo-and-live-updates.md
 docs/demo-workspaces.md
 services/platform/uploads/
 *.tmp.mjs
+
+# Copied from the pinned vision dependency before dev/build
+public/mediapipe/

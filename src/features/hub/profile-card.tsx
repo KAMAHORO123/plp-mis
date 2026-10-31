@@ -39,7 +39,7 @@ export function ProfileCard({ kicker, subtitle, actions, bio, stats }: {
       </div>
       <p className="pv-bio">{translateUi(bio || profile.bio || 'Add a short bio so people know what you care about.')}</p>
       <dl className="pv-stats">
-        {translateUi(stats.map(({ label, value, icon: Icon }) => <div key={label}><Icon size={18}/><dt>{translateUi(label)}</dt><dd>{translateUi(value)}</dd></div>))}
+        {translateUi(stats.map(({ label, value, icon: Icon }) => <div key={label}><dt><Icon size={18} aria-hidden="true"/>{translateUi(label)}</dt><dd>{translateUi(value)}</dd></div>))}
       </dl>
     </section>);
 }

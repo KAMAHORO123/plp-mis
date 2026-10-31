@@ -1,3 +1,4 @@
+import "./profile-photo.css";
 import { translateUi, useSiteLanguage } from '../../i18n/language';
 import { useRef, useState } from "react";
 import { Camera, Trash2 } from "lucide-react";
@@ -59,15 +60,16 @@ export function ProfilePhoto({ size = 96, editable = true, badge = false }: {
     if (badge)
         return (<div className="pp-badge" style={{ width: size, height: size }}>
       <div className="pp-frame" style={{ width: size, height: size, fontSize: size / 3 }}>
-        {translateUi(profile.avatarUrl && broken !== profile.avatarUrl ? <img src={profile.avatarUrl} alt={translateUi("{p0}'s profile picture", { p0: translateUi(profile.name) })} onError={() => setBroken(profile.avatarUrl!)}/> : <span>{translateUi(initialsOf(profile.name))}</span>)}
+        {translateUi(profile.avatarUrl && broken !== profile.avatarUrl ? <img data-zoom tabIndex={0} role="button" src={profile.avatarUrl} alt={translateUi("{p0}'s profile picture", { p0: translateUi(profile.name) })} onError={() => setBroken(profile.avatarUrl!)}/> : <span>{translateUi(initialsOf(profile.name))}</span>)}
       </div>
       <input ref={input} type="file" accept="image/png,image/jpeg" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f)
             void upload(f); }} aria-label={translateUi("Upload profile picture")}/>
-      <button type="button" className="pp-badge-button" disabled={busy} title={translateUi("Change photo (PNG or JPEG, up to 2 MB)")} aria-label={translateUi(profile.avatarUrl ? "Change profile picture" : "Add profile picture")} onClick={() => input.current?.click()}><Camera size={15}/></button>
+      {editable && <button type="button" className="pp-badge-button" disabled={busy} title={translateUi("Change photo (PNG or JPEG, up to 2 MB)")} aria-label={translateUi(profile.avatarUrl ? "Change profile picture" : "Add profile picture")} onClick={() => input.current?.click()}><Camera size={15}/></button>}
+      {editable && profile.avatarUrl && <button type="button" className="pp-remove-button" disabled={busy} aria-label={translateUi("Remove profile picture")} title={translateUi("Remove photo")} onClick={() => void remove()}><Trash2 size={14}/></button>}
     </div>);
     return (<div className="pp-photo">
       <div className="pp-frame" style={{ width: size, height: size, fontSize: size / 3 }}>
-        {translateUi(profile.avatarUrl && broken !== profile.avatarUrl ? <img src={profile.avatarUrl} alt={translateUi("{p0}'s profile picture", { p0: translateUi(profile.name) })} onError={() => setBroken(profile.avatarUrl!)}/> : <span>{translateUi(initialsOf(profile.name))}</span>)}
+        {translateUi(profile.avatarUrl && broken !== profile.avatarUrl ? <img data-zoom tabIndex={0} role="button" src={profile.avatarUrl} alt={translateUi("{p0}'s profile picture", { p0: translateUi(profile.name) })} onError={() => setBroken(profile.avatarUrl!)}/> : <span>{translateUi(initialsOf(profile.name))}</span>)}
       </div>
       {translateUi(editable && (<div className="pp-controls">
           <input ref={input} type="file" accept="image/png,image/jpeg" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f)

@@ -1,3 +1,5 @@
+import { DueBadge } from "./session-calendar";
+import { RecordTable } from "./management-ui";
 import { translateUi, useSiteLanguage } from '../../i18n/language';
 import { confirmAction } from '@/components/shared/confirm-dialog';
 import { useLiveTick } from './live';
@@ -73,7 +75,7 @@ export function MeetingsPage() {
     if (error && !meeting && !list.length)
         return <div className="hub-meeting-layout"><Panel><p role="alert">{translateUi(error)}</p><Link to="/meetings">{translateUi("Back to meetings")}</Link></Panel></div>;
     if (!id)
-        return <div className="hub-meeting-layout hub-editorial-page"><Heading title={translateUi("PLP meetings")} description={translateUi("Show up, connect, and earn verified credits.")}/>{translateUi(account?.role === 'admin' && <Link className="hub-button" to="/meetings/manage">{translateUi("Manage meetings")}</Link>)}{translateUi(list.length ? list.map(m => <Panel key={m.id}><h2>{translateUi(m.title)}</h2><p>{translateUi(formatDate(m.opens_at))}{translateUi(" \u00B7 Kigali time")}</p><p>{translateUi(m.location)}</p><Link className="hub-button" to={`/meetings/${m.id}`}>{translateUi("View meeting")}</Link></Panel>) : <Empty>{translateUi("No upcoming meetings. Check back soon.")}</Empty>)}</div>;
+        return <div className="hub-meeting-layout hub-editorial-page"><Heading title={translateUi("PLP meetings")} description={translateUi("Show up, connect, and earn verified credits.")}/>{translateUi(account?.role === 'admin' && <Link className="hub-button" to="/meetings/manage">{translateUi("Manage meetings")}</Link>)}<Panel><RecordTable title="meetings" rows={list} searchText={m=>`${m.title} ${m.location}`} filters={[{label:'Time',options:[{label:'This week',test:(m:Meeting)=>Date.parse(m.opens_at)>Date.now()&&Date.parse(m.opens_at)<Date.now()+7*86400000}]}]} columns={[{label:'Meeting',render:m=><strong>{m.title}</strong>},{label:'When',render:m=><>{formatDate(m.opens_at)}<DueBadge date={m.opens_at}/></>},{label:'Location',render:m=>m.location},{label:'Action',render:m=><Link className="hub-text-link" to={`/meetings/${m.id}`}>{translateUi('View meeting')}</Link>}]}/></Panel></div>;
     if (!meeting)
         return null;
     const open = !meeting.closed && now >= new Date(meeting.opens_at).getTime() && now <= new Date(meeting.closes_at).getTime();
@@ -122,13 +124,24 @@ export function MeetingManager() {
     const [register, setRegister] = useState<{
         meeting: Meeting;
         rows: Attendee[];
-    } | null>(null), [query, setQuery] = useState('');
+    } | null>(null);
     const reload = () => platformApi<Meeting[]>('/meetings').then(setList);
     const live = useLiveTick();
     useEffect(() => { reload().catch(e => toast.error(translateUi(e.message))).finally(() => setLoaded(true)); }, [live]);
+    const removeMeetings = async (rows: Meeting[]) => {
+        const empty = rows.filter(m => !m.attendees);
+        if (!empty.length)
+            return toast.error(translateUi('Those meetings have check-ins, so they are kept for the attendance record.'));
+        if (!await confirmAction({ title: `Delete ${empty.length} meeting${empty.length === 1 ? '' : 's'}?`, description: rows.length > empty.length ? `${rows.length - empty.length} selected have check-ins and will be kept.` : 'They are removed from the hub and the website.', confirmLabel: `Delete ${empty.length}`, destructive: true }))
+            return;
+        let done = 0;
+        for (const m of empty) { try { await platformApi(`/meetings/${m.id}`, 'DELETE'); done++; } catch { /* Counted below. */ } }
+        await reload();
+        if (done) toast.success(translateUi('{p0} deleted', { p0: done === 1 ? '1 meeting' : `${done} meetings` }));
+        if (done < empty.length) toast.error(translateUi('{p0} could not be deleted.', { p0: empty.length - done }));
+    };
     const openRegister = async (m: Meeting) => { try {
         setRegister({ meeting: m, rows: await platformApi<Attendee[]>(`/meetings/${m.id}/attendance`) });
-        setQuery('');
     }
     catch (e) {
         toast.error(translateUi((e as Error).message));
@@ -154,7 +167,7 @@ export function MeetingManager() {
     }
     const current = editing && editing !== 'new' ? editing : null;
     const totalCheckins = list.reduce((n, m) => n + (m.attendees || 0), 0);
-    const rows = register?.rows.filter(r => `${r.name} ${r.email}`.toLowerCase().includes(query.toLowerCase())) ?? [];
+    const rows = register?.rows ?? [];
     return <div className="ws-page">
   <header className="ws-page-header"><div><p className="ws-kicker">{translateUi("ADMINISTRATION")}</p><h1>{translateUi("Meetings & attendance")}</h1><p>{translateUi("Schedule PLP meetings, share the host code at the venue, and see who checked in.")}</p></div><button className="hub-button" onClick={() => { setEditing('new'); setHostCode(null); }}><Plus size={16}/>{translateUi(" Create meeting")}</button></header>
   {translateUi(hostCode && <Panel className="ms-callout"><div><h2>{translateUi(hostCode.title)}{translateUi(" \u00B7 Host code")}</h2><p className="hub-meeting-code">{translateUi(hostCode.code)}</p><p>{translateUi("Display this code at the venue. It is shown only once; generate a new one if needed.")}</p></div><button className="hub-button secondary" onClick={() => setHostCode(null)}>{translateUi("Hide code")}</button></Panel>)}
@@ -166,15 +179,11 @@ export function MeetingManager() {
   </div>
   <Panel>
    <div className="ws-panel-title"><h2>{translateUi("Scheduled meetings ")}<span className="ws-count">{translateUi(list.length)}</span></h2></div>
-   {translateUi(!loaded ? <p>{translateUi("Loading meetings\u2026")}</p> : !list.length ? <Empty>{translateUi("No meetings yet. Use \u201CCreate meeting\u201D to schedule the first one.")}</Empty> : <div className="ws-table-wrap"><table className="ws-table"><thead><tr><th>{translateUi("Meeting")}</th><th>{translateUi("Attendance window")}</th><th>{translateUi("Status")}</th><th>{translateUi("Checked in")}</th><th>{translateUi("Actions")}</th></tr></thead><tbody>
-    {translateUi(list.map(m => {
-                const status = meetingStatus(m);
-                return <tr key={m.id}>
-     <td><strong>{translateUi(m.title)}</strong><small><MapPin size={11}/> {translateUi(m.location)}</small></td>
-     <td>{translateUi(formatDate(m.opens_at))}<small>{translateUi("until ")}{translateUi(formatDate(m.closes_at))}{translateUi(" \u00B7 Kigali time")}</small></td>
-     <td><span className={`ws-status ${status === 'Open now' ? 'ws-status-issued' : status === 'Closed' ? 'ws-status-returned' : ''}`}>{translateUi(status)}</span></td>
-     <td><button className="hub-text-button" onClick={() => void openRegister(m)}>{translateUi(m.attendees || 0)}{translateUi(" people")}</button><small>{translateUi(m.credits)}{translateUi(" credits each")}</small></td>
-     <td><div className="mb-actions">
+   {translateUi(!loaded ? <p>{translateUi("Loading meetings\u2026")}</p> : !list.length ? <Empty>{translateUi("No meetings yet. Use \u201CCreate meeting\u201D to schedule the first one.")}</Empty> : <div className="ws-table-wrap"><RecordTable title="meetings" rows={list} bulkActions={[{ label: "Delete", tone: "danger", run: removeMeetings }]} searchText={m=>`${m.title} ${m.location} ${meetingStatus(m)}`} filters={[{label:'Status',options:['Scheduled','Open now','Closed'].map(status=>({label:status,test:(m:Meeting)=>meetingStatus(m)===status}))}]} columns={[{label:translateUi("Meeting"),render:(m)=>{return <><strong>{translateUi(m.title)}</strong><small><MapPin size={11}/> {translateUi(m.location)}</small></>;}},
+{label:translateUi("Attendance window"),render:(m)=>{return <>{translateUi(formatDate(m.opens_at))}<small>{translateUi("until ")}{translateUi(formatDate(m.closes_at))}{translateUi(" \u00B7 Kigali time")}</small></>;}},
+{label:translateUi("Status"),render:(m)=>{const status = meetingStatus(m);return <><span className={`ws-status ${status === 'Open now' ? 'ws-status-issued' : status === 'Closed' ? 'ws-status-returned' : ''}`}>{translateUi(status)}</span></>;}},
+{label:translateUi("Checked in"),render:(m)=>{return <><button className="hub-text-button" onClick={() => void openRegister(m)}>{translateUi(m.attendees || 0)}{translateUi(" people")}</button><small>{translateUi(m.credits)}{translateUi(" credits each")}</small></>;}},
+{label:translateUi("Actions"),render:(m)=>{const status = meetingStatus(m);return <><div className="mb-actions">
       <button className="hub-record-icon hub-record-edit" title={translateUi("View attendance register")} aria-label={translateUi("Attendance for {p0}", { p0: translateUi(m.title) })} onClick={() => void openRegister(m)}><ClipboardList size={17}/></button>
       <Link className="hub-record-icon hub-record-edit" title={translateUi("Open check-in page")} aria-label={translateUi("Open check-in page for {p0}", { p0: translateUi(m.title) })} to={`/meetings/${m.id}`} target="_blank"><ExternalLink size={17}/></Link>
       {translateUi(status !== 'Closed' && <>
@@ -184,19 +193,18 @@ export function MeetingManager() {
        <button className="hub-record-icon hub-record-delete" disabled={busy} title={translateUi("Close attendance")} aria-label={translateUi("Close attendance for {p0}", { p0: translateUi(m.title) })} onClick={async () => { if (await confirmAction({ title: 'Close attendance for this meeting?', description: 'Members will no longer be able to check in with the attendance code.', confirmLabel: 'Close attendance', destructive: true }))
                         void manage(m, 'close'); }}><Ban size={17}/></button>
       </>)}
-     </div></td>
-    </tr>;
-            }))}
-   </tbody></table></div>)}
+     </div></>;}}]}/></div>)}
   </Panel>
   {translateUi(register && <Panel>
    <div className="ws-panel-title"><h2>{translateUi("Attendance register \u00B7 ")}{translateUi(register.meeting.title)} <span className="ws-count">{translateUi(register.rows.length)}</span></h2><div className="hub-actions"><button className="hub-button secondary" disabled={!register.rows.length} onClick={() => downloadCSV(`attendance-${register.meeting.title.replace(/\W+/g, '-').toLowerCase()}.csv`, [['Name', 'Email', 'Role', 'Checked in (Kigali)', 'Distance from venue (m)', 'Location accuracy (m)'], ...register.rows.map(r => [r.name, r.email, r.role, formatDate(r.checked_in_at), r.distance_m, r.accuracy_m])])}><Download size={15}/>{translateUi(" Export CSV")}</button><button className="hub-button secondary" onClick={() => setRegister(null)}>{translateUi("Close")}</button></div></div>
    <p className="hub-caption">{translateUi(formatDate(register.meeting.opens_at))}{translateUi(" \u2013 ")}{translateUi(formatDate(register.meeting.closes_at))}{translateUi(" \u00B7 ")}{translateUi(register.meeting.location)}{translateUi(" \u00B7 ")}{translateUi(register.rows.length * register.meeting.credits)}{translateUi(" credits awarded")}</p>
    {translateUi(register.rows.length ? <>
-    <div className="ws-table-tools"><input aria-label={translateUi("Search attendees")} placeholder={translateUi("Search by name or email")} value={query} onChange={e => setQuery(e.target.value)}/><span>{translateUi(rows.length)}{translateUi(" of ")}{translateUi(register.rows.length)}</span></div>
-    <div className="ws-table-wrap"><table className="ws-table"><thead><tr><th>{translateUi("#")}</th><th>{translateUi("Name")}</th><th>{translateUi("Role")}</th><th>{translateUi("Checked in")}</th><th>{translateUi("Distance from venue")}</th></tr></thead><tbody>
-     {translateUi(rows.map((r, i) => <tr key={r.email}><td>{translateUi(i + 1)}</td><td><strong>{translateUi(r.name)}</strong><small>{translateUi(r.email)}</small></td><td>{translateUi(({ member: 'Member', leader: 'Club leader', trainer: 'Trainer', mentor: 'Mentor', admin: 'Administrator' } as Record<string, string>)[r.role] ?? r.role)}</td><td>{translateUi(formatDate(r.checked_in_at))}</td><td>{translateUi(r.distance_m)}{translateUi(" m")}<small>{translateUi("\u00B1")}{translateUi(r.accuracy_m)}{translateUi(" m accuracy")}</small></td></tr>))}
-    </tbody></table></div>
+
+    <div className="ws-table-wrap"><RecordTable title="attendees" rows={(rows).map((r, i) => ({...r, id: String(r.email), i,}))} searchText={r=>`${r.name} ${r.email} ${r.role}`}  columns={[{label:translateUi("#"),render:(r)=>{return <>{translateUi(r.i + 1)}</>;}},
+{label:translateUi("Name"),render:(r)=>{return <><strong>{translateUi(r.name)}</strong><small>{translateUi(r.email)}</small></>;}},
+{label:translateUi("Role"),render:(r)=>{return <>{translateUi(({ member: 'Member', leader: 'Club leader', trainer: 'Trainer', mentor: 'Mentor', admin: 'Administrator' } as Record<string, string>)[r.role] ?? r.role)}</>;}},
+{label:translateUi("Checked in"),render:(r)=>{return <>{translateUi(formatDate(r.checked_in_at))}</>;}},
+{label:translateUi("Distance from venue"),render:(r)=>{return <>{translateUi(r.distance_m)}{translateUi(" m")}<small>{translateUi("\u00B1")}{translateUi(r.accuracy_m)}{translateUi(" m accuracy")}</small></>;}}]}/></div>
    </> : <Empty>{translateUi("No one has checked in yet. Members check in on the meeting page with the host code while at the venue.")}</Empty>)}
   </Panel>)}
   {translateUi(editing && <Dialog open onOpenChange={o => { if (!o && !busy)

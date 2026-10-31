@@ -6,6 +6,7 @@ RUN npm ci
 COPY index.html vite.config.ts tailwind.config.ts postcss.config.js tsconfig*.json ./
 COPY public ./public
 COPY src ./src
+COPY scripts/prepare-vision.mjs ./scripts/prepare-vision.mjs
 RUN npm run build
 FROM nginx:alpine
 COPY deploy/hub-nginx.conf /etc/nginx/conf.d/default.conf

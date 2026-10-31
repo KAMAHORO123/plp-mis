@@ -3,8 +3,8 @@ import { z } from "zod";
 import { transaction } from "./db.mjs";
 
 // Server-enforced timed assessments for trainer-built courses. Answers never leave the server.
-export const QUIZ_PASS_MARK = 80, EXAM_PASS_MARK = 70, MAX_ATTEMPTS = 3, MAX_FOCUS_LOSSES = 3, MIN_ASSIGNMENT_WORDS = 60;
-const GRACE = "interval '15 seconds'";
+export const QUIZ_PASS_MARK = 80, EXAM_PASS_MARK = 70, MAX_ATTEMPTS = 3, MAX_FOCUS_LOSSES = 1, MIN_ASSIGNMENT_WORDS = 60;
+const GRACE = "interval '0 seconds'";
 const demand = (ok, status, message) => { if (!ok) throw Object.assign(new Error(message), { status }); };
 export const wordCount = (text) => String(text || "").trim().split(/\s+/).filter(Boolean).length;
 
@@ -44,7 +44,7 @@ export async function completeIfEligible(tx, e, course) {
 async function grade(tx, attempt, e, course, reason) {
   const a = assessmentsOf(course.data).find((x) => x.id === attempt.assessment_id);
   const results = attempt.question_ids.map((qid) => { const q = a?.questions.find((x) => x.id === qid); return !!q && attempt.answers[qid] === q.answer; });
-  const score = results.filter(Boolean).length, total = results.length, percent = total ? Math.round((score / total) * 100) : 0, passed = !!a && percent >= a.passMark;
+  const score = results.filter(Boolean).length, total = results.length, percent = total ? Math.round((score / total) * 100) : 0, passed = reason !== "focus" && !!a && percent >= a.passMark;
   const row = (await tx.query("UPDATE assessment_attempts SET submitted_at=now(),score=$2,total=$3,percent=$4,passed=$5,reason=$6,results=$7 WHERE id=$1 RETURNING *", [attempt.id, score, total, percent, passed, reason, results])).rows[0];
   if (passed && a.kind === "quiz" && !e.lessons.includes(a.moduleIndex)) e.lessons = [...e.lessons, a.moduleIndex];
   if (passed && a.kind === "exam") e.passed = true;
@@ -65,7 +65,7 @@ async function closeExpired(tx, e, course) {
 }
 function activePayload(attempt, course) {
   const a = assessmentsOf(course.data).find((x) => x.id === attempt.assessment_id);
-  return { id: attempt.id, assessment_id: attempt.assessment_id, started_at: attempt.started_at, ends_at: attempt.ends_at, answers: attempt.answers, focus_losses: attempt.focus_losses, questions: attempt.question_ids.map((qid) => a?.questions.find((q) => q.id === qid)).filter(Boolean).map((q) => ({ id: q.id, prompt: q.prompt, options: q.options })) };
+  return { id: attempt.id, assessment_id: attempt.assessment_id, server_time: new Date().toISOString(), started_at: attempt.started_at, ends_at: attempt.ends_at, answers: attempt.answers, focus_losses: attempt.focus_losses, questions: attempt.question_ids.map((qid) => a?.questions.find((q) => q.id === qid)).filter(Boolean).map((q) => ({ id: q.id, prompt: q.prompt, options: q.options })) };
 }
 
 const answersSchema = z.record(z.string().max(40), z.number().int().min(0).max(5));
@@ -137,8 +137,8 @@ export async function assessmentsRoute({ p, req, db, user, body, send }) {
     const result = await transaction(db, async (tx) => {
       const attempt = (await tx.query(`SELECT a.*,a.ends_at+${GRACE}>=now() AS open_window FROM assessment_attempts a JOIN enrollments e ON e.id=a.enrollment_id WHERE a.id=$1 AND e.member_id=$2 FOR UPDATE OF a`, [attemptId, user.id])).rows[0];
       demand(attempt, 404, "Attempt not found");
-      demand(!attempt.submitted_at, 409, "This attempt has already been submitted");
       const { e, course } = await lockEnrollment(tx, attempt.enrollment_id, user);
+      if (attempt.submitted_at) return { submitted: summary(attempt, assessmentsOf(course.data).find(a => a.id === attempt.assessment_id)?.kind) };
       // Answers sent after the time limit are ignored; the attempt is graded on what was saved in time.
       if (attempt.open_window) {
         for (const [qid, value] of Object.entries(input.answers)) if (attempt.question_ids.includes(qid)) attempt.answers[qid] = value;

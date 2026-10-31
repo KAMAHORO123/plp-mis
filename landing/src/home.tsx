@@ -1,10 +1,11 @@
 import { translateUi, useSiteLanguage } from './i18n/language';
 import { SiteLink as Link } from "./site-link";
-import { ArrowRight, ArrowUpRight, Download, BookOpen, Compass, Users, Award, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Pause, Play, Download, BookOpen, Compass, Users, Award } from "lucide-react";
 import { TestimonialsSection, FunCorner, AlbumSection, CanadaSection } from "./community-sections";
 import { PhotoPlayground } from "./landing-art";
 const programmes = [
-    { id: "peace-memory", label: "Peace & memory", title: "Remembering together. Taking responsibility.", image: "plp-walk", alt: "Participants walking together at Walk to Remember", caption: "Peace & memory", intro: "Memory is part of how we build peace. PLP brings young people, survivors, and communities together to remember the 1994 Genocide against the Tutsi and confront the divisions that lead to violence.", items: [
+    { id: "peace-memory", label: "Peace & memory", title: "Remembering together. Taking responsibility.", image: "plp-remembrance", alt: "Thousands gathered in an arena for a remembrance event", caption: "Peace & memory", intro: "Memory is part of how we build peace. PLP brings young people, survivors, and communities together to remember the 1994 Genocide against the Tutsi and confront the divisions that lead to violence.", items: [
             ["Walk to Remember", "Initiated by PLP in 2009, this youth-led campaign brings remembrance walks, survivor testimonies, poetry, and art into a shared act of commemoration. The initiative has reached more than 25 countries."],
             ["Ku Gicaniro Dialogue", "Honest conversations about history, responsibility, and unity give young people a space to learn about genocide prevention and challenge divisionism and hate."]
         ] },
@@ -39,7 +40,7 @@ function ProgrammeFeatures({ full = false }: {
 }
 function Pathway() {
     useSiteLanguage();
-    return <section className="plp-pathway-editorial" id="pathways"><div className="plp-pathway-intro"><p className="plp-section-label">{translateUi("OUR FLAGSHIP MODEL")}</p><h2>{translateUi("PLP Pathways")}</h2><p>{translateUi("From discovery to practical experience, then leadership in action. The three stages connect PLP\u2019s work across schools, universities, and communities.")}</p><div className="plp-pathway-symbol" aria-hidden="true"><span><BookOpen size={24}/>{translateUi("Discover")}</span><i>{translateUi("\u2197")}</i><span><Compass size={24}/>{translateUi("Do")}</span><i>{translateUi("\u2197")}</i><span><Sparkles size={24}/>{translateUi("Demonstrate")}</span></div></div><ol>{translateUi([
+    return <section className="plp-pathway-editorial" id="pathways"><div className="plp-pathway-intro"><p className="plp-section-label">{translateUi("OUR FLAGSHIP MODEL")}</p><h2>{translateUi("PLP Pathways")}</h2><p>{translateUi("From discovery to practical experience, then leadership in action. The three stages connect PLP\u2019s work across schools, universities, and communities.")}</p><div className="plp-pathway-symbol" aria-hidden="true"><span><BookOpen size={24}/>{translateUi("Discover")}</span><i>{translateUi("\u2197")}</i><span><Compass size={24}/>{translateUi("Do")}</span><i>{translateUi("\u2197")}</i><span><Award size={24}/>{translateUi("Demonstrate")}</span></div></div><ol>{translateUi([
             ["Discover & Develop", "Clubs and homegroups are the starting point. Leadership, mentorship, and practical skills help members find their direction. The PLP Hub supports this stage as a digital learning platform."],
             ["Do: PLP Connect", "Apply what you learn through internships, volunteering, apprenticeships, professional mentorship, and business opportunities."],
             ["Demonstrate", "Bring your leadership and talents into community life through PLP’s peace, arts, wellness, and service initiatives."]
@@ -86,20 +87,51 @@ function Team() {
   <div className="plp-team-groups"><p className="plp-team-group-label">{translateUi("Leadership")}</p><ul className="plp-team-leadership">{translateUi(leadership.map(p => <Person key={p[0]} person={p} lead/>))}</ul><p className="plp-team-group-label">{translateUi("Directors")}</p><ul className="plp-team-directors">{translateUi(directors.map(p => <Person key={p[0]} person={p}/>))}</ul><p className="plp-team-group-label">{translateUi("Programmes and teams")}</p><div className="plp-team-units">{translateUi(teams.map(([area, , units]) => <section key={area}><h3>{translateUi(area === "Do" ? "PLP Connect" : area)}</h3><dl>{translateUi(units.map(([unit, people]) => <div key={unit}><dt>{translateUi(unit)}</dt><dd>{people.split(" · ").map(name => <span key={name}>{translateUi(name)}</span>)}</dd></div>))}</dl></section>))}</div><p className="plp-source-note">{translateUi("PLP is governed by a Board of Directors and supported by an Advisory Council.")}</p></div>
     </section>;
 }
+/** Full-width hero slider: each photo carries its own headline and link; the first slide is the page title. */
+const HERO_SLIDES = [
+    { src: "/images/plp/albums/camp-8.jpg", position: "center 35%", title: "Young people. Shared purpose.", accent: "A peaceful future.", text: "A youth-led community rooted in Rwanda, reaching beyond borders.", to: "/programmes", cta: "Explore our work" },
+    { src: "/images/plp/plp-remembrance.webp", position: "center 45%", title: "Remember together.", accent: "", text: "We honour our history and stand as one for unity.", to: "/about", cta: "Our story" },
+    { src: "/images/plp/plp-arts.webp", position: "center 40%", title: "Create freely.", accent: "", text: "Art, music and expression that bring young people together.", to: "/programmes", cta: "Our programmes" },
+    { src: "/images/plp/albums/academy-8.jpg", position: "center 30%", title: "Learn and lead.", accent: "", text: "Courses, mentoring and real opportunities through the PLP Hub.", to: "/plp-hub", cta: "Discover the Hub" },
+    { src: "/images/plp/plp-dialogue.webp", position: "center 55%", title: "Speak up.", accent: "", text: "Dialogue that turns young voices into action.", to: "/stories", cta: "Our impact" },
+];
+function HeroSlider() {
+    useSiteLanguage();
+    const [index, setIndex] = useState(0), [paused, setPaused] = useState(false), [touchX, setTouchX] = useState<number | null>(null);
+    const go = (step: number) => setIndex(i => (i + step + HERO_SLIDES.length) % HERO_SLIDES.length);
+    useEffect(() => {
+        // Slides always advance on their own; the pause button stops them (reduced motion only drops the zoom).
+        if (paused)
+            return;
+        const timer = window.setTimeout(() => go(1), 6000);
+        return () => clearTimeout(timer);
+    }, [index, paused]);
+    return <section className={`plp-showcase${paused ? " is-paused" : ""}`} aria-roledescription="carousel" aria-label={translateUi("Peace and Love Proclaimers")} onTouchStart={e => setTouchX(e.touches[0].clientX)} onTouchEnd={e => { if (touchX !== null && Math.abs(e.changedTouches[0].clientX - touchX) > 40) go(e.changedTouches[0].clientX < touchX ? 1 : -1); setTouchX(null); }}>
+      {HERO_SLIDES.map((s, i) => {
+        const Heading = i === 0 ? "h1" : "h2", active = i === index;
+        return <div key={s.src} className={`plp-showcase-slide${active ? " is-active" : ""}`} aria-roledescription="slide" aria-label={translateUi("{p0} of {p1}", { p0: i + 1, p1: HERO_SLIDES.length })} aria-hidden={active ? undefined : true}>
+          <img src={s.src} alt="" style={{ objectPosition: s.position }} loading={i === 0 ? "eager" : "lazy"} {...(i === 0 ? { fetchpriority: "high" } : {})}/>
+          <div className="plp-showcase-copy">
+            <p className="plp-showcase-kicker">{translateUi("PEACE AND LOVE PROCLAIMERS · SINCE 2007")}</p>
+            <Heading>{translateUi(s.title)}{s.accent && <><br /><span>{translateUi(s.accent)}</span></>}</Heading>
+            <p>{translateUi(s.text)}</p>
+            <Link to={s.to} className="hub-button" tabIndex={active ? undefined : -1}>{translateUi(s.cta)}<ArrowRight size={18}/></Link>
+          </div>
+        </div>;
+      })}
+      <div className="plp-showcase-controls">
+        <span className="plp-showcase-count" aria-hidden="true"><strong>{String(index + 1).padStart(2, "0")}</strong> / {String(HERO_SLIDES.length).padStart(2, "0")}</span>
+        <span className="plp-showcase-bars">{HERO_SLIDES.map((s, i) => <button key={s.src} type="button" className={i === index ? "is-active" : i < index ? "is-done" : undefined} aria-label={translateUi("Show slide {p0}", { p0: i + 1 })} aria-current={i === index ? "true" : undefined} onClick={() => setIndex(i)}><i key={i === index ? `on-${index}` : "off"}/></button>)}</span>
+        <button type="button" className="plp-showcase-arrow" aria-label={translateUi(paused ? "Play slideshow" : "Pause slideshow")} aria-pressed={paused} onClick={() => setPaused(!paused)}>{paused ? <Play size={16}/> : <Pause size={16}/>}</button>
+        <button type="button" className="plp-showcase-arrow" aria-label={translateUi("Previous slide")} onClick={() => go(-1)}><ArrowLeft size={18}/></button>
+        <button type="button" className="plp-showcase-arrow" aria-label={translateUi("Next slide")} onClick={() => go(1)}><ArrowRight size={18}/></button>
+      </div>
+    </section>;
+}
 export function HomePage() {
     useSiteLanguage();
     return <>
-  <section className="plp-landing-hero plp-restored-hero">
-    <p className="plp-hero-kicker">{translateUi("PEACE AND LOVE PROCLAIMERS \u00B7 SINCE 2007")}</p>
-    <h1>{translateUi("Young people. Shared purpose.")}<br /><span>{translateUi("A peaceful future.")}</span></h1>
-    <p>{translateUi("Peace, leadership, culture, wellness, and service.")}<br className="plp-desktop-break"/>{translateUi(" A youth-led community rooted in Rwanda, reaching beyond borders.")}</p>
-    <div className="hub-actions"><Link to="/programmes" className="hub-button">{translateUi("Explore our work ")}<ArrowRight size={18}/></Link><Link to="/about" className="plp-quiet-link">{translateUi("The story of PLP ")}<ArrowUpRight size={18}/></Link></div>
-    <div className="plp-photo-stage">
-      <figure className="plp-side-photo plp-side-left"><img src="/images/plp/icyeza-home-hd.png" alt={translateUi("Two PLP ICYEZA members holding a Peace and Love Proclaimers photo frame")} width="1135" height="1386" {...{fetchpriority: "high"}}/><figcaption>{translateUi("Peace, love & belonging.")}</figcaption></figure>
-      <figure className="plp-main-photo"><span className="plp-photo-word" aria-hidden="true">{translateUi("together.")}</span><img src="/images/plp/plp-youth.webp" alt={translateUi("PLP members together in their MegaCare shirts")} width="1500" height="1001" {...{fetchpriority: "high"}}/><figcaption>{translateUi("Peace and Love Proclaimers \u00B7 Youth for Change")}</figcaption></figure>
-      <figure className="plp-side-photo plp-side-right"><img src="/images/plp/plp-remembrance.webp" alt={translateUi("A community gathered in an arena for remembrance")} width="523" height="452"/><figcaption>{translateUi("Remembering together.")}</figcaption></figure>
-    </div><div className="plp-hero-baseline"><span>{translateUi("Rwanda \u00B7 Canada \u00B7 One community")}</span><a href="#our-work">{translateUi("Discover PLP ")}<ArrowRight size={16}/></a></div>
-  </section>
+  <HeroSlider />
   <Reach />
   <section className="plp-org-intro"><p className="plp-section-label">{translateUi("WHAT BRINGS US TOGETHER")}</p><h2>{translateUi("Peace is at the heart.")}<br />{translateUi("Young people lead the work.")}</h2><p>{translateUi("Remembering our history. Creating space for expression. Supporting one another. Building skills and putting them to use. These are connected parts of PLP\u2019s work.")}</p></section>
   <ProgrammeFeatures />
@@ -137,7 +169,7 @@ export function AlbumPage() { useSiteLanguage(); return <AlbumSection />; }
 export function PublicHubPage() {
     useSiteLanguage();
     return <>
- <header className="plp-page-intro plp-hub-intro"><div className="plp-hub-intro-copy"><p className="plp-section-label">{translateUi("THE PLP HUB")}</p><h1>{translateUi("A place to learn.")}<br />{translateUi("A community to grow with.")}</h1><p>{translateUi("Build your skills, discover opportunities, and keep your PLP journey in one place.")}</p><div className="hub-actions"><Link className="hub-button" to="/hub">{translateUi("Enter the Hub ")}<ArrowUpRight size={18}/></Link><Link className="plp-editorial-link" to="/auth/signup">{translateUi("Become a member ")}<ArrowRight size={18}/></Link></div></div><div className="plp-hub-visual" aria-label={translateUi("Learn, connect, and grow with PLP")}><div className="plp-hub-orbit" aria-hidden="true"/><div className="plp-hub-core"><img src="/logo.svg" alt={translateUi("")} width="70" height="70"/><strong>{translateUi("Your next")}<br />{translateUi("chapter.")}</strong><span>{translateUi("STARTS WITH YOU")}</span></div><div className="plp-hub-float hub-float-learn"><BookOpen /><span>{translateUi("Stay curious.")}<strong>{translateUi("Learn something new.")}</strong></span></div><div className="plp-hub-float hub-float-connect"><Users /><span>{translateUi("Find your people.")}<strong>{translateUi("Grow together.")}</strong></span></div><div className="plp-hub-float hub-float-grow"><Award /><span>{translateUi("Make it count.")}<strong>{translateUi("Celebrate progress.")}</strong></span></div><span className="plp-hub-visual-note">{translateUi("LEARN \u00B7 CONNECT \u00B7 BECOME")}</span></div></header>
+ <header className="plp-page-intro plp-hub-intro"><div className="plp-hub-intro-copy"><p className="plp-section-label">{translateUi("THE PLP HUB")}</p><h1>{translateUi("A place to learn.")}<br />{translateUi("A community to grow with.")}</h1><p>{translateUi("Build your skills, discover opportunities, and keep your PLP journey in one place.")}</p><div className="hub-actions"><Link className="hub-button" to="/hub">{translateUi("Enter the Hub ")}<ArrowUpRight size={18}/></Link><Link className="plp-editorial-link" to="/auth/signup">{translateUi("Become a member ")}<ArrowRight size={18}/></Link></div></div><div className="plp-hub-visual" aria-label={translateUi("Learn, connect, and grow with PLP")}><div className="plp-hub-orbit" aria-hidden="true"/><div className="plp-hub-core"><img className="plp-logo-light" src="/logo.svg" alt={translateUi("")} width="70" height="70"/><img className="plp-logo-dark" src="/logo-dark.svg" alt="" aria-hidden="true" width="70" height="70"/><strong>{translateUi("Your next")}<br />{translateUi("chapter.")}</strong><span>{translateUi("STARTS WITH YOU")}</span></div><div className="plp-hub-float hub-float-learn"><BookOpen /><span>{translateUi("Stay curious.")}<strong>{translateUi("Learn something new.")}</strong></span></div><div className="plp-hub-float hub-float-connect"><Users /><span>{translateUi("Find your people.")}<strong>{translateUi("Grow together.")}</strong></span></div><div className="plp-hub-float hub-float-grow"><Award /><span>{translateUi("Make it count.")}<strong>{translateUi("Celebrate progress.")}</strong></span></div><span className="plp-hub-visual-note">{translateUi("LEARN \u00B7 CONNECT \u00B7 BECOME")}</span></div></header>
  <section className="plp-community-section plp-hub-overview" aria-label={translateUi("Explore the PLP Hub")}>{translateUi([
             ['01', 'Learn at your pace', 'Explore leadership, digital skills, entrepreneurship, employability, and peacebuilding.', '/courses', 'Explore learning'],
             ['02', 'Find your next opportunity', 'Discover opportunities and connect with the support to take your next step.', '/opportunities', 'View opportunities'],

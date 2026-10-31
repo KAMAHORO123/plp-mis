@@ -1,0 +1,80 @@
+.plp-theme-toggle { display:inline-grid; place-items:center; width:36px; height:36px; flex-shrink:0; border:1px solid hsl(var(--border,214 32% 91%)); border-radius:8px; background:transparent; color:inherit; cursor:pointer; }
+.plp-theme-toggle:hover { background:hsl(var(--muted,210 40% 96%)); }
+html[data-theme="dark"] { color-scheme:dark; --background:0 0% 4%; --foreground:0 0% 90%; --card:0 0% 10%; --card-foreground:0 0% 90%; --popover:0 0% 10%; --popover-foreground:0 0% 90%; --primary:207 85% 68%; --primary-foreground:0 0% 4%; --secondary:0 0% 14%; --secondary-foreground:0 0% 90%; --muted:0 0% 14%; --muted-foreground:0 0% 69%; --accent:0 0% 17%; --accent-foreground:207 85% 78%; --border:0 0% 19%; --input:0 0% 19%; --ring:207 85% 68%; --sidebar:0 0% 9%; --sidebar-foreground:0 0% 80%; --sidebar-active:0 0% 17%; --sidebar-active-foreground:207 85% 78%; }
+html[data-theme="dark"] body, html[data-theme="dark"] .hub-app { background:#0b0b0b; color:#e8e8e8; }
+html[data-theme="dark"] .plp-dashboard { --primary:207 85% 68%; --ring:207 85% 68%; --sidebar-active-foreground:207 85% 78%; }
+html[data-theme="dark"] :is(.plp-dashboard main,.hub-content,.ws-page,.ac-page) { background:#0b0b0b; }
+html[data-theme="dark"] :is(.plp-dashboard aside,.hub-header,.hub-mobile-nav,.hub-panel,.plp-stat-card,.hub-stats > div,.op-card,.op-save,.op-types button,.pv-id,.pv-panel,.ws-shortcuts a,.ac-outline,.ac-question,.ac-hero-card,.ws-chat-panel,.ws-chat-panel header,.hub-cookie-notice,.tw-card,.hub-heading,.ws-page-header,.plp-dashboard-heading) { background:#1f1f1f; color:#e8e8e8; border-color:#2b2b2b; box-shadow:none; }
+html[data-theme="dark"] .hub-app :is(h1,h2,h3,h4,legend,.op-card h2,.pv-name h1,.hub-stats strong,.plp-stat-value,.op-h3) { color:#f2f2f2; }
+html[data-theme="dark"] .hub-app :is(p,small,.hub-caption,.op-meta li,.op-org,.op-desc,.ws-table td,.ws-table th,.pv-bio,.ac-meta,.hub-field > span) { color:#c4c4c4; }
+html[data-theme="dark"] .hub-app :is(input:not([type="radio"]):not([type="checkbox"]),textarea,select) { background:#161616; color:#ececec; border-color:#3a3a3a; }
+html[data-theme="dark"] .hub-app :is(input,textarea)::placeholder { color:#aaaaaa; }
+html[data-theme="dark"] :is(.ws-table th,.ws-table tbody tr:hover,.op-external,.op-mode,.op-mode label.on,.pv-stats,.ws-chat-messages > div,.ac-exam-facts > div,.hub-feedback,.hub-tag,.hub-button.secondary) { background:#1f1f1f; color:#e2e2e2; border-color:#2b2b2b; }
+html[data-theme="dark"] :is(.ws-table td,.ws-table th,.ws-pagination,.op-card footer,.ws-tabs,.hub-chips,.pv-stats,.pv-stats > div) { border-color:#2b2b2b; }
+html[data-theme="dark"] :is(.hub-text-button,.hub-eyebrow,.op-type,.op-meta li svg,.pv-icon,.plp-stat-icon) { color:#8ac4fa; }
+html[data-theme="dark"] :is(.op-icon,.pp-frame,.plp-stat-icon,.hub-stat-icon) { background:#262626; color:#9bcfff; border-color:#3a3a3a; }
+html[data-theme="dark"] .hub-button:not(.secondary) { background:#85bff4; color:#161616; }
+html[data-theme="dark"] .op-types button.active { color:#b6dbff; background:#262626; border-color:#7cb8ef; }
+html[data-theme="dark"] .op-meta li.urgent { color:#ffaea7; }
+html[data-theme="dark"] .op-applied { color:#8be0bb; background:#1f1f1f; }
+html[data-theme="dark"] .op-closed { color:#f4ce89; background:#1f1f1f; }
+html[data-theme="dark"] .hub-app .hub-chips button, html[data-theme="dark"] .ws-tabs button { color:#c3c3c3; }
+html[data-theme="dark"] .hub-app .hub-chips button.active, html[data-theme="dark"] .ws-tabs button.active { color:#a6d5ff; border-bottom-color:#a6d5ff; }
+html[data-theme="dark"] .pp-badge .pp-frame { box-shadow:0 0 0 4px #1f1f1f; }
+html[data-theme="dark"] .pp-badge-button, html[data-theme="dark"] .pp-remove-button { border-color:#1f1f1f; }
+html[data-theme="dark"] .ws-chat-panel :is(input,select) { background:#161616; color:#ececec; }
+html[data-theme="dark"] .ws-chat-language, html[data-theme="dark"] .ws-chat-suggestions button { background:#1f1f1f; color:#e2e2e2; border-color:#2b2b2b; }
+html[data-theme="dark"] .ac-timer { background:#262626; color:#ececec; }
+html[data-theme="dark"] .ac-timer.urgent { background:#262626; color:#ffd1ca; }
+html[data-theme="light"] { color-scheme:light; }
+html[data-theme="dark"] .hub-search { background:#161616; color:#bfbfbf; border-color:#3a3a3a; }
+html[data-theme="dark"] .hub-app .hub-button:not(.secondary) { color:#161616 !important; }
+html[data-theme="dark"] :is(.dv-card,.tw-course-card,.nb-panel,.nb-list button,.ws-list > div,.pv-icon,.ac-outline-item.active) { background:#1f1f1f; color:#e8e8e8; border-color:#2b2b2b; }
+html[data-theme="dark"] :is(.nb-list button.unread,.nb-list button:hover) { background:#262626; }
+html[data-theme="dark"] .pv-cover { background:#262626; }
+html[data-theme="dark"] .hub-app :is(.ac-outline-item,.ae-list strong,.pv-stats dd,.dv-card strong,.tw-course-card strong) { color:#e8e8e8; }
+html[data-theme="dark"] .hub-app .ac-outline-item:hover { background:#262626; }
+html[data-theme="dark"] .hub-app .ac-outline-item.locked { color:#b0b0b0; }
+html[data-theme="dark"] .hub-app :is(.hub-panel,.ae-list li,.tw-quiz-head) { border-color:#2b2b2b; }
+html[data-theme="dark"] .hub-app .hub-caption { color:#c4c4c4 !important; }
+/* Certificates are printed paper: keep the light sheet and its dark ink in dark mode. */
+html[data-theme="dark"] .hub-app .cc-sheet :is(p,small,span,dt,dd,code,strong) { color:#1d2939; }
+html[data-theme="dark"] .hub-app .cc-sheet :is(.cc-small,.cc-org,.cc-foot dt,.cc-qr small) { color:#667085; }
+html[data-theme="dark"] .hub-app .cc-sheet .cc-title { color:#0c2e4b; }
+/* Chart tooltips set their own inline colours. */
+html[data-theme="dark"] .recharts-default-tooltip { background:#1f1f1f !important; border-color:#2b2b2b !important; color:#eeeeee; }
+html[data-theme="dark"] .recharts-tooltip-label { color:#eeeeee !important; }
+html[data-theme="dark"] .recharts-cartesian-grid line { stroke:#2b2b2b; }
+html[data-theme="dark"] .recharts-cartesian-axis-tick text { fill:#a5a5a5; }
+/* The full logo has black lettering: show it on a white badge in dark mode, wherever it appears. */
+html[data-theme="dark"] img[src$="/logo.svg"] { background:#fff; border-radius:8px; padding:4px 6px; }
+/* Logos: the light-lettered version is shown in dark mode. */
+.plp-logo-dark { display:none !important; }
+html[data-theme="dark"] .plp-logo-light { display:none !important; }
+html[data-theme="dark"] .plp-logo-dark { display:block !important; }
+/* Sign-in and sign-up: no white glow over the photos, and the form sits directly on the page as in light mode. */
+html[data-theme="dark"] .plp-auth-glow { display:none; }
+html[data-theme="dark"] .hub-app .hub-narrow :is(.hub-heading,.hub-panel), html[data-theme="dark"] .hub-access-shell :is(.hub-heading,.hub-panel) { background:transparent; border-color:transparent; box-shadow:none; }
+/* Brand-navy blocks become black in dark mode, with a blue edge so they still read as highlights. */
+html[data-theme="dark"] .plp-art-footer { background:#0f0f0f; border-top:1px solid #2b2b2b; }
+html[data-theme="dark"] .plp-poster-link { background:#161616; }
+html[data-theme="dark"] .plp-album-filters button[aria-pressed=true] { background:#ececec; color:#0b0b0b; border-color:#ececec; }
+html[data-theme="dark"] .hub-credit-hero { background:#161616; border:1px solid #2b2b2b; box-shadow:inset 4px 0 0 #85bff4; }
+/* Footer logo: no badge in dark mode, just the mark on the footer. */
+html[data-theme="dark"] .plp-footer-brand .plp-footer-logo { background:transparent !important; padding:0 !important; border-radius:0; }
+html[data-theme="dark"] .plp-footer-brand .plp-footer-logo strong { color:#ececec; }
+html[data-theme="dark"] .plp-footer-brand .plp-footer-logo small { color:#9a9a9a; }
+/* Banner call to action is a plain link, never a box. */
+html[data-theme="dark"] .plp-imigongo-banner a.plp-announcement-cta { background:transparent !important; border:0 !important; box-shadow:none !important; color:#85bff4; }
+/* ---- Minimal dark dashboards: one black surface, quiet borders, no decoration ---- */
+html[data-theme="dark"] .plp-dashboard aside { background:#0b0b0b !important; border-right:1px solid #1c1c1c; box-shadow:none; }
+html[data-theme="dark"] .plp-dashboard aside > :first-child::after,
+html[data-theme="dark"] .plp-dashboard :is(.hub-heading,.ws-page-header,.plp-dashboard-heading)::before,
+html[data-theme="dark"] .plp-dashboard .plp-stat-card::after { display:none; }
+html[data-theme="dark"] .plp-dashboard aside a { border:0 !important; box-shadow:none !important; }
+html[data-theme="dark"] .plp-dashboard aside a:hover { background:#141414; }
+html[data-theme="dark"] .plp-dashboard aside a[aria-current="page"], html[data-theme="dark"] .plp-dashboard aside a.active { background:#161616 !important; color:#9fcbf5 !important; }
+html[data-theme="dark"] .plp-dashboard header { background:#0b0b0b; border-color:#1c1c1c; }
+html[data-theme="dark"] .plp-dashboard :is(.hub-heading,.ws-page-header,.plp-dashboard-heading,.plp-stat-card,.hub-stats > div,.hub-panel,.dv-card,.ws-panel) { border-color:#222 !important; box-shadow:none !important; }
+html[data-theme="dark"] .plp-dashboard :is(.hub-stat-icon,.plp-stat-icon) { background:#1a1a1a; border-color:#262626; }
+html[data-theme="dark"] .plp-dialog-overlay { background:rgba(0,0,0,.72); }

@@ -44,6 +44,19 @@ export async function meetingsRoute({p,req,db,user,body,send}) {
   send(201,{...row,code});return true;
  }
  const edit=p.match(/^\/meetings\/([^/]+)$/);
+ // Meetings with check-ins hold attendance and credits, so only unattended ones can be deleted.
+ if(edit && req.method==='DELETE') {
+  demand(user.role==='admin',403,'Administrator required');
+  const id=z.string().uuid().parse(edit[1]);
+  await transaction(db,async tx=>{
+   demand((await tx.query('SELECT 1 FROM meetings WHERE id=$1 FOR UPDATE',[id])).rowCount,404,'Meeting not found');
+   demand(!(await tx.query('SELECT 1 FROM meeting_checkins WHERE meeting_id=$1 LIMIT 1',[id])).rowCount,409,'This meeting has check-ins, so it is kept for the attendance record.');
+   await tx.query("DELETE FROM content WHERE key='announcement' AND data->>'href'=$1",[`/meetings/${id}`]);
+   await tx.query('DELETE FROM meetings WHERE id=$1',[id]);
+   await tx.query("INSERT INTO audit_log(actor_id,action,entity_id) VALUES($1,'meeting.delete',$2)",[user.id,id]);
+  });
+  send(200,{deleted:true});return true;
+ }
  if(edit && req.method==='PUT') {
   demand(user.role==='admin',403,'Administrator required');
   const id=z.string().uuid().parse(edit[1]),input=inputSchema.parse(await body());

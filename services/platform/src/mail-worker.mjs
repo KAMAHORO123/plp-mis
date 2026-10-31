@@ -1,3 +1,4 @@
+import { queueReminders } from "./reminders.mjs";
 import { renderEmail } from "./email-template.mjs";
 import { verifyPassword } from "./auth.mjs";
 import { mailConfigured, createMailTransport } from "./mail-config.mjs";
@@ -72,6 +73,10 @@ export async function deliverNotification(db, transporter, from) {
       )
     ).rows[0];
     if (!mail) return false;
+    if (mail.reminder_session_id && !(await tx.query("SELECT 1 FROM mentor_sessions WHERE id=$1 AND date=$2 AND status='Confirmed' AND date>now()", [mail.reminder_session_id, mail.reminder_session_date])).rowCount) {
+      await tx.query('DELETE FROM notification_mail WHERE id=$1', [mail.id]);
+      return true;
+    }
     try {
       await transporter.sendMail({ from, to: mail.recipient, subject: mail.subject, text: mail.body, ...(mail.html ? { html: mail.html } : {}) });
       await tx.query("DELETE FROM notification_mail WHERE id=$1", [mail.id]);
@@ -86,11 +91,9 @@ export async function deliverNotification(db, transporter, from) {
   });
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  if (!mailConfigured() || !process.env.APP_ORIGIN)
-    throw Error(
-      "Configure SMTP_HOST, MAIL_FROM and APP_ORIGIN (plus SMTP_USER and SMTP_PASSWORD unless the relay authorises this server by IP)",
-    );
-  const transport = createMailTransport();
+  if (!process.env.APP_ORIGIN) throw Error('Configure APP_ORIGIN');
+  const transport = mailConfigured() ? createMailTransport() : null;
+  if (!transport) console.info('Email is not configured; in-app reminders remain enabled.');
   const db = connectDatabase();
   let stopped = false;
   process.on("SIGTERM", () => {
@@ -99,20 +102,25 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   process.on("SIGINT", () => {
     stopped = true;
   });
+  let nextReminders = 0;
   while (!stopped) {
     try {
-      await deliverRecovery(
+      if (Date.now() >= nextReminders) {
+        await queueReminders(db, process.env.APP_ORIGIN, { mailEnabled: !!transport });
+        nextReminders = Date.now() + 60000;
+      }
+      if (transport) { await deliverRecovery(
         db,
         transport,
         process.env.APP_ORIGIN,
         process.env.MAIL_FROM,
       );
-      await deliverNotification(db, transport, process.env.MAIL_FROM);
+      await deliverNotification(db, transport, process.env.MAIL_FROM); }
     } catch {
       console.error("Recovery mail worker could not process queue.");
     }
     await new Promise((resolve) => setTimeout(resolve, 2000));
   }
-  transport.close();
+  transport?.close();
   await db.end();
 }

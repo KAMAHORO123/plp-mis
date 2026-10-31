@@ -1,0 +1,131 @@
+# Local containers. Production HTTPS deployment lives in deploy/compose.yml.
+name: plp-local
+x-platform-env: &platform-env
+  DATABASE_URL: postgresql://plp_app:plp_local_app@database:5432/plp
+  APP_ORIGIN: http://localhost:5173
+  NODE_ENV: development
+  JWT_SECRET: local-development-only-plp-session-secret-not-for-production
+  CREDENTIAL_URL: http://credentials:8083
+  UPLOAD_DIR: /app/uploads
+  TRUST_PROXY: "true"
+x-service: &service
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+services:
+  database:
+    <<: *service
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: plp
+      POSTGRES_USER: plp
+      POSTGRES_PASSWORD: plp_local_database
+    volumes:
+      - postgres:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U plp -d plp"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+  migrate:
+    build: ./services/platform
+    command: [node, src/migrate.mjs]
+    environment:
+      DATABASE_URL: postgresql://plp:plp_local_database@database:5432/plp
+      APP_DB_PASSWORD: plp_local_app
+    depends_on:
+      database: { condition: service_healthy }
+    restart: "no"
+  platform:
+    <<: *service
+    build: ./services/platform
+    env_file: ./deploy/.env
+    environment: *platform-env
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      credentials: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:8082/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  mail:
+    <<: *service
+    build: ./services/platform
+    command: [node, src/mail-worker.mjs]
+    env_file: ./deploy/.env
+    environment: *platform-env
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      platform: { condition: service_healthy }
+  credentials:
+    <<: *service
+    build: ./services/credentials
+    environment:
+      APP_ORIGIN: http://localhost:5173
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:8083/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  content:
+    <<: *service
+    build: ./services/public-content
+    environment:
+      PUBLIC_SITE_ORIGIN: http://localhost:5174
+      PLATFORM_URL: http://platform:8082
+    depends_on:
+      platform: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:8080/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  hub:
+    <<: *service
+    build:
+      context: .
+      dockerfile: deploy/hub.Dockerfile
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://127.0.0.1/]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  landing:
+    <<: *service
+    build:
+      context: ./landing
+      args:
+        VITE_HUB_URL: http://localhost:5173
+        VITE_CONTENT_API_URL: /content
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://127.0.0.1/]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  gateway:
+    <<: *service
+    image: caddy:2-alpine
+    ports:
+      - "127.0.0.1:5173:5173"
+      - "127.0.0.1:5174:5174"
+    volumes:
+      - ./deploy/Caddyfile.local:/etc/caddy/Caddyfile:ro
+    depends_on:
+      platform: { condition: service_healthy }
+      content: { condition: service_healthy }
+      hub: { condition: service_healthy }
+      landing: { condition: service_healthy }
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://127.0.0.1:5173/api/healthz]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+volumes:
+  postgres:
+  uploads:

@@ -1,9 +1,10 @@
 import { translateUi, useSiteLanguage } from '../../i18n/language';
 import { useState } from "react";
+import "./cookie-notice.css";
 import { Cookie } from "lucide-react";
-const KEY = "plp-cookie-notice";
+const KEY = "plp-essential-cookies-v2";
 const seen = () => { try {
-    return localStorage.getItem(KEY) === "1";
+    return localStorage.getItem(KEY) === "accepted";
 }
 catch {
     return false;
@@ -15,12 +16,12 @@ export function CookieNotice() {
     if (hidden)
         return null;
     const dismiss = () => { try {
-        localStorage.setItem(KEY, "1");
+        localStorage.setItem(KEY, "accepted");
     }
-    catch { /* private mode: show again next visit */ } setHidden(true); };
+    catch { /* private mode: show again next visit */ } setHidden(true); window.dispatchEvent(new Event("plp:cookies-accepted")); };
     return (<div className="ck-notice" role="region" aria-label={translateUi("Cookie notice")}>
       <Cookie size={20} aria-hidden="true"/>
-      <p><strong>{translateUi("We use essential cookies.")}</strong>{translateUi(" One secure cookie keeps you signed in. We don't use advertising or tracking cookies. If your browser blocks cookies, sign-in won't work.")}</p>
-      <button className="hub-button" onClick={dismiss}>{translateUi("Got it")}</button>
+      <p><strong>{translateUi("Essential cookies only.")}</strong>{translateUi(" We use a cookie to keep you signed in. No ads or tracking.")}</p>
+      <button className="hub-button" onClick={dismiss}>{translateUi("Accept essential cookies")}</button>
     </div>);
 }

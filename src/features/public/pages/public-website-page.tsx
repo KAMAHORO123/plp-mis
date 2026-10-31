@@ -1,6 +1,6 @@
 import { translateUi, useSiteLanguage } from '../../../i18n/language';
 import { Link } from "react-router-dom";
-import { ArrowRight, Award, CalendarDays, CheckCircle2, ClipboardList, Globe2, GraduationCap, Megaphone, MapPin, Sparkles, UsersRound, } from "lucide-react";
+import { ArrowRight, Award, CalendarDays, CheckCircle2, ClipboardList, Globe2, GraduationCap, Megaphone, MapPin, UsersRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Logo } from "@/components/shared/logo";
@@ -108,7 +108,7 @@ export function PublicWebsitePage() {
           <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-7xl items-center px-4 pb-20 pt-12 sm:px-6 lg:px-8">
             <div className="max-w-2xl animate-fade-in-up">
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1 text-sm font-semibold text-emerald-800 shadow-card backdrop-blur">
-                <Sparkles className="size-4"/>{translateUi(" Peace & Love Proclaimers ")}</div>
+                <Globe2 className="size-4"/>{translateUi(" Peace & Love Proclaimers ")}</div>
               <h1 className="mt-6 max-w-xl font-display text-5xl font-bold leading-[1.02] tracking-normal text-slate-950 sm:text-6xl lg:text-7xl">{translateUi(" PLP Public Portal ")}</h1>
               <p className="mt-6 max-w-xl text-lg leading-8 text-slate-700 sm:text-xl">{translateUi(" A live window into school communities building peace, leadership, and service through verified activities, events, and national updates. ")}</p>
               {translateUi(isFetching && !data && (<p className="mt-4 text-sm font-semibold text-slate-600">{translateUi(" Loading the latest MIS feed in the background... ")}</p>))}
