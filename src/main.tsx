@@ -8,6 +8,8 @@ import { router } from "@/app/router";
 import { ConfirmHost } from "@/components/shared/confirm-dialog";
 import { queryClient } from "@/app/query-client";
 import "@/styles/globals.css";
+// Applies the saved light/dark theme before the first render, on every page.
+import "@/components/shared/theme-toggle";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

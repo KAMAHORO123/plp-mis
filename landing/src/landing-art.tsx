@@ -15,7 +15,7 @@ export function HandDrawnArrow() {
 }
 const moments = [
     { image: "plp-workshop", text: "Big ideas start here.", alt: "A PLP facilitator leading an Academy workshop" },
-    { image: "plp-walk", text: "Every step, together.", alt: "A crowd walking together at a PLP community event" },
+    { image: "plp-steps", text: "Every step, together.", alt: "Young people running together on a sports court at a PLP camp" },
     { image: "plp-academy", text: "Find your voice.", alt: "A PLP Academy facilitator speaking with participants" },
     { image: "plp-dialogue", text: "Make room for conversation.", alt: "Participants gathered at a PLP dialogue" },
     { image: "plp-remembrance", text: "Remember. Unite. Renew.", alt: "A PLP remembrance gathering" },

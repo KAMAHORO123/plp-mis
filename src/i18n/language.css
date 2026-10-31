@@ -19,4 +19,28 @@
   .plp-public-site .hub-header { gap: 10px; }
   .plp-public-site .hub-header-actions { gap: 8px; }
 }
-@media (min-width:1500px) { .plp-public-site .plp-sticky-navigation:not(.is-compact) > .hub-header { width: min(1560px, calc(100% - 48px)); max-width: none; margin-left: auto; margin-right: auto; } .plp-public-site .hub-top-nav a { padding-inline: 10px; } }
+
+/* Compact picker: the native select sits invisibly on top of the globe + code, so the opened list shows full names. */
+.plp-language-switcher.is-compact { position: relative; }
+.plp-language-code { display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 600; letter-spacing: .04em; color: #172b43; background: #fff; pointer-events: none; }
+.plp-language-switcher.is-compact select { position: absolute; inset: 0; width: 100%; min-height: 0; height: 100%; opacity: 0; cursor: pointer; }
+.plp-language-switcher.is-compact:focus-within .plp-language-code { outline: 2px solid #1d75db; outline-offset: 2px; }
+html[data-theme="dark"] .plp-language-code { background: #161616; color: #ececec; border-color: #3a3a3a; }
+
+/* Small phones: the globe alone; the opened list still names every language. */
+@media (max-width: 480px) {
+  .plp-language-code { width: 38px; padding: 0; justify-content: center; }
+  .plp-language-code-text { display: none; }
+}
+
+/* Rounded pill controls: translate glyph with the language code, and a round theme button. */
+.plp-language-code { gap:8px; height:40px; padding:0 16px 0 14px; border:1px solid #e5e7eb; border-radius:999px; background:#fff; color:#111827; font-size:15px; font-weight:500; letter-spacing:.02em; }
+.plp-language-switcher.is-compact:focus-within .plp-language-code { outline-offset:3px; border-radius:999px; }
+.plp-theme-toggle, .hub-app .plp-theme-toggle { width:40px; height:40px; border:1px solid #e5e7eb; border-radius:999px; background:#fff; color:#111827; }
+.plp-theme-toggle:hover, .plp-language-switcher.is-compact:hover .plp-language-code { background:#f9fafb; }
+html[data-theme="dark"] .plp-language-code, html[data-theme="dark"] .plp-theme-toggle { background:#161616; color:#ececec; border-color:#333; }
+@media (max-width: 480px) {
+  .plp-language-code { width:36px; height:36px; padding:0; }
+  .plp-theme-toggle, .hub-app .plp-theme-toggle { width:36px; height:36px; }
+}
+.hub-app .plp-language-switcher.is-compact select, .plp-language-switcher.is-compact select { width:100%; min-height:0; }

@@ -1,4 +1,4 @@
-import { translateUi, useSiteLanguage } from '../../i18n/language';
+import { translateUi, useSiteLanguage, formatDate } from '../../i18n/language';
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Search, BarChart3, type LucideIcon } from "lucide-react";
@@ -119,3 +119,14 @@ export function downloadCSV(name: string, rows: (string | number)[][]) {
         .join(","))
         .join("\r\n"), "text/csv");
 }
+/** "Good morning, Grace" in the reader's language, by the time of day in Kigali. */
+export function greeting(name: string) {
+    const hour = Number(new Date().toLocaleString('en-GB', { hour: 'numeric', hour12: false, timeZone: 'Africa/Kigali' }));
+    const first = name.trim().split(/\s+/)[0] || name;
+    return translateUi(hour < 12 ? 'Good morning, {p0}' : hour < 18 ? 'Good afternoon, {p0}' : 'Good evening, {p0}', { p0: first });
+}
+/** The quiet line under a dashboard greeting: what this page is, then today's date. */
+export function dashboardSubtitle(...parts: (string | false | null | undefined)[]) {
+    return [...parts.filter(Boolean).map(p => translateUi(p as string)), formatDate(new Date(), { weekday: 'long', day: 'numeric', month: 'long' })].join(' \u00B7 ');
+}
+

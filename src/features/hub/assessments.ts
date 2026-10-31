@@ -4,7 +4,7 @@ export const QUIZ_PASS_MARK = 80;
 export const EXAM_PASS_MARK = 70;
 export const MAX_ATTEMPTS = 3;
 export const ATTEMPT_WINDOW_HOURS = 24;
-export const MAX_FOCUS_LOSSES = 3;
+export const MAX_FOCUS_LOSSES = 1;
 export const MIN_ASSIGNMENT_WORDS = 60;
 
 export interface AssessmentAttempt {
@@ -230,5 +230,5 @@ export function grade(assessment: Assessment, active: ActiveAttempt, reason: Ass
   const results = questions.map(x => active.answers[x.id] === x.answer);
   const score = results.filter(Boolean).length;
   const percent = questions.length ? Math.round((score / questions.length) * 100) : 0;
-  return { id, assessmentId: assessment.id, startedAt: active.startedAt, submittedAt: new Date().toISOString(), score, total: questions.length, percent, passed: percent >= assessment.passMark, reason, focusLosses: active.focusLosses, results };
+  return { id, assessmentId: assessment.id, startedAt: active.startedAt, submittedAt: new Date().toISOString(), score, total: questions.length, percent, passed: reason !== "focus" && percent >= assessment.passMark, reason, focusLosses: active.focusLosses, results };
 }

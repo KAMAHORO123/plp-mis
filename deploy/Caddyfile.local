@@ -1,0 +1,27 @@
+{
+ auto_https off
+ admin off
+}
+http://:5173 {
+ encode gzip
+ handle /api/* {
+  reverse_proxy platform:8082 {
+   header_up X-Real-IP {remote_host}
+  }
+ }
+ handle {
+  reverse_proxy hub:80
+ }
+}
+http://:5174 {
+ encode gzip
+ handle /api/public/* {
+  reverse_proxy platform:8082
+ }
+ handle_path /content/* {
+  reverse_proxy content:8080
+ }
+ handle {
+  reverse_proxy landing:80
+ }
+}

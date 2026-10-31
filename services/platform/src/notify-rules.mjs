@@ -18,7 +18,8 @@ export const onRecordCreated = safe(async (db, user, kind, data, schoolId) => {
   }
   if (kind === "applications" && data.reference_id) {
     const opp = (await db.query("SELECT owner_id,data FROM records WHERE id=$1", [data.reference_id])).rows[0];
-    if (opp) return notify(db, [opp.owner_id], { title: `New application from ${user.name}`, body: opp.data.title, link: "/opportunities" }, user.id);
+    // Every administrator can review applications, so all of them hear about a new one.
+    if (opp) return notify(db, "admin", { title: `New application from ${user.name}`, body: opp.data.title, link: "/studio?tab=Opportunities" }, user.id);
   }
   if (kind === "opportunities" && data.published)
     return notify(db, "member", { title: `New opportunity: ${data.title}`, body: data.organization ? `From ${data.organization}` : "Open for applications", link: "/opportunities" }, user.id);

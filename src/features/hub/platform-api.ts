@@ -1,5 +1,5 @@
 export async function platformApi<T>(path: string, method = 'GET', body?: object): Promise<T> {
- const response = await fetch('/api' + path, {method, headers:{'Content-Type':'application/json'}, body:body ? JSON.stringify(body) : undefined});
+ const response = await fetch('/api' + path, {method, keepalive: path.startsWith('/assessment-attempts/'), headers:{'Content-Type':'application/json'}, body:body ? JSON.stringify(body) : undefined});
  let data;
  try { data = await response.json(); } catch { throw Error('Account services are unavailable. Please try again.'); }
  if(!response.ok) throw Object.assign(new Error(data.error || 'Request failed'), {status:response.status});

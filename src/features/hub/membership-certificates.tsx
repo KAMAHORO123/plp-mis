@@ -1,5 +1,5 @@
 import { translateUi, useSiteLanguage } from '../../i18n/language';
-import { Award, Clock3, Users } from 'lucide-react';
+import { Award, Clock3, Download, ShieldCheck, Users } from 'lucide-react';
 import { useLiveTick } from './live';
 import { MonthlyActivity } from './dashboard-insights';
 import { useEffect, useState, type FormEvent } from 'react';
@@ -15,7 +15,7 @@ import { downloadCertificates } from './workspaces';
 import { hostName } from './school-operations';
 import type { CertificateRequest } from './school-data';
 import { DEFAULT_CITATION, schoolCertificateDesign, issuedCertificateDesign, type IssuedCertificate } from './certificate-pdf';
-import { CertificateCard } from './certificate-card';
+import { CertificateCard, CertificateSummary } from './certificate-card';
 const label = (r: CertificateRequest) => r.status === 'Issued' ? 'Issued' : r.status === 'Returned' ? 'Correction required' : r.correctedAt ? 'Corrected' : 'Awaiting approval';
 const pending = (r: CertificateRequest) => r.status === 'Submitted';
 export function MembershipCertificatesPage() {
@@ -59,11 +59,13 @@ function CertificatePreview({ draft, name, role, school, issued }: {
     issued?: {
         id: string;
         date: string;
+        memberId: string;
     };
 }) {
     useSiteLanguage();
-    // A sample for the whole batch, so no QR: each issued certificate carries its own.
-    return <CertificateCard actions={false} pending qrNote={issued ? 'Each certificate has its own QR code' : undefined} design={schoolCertificateDesign({ id: issued?.id ?? 'preview', recipient: name || 'Member name', issued: issued?.date ?? new Date().toISOString().slice(0, 10), school, title: draft.title, programme: draft.programme, citation: draft.citation, role, periodFrom: draft.periodFrom || null, periodTo: draft.periodTo || null })}/>;
+    // Before issuing it is a sample for the whole batch, so no QR. Once issued it is the first member's real certificate.
+    const id = issued ? `${issued.id}/${issued.memberId}` : 'preview';
+    return <div className="cw-cert-preview"><CertificateCard actions={false} pending={!issued} design={schoolCertificateDesign({ id, recipient: name || 'Member name', issued: issued?.date ?? new Date().toISOString().slice(0, 10), school, title: draft.title, programme: draft.programme, citation: draft.citation, role, periodFrom: draft.periodFrom || null, periodTo: draft.periodTo || null, verificationUrl: issued ? `${window.location.origin}/certificate-check/${encodeURIComponent(issued.id)}/${encodeURIComponent(issued.memberId)}` : undefined })}/></div>;
 }
 function CertificateRequestsPage() {
     useSiteLanguage();
@@ -121,6 +123,25 @@ function CertificateRequestsPage() {
         setBusy(false);
     } }
     const school = (id: string) => hostName(id);
+    // Approves many batches with the wording each club leader wrote; one failure never stops the rest.
+    async function issueAll(rows: CertificateRequest[]) {
+        const ready = rows.filter(r => !draftProblem(draftOf(r)));
+        let done = 0, people = 0;
+        for (const r of ready) {
+            try {
+                await platformApi(`/certificate-requests/${r.id}/review`, 'POST', { decision: 'issued', note: '', ...wordingPayload(draftOf(r), r.members.map(m => m.id)) });
+                done++;
+                people += r.members.length;
+            }
+            catch { /* Counted below. */ }
+        }
+        resyncSchoolData();
+        if (done)
+            toast.success(translateUi("{p0} certificates issued across {p1} requests", { p0: people, p1: done }));
+        if (done < rows.length)
+            toast.error(translateUi("{p0} requests need individual review.", { p0: rows.length - done }));
+    }
+    const schools = [...new Set(requests.map(r => r.schoolId))];
     return <div className="ws-page cc-center-page"><Heading title={translateUi(admin ? 'School certificates' : 'Membership certificates')} description={translateUi(admin ? 'Approve certificate requests from club leaders. You can adjust the wording before issuing, and every certificate can be verified online.' : 'Request certificates for members of your school register, with your own wording. PLP approves them, then they are ready to download.')} action={leader && profile.schoolId ? <button className="hub-button" onClick={() => startCompose()}>{translateUi("Request certificates")}</button> : undefined}/>
  {translateUi(admin && waiting.length > 0 && <div className="act-review-callout" role="status"><Award size={20}/><div><strong>{translateUi(waiting.length)}{translateUi(" certificate request")}{translateUi(waiting.length === 1 ? ' is' : 's are')}{translateUi(" waiting for your approval")}</strong><p>{translateUi("Check the names and wording, adjust anything that needs it, then issue.")}</p></div><button className="hub-button" onClick={() => openDetail(waiting[0])}>{translateUi("Review the first")}</button></div>)}
  <Stats items={[{ label: 'Awaiting approval', value: waiting.length, icon: Clock3 }, { label: 'Certificates issued', value: requests.filter(r => r.status === 'Issued').reduce((n, r) => n + r.members.length, 0), icon: Award }, { label: admin ? 'Schools requesting' : 'Members not yet certified', value: admin ? new Set(requests.map(r => r.schoolId)).size : register.filter(m => !taken.has(m.id)).length, icon: Users }]}/>
@@ -132,7 +153,7 @@ function CertificateRequestsPage() {
   <CertificatePreview draft={draft} name={register.find(m => m.id === selected[0])?.name ?? ''} role={selected[0] ? draft.roles[selected[0]] : ''} school={profile.schoolId ? school(profile.schoolId) : ''}/>
   <div className="hub-actions hub-dialog-actions"><button type="button" className="hub-button secondary" onClick={() => setComposing(null)}>{translateUi("Cancel")}</button><button className="hub-button" disabled={busy || !selected.length}>{translateUi(busy ? 'Sending…' : composing.editing ? 'Send corrected request' : `Request ${selected.length || ''} certificate${selected.length === 1 ? '' : 's'}`)}</button></div>
  </form></FormModal>)}
- <Panel><RecordTable title={translateUi("certificate requests")} rows={requests.slice().sort((a, b) => Number(pending(b)) - Number(pending(a)) || (b.requestedAt ?? b.submitted).localeCompare(a.requestedAt ?? a.submitted))} searchText={r => `${r.id} ${school(r.schoolId)} ${r.title} ${r.programme} ${r.members.map(m => m.name).join(' ')} ${label(r)}`} columns={[{ label: 'Certificate', render: r => <><strong>{translateUi(r.title)}</strong><small>{translateUi(r.programme)}</small></> }, { label: 'School', render: r => school(r.schoolId) }, { label: 'Members', render: r => r.members.length }, { label: 'Requested', render: r => r.requestedAt ? new Date(r.requestedAt).toLocaleDateString() : r.submitted }, { label: 'Status', render: r => <Tag>{translateUi(label(r))}</Tag> } ]}/></Panel>
+ <Panel><RecordTable title={translateUi("certificate requests")} pageSize={10} filters={[{ label: 'Status', options: ['Awaiting approval', 'Corrected', 'Correction required', 'Issued'].map(l => ({ label: l, test: (r: CertificateRequest) => label(r) === l })) }, ...(admin && schools.length > 1 ? [{ label: 'School', options: schools.map(id => ({ label: school(id), test: (r: CertificateRequest) => r.schoolId === id })) }] : [])]} selectable={pending} bulkActions={admin ? [{ label: 'Approve & issue', run: issueAll }] : []} rows={requests.slice().sort((a, b) => Number(pending(b)) - Number(pending(a)) || (b.requestedAt ?? b.submitted).localeCompare(a.requestedAt ?? a.submitted))} searchText={r => `${r.id} ${school(r.schoolId)} ${r.title} ${r.programme} ${r.members.map(m => m.name).join(' ')} ${label(r)}`} columns={[{ label: 'Certificate', render: r => <><strong>{translateUi(r.title)}</strong><small>{translateUi(r.programme)}</small></> }, { label: 'School', render: r => school(r.schoolId) }, { label: 'Members', render: r => r.members.length }, { label: 'Requested', render: r => r.requestedAt ? new Date(r.requestedAt).toLocaleDateString() : r.submitted }, { label: 'Status', render: r => <Tag>{translateUi(label(r))}</Tag> }, { label: '', render: r => <button className="hub-text-button" onClick={() => openDetail(r)}>{translateUi(admin && pending(r) ? 'Review' : 'View')}</button> }]}/></Panel>
  {translateUi(record && <FormModal title={translateUi(admin && pending(record) ? 'Review certificate request' : record.title)} description={translateUi("{p0} \u00B7 {p1} member{p2} \u00B7 {p3}", { p0: translateUi(school(record.schoolId)), p1: translateUi(record.members.length), p2: translateUi(record.members.length === 1 ? '' : 's'), p3: translateUi(label(record)) })} onClose={() => setDetail('')} wide>
   {translateUi(record.note && <p className="hub-feedback">{translateUi(record.note)}</p>)}
   {translateUi(admin && pending(record) ? <div className="hub-form">
@@ -142,8 +163,8 @@ function CertificateRequestsPage() {
    <Field label={translateUi("Note for the club leader (required when returning)")}><textarea value={note} onChange={e => setNote(e.target.value)} maxLength={1000}/></Field>
    <div className="hub-actions hub-dialog-actions"><button className="hub-button danger" disabled={busy} onClick={() => void decide('returned')}>{translateUi("Return for correction")}</button><button className="hub-button" disabled={busy} onClick={() => void decide('issued')}>{translateUi(busy ? 'Issuing…' : 'Approve & issue')}</button></div>
   </div> : <>
-   <CertificatePreview draft={draftOf(record)} name={record.members[0]?.name ?? ''} role={record.members[0]?.role} school={school(record.schoolId)} issued={record.status === 'Issued' ? { id: record.id, date: record.issued ?? record.submitted } : undefined}/>
-   <ul className="cw-list">{translateUi(pagedMembers.items.map(m => <li key={m.id}><span>{translateUi(m.name)}{translateUi(m.role && <small>{translateUi(" \u00B7 ")}{translateUi(m.role)}</small>)}</span>{translateUi(record.status === 'Issued' && <div className="hub-actions"><button className="hub-text-button" onClick={() => void downloadCertificates(record, [m])}>{translateUi("Download")}</button><Link to={`/certificate-check/${record.id}/${m.id}`}>{translateUi("Verify")}</Link></div>)}</li>))}</ul><Pager {...pagedMembers}/>
+   <CertificatePreview draft={draftOf(record)} name={record.members[0]?.name ?? ''} role={record.members[0]?.role} school={school(record.schoolId)} issued={record.status === 'Issued' && record.members[0] ? { id: record.id, date: record.issued ?? record.submitted, memberId: record.members[0].id } : undefined}/>
+   <ul className="cw-list">{translateUi(pagedMembers.items.map(m => <li key={m.id}><span>{translateUi(m.name)}{translateUi(m.role && <small>{translateUi(" \u00B7 ")}{translateUi(m.role)}</small>)}</span>{translateUi(record.status === 'Issued' && <div className="cw-row-actions"><button type="button" onClick={() => void downloadCertificates(record, [m])}><Download size={14}/>{translateUi("Download")}</button><Link to={`/certificate-check/${record.id}/${m.id}`}><ShieldCheck size={14}/>{translateUi("Verify")}</Link></div>)}</li>))}</ul><Pager {...pagedMembers}/>
    <div className="hub-actions hub-dialog-actions">{translateUi(leader && record.status === 'Returned' && <button className="hub-button" onClick={() => { setDetail(''); startCompose(record); }}>{translateUi("Correct the request")}</button>)}{translateUi(record.status === 'Issued' && <button className="hub-button" onClick={() => void downloadCertificates(record)}>{translateUi("Download all (PDF)")}</button>)}</div>
   </>)}
  </FormModal>)}
@@ -165,9 +186,9 @@ function MyCertificatesPage() {
     const total = issued.length + local.length;
     return <div className="ws-page"><Heading eyebrow="MY ACHIEVEMENTS" title={translateUi("My school certificates")} description={translateUi("Certificates issued to you for your service as a PLP member. Only your own certificates appear here.")}/>
   {translateUi(!loaded ? <p role="status">{translateUi("Loading your certificates\u2026")}</p> : !total ? <Empty><Award size={32}/><h2>{translateUi("No school certificate yet")}</h2><p>{translateUi("When your club leader requests a membership certificate for you and PLP approves it, it appears here for you to download.")}</p></Empty> :
-            <div className="cc-grid">
-   {translateUi(issued.map(c => <CertificateCard key={c.id} design={issuedCertificateDesign(c)} revoked={!!c.revoked_at}/>))}
-   {translateUi(local.map(({ request, member }) => <CertificateCard key={`${request.id}-${member.id}`} design={schoolCertificateDesign({ id: `${request.id}/${member.id}`, recipient: member.name, issued: request.issued ?? request.submitted, school: hostName(request.schoolId), title: request.title, programme: request.programme, citation: request.citation, role: member.role, periodFrom: request.periodFrom, periodTo: request.periodTo, verificationUrl: `${window.location.origin}/certificate-check/${encodeURIComponent(request.id)}/${encodeURIComponent(member.id)}` })}/>))}
+            <div className="cs-list">
+   {translateUi(issued.map(c => <CertificateSummary key={c.id} design={issuedCertificateDesign(c)} revoked={!!c.revoked_at}/>))}
+   {translateUi(local.map(({ request, member }) => <CertificateSummary key={`${request.id}-${member.id}`} design={schoolCertificateDesign({ id: `${request.id}/${member.id}`, recipient: member.name, issued: request.issued ?? request.submitted, school: hostName(request.schoolId), title: request.title, programme: request.programme, citation: request.citation, role: member.role, periodFrom: request.periodFrom, periodTo: request.periodTo, verificationUrl: `${window.location.origin}/certificate-check/${encodeURIComponent(request.id)}/${encodeURIComponent(member.id)}` })}/>))}
   </div>)}
  </div>;
 }

@@ -93,7 +93,7 @@ export function TrendCard({ title, data, dataKey, unit, columns = false, action 
         <div><h2>{translateUi(title)}</h2><p><strong>{translateUi(compact(total))}</strong> {translateUi(unit)}{translateUi(" in the last 12 months \u00B7 ")}<strong>{translateUi(compact(latest))}</strong>{translateUi(" this month")}</p></div>
         {translateUi(action)}
       </header>
-      {translateUi(total === 0 ? <p className="pv-empty">{translateUi("Nothing recorded in the last 12 months yet. This chart fills in as activity is recorded.")}</p> : (<div className="dv-plot" role="img" aria-label={translateUi(`${title}: ${data.map((d) => `${monthLong(String(d.month))} ${d[dataKey]}`).join(', ')}`)}>
+      {translateUi(total === 0 ? <p className="pv-empty">{translateUi("Nothing recorded yet.")}</p> : (<div className="dv-plot" role="img" aria-label={translateUi(`${title}: ${data.map((d) => `${monthLong(String(d.month))} ${d[dataKey]}`).join(', ')}`)}>
           <ResponsiveContainer width="100%" height={220}>
             {translateUi(columns ? (<BarChart data={data} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
                 <CartesianGrid vertical={false} stroke={GRID}/>

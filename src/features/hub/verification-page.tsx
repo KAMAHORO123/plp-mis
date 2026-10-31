@@ -53,7 +53,6 @@ export function EmailVerificationPage() {
     }, []);
     return (<div className="hub-access-shell">
       <Panel>
-        <img src="/favicon.svg" alt={translateUi("")} className="mx-auto mb-4 h-14 w-14"/>
         {translateUi(done ? (<>
             <Heading title={translateUi("Email confirmed")} description={translateUi(awaitingApproval ? "Your email is verified. An administrator will review your staff application before dashboard access is enabled." : "Your email is verified. You can now sign in and get started.")}/>
             <div className="flex justify-center">

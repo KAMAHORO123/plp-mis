@@ -772,7 +772,7 @@
 .hub-caption {
   font-size: 10px !important;
   line-height: 1.6;
-  color: #7b8e9f !important;
+  color: #5b6b7d !important; /* 5.6:1 on white (was #7b8e9f, 3.4:1) */
 }
 .hub-academy-banner {
   border: 1px solid #dce7e6;
@@ -1910,6 +1910,8 @@
   max-width: 384px;
   margin: auto;
   padding: 0;
+  /* The older two-column access page's tall minimum would push the form up and clip its heading. */
+  min-height: 0;
 }
 .hub-auth .hub-access-shell > .hub-panel {
   padding: 0;
@@ -2066,3 +2068,12 @@
 .hub-teaching-submission { padding:28px 0; border-bottom:1px solid #e2eaf1; display:flex; flex-direction:column; gap:20px; }
 .hub-lesson-preview { padding:18px 0; border-bottom:1px solid #e2eaf1; }
 @media(max-width:760px){.hub-teaching-stats {grid-template-columns:1fr;gap:14px;}.hub-course-builder{grid-template-columns:1fr;}.hub-course-builder nav{flex-direction:row;overflow:auto;}.hub-course-builder nav button{flex-shrink:0;padding:12px;}}
+/* Short phones: the sign-in form tightens so it fits the screen without scrolling. */
+@media (max-height: 620px) {
+  .hub-auth .hub-access-shell .hub-heading { margin-bottom: 14px; }
+  .hub-auth .hub-access-shell .hub-heading h1 { font-size: 21px; }
+  .hub-auth .hub-access-shell .hub-heading p { font-size: 13px; }
+  .hub-auth .hub-access-shell .hub-form { gap: 14px; }
+  .hub-auth .hub-form .hub-button.hub-access-submit { min-height: 44px; }
+  .hub-auth .hub-access-shell .hub-access-footnote { margin-top: 12px; }
+}

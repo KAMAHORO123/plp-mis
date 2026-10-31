@@ -1,7 +1,7 @@
 export interface HubFile { name:string; type:string; data:string; size:number }
 export interface LearningMaterial { id:string; title:string; file:HubFile; schoolIds:string[]; createdAt:string; version?:number }
 export interface MaterialCompletion { materialId:string; schoolId:string; by:string; completedAt:string }
-export interface CommunityActivity { id:string; version?:number; attachments?:string[]; hostId:string; title:string; date:string; description:string; type?:string; hours?:number; photos:HubFile[]; authorId:string; report?:string; reportedAt?:string; reviewedAt?:string; attendees:string[] }
+export interface CommunityActivity { id:string; version?:number; attachments?:string[]; hostId:string; title:string; date:string; description:string; type?:string; hours?:number; startTime?:string; location?:string; photos:HubFile[]; authorId:string; report?:string; reportedAt?:string; reviewedAt?:string; attendees:string[] }
 export interface CommunityRequest { id:string; version?:number; memberId:string; memberName?:string; hostId:string; activityId?:string; status:'Pending'|'Approved'|'Declined'; createdAt:string }
 export interface Operations { materials:LearningMaterial[]; completions:MaterialCompletion[]; activities:CommunityActivity[]; requests:CommunityRequest[] }
 export const emptyOperations = ():Operations => ({materials:[],completions:[],activities:[],requests:[]});

@@ -1,10 +1,12 @@
+import { RecordTable, usePaged, Pager } from "./management-ui";
+import "./sessions.css";
 import { translateUi, useSiteLanguage } from '../../i18n/language';
 import { platformApi } from "./platform-api";
 import { useLiveTick } from './live';
 import { isPlatformId } from "./platform-course";
 import { certificateReference } from "./certificate-id";
 import { downloadCertificatePDF, certificateFileName, courseCertificateDesign, issuedCertificateDesign, type IssuedCertificate } from './certificate-pdf';
-import { CertificateCard } from './certificate-card';
+import { CertificateCard, CertificateSummary } from './certificate-card';
 import { downloadPassportPDF } from './passport-pdf';
 import { ProfileCard, ProfilePanel } from './profile-card';
 import { useOverview, figure, type MemberOverview } from './reports';
@@ -12,7 +14,7 @@ import { FormModal } from './modal';
 import { confirmAction } from "@/components/shared/confirm-dialog";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowRight, Award, BookOpen, Clock3, Coins, Download, Fingerprint, Plus, PencilLine, Sparkles, Flag, Users, } from "lucide-react";
+import { ArrowRight, Award, BookOpen, Clock3, Coins, Download, Fingerprint, Plus, PencilLine, Flag, Users } from "lucide-react";
 import { toast } from "sonner";
 import { clubs, mentors } from "./data";
 import { useHub, balance, type HubCertificate } from "./store";
@@ -209,7 +211,8 @@ export function PassportPage() {
                 if (leavingSchool && !await confirmAction({ title: translateUi("Leave your school's register?"), description: translateUi("Your school's club leaders will no longer manage your membership. Your certificates, credits and activity history stay with you."), confirmLabel: translateUi("Save and continue") }))
                     return;
                 try {
-                    const saved = await platformApi<Education>("/me/profile", "PUT", { name, education_stage: stage, institution: String(f.get("institution") ?? "").trim(), graduation_year: year ? Number(year) : null });
+                    const list = (key: string) => String(f.get(key) ?? "").split(",").map((x) => x.trim()).filter(Boolean).slice(0, 20);
+                    const saved = await platformApi<Education>("/me/profile", "PUT", { name, education_stage: stage, institution: String(f.get("institution") ?? "").trim(), graduation_year: year ? Number(year) : null, bio: String(f.get("bio") ?? "").trim(), skills: list("skills"), leadership: list("leadership") });
                     setEducation(saved);
                 }
                 catch (err) {
@@ -267,7 +270,7 @@ export function PassportPage() {
           </form>
         </FormModal>))}
       <div className="pv-grid">
-        <ProfilePanel icon={Sparkles} title={translateUi("Skills")}>
+        <ProfilePanel icon={BookOpen} title={translateUi("Skills")}>
           {translateUi(profile.skills.length
             ? <div className="pv-chips">{translateUi(profile.skills.map((s) => <span key={s}>{translateUi(s)}</span>))}</div>
             : <p className="pv-empty">{translateUi("Skills you add or earn from courses appear here.")}</p>)}
@@ -298,7 +301,7 @@ export function CertificatesPage({ administration = false }: {
 }) {
     useSiteLanguage();
     const { state, profile } = useHub();
-    const [query, setQuery] = useState('');
+    const [query, setQuery] = useState(''), [kind, setKind] = useState('All'), [year, setYear] = useState('All'), [order, setOrder] = useState('newest');
     const admin = administration && profile.role === 'Administrator';
     const [issued, setIssued] = useState<HubCertificate[]>([]);
     // The platform's own records, so each download uses the wording it was issued with.
@@ -308,25 +311,40 @@ export function CertificatesPage({ administration = false }: {
     })[]>("/certificates").then(rows => { if (active)
         setRows(rows); if (active)
         setIssued(rows.filter(r => !r.revoked_at).map(r => ({ id: r.id, memberId: profile.id, memberName: r.recipient, title: r.programme, courseId: r.kind === "school" ? "school" : r.id, date: r.issued_at.slice(0, 10) }))); }).catch(() => { }); void load(); window.addEventListener('plp:achievements-updated', load); return () => { active = false; window.removeEventListener('plp:achievements-updated', load); }; }, [profile.id]);
-    const list = [...issued, ...state.certificates.filter(c => !issued.some(r => r.id === c.id))].filter(c => (admin || c.memberId === profile.id) && `${c.title} ${c.memberName} ${c.id}`.toLowerCase().includes(query.toLowerCase()));
+    const kindOf = (c: HubCertificate) => c.courseId === 'school' ? 'School membership' : 'Course';
+    const mine = [...issued, ...state.certificates.filter(c => !issued.some(r => r.id === c.id))].filter(c => admin || c.memberId === profile.id);
+    const years = [...new Set(mine.map(c => c.date.slice(0, 4)))].sort().reverse();
+    const list = mine
+        .filter(c => (kind === 'All' || kindOf(c) === kind) && (year === 'All' || c.date.startsWith(year)) && `${c.title} ${c.memberName} ${c.id}`.toLowerCase().includes(query.toLowerCase()))
+        .sort((a, b) => order === 'az' ? a.title.localeCompare(b.title) : order === 'oldest' ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date));
+    const filtering = !!query || kind !== 'All' || year !== 'All';
+    const certificatePage = usePaged(list, 8, `${query}|${kind}|${year}|${order}`);
     return (<div className="hub-editorial-page hub-achievements-page">
       <Heading title={translateUi(admin ? "Issued course certificates" : "My achievements")} description={translateUi(admin ? "Manage issued course certificates." : "Your learning milestones, all in one place.")}/>
       <div className="hub-achievements-summary"><span><strong>{translateUi(list.length)}</strong> {translateUi(list.length === 1 ? "achievement" : "achievements")}</span><TextLink to="/certificate-centre">{translateUi("School certificates")}</TextLink></div>
-      {translateUi(admin && <Field label={translateUi("Search issued certificates")}><input value={query} onChange={e => setQuery(e.target.value)} placeholder={translateUi("Search recipient, programme, or certificate ID")}/></Field>)}
+      <div className="ws-table-tools cs-filters">
+        <input aria-label={translateUi("Search certificates")} value={query} onChange={e => setQuery(e.target.value)} placeholder={translateUi(admin ? "Search recipient, programme, or certificate ID" : "Search by programme or certificate ID")}/>
+        <select aria-label={translateUi("Certificate type")} value={kind} onChange={e => setKind(e.target.value)}>{['All', 'Course', 'School membership'].map(k => <option key={k} value={k}>{translateUi(k === 'All' ? 'Type: all' : k)}</option>)}</select>
+        <select aria-label={translateUi("Year issued")} value={year} onChange={e => setYear(e.target.value)}><option value="All">{translateUi("Year: all")}</option>{years.map(y => <option key={y} value={y}>{y}</option>)}</select>
+        <select aria-label={translateUi("Sort certificates")} value={order} onChange={e => setOrder(e.target.value)}><option value="newest">{translateUi("Newest first")}</option><option value="oldest">{translateUi("Oldest first")}</option><option value="az">{translateUi("A to Z")}</option></select>
+        {filtering && <button type="button" className="hub-text-button" onClick={() => { setQuery(''); setKind('All'); setYear('All'); }}>{translateUi("Clear filters")}</button>}
+        <span>{translateUi("{p0} of {p1}", { p0: list.length, p1: mine.length })}</span>
+      </div>
       {translateUi(!list.length ? (<Empty>
           <Award size={32}/>
-          <h2>{translateUi(admin ? "No issued course certificates match this view." : "Your first milestone is waiting.")}</h2>
+          <h2>{translateUi(filtering ? "No certificates match these filters." : admin ? "No issued course certificates match this view." : "Your first milestone is waiting.")}</h2>
           <p>{translateUi(" Complete a course\u2019s lessons, assignment, and assessment to earn a certificate. ")}</p>
           <TextLink to="/academy">{translateUi("Find a course")}</TextLink>
-        </Empty>) : (<div className="cc-grid">
-          {translateUi(list.map((c) => {
+        </Empty>) : (<div className="cs-list">
+          {translateUi(certificatePage.items.map((c) => {
                 // Platform certificates carry their own wording; courses tracked in this browser use the course design.
                 const raw = rows.find((r) => r.id === c.id);
-                return <CertificateCard key={c.id} design={raw ? issuedCertificateDesign(raw) : courseCertificateDesign({ id: c.id, recipient: c.memberName, course: c.title, date: c.date })} revoked={!!(raw as {
+                return <CertificateSummary key={c.id} design={raw ? issuedCertificateDesign(raw) : courseCertificateDesign({ id: c.id, recipient: c.memberName, course: c.title, date: c.date })} revoked={!!(raw as {
                     revoked_at?: string | null;
                 } | undefined)?.revoked_at}/>;
             }))}
         </div>))}
+      <Pager {...certificatePage}/>
     </div>);
 }
 function PlatformVerifyPage() {
@@ -373,38 +391,35 @@ export function CreditsPage() {
     useSiteLanguage();
     const { state, profile, creditsLoading, creditsError } = useHub();
     const total = balance(state, profile.id);
-    const ledger = state.credits.filter((c) => c.memberId === profile.id);
-    return (<>
-      <Heading title={translateUi("Your PLP credits")} description={translateUi("Credits confirmed by PLP and saved to your account.")}/>
-      <div className="hub-credit-hero">
-        <Coins size={50}/>
-        <div>
-          <p>{translateUi("AVAILABLE BALANCE")}</p>
-          <strong>{translateUi(creditsLoading ? "…" : creditsError ? "—" : total)}</strong>
-          <span>{translateUi("PLP credits")}</span>
-        </div>
-    <p>{translateUi("Verified attendance.")}<br />{translateUi("Recognized learning.")}</p>
+    const ledger = state.credits.filter(c => c.memberId === profile.id).sort((a,b)=>b.date.localeCompare(a.date));
+    const [from,setFrom] = useState(''), [to,setTo] = useState('');
+    const shown = ledger.filter(c=>(!from||c.date.slice(0,10)>=from)&&(!to||c.date.slice(0,10)<=to));
+    const month = new Date().toISOString().slice(0,7);
+    const earned = ledger.filter(c=>c.amount>0&&c.date.startsWith(month)).reduce((n,c)=>n+c.amount,0);
+    const sourceLabel = (source:string) => ({meeting:'Meeting',course:'Learning',event:'Activity',activity:'Activity'}[source.split(':')[0]] || 'Other');
+    const sources = [...new Set(ledger.map(c=>sourceLabel(c.source)))];
+    return <div className="ws-page credits-page">
+      <Heading title={translateUi('My credits')} description={translateUi('A clear record of your participation and progress.')}/>
+      <div className="credit-summary">
+        <Panel className="credit-balance"><span className="credit-label"><Coins size={18}/>{translateUi('AVAILABLE BALANCE')}</span><strong>{creditsLoading?'…':creditsError?'—':total.toLocaleString()}</strong><span>{translateUi('PLP credits')}</span><small>{translateUi('Verified learning. Meaningful participation.')}</small></Panel>
+        <Panel><span className="credit-label">{translateUi('EARNED THIS MONTH')}</span><strong className="credit-number">{creditsLoading?'…':creditsError?'—':`+${earned.toLocaleString()}`}</strong><p className="hub-caption">{translateUi('Keep showing up. Every contribution counts.')}</p></Panel>
+        <Panel><span className="credit-label">{translateUi('VERIFIED RECORDS')}</span><strong className="credit-number">{creditsLoading?'…':creditsError?'—':ledger.length}</strong><p className="hub-caption">{translateUi('Your confirmed credit transactions.')}</p></Panel>
       </div>
-      {translateUi(creditsError && <p role="alert">{translateUi("Could not load your verified credits. ")}{translateUi(creditsError)}</p>)}
-      <h2 className="hub-section-title">{translateUi("How to earn")}</h2>
-      <div className="hub-grid two">
-        <Panel><h3>{translateUi("Attend a PLP meeting")}</h3><p>{translateUi("Visit the venue, use the host\u2019s code, and confirm your location during the attendance window. Credits arrive automatically, once per meeting.")}</p><TextLink to="/meetings">{translateUi("Upcoming meetings")}</TextLink></Panel>
-        <Panel><h3>{translateUi("Complete verified learning & activities")}</h3><p>{translateUi("Credits are awarded when PLP confirms course completion or activity participation. Self-reported progress does not add verified credits.")}</p><TextLink to="/academy">{translateUi("Explore learning")}</TextLink></Panel>
+      {creditsError&&<p role="alert">{translateUi('Could not load your verified credits. ')}{creditsError}</p>}
+      <Panel><div className="ws-panel-title"><div><h2>{translateUi('Credit history')}</h2><p className="hub-caption">{translateUi('Search your activity, filter by source, or choose a date range.')}</p></div></div>
+        <div className="credit-dates"><Field label={translateUi('From date')}><input type="date" value={from} onChange={e=>setFrom(e.target.value)}/></Field><Field label={translateUi('To date')}><input type="date" min={from} value={to} onChange={e=>setTo(e.target.value)}/></Field>{(from||to)&&<button className="hub-text-button" onClick={()=>{setFrom('');setTo('');}}>{translateUi('Clear dates')}</button>}</div>
+        {creditsLoading?<p role="status">{translateUi('Loading credit history…')}</p>:creditsError?<Empty>{translateUi('Credit history is unavailable.')}</Empty>:<RecordTable title="credit history" rows={shown} searchText={c=>`${c.label} ${c.source} ${c.date} ${c.amount}`} filters={[
+          {label:'Source',options:sources.map(source=>({label:source,test:(c:typeof ledger[number])=>sourceLabel(c.source)===source}))},
+          {label:'Type',options:[{label:'Earned',test:(c:typeof ledger[number])=>c.amount>0},{label:'Adjustments',test:(c:typeof ledger[number])=>c.amount<=0}]}
+        ]} columns={[
+          {label:'Activity',render:c=><strong>{c.label}</strong>},
+          {label:'Source',render:c=><span className="credit-source">{translateUi(sourceLabel(c.source))}</span>},
+          {label:'Date',render:c=>new Date(c.date).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})},
+          {label:'Credits',render:c=><span className={`credit-amount ${c.amount>0?'positive':'negative'}`}>{c.amount>0?'+':''}{c.amount.toLocaleString()}</span>}
+        ]}/>}</Panel>
+      <div className="hub-grid two credit-earn">
+        <Panel><h3>{translateUi('Attend a PLP meeting')}</h3><p>{translateUi('Check in at the venue. Verified attendance adds credits automatically.')}</p><TextLink to="/meetings">{translateUi('Upcoming meetings')}</TextLink></Panel>
+        <Panel><h3>{translateUi('Learn and participate')}</h3><p>{translateUi('Earn credits through confirmed course completion and community activities.')}</p><TextLink to="/academy">{translateUi('Explore learning')}</TextLink></Panel>
       </div>
-      <h2 className="hub-section-title">{translateUi("Your credit history")}</h2>
-      <Panel>
-        {translateUi(ledger.length ? (ledger
-            .slice()
-            .map((c) => (<div className="hub-list-row" key={c.id}>
-                <div>
-                  <strong>{translateUi(c.label)}</strong>
-                  <p className="hub-caption">{translateUi(c.date)}</p>
-                </div>
-                <Tag>
-                  {translateUi(c.amount > 0 ? "+" : "")}
-                  {translateUi(c.amount)}
-                </Tag>
-              </div>))) : (<Empty>{translateUi(creditsLoading ? "Loading credit history…" : creditsError ? "Credit history is unavailable." : "Your verified credits will appear here.")}</Empty>))}
-      </Panel>
-    </>);
+    </div>;
 }

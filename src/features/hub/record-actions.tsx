@@ -13,6 +13,37 @@ import { TypeInput, activityDateRange } from './school-operations';
 type Kind = 'activity' | 'material' | 'member';
 const labels: Record<Kind, string> = { activity: 'activity', material: 'material', member: 'member' };
 const serverKind = { activity: 'events', material: 'materials', member: 'members' } as const;
+// Linked records (reports, attendance, certificates, completions) keep their history, so those rows are skipped.
+function blockedReason(state: HubState, k: Kind, id: string) {
+    if (k === 'activity') {
+        const a = state.operations.activities.find(r => r.id === id);
+        if (a?.report || a?.attendees.length)
+            return 'Activities with reports or attendance must be retained.';
+    }
+    if (k === 'material' && state.operations.completions.some(r => r.materialId === id))
+        return 'Materials with completion records must be retained.';
+    if (k === 'member' && (state.schoolRecords.requests.some(r => r.members.some(m => m.id === id)) || state.operations.activities.some(r => r.attendees.includes(id))))
+        return 'Members linked to certificate requests or attendance must be retained.';
+    return '';
+}
+/** Deletes several register members, materials or activities after one confirmation; reports what was kept. */
+export async function deleteRecords(state: HubState, kind: Kind, ids: string[]) {
+    const kept = ids.filter((id) => blockedReason(state, kind, id));
+    const removable = ids.filter((id) => !kept.includes(id));
+    if (!removable.length)
+        return toast.error(translateUi("None of these can be deleted: they are linked to reports, attendance, certificates or completions."));
+    const noun = removable.length === 1 ? labels[kind] : `${labels[kind] === 'activity' ? 'activitie' : labels[kind]}s`;
+    if (!await confirmAction({ title: `Delete ${removable.length} ${noun}?`, description: kept.length ? `${kept.length} selected ${kept.length === 1 ? 'is' : 'are'} linked to other records and will be kept.` : 'This permanently removes them and cannot be undone.', confirmLabel: `Delete ${removable.length}`, destructive: true }))
+        return;
+    let done = 0;
+    for (const id of removable) {
+        try { await deleteRecord(serverKind[kind], id); done++; } catch { /* Counted below. */ }
+    }
+    if (done)
+        toast.success(translateUi("{p0} deleted", { p0: `${done} ${done === 1 ? labels[kind] : noun}` }));
+    if (done < removable.length)
+        toast.error(translateUi("{p0} could not be deleted. Reload and try again.", { p0: removable.length - done }));
+}
 // Edits and deletes are saved on the platform, which re-checks permissions and linked records.
 export function RecordActions({ kind, id }: {
     kind: Kind | string;
@@ -32,18 +63,7 @@ export function RecordActions({ kind, id }: {
     const allowed = !!record && (admin || (k !== 'material' && profile.role === 'Club leader' && !!profile.schoolId && (('schoolId' in record && record.schoolId === profile.schoolId) || ('hostId' in record && record.hostId === profile.schoolId))));
     if (!record || !allowed)
         return null;
-    const blocked = () => {
-        if (k === 'activity') {
-            const a = state.operations.activities.find(r => r.id === id);
-            if (a?.report || a?.attendees.length)
-                return 'Activities with reports or attendance must be retained.';
-        }
-        if (k === 'material' && state.operations.completions.some(r => r.materialId === id))
-            return 'Materials with completion records must be retained.';
-        if (k === 'member' && (state.schoolRecords.requests.some(r => r.members.some(m => m.id === id)) || state.operations.activities.some(r => r.attendees.includes(id))))
-            return 'Members linked to certificate requests or attendance must be retained.';
-        return '';
-    };
+    const blocked = () => blockedReason(state, k, id);
     const remove = async () => {
         const reason = blocked();
         if (reason)

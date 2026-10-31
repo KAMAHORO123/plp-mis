@@ -1,6 +1,6 @@
 import type { HubState } from "./store";
 
-// Legacy account IDs and a one-time cleanup of explicitly requested/test addresses.
+// Legacy account IDs and a one-time cleanup of test addresses.
 const seededAccountIds = new Set([
   "demo-0", "demo-1", "demo-2", "demo-3", "demo-4", "demo-5",
   "preview-member", "preview-coordinator", "preview-trainer", "preview-admin", "preview-leader",
@@ -9,8 +9,7 @@ export const isSeededAccount = (id: string) => seededAccountIds.has(id);
 function isRemovedEmail(email: string = "") {
   const address = email.trim().toLowerCase();
   const domain = address.split("@")[1] || "";
-  return address === "kamahorolinda@gmail.com" ||
-    /(^|\.)(example\.(com|org|net)|test|invalid|localhost)$/.test(domain);
+  return /(^|\.)(example\.(com|org|net)|test|invalid|localhost)$/.test(domain);
 }
 export function removeSeededAccounts(state: HubState): HubState {
   const cleanEmails = state.emailCleanupVersion !== 1;

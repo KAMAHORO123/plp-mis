@@ -2,6 +2,111 @@ export type FaqLanguage = 'en' | 'rw' | 'fr';
 export type FaqLanguageChoice = FaqLanguage | 'auto';
 type FaqEntry = { id: string; q: Record<FaqLanguage, string>; words: Record<FaqLanguage, string[]>; answer: Record<FaqLanguage, string> };
 export const faqEntries: FaqEntry[] = [
+{
+  "id": "opportunities",
+  "q": {
+    "en": "How do I apply?",
+    "rw": "Nasaba amahirwe nte?",
+    "fr": "Comment postuler ?"
+  },
+  "words": {
+    "en": [
+      "opportunity",
+      "opportunities",
+      "apply",
+      "application",
+      "scholarship",
+      "internship"
+    ],
+    "rw": [
+      "amahirwe",
+      "gusaba",
+      "nasaba"
+    ],
+    "fr": [
+      "opportunité",
+      "opportunités",
+      "postuler",
+      "candidature",
+      "bourse",
+      "stage"
+    ]
+  },
+  "answer": {
+    "en": "Open an opportunity and choose View details to check eligibility and the deadline. Use Apply now for a PLP application, or follow the external application link. External applications are completed on the organiser’s website.",
+    "rw": "Fungura amahirwe ukande “View details” urebe ibisabwa n’itariki ntarengwa. Kanda “Apply now” cyangwa ukurikire ihuza ry’urubuga rw’abateguye ayo mahirwe.",
+    "fr": "Ouvrez une offre puis « View details » pour consulter les critères et la date limite. Utilisez « Apply now » ou le lien externe vers le site de l’organisateur."
+  }
+},
+{
+  "id": "opportunity-documents",
+  "q": {
+    "en": "Which documents do I need?",
+    "rw": "Nkeneye izihe nyandiko?",
+    "fr": "Quels documents préparer ?"
+  },
+  "words": {
+    "en": [
+      "documents",
+      "cv",
+      "resume",
+      "cover letter",
+      "eligibility",
+      "eligible",
+      "requirements"
+    ],
+    "rw": [
+      "inyandiko",
+      "ibisabwa",
+      "nkeneye"
+    ],
+    "fr": [
+      "documents",
+      "cv",
+      "lettre",
+      "éligibilité",
+      "critères"
+    ]
+  },
+  "answer": {
+    "en": "Requirements vary by opportunity. Check Who can apply in the details. PLP applications can include a CV, cover letter and supporting letter. For external applications, follow the organiser’s requirements.",
+    "rw": "Ibisabwa biterwa n’amahirwe wahisemo. Reba “Who can apply”. Ushobora kongeraho CV, ibaruwa isaba n’ibaruwa igushyigikira. Ku mbuga zo hanze, kurikiza ibisabwa n’abateguye ayo mahirwe.",
+    "fr": "Les critères varient selon l’offre. Consultez « Who can apply ». Une candidature PLP peut inclure un CV, une lettre de motivation et une lettre de soutien. Pour les candidatures externes, suivez les consignes de l’organisateur."
+  }
+},
+{
+  "id": "opportunity-saved",
+  "q": {
+    "en": "Where are my saved opportunities?",
+    "rw": "Amahirwe nabitse nayabona he?",
+    "fr": "Où retrouver mes offres enregistrées ?"
+  },
+  "words": {
+    "en": [
+      "saved",
+      "bookmark",
+      "shortlist",
+      "deadline",
+      "closing"
+    ],
+    "rw": [
+      "nabitse",
+      "nabika",
+      "ntarengwa"
+    ],
+    "fr": [
+      "enregistrées",
+      "favoris",
+      "échéance",
+      "date limite"
+    ]
+  },
+  "answer": {
+    "en": "Use the bookmark on an opportunity to add it to Saved. Check the deadline before applying: saving does not reserve a place or submit an application. Submitted applications appear under My applications.",
+    "rw": "Kanda ikimenyetso cyo kubika amahirwe, uyasange muri “Saved”. Kubika ntibivuze gusaba cyangwa gufatirwa umwanya. Ibyo wasabye biboneka muri “My applications”.",
+    "fr": "Utilisez le marque-page pour retrouver une offre dans « Saved ». Enregistrer une offre ne réserve pas de place et n’envoie pas de candidature. Vos candidatures figurent dans « My applications »."
+  }
+},
   {
     "id": "join",
     "q": {

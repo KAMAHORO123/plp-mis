@@ -22,6 +22,7 @@ const ago = (iso: string) => {
 export function NotificationBell() {
     useSiteLanguage();
     const [items, setItems] = useState<HubNotification[]>([]);
+    const [query, setQuery] = useState(""), [onlyUnread, setOnlyUnread] = useState(false);
     const [unread, setUnread] = useState(0);
     const [open, setOpen] = useState(false);
     const [desktop, setDesktop] = useState(typeof Notification === "undefined" ? "unsupported" : Notification.permission);
@@ -32,18 +33,19 @@ export function NotificationBell() {
     }>("/notifications").then((r) => { setItems(Array.isArray(r?.items) ? r.items : []); setUnread(Number(r?.unread) || 0); }).catch(() => { });
     useEffect(() => {
         void load();
+        const poll = window.setInterval(() => void load(), 30000);
         const arrived = (e: Event) => {
             const n = (e as CustomEvent<HubNotification>).detail;
             setItems((list) => [n, ...list.filter((x) => x.id !== n.id)].slice(0, 50));
             setUnread((u) => u + 1);
-            toast(n.title, { description: n.body || undefined, action: n.link ? { label: "Open", onClick: () => navigate(n.link!) } : undefined });
+            toast(translateUi(n.title), { description: n.body ? translateUi(n.body) : undefined, action: n.link ? { label: translateUi("Open"), onClick: () => navigate(n.link!) } : undefined });
             if (document.hidden && typeof Notification !== "undefined" && Notification.permission === "granted")
-                new Notification(n.title, { body: n.body, icon: "/plp-dove.png", tag: n.id });
+                new Notification(translateUi(n.title), { body: n.body ? translateUi(n.body) : undefined, icon: "/plp-dove.png", tag: n.id });
         };
         const read = () => void load();
         window.addEventListener("plp:notification", arrived);
         window.addEventListener("plp:notifications-read", read);
-        return () => { window.removeEventListener("plp:notification", arrived); window.removeEventListener("plp:notifications-read", read); };
+        return () => { window.clearInterval(poll); window.removeEventListener("plp:notification", arrived); window.removeEventListener("plp:notifications-read", read); };
     }, []);
     const markAll = async () => { setUnread(0); setItems((l) => l.map((n) => ({ ...n, read_at: n.read_at ?? new Date().toISOString() }))); await platformApi("/notifications/read", "POST", {}).catch(() => { }); };
     const openItem = async (n: HubNotification) => {
@@ -56,6 +58,7 @@ export function NotificationBell() {
         if (n.link)
             navigate(n.link);
     };
+    const shown = items.filter(n => (!onlyUnread || !n.read_at) && `${n.title} ${n.body}`.toLowerCase().includes(query.toLowerCase()));
     return (<Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button className="nb-trigger" aria-label={translateUi(unread ? `Notifications, ${unread} unread` : "Notifications")}>
@@ -69,14 +72,15 @@ export function NotificationBell() {
           {translateUi(unread > 0 && <button className="nb-link" onClick={() => void markAll()}><CheckCheck size={14}/>{translateUi(" Mark all read")}</button>)}
         </header>
         {translateUi(desktop === "default" && (<button className="nb-desktop" onClick={() => Notification.requestPermission().then(setDesktop)}>{translateUi("Turn on desktop alerts for when this tab is in the background")}</button>))}
-        {translateUi(items.length ? (<ul className="nb-list">
-            {translateUi(items.map((n) => (<li key={n.id}>
+        <div className="nb-filters"><input aria-label={translateUi('Search notifications')} placeholder={translateUi('Search notifications')} value={query} onChange={e=>setQuery(e.target.value)}/><label><input type="checkbox" checked={onlyUnread} onChange={e=>setOnlyUnread(e.target.checked)}/>{translateUi('Unread only')}</label></div>
+        {translateUi(shown.length ? (<ul className="nb-list">
+            {translateUi(shown.map((n) => (<li key={n.id}>
                 <button className={n.read_at ? "" : "unread"} onClick={() => void openItem(n)}>
                   <span className="nb-dot" aria-hidden="true"/>
                   <span className="nb-text"><strong>{translateUi(n.title)}</strong>{translateUi(n.body && <small>{translateUi(n.body)}</small>)}<em>{translateUi(ago(n.created_at))}</em></span>
                 </button>
               </li>)))}
-          </ul>) : <p className="nb-empty">{translateUi("You're all caught up. New activities, requests and reviews will appear here.")}</p>)}
+          </ul>) : <p className="nb-empty">{translateUi(query || onlyUnread ? "No matching notifications." : "You're all caught up. New activities, requests and reviews will appear here.")}</p>)}
       </PopoverContent>
     </Popover>);
 }

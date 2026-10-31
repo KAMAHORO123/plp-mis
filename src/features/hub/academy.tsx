@@ -1,3 +1,5 @@
+import { usePaged, Pager } from "./management-ui";
+import { useAssessmentClock } from "./use-assessment-clock";
 import { translateUi, useSiteLanguage } from '../../i18n/language';
 import { platformApi } from "./platform-api";
 import { useLiveTick } from './live';
@@ -70,6 +72,7 @@ export function AcademyPage() {
             `${c.title} ${c.summary} ${c.skills.join(" ")}`.toLowerCase().includes(search.toLowerCase()) &&
             (view === "All courses" || (view === "In progress" ? e && !e.completedAt : !!e?.completedAt)));
     });
+    const coursePage = usePaged(list, 9, `${search}|${category}|${level}|${view}`);
     const resume = mine
         .filter((e) => !e.completedAt)
         .map((e) => ({ e, c: published.find((c) => c.id === e.courseId) }))
@@ -98,7 +101,7 @@ export function AcademyPage() {
         {translateUi(["All pathways", ...categories].map((c) => (<button className={c === category ? "active" : ""} key={c} onClick={() => setParams(c === "All pathways" ? {} : { category: c })}>{translateUi(c)}</button>)))}
       </div>
       <div className="ac-grid">
-        {translateUi(list.map((c) => {
+        {translateUi(coursePage.items.map((c) => {
             const i = published.indexOf(c);
             const e = mine.find((x) => x.courseId === c.id);
             const learners = state.enrollments.filter((x) => x.courseId === c.id).length;
@@ -126,6 +129,7 @@ export function AcademyPage() {
             </Link>);
         }))}
       </div>
+      <Pager {...coursePage}/>
       {translateUi(!list.length && <Empty>{translateUi("No courses match. Try another pathway, level, or clear your search.")}</Empty>)}
     </div>);
 }
@@ -197,7 +201,7 @@ function LocalCoursePage() {
         if (x.locked)
             return toast.error(translateUi(enrollment ? "Complete the previous step to unlock this item." : "Enroll to start this course."));
         if (enrollment?.active && x.key !== current.key)
-            toast.warning(translateUi("You have an assessment in progress. Finish it before moving on."));
+            return toast.warning(translateUi("You have an assessment in progress. Finish it before moving on."));
         setItem(x.key);
     };
     return (<div className="ac-page">
@@ -230,7 +234,7 @@ function LocalCoursePage() {
       </section>
       {translateUi(enrollment?.active && tab !== "Modules" && (<button className="ac-live-banner" onClick={() => setTab("Modules")}><Timer size={16}/>{translateUi(" An assessment is in progress. Return to it now \u2014 the timer keeps running.")}</button>))}
       <div className="ws-tabs" role="tablist" aria-label={translateUi("Course sections")}>
-        {translateUi(["Overview", "Modules", "Grades"].map((t) => (<button key={t} role="tab" aria-selected={tab === t} className={tab === t ? "active" : ""} onClick={() => setTab(t)}>{translateUi(t)}</button>)))}
+        {translateUi(["Overview", "Modules", "Grades"].map((t) => (<button key={t} disabled={!!enrollment?.active && t !== tab} role="tab" aria-selected={tab === t} className={tab === t ? "active" : ""} onClick={() => setTab(t)}>{translateUi(t)}</button>)))}
       </div>
       {translateUi(tab === "Overview" && (<div className="ac-overview">
           <Panel>
@@ -251,7 +255,7 @@ function LocalCoursePage() {
               <li>{translateUi("Modules unlock in order. Read each module, then pass its knowledge check with at least 80%.")}</li>
               <li>{translateUi("Every quiz and exam is timed. The timer starts when you begin and cannot be paused; when it runs out your answers are submitted automatically.")}</li>
               <li>{translateUi("Quizzes and exams are proctored: your camera must stay on, the assessment opens in full screen, and you cannot leave the page until you submit. The camera feed is not recorded.")}</li>
-              <li>{translateUi("Leaving the tab, leaving full screen or turning off the camera is recorded. After ")}{translateUi(MAX_FOCUS_LOSSES)}{translateUi(" departures your attempt is submitted.")}</li>
+              <li>{translateUi("Leaving this tab, exiting full screen or turning off your camera immediately ends the attempt. Terminated attempts do not pass.")}</li>
               <li>{translateUi("You have ")}{translateUi(exam?.maxAttempts ?? 3)}{translateUi(" attempts per assessment every ")}{translateUi(ATTEMPT_WINDOW_HOURS)}{translateUi(" hours.")}</li>
               <li>{translateUi("Submit the graded assignment (")}{translateUi(MIN_ASSIGNMENT_WORDS)}{translateUi("+ words) to unlock the final exam.")}</li>
               <li>{translateUi("The course is marked complete only when every assessment is passed. There is no manual \"mark as complete\".")}</li>
@@ -271,6 +275,7 @@ function LocalCoursePage() {
           </aside>
           <div className="ac-stage">
             {translateUi(!enrollment ? (<Panel><h2>{translateUi("Enroll to begin")}</h2><p>{translateUi("Enroll to unlock module readings, quizzes, and the final exam.")}</p><button className="hub-button hub-space" onClick={enroll}>{translateUi("Enroll in this course ")}<ArrowRight size={17}/></button></Panel>) : current.locked ? (<Panel><h2><LockKeyhole size={18}/> {translateUi(current.label)}</h2><p>{translateUi("This item unlocks after you finish the previous step.")}</p></Panel>) : current.key.startsWith("reading-") ? (<Reading course={course} index={Number(current.key.split("-")[1])} onNext={(next) => setItem(next)} hasQuiz={!!quizFor(Number(current.key.split("-")[1]))}/>) : current.key === "assignment" ? (<Assignment course={course} enrollment={enrollment} onSubmitted={() => setItem("final")}/>) : (<AssessmentPanel course={course} enrollment={enrollment} assessment={assessments.find((a) => (current.key === "final" ? a.kind === "exam" : a.moduleIndex === Number(current.key.split("-")[1])))!}/>))}
+            {enrollment && <StepNav items={items} current={current} onOpen={openItem} busy={!!enrollment.active}/>}
             {translateUi(enrollment?.completedAt && (<div className="hub-success hub-space">
                 <Award />
                 <div>
@@ -296,6 +301,23 @@ export function OutlineItem({ item, active, onOpen }: {
       {translateUi(item.done ? <CheckCircle2 size={17} className="ac-done"/> : item.locked ? <LockKeyhole size={17}/> : <Icon size={17}/>)}
       <span><strong>{translateUi(item.label)}</strong><small>{translateUi(item.detail)}</small></span>
     </button>);
+}
+/** Once a quiz, assignment or exam is finished, points the learner at the next step (readings carry their own Continue). */
+export function StepNav({ items, current, onOpen, busy }: {
+    items: Item[];
+    current: Item;
+    onOpen: (x: Item) => void;
+    busy?: boolean;
+}) {
+    useSiteLanguage();
+    const at = items.findIndex((x) => x.key === current.key), prev = items[at - 1], next = items[at + 1];
+    if (busy || current.locked || !current.done || current.key.startsWith("reading-"))
+        return null;
+    return (<nav className="ac-step-nav" aria-label={translateUi("Course steps")}>
+      {prev ? <button className="hub-text-button" onClick={() => onOpen(prev)}><ArrowLeft size={15}/>{translateUi("Previous")}</button> : <span />}
+      {next ? <button className="hub-button" disabled={next.locked} onClick={() => onOpen(next)}><span><small>{translateUi("Next")}</small>{translateUi(next.label)}</span><ArrowRight size={16}/></button>
+        : <Link className="hub-button" to="/academy">{translateUi("Back to the academy")}<ArrowRight size={16}/></Link>}
+    </nav>);
 }
 function Reading({ course, index, hasQuiz, onNext }: {
     course: Course;
@@ -381,7 +403,7 @@ function AssessmentPanel({ course, enrollment, assessment }: {
     const passed = hasPassed(enrollment, assessment.id);
     const lockedUntil = nextAttemptAt(enrollment, assessment, now);
     const last = attempts.at(-1);
-    const remaining = active ? Date.parse(active.endsAt) - now : 0;
+    const remaining = useAssessmentClock(active?.endsAt);
     const submit = (reason: AssessmentAttempt["reason"]) => {
         proctor.end();
         let result: AssessmentAttempt | undefined;
@@ -416,24 +438,16 @@ function AssessmentPanel({ course, enrollment, assessment }: {
             return;
         if (losses >= MAX_FOCUS_LOSSES) {
             if (submit("focus"))
-                toast.error(translateUi("Too many departures from the assessment. It was submitted."));
+                toast.error(translateUi("You left the assessment. Your attempt has been terminated."));
         }
         else
             toast.warning(translateUi("{p0} ({p1}/{p2}). Stay on this page, in full screen, with your camera on.", { p0: translateUi(departureLabel[reason]), p1: translateUi(losses), p2: translateUi(MAX_FOCUS_LOSSES) }));
     };
     const proctor = useProctoring(!!active, depart);
-    useEffect(() => {
-        if (!active)
-            return;
-        const onHide = () => { if (document.visibilityState === "hidden")
-            depart("tab"); };
-        document.addEventListener("visibilitychange", onHide);
-        return () => document.removeEventListener("visibilitychange", onHide);
-    }, [active?.startedAt]);
     const start = async () => {
         if (!await confirmAction({
             title: `Start ${assessment.title.toLowerCase()}?`,
-            description: `You will have ${assessment.minutes} minutes for ${assessment.questions.length} questions. Your camera must stay on and the assessment opens in full screen. The timer cannot be paused, you cannot leave the page, and leaving full screen or this tab is recorded.`,
+            description: `You will have ${assessment.minutes} minutes for ${assessment.questions.length} questions. Your camera must stay on and the assessment opens in full screen. The timer cannot be paused, you cannot leave the page, and leaving full screen or this tab immediately terminates your attempt. Keep your face visible and centred; camera checks run on your device without recording.`,
             confirmLabel: "Turn on camera & start",
         }))
             return;
@@ -463,7 +477,7 @@ function AssessmentPanel({ course, enrollment, assessment }: {
         return (<Panel className="ac-exam">
         <ProctorCamera stream={proctor.stream}/>
         <div className={`ac-timer ${remaining < 60000 ? "urgent" : ""}`} role="timer" aria-live="off">
-          <div><strong>{translateUi(assessment.title)}</strong><small>{translateUi(answered)}{translateUi(" of ")}{translateUi(questions.length)}{translateUi(" answered \u00B7 ")}{translateUi(active.focusLosses)}{translateUi("/")}{translateUi(MAX_FOCUS_LOSSES)}{translateUi(" departures \u00B7 camera on")}</small></div>
+          <div><strong>{translateUi(assessment.title)}</strong><small>{translateUi(answered)}{translateUi(" of ")}{translateUi(questions.length)}{translateUi(" answered · stay on this tab · camera on")}</small></div>
           <span><Timer size={18}/> {translateUi(formatClock(remaining))}</span>
         </div>
         <form className="hub-form" onSubmit={async (e) => {
@@ -500,7 +514,7 @@ function AssessmentPanel({ course, enrollment, assessment }: {
           {translateUi(last.passed ? <CheckCircle2 /> : <XCircle />)}
           <div>
             <strong>{translateUi("Latest attempt: ")}{translateUi(last.percent)}{translateUi("% (")}{translateUi(last.score)}{translateUi("/")}{translateUi(last.total)}{translateUi(") \u00B7 ")}{translateUi(last.passed ? "Passed" : "Not passed")}</strong>
-            <small>{translateUi("Submitted ")}{translateUi(new Date(last.submittedAt).toLocaleString())}{translateUi(last.reason === "time" ? " · time expired" : last.reason === "focus" ? " · submitted after leaving the tab" : "")}</small>
+            <small>{translateUi("Submitted ")}{translateUi(new Date(last.submittedAt).toLocaleString())}{translateUi(last.reason === "time" ? " · time expired" : last.reason === "focus" ? " · terminated after leaving the assessment" : "")}</small>
             {translateUi(assessment.kind === "quiz" && <p>{translateUi(last.results.map((ok, i) => <span key={i} className={ok ? "ok" : "no"}>{translateUi("Q")}{translateUi(i + 1)} {translateUi(ok ? "correct" : "incorrect")}</span>))}</p>)}
             {translateUi(assessment.kind === "exam" && !last.passed && <p className="hub-caption">{translateUi("Exam answers are not revealed. Review the modules before your next attempt.")}</p>)}
           </div>
@@ -517,7 +531,7 @@ function Grades({ course, enrollment, assessments }: {
     if (!enrollment)
         return <Empty>{translateUi("Enroll to see your grades.")}</Empty>;
     return (<Panel>
-      <div className="ws-panel-title"><h2>{translateUi("Grades")}</h2><span className="ws-pill">{translateUi(enrollment.completedAt ? `Completed ${enrollment.completedAt}` : "In progress")}</span></div>
+      <div className="ws-panel-title"><h2>{translateUi("Grades")}</h2><span className="ws-pill">{translateUi(enrollment.completedAt ? `Completed ${new Date(enrollment.completedAt.length === 10 ? `${enrollment.completedAt}T12:00:00` : enrollment.completedAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}` : "In progress")}</span></div>
       <div className="ws-table-wrap">
         <table className="ws-table">
           <thead><tr><th>{translateUi("Item")}</th><th>{translateUi("Status")}</th><th>{translateUi("Best score")}</th><th>{translateUi("Pass mark")}</th><th>{translateUi("Attempts")}</th></tr></thead>

@@ -30,7 +30,7 @@ export function StaffProfilePage() {
     useEffect(() => {
         platformApi<{
             id: string;
-        }>('/me').then((m) => setMe(m.id)).catch(() => { });
+        }>('/me').then((m) => { setMe(m.id); }).catch(() => { });
         if (role === 'Trainer')
             platformApi<Course[]>('/records/courses').then(setCourses).catch(() => { });
     }, [role, live]);
@@ -97,9 +97,17 @@ export function StaffProfilePage() {
           {translateUi(links[0] && <Link className="hub-button" to={links[0][0]}><LayoutGrid size={16}/> {translateUi(links[0][1])}</Link>)}
         </>} stats={stats}/>
       {translateUi(edit && (<FormModal title={translateUi("Edit your profile")} description={translateUi(role === 'Mentor' ? 'Your mentor title, area and availability are edited from the mentor dashboard.' : 'Shown on your profile.')} onClose={() => setEdit(false)}>
-          <form className="hub-form" onSubmit={(e) => {
+          <form className="hub-form" onSubmit={async (e) => {
                 e.preventDefault();
                 const f = new FormData(e.currentTarget);
+                // Name and bio are stored on the account so they show on every device.
+                try {
+                    const me = await platformApi<{ education_stage: string; institution: string; graduation_year: number | null }>('/me');
+                    await platformApi('/me/profile', 'PUT', { name: String(f.get('name')).trim(), bio: String(f.get('bio')).trim(), education_stage: me.education_stage, institution: me.institution ?? '', graduation_year: me.graduation_year ?? null });
+                }
+                catch (err) {
+                    return toast.error(translateUi((err as Error).message));
+                }
                 if (update((s) => { const p = s.profiles.find((x) => x.id === profile.id)!; p.name = String(f.get('name')).trim(); p.bio = String(f.get('bio')).trim(); if (role === 'Trainer')
                     p.community = String(f.get('community')).trim(); })) {
                     setEdit(false);

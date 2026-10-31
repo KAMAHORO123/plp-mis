@@ -138,3 +138,37 @@
 @media(max-width:380px){.plp-trivia-options{grid-template-columns:1fr}.plp-trivia-card,.plp-quote-card{padding:20px}.plp-trivia-meta{font-size:10px}.plp-album-pair{gap:5px}}
 .plp-trivia-card h3{scroll-margin-top:140px}.plp-trivia-options button:disabled{color:#23415c}
 .plp-quote-author{display:block;font-size:16px;color:#17446b;margin-top:8px}.plp-quote-source{display:inline-flex;align-items:center;gap:5px;min-height:44px;font-size:11px;color:#216bac;text-decoration:underline;text-underline-offset:3px}.plp-quote-source svg{flex-shrink:0}
+
+/* Small phones: one slim row (message, link, pause); an event date sits beneath. */
+@media(max-width:600px){
+ .plp-imigongo-banner{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:4px 10px;min-height:0;padding:6px 12px}
+ .plp-announcement-window{grid-column:1;grid-row:1}
+ .plp-imigongo-banner a.plp-announcement-cta{grid-column:2;grid-row:1;min-height:36px;max-width:none;padding:0;font-size:10px;white-space:nowrap}
+ .plp-imigongo-banner .plp-announcement-pause{grid-column:3;grid-row:1;width:36px;height:36px}
+ .plp-imigongo-banner .plp-announcement-date{grid-column:1/-1;grid-row:2;font-size:10px}
+ .plp-imigongo-banner .plp-announcement-message{gap:14px;padding-right:14px}
+ .plp-imigongo-banner .plp-announcement-message strong{font-size:11px}
+ .plp-announcement-diamond{font-size:14px}
+}
+
+/* Bold brand banner (igihe-style): deep blue with a slowly drifting imigongo pattern and white type. */
+.plp-imigongo-banner.plp-banner-bold { min-height: 50px; padding: 7px clamp(16px, 3vw, 44px); gap: 18px; align-items: center; background: linear-gradient(90deg, #0d4a83 0%, #1c73bb 50%, #0d4a83 100%); color: #fff; border-block: 0; box-shadow: inset 0 -1px 0 rgba(255,255,255,.12); }
+.plp-banner-bold::before { opacity: .16; filter: none; background-color: transparent; background-size: 112px 80px; mask-image: none; animation: plp-banner-drift 40s linear infinite; }
+.plp-banner-bold.is-paused::before { animation-play-state: paused; }
+@keyframes plp-banner-drift { to { background-position: 112px 0; } }
+.plp-banner-bold .plp-announcement-message strong { font-size: 13px; font-weight: 600; color: #fff; }
+.plp-banner-bold .plp-announcement-message > span:last-child { color: rgba(255,255,255,.7); font-size: 9px; }
+.plp-banner-bold .plp-announcement-diamond { color: #9fd0ff; font-size: 16px; }
+.plp-banner-bold .plp-announcement-date { color: rgba(255,255,255,.92); font-size: 12px; }
+.plp-public-site .plp-banner-bold a.plp-announcement-cta, html[data-theme="dark"] .plp-public-site .plp-banner-bold a.plp-announcement-cta { display: inline-flex; align-items: center; gap: 4px; padding: 6px 14px !important; border-radius: 999px; background: #fff !important; color: #0f4f8a !important; font-size: 12px; font-weight: 600; text-decoration: none; }
+.plp-banner-bold a.plp-announcement-cta:hover { background: #e8f3fd !important; }
+.plp-banner-bold .plp-announcement-pause { width: 30px; height: 30px; background: transparent; color: #fff; border-color: rgba(255,255,255,.5); }
+.plp-banner-bold .plp-announcement-countdown { background: #fff; color: #0f4f8a; font-size: 11px; padding: 4px 10px; }
+.plp-banner-bold :is(a, button):focus-visible { outline-color: #fff; }
+html[data-theme="dark"] .plp-imigongo-banner.plp-banner-bold { background: linear-gradient(90deg, #0a2e52 0%, #12528c 50%, #0a2e52 100%); }
+@media (max-width: 600px) {
+  .plp-imigongo-banner.plp-banner-bold { padding: 6px 12px; }
+  .plp-public-site .plp-banner-bold a.plp-announcement-cta { padding: 4px 10px !important; font-size: 11px; min-height: 30px; }
+  .plp-banner-bold .plp-announcement-pause { width: 30px; height: 30px; }
+}
+@media (prefers-reduced-motion: reduce) { .plp-banner-bold::before { animation: none; } }

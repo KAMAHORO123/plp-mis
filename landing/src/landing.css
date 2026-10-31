@@ -576,3 +576,135 @@
 
 @media(max-width:1000px) { .plp-team-units { columns: 2; } }
 @media(max-width:600px) { .plp-team-units { columns: 1; } }
+
+/* Navigation bar: full width under the banner, like the banner itself; content stays aligned with the page */
+.plp-public-site .plp-sticky-navigation > .hub-header.hub-header,
+.plp-public-site .plp-sticky-navigation.is-compact > .hub-header.hub-header {
+  width: 100%; max-width: none; margin: 0; border-radius: 0; border-left: 0; border-right: 0; border-top: 0;
+  border-bottom: 1px solid #e3e8ef; box-shadow: 0 6px 18px -16px rgba(12, 46, 75, .35); top: 0;
+  padding-inline: max(24px, calc((100% - 1440px) / 2));
+}
+.plp-public-site .plp-sticky-navigation:not(.is-compact) > .hub-header.hub-header { height: 80px; }
+@media (max-width: 900px) { .plp-public-site .plp-sticky-navigation > .hub-header.hub-header { height: 68px; padding-inline: 16px; } }
+
+/* Navigation fits all three languages: tighter link spacing and a compact action area. */
+.plp-public-site .plp-sticky-navigation > .hub-header.hub-header { gap: 14px; padding-inline: max(20px, calc((100% - 1440px) / 2)); }
+.plp-public-site .hub-top-nav { gap: 2px; }
+.plp-public-site .hub-top-nav a { padding: 10px 8px; }
+.plp-public-site .hub-header-actions { gap: 12px; }
+.plp-public-site .hub-header .hub-button { padding: 11px 16px; }
+.plp-public-site .hub-brand img { width: auto; height: 58px; }
+@media (min-width: 1500px) { .plp-public-site .hub-top-nav a { padding: 10px 12px; } .plp-public-site .hub-top-nav { gap: 4px; } }
+/* Navigation links: no background on hover or for the current page, only blue text and a blue underline. */
+.plp-public-site .hub-top-nav a, .plp-public-site .hub-top-nav a:hover, .plp-public-site .hub-top-nav a.active { background: transparent !important; text-decoration: none; position: relative; }
+.plp-public-site .hub-top-nav a::after { content: ''; position: absolute; left: 8px; right: 8px; bottom: 4px; height: 2px; border-radius: 2px; background: #1c73bb; transform: scaleX(0); transition: transform .2s ease; }
+.plp-public-site .hub-top-nav a:hover, .plp-public-site .hub-top-nav a.active { color: #1c73bb !important; }
+.plp-public-site .hub-top-nav a:hover::after, .plp-public-site .hub-top-nav a.active::after { transform: scaleX(1); }
+html[data-theme="dark"] .plp-public-site .hub-top-nav a:hover, html[data-theme="dark"] .plp-public-site .hub-top-nav a.active { color: #85bff4 !important; }
+html[data-theme="dark"] .plp-public-site .hub-top-nav a::after { background: #85bff4; }
+
+/* Small phones: a smaller logo and tighter controls so the navbar stays on one calm line. */
+@media (max-width: 480px) {
+  .plp-public-site .plp-sticky-navigation > .hub-header.hub-header { height: 58px; gap: 8px; padding-inline: 12px; }
+  .plp-public-site .plp-sticky-navigation .hub-brand img.plp-full-nav-logo { width: 78px; height: 44px; }
+  .plp-public-site .hub-header-actions { gap: 6px; }
+  .plp-public-site .hub-header .hub-menu { width: 38px; height: 38px; }
+}
+
+/* Hero slideshow: one frame, photos crossfade, the word over them changes with each photo. */
+.plp-hero-slides .plp-hero-slide-frame { position: relative; z-index: 1; aspect-ratio: 3 / 2; overflow: hidden; }
+.plp-hero-slides .plp-hero-slide-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.04); transition: opacity 1.2s ease, transform 6s ease; animation: none; }
+.plp-hero-slides .plp-hero-slide-frame img.is-active { opacity: 1; transform: scale(1); }
+.plp-hero-slides .plp-photo-word { animation: plp-word-in .8s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes plp-word-in { from { opacity: 0; transform: translateY(12px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+.plp-hero-slides figcaption { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.plp-hero-dots { display: inline-flex; gap: 2px; }
+.plp-hero-dots button { width: 24px; height: 24px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+.plp-hero-dots button::before { content: ""; width: 6px; height: 6px; border-radius: 999px; background: #c5d6e6; transition: width .3s ease, background .3s ease; }
+.plp-hero-dots button[aria-current="true"]::before { width: 18px; background: #1c73bb; }
+.plp-hero-dots button:focus-visible { outline: 2px solid #1c73bb; outline-offset: 1px; border-radius: 6px; }
+html[data-theme="dark"] .plp-hero-dots button::before { background: #3a4654; }
+html[data-theme="dark"] .plp-hero-dots button[aria-current="true"]::before { background: #85bff4; }
+@media (prefers-reduced-motion: reduce) { .plp-hero-slides .plp-hero-slide-frame img, .plp-hero-slides .plp-photo-word { transition: none; animation: none; transform: none; } }
+/* The changing word sits over every photo, bottom-left, on a soft shade so it reads on any image. */
+.plp-hero-slides { padding-top: 0; }
+.plp-hero-slides .plp-hero-slide-frame::after { content: ""; position: absolute; inset: 45% 0 0; z-index: 1; background: linear-gradient(to top, rgba(9, 25, 41, .55), transparent); pointer-events: none; }
+.plp-hero-slides .plp-photo-word { top: auto; bottom: 64px; left: 28px; width: auto; z-index: 3; font-size: clamp(40px, 6vw, 88px); line-height: 1; text-shadow: 0 2px 18px rgba(9, 25, 41, .35); pointer-events: none; }
+@media (max-width: 767px) { .plp-hero-slides .plp-photo-word { left: 18px; bottom: 58px; font-size: clamp(34px, 12vw, 56px); } }
+
+/* Full-width hero slider (after rwandaevents.com): photo fills the frame, words change with each slide. */
+.plp-showcase { position: relative; isolation: isolate; overflow: hidden; width: 100%; height: clamp(520px, 86svh, 780px); background: #0d2236; color: #fff; }
+.plp-showcase-slide { position: absolute; inset: 0; visibility: hidden; opacity: 0; transition: opacity 1s ease, visibility 0s 1s; }
+.plp-showcase-slide.is-active { visibility: visible; opacity: 1; transition: opacity 1s ease; z-index: 1; }
+.plp-showcase-slide img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.08); transition: transform 7s ease-out; }
+.plp-showcase-slide.is-active img { transform: scale(1); }
+.plp-showcase-slide::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(8, 24, 40, .78) 0%, rgba(8, 24, 40, .45) 45%, rgba(8, 24, 40, .05) 75%), linear-gradient(0deg, rgba(8, 24, 40, .55), transparent 40%); }
+.plp-showcase-copy { position: absolute; z-index: 2; left: max(24px, calc((100% - 1440px) / 2 + 24px)); bottom: clamp(96px, 16svh, 150px); width: min(620px, calc(100% - 48px)); }
+.plp-showcase-copy > * { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+.plp-showcase-slide.is-active .plp-showcase-copy > * { opacity: 1; transform: none; }
+.plp-showcase-slide.is-active .plp-showcase-copy > :nth-child(2) { transition-delay: .12s; }
+.plp-showcase-slide.is-active .plp-showcase-copy > :nth-child(3) { transition-delay: .24s; }
+.plp-showcase-slide.is-active .plp-showcase-copy > :nth-child(4) { transition-delay: .36s; }
+.plp-showcase-kicker { margin: 0 0 16px; font-size: 11px; font-weight: 600; letter-spacing: .2em; color: rgba(255,255,255,.75); }
+.plp-public-site .plp-showcase :is(h1, h2) { margin: 0; color: #fff; font-family: Sora, sans-serif; font-size: clamp(36px, 5.2vw, 72px); font-weight: 600; line-height: 1.05; letter-spacing: -.045em; }
+.plp-showcase :is(h1, h2) span { color: #9fd0ff; }
+.plp-showcase-copy > p:not(.plp-showcase-kicker) { margin: 18px 0 26px; max-width: 460px; font-size: clamp(15px, 1.3vw, 18px); line-height: 1.6; color: rgba(255,255,255,.86); }
+.plp-showcase-copy .hub-button { display: inline-flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 24px; border-radius: 999px; background: #fff; color: #0f3f66; font-weight: 600; }
+.plp-showcase-copy .hub-button:hover { background: #e8f3fd; }
+.plp-showcase-controls { position: absolute; z-index: 3; left: max(24px, calc((100% - 1440px) / 2 + 24px)); right: max(24px, calc((100% - 1440px) / 2 + 24px)); bottom: 32px; display: flex; align-items: center; gap: 14px; }
+.plp-showcase-count { font-size: 13px; color: rgba(255,255,255,.7); font-variant-numeric: tabular-nums; }
+.plp-showcase-count strong { color: #fff; font-weight: 600; }
+.plp-showcase-bars { display: flex; flex: 1; gap: 6px; max-width: 360px; }
+.plp-showcase-bars button { flex: 1; height: 24px; padding: 0; border: 0; background: none; cursor: pointer; display: flex; align-items: center; }
+.plp-showcase-bars i { display: block; width: 100%; height: 3px; border-radius: 3px; background: rgba(255,255,255,.3); background-image: linear-gradient(#fff, #fff); background-repeat: no-repeat; background-size: 0% 100%; }
+.plp-showcase-bars .is-done i { background-size: 100% 100%; }
+.plp-showcase-bars .is-active i { animation: plp-showcase-progress 6s linear forwards; }
+.plp-showcase.is-paused .plp-showcase-bars .is-active i { animation-play-state: paused; }
+@keyframes plp-showcase-progress { to { background-size: 100% 100%; } }
+.plp-showcase-arrow { display: grid; place-items: center; width: 44px; height: 44px; margin-left: auto; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; background: rgba(255,255,255,.08); color: #fff; cursor: pointer; backdrop-filter: blur(6px); transition: background .2s; }
+.plp-showcase-arrow + .plp-showcase-arrow { margin-left: 0; }
+.plp-showcase-arrow:hover { background: rgba(255,255,255,.2); }
+.plp-showcase :is(a, button):focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+@media (max-width: 767px) {
+  .plp-showcase { height: clamp(500px, 78svh, 680px); }
+  .plp-showcase-slide::after { background: linear-gradient(0deg, rgba(8, 24, 40, .85) 0%, rgba(8, 24, 40, .45) 55%, rgba(8, 24, 40, .1) 100%); }
+  .plp-showcase-copy { left: 20px; width: calc(100% - 40px); bottom: 92px; }
+  .plp-showcase-kicker { font-size: 9px; margin-bottom: 12px; }
+  .plp-showcase-copy > p:not(.plp-showcase-kicker) { margin: 12px 0 20px; }
+  .plp-showcase-controls { left: 20px; right: 20px; bottom: 24px; gap: 10px; }
+  .plp-showcase-arrow { width: 40px; height: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .plp-showcase-slide, .plp-showcase-slide img, .plp-showcase-copy > * { transition: none; transform: none; }
+  .plp-showcase-bars .is-active i { animation: none; background-size: 100% 100%; }
+}
+/* Clip, not hide: focus must never scroll the slider sideways. Button text stays dark on white. */
+.plp-showcase { overflow: clip; }
+.plp-public-site .plp-showcase .plp-showcase-copy .hub-button { background: #fff; color: #0f3f66; border-color: #fff; }
+.plp-public-site .plp-showcase .plp-showcase-copy .hub-button:hover { background: #e8f3fd; color: #0f3f66; }
+.plp-showcase-slide::after { background: linear-gradient(90deg, rgba(8, 24, 40, .86) 0%, rgba(8, 24, 40, .55) 42%, rgba(8, 24, 40, .08) 75%), linear-gradient(0deg, rgba(8, 24, 40, .6), transparent 45%); }
+.plp-showcase-kicker, .plp-showcase-copy > p { text-shadow: 0 1px 12px rgba(8, 24, 40, .45); }
+@media (max-width: 767px) {
+  .plp-showcase-slide::after { background: linear-gradient(0deg, rgba(8, 24, 40, .9) 0%, rgba(8, 24, 40, .55) 55%, rgba(8, 24, 40, .15) 100%); }
+  .plp-showcase-arrow { display: none; }
+  .plp-showcase-bars { max-width: none; }
+}
+/* .hub-button forces white text site-wide; the slider button is white, so its label must be dark. */
+.plp-public-site .plp-showcase .plp-showcase-copy .hub-button { color: #0f3f66 !important; font-size: 15px; }
+.plp-public-site .plp-showcase .plp-showcase-kicker { color: rgba(255, 255, 255, .85); }
+.plp-public-site .plp-showcase .plp-showcase-copy > p:not(.plp-showcase-kicker) { color: rgba(255, 255, 255, .9); }
+/* Arrows sit beside the progress bars, clear of the corner help button. */
+.plp-showcase-arrow { margin-left: 8px; }
+/* Lighter shade: only enough behind the words to read them; the rest of each photo stays natural. */
+.plp-showcase-slide::after { background: linear-gradient(90deg, rgba(8, 24, 40, .62) 0%, rgba(8, 24, 40, .3) 38%, rgba(8, 24, 40, 0) 62%), linear-gradient(0deg, rgba(8, 24, 40, .4), rgba(8, 24, 40, 0) 32%); }
+@media (max-width: 767px) { .plp-showcase-slide::after { background: linear-gradient(0deg, rgba(8, 24, 40, .78) 0%, rgba(8, 24, 40, .35) 45%, rgba(8, 24, 40, 0) 70%); } }
+/* No strip of empty space between the navigation and the hero slider. */
+.plp-sticky-navigation { padding-bottom: 0; }
+/* Reduced motion keeps the slideshow but drops the zoom; the play/pause button stays visible on phones. */
+@media (prefers-reduced-motion: reduce) { .plp-showcase-bars .is-active i { animation: plp-showcase-progress 6s linear forwards; background-size: 0% 100%; } }
+@media (max-width: 767px) { .plp-showcase-arrow[aria-pressed] { display: grid; margin-left: auto; } }
+/* Menu links sit in the true centre: logo and actions take equal room on either side. */
+.plp-public-site .hub-header:not(.is-nav-collapsed) > .hub-brand,
+.plp-public-site .hub-header:not(.is-nav-collapsed) > .hub-header-actions { flex: 1 1 0; }
+.plp-public-site .hub-header:not(.is-nav-collapsed) > .hub-header-actions { justify-content: flex-end; }
+.plp-public-site .hub-header:not(.is-nav-collapsed) > .hub-top-nav { justify-content: center; }

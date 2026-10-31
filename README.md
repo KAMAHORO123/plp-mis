@@ -1,5 +1,39 @@
 # PLP website and MIS
 
+## Run everything with Docker
+
+Start Docker Desktop, then run this from the repository root:
+
+```bash
+docker compose up --build -d --wait
+```
+
+- MIS: http://localhost:5173
+- Public website: http://localhost:5174
+
+This builds the apps and starts PostgreSQL, database migrations, the platform API, certificate renderer, announcement service, email worker and gateway. Use `localhost` for sign-in, matching the configured application origin. Ports 5173 and 5174 must be free; stop any Vite servers using them first. The older `system/` interface is not part of the current deployment.
+
+These containers serve production builds; rerun the same command after changing code.
+
+The local stack starts with a **separate, empty database**. Your existing host database is not modified or imported. Database records and uploaded files persist in Docker volumes across restarts. The API and email worker load the private settings in `deploy/.env`. Set `SMTP_HOST`, `SMTP_PORT`, `MAIL_FROM`, and your relay credentials (`SMTP_USER` / `SMTP_PASSWORD`) there. After changing these settings, rerun the startup command. Verify the connection without sending an email using `docker compose exec platform npm run mail:check`. Google sign-in requires its own configured client credentials and localhost callback.
+
+Create the first administrator with your own values:
+
+```bash
+docker compose exec -e ADMIN_EMAIL -e ADMIN_NAME -e ADMIN_PASSWORD platform npm run bootstrap-admin
+```
+
+Set those three environment variables in your terminal first; the password must contain at least 12 characters.
+
+```bash
+docker compose logs -f       # Follow service logs
+docker compose down          # Stop containers; keep data
+docker compose up -d --wait   # Start the existing containers again
+```
+
+The root Compose file uses local-only credentials and binds web ports to loopback. For a public HTTPS deployment, use `deploy/compose.yml` and the production hosting guide below.
+
+
 The public website and database-backed system can be developed and deployed independently.
 
 | Folder | Run / purpose |
@@ -11,7 +45,7 @@ The public website and database-backed system can be developed and deployed inde
 | `services/public-content/` | Read-only announcement service |
 | `deploy/` | One-server Docker Compose deployment, HTTPS and backup scripts |
 
-Start with [the deployment and hosting guide](docs/production-roadmap.md). It explains database setup, the lowest-cost server options, Strettch, temporary hostnames, first-admin creation, backups and exact remaining workflow gaps. No server has been purchased or deployed yet.
+To put PLP on the netcup server, follow [the step-by-step netcup deployment guide](docs/deploy-netcup.md). [The hosting background](docs/production-roadmap.md) explains the database, backups and remaining workflow gaps.
 
 **The original root `src/` and `frontend/` applications remain browser-local demos.** Their localStorage accounts are not production accounts and their data has not been imported. The sections below document that legacy demonstration. Use `landing/` for the independently deployable public site and `system/` for the new API-backed interface.
 

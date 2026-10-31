@@ -7,6 +7,10 @@ export interface Announcement {
  href: string;
  linkLabel: string;
  sample: boolean;
+ /** One line about the event, shown in the popup flyer. */
+ description?: string;
+ /** Uploaded flyer image id; served publicly at /api/public/announcement/flyer. */
+ flyer?: string;
 }
 export const defaultAnnouncement: Announcement = {
  enabled: true, title: 'Sober Campaign · An evening of music & connection',
@@ -37,3 +41,27 @@ export const albums = [
  { id:'archive', title:'From the PLP archive', description:'The moments that brought us here.', photos:['archive-1','archive-2','archive-3','archive-4','archive-5','archive-6','archive-7','archive-8','archive-9','archive-10'] },
  { id:'camp', title:'Camp diaries', description:'A little movement. A lot of togetherness.', photos:['camp-1','camp-2','camp-3','camp-4','camp-5','camp-6','camp-7','camp-8','camp-9','camp-10'] },
 ];
+
+/** Whole days from today until an event date (YYYY-MM-DD), counted in Kigali. */
+export function daysUntil(date: string) {
+ const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Kigali' });
+ return Math.round((Date.parse(date + 'T12:00:00Z') - Date.parse(today + 'T12:00:00Z')) / 864e5);
+}
+export const flyerUrl = (item: Announcement) => item.flyer ? `/api/public/announcement/flyer?v=${encodeURIComponent(item.flyer)}` : '';
+
+/** The popup shown when no event is live. Administrators edit it under Website banner. */
+export interface WelcomePopup {
+ imageOnly?: boolean;
+ enabled: boolean;
+ title: string;
+ text: string;
+ cta: string;
+ href: string;
+ /** Uploaded image id; served publicly at /api/public/welcome-popup/image. */
+ image: string;
+}
+export const defaultWelcomePopup: WelcomePopup = {
+ enabled: true, title: 'Be part of something bigger.',
+ text: 'Join thousands of young people learning, leading and serving their communities with PLP.',
+ cta: 'Join PLP', href: '/auth/signup', image: '',
+};

@@ -48,6 +48,12 @@ export function FunCornerEditor() {
         if (!await confirmAction({ title: translateUi(`Delete this ${kind}?`), description: translateUi('It is removed from the website straight away.'), confirmLabel: translateUi('Delete'), destructive: true })) return;
         await publish(kind === 'question' ? { ...content, trivia: content.trivia.filter((_, i) => i !== index) } : { ...content, quotes: content.quotes.filter((_, i) => i !== index) }, `The ${kind} was deleted`);
     }
+    async function removeMany(kind: 'question' | 'quote', ids: string[]) {
+        const list = kind === 'question' ? content.trivia : content.quotes, drop = new Set(ids.map(Number));
+        if (drop.size >= list.length) return toast.error(translateUi(`Keep at least one ${kind} in the fun corner.`));
+        if (!await confirmAction({ title: translateUi(`Delete ${drop.size} ${kind}${drop.size === 1 ? '' : 's'}?`), description: translateUi('They are removed from the website straight away.'), confirmLabel: translateUi('Delete'), destructive: true })) return;
+        await publish(kind === 'question' ? { ...content, trivia: content.trivia.filter((_, i) => !drop.has(i)) } : { ...content, quotes: content.quotes.filter((_, i) => !drop.has(i)) }, `${drop.size} ${kind}${drop.size === 1 ? '' : 's'} deleted`);
+    }
     async function restore() {
         if (!await confirmAction({ title: translateUi('Restore the original fun corner?'), description: translateUi('Your questions and quotes are replaced by the ones PLP started with.'), confirmLabel: translateUi('Restore') })) return;
         try {
@@ -93,15 +99,15 @@ export function FunCornerEditor() {
         </div>
       </div>
       {view === 'Questions'
-        ? <RecordTable key="q" title={translateUi('questions')} pageSize={5} rows={content.trivia.map((q, i) => ({ ...q, id: String(i) }))} searchText={q => `${q.category} ${q.question} ${q.options.join(' ')}`} columns={[
+        ? <RecordTable key="q" title={translateUi('questions')} pageSize={5} bulkActions={[{ label: 'Delete', tone: 'danger', run: rows => removeMany('question', rows.map(r => r.id)) }]} rows={content.trivia.map((q, i) => ({ ...q, id: String(i) }))} searchText={q => `${q.category} ${q.question} ${q.options.join(' ')}`} columns={[
             { label: translateUi('#'), render: q => Number(q.id) + 1 },
-            { label: translateUi('Question'), render: q => <><strong>{q.question}</strong><br/><small>{q.category}</small></> },
-            { label: translateUi('Correct answer'), render: q => q.options[q.answer] },
+            { label: translateUi('Question'), render: q => <><strong>{translateUi(q.question)}</strong><br/><small>{translateUi(q.category)}</small></> },
+            { label: translateUi('Correct answer'), render: q => translateUi(q.options[q.answer]) },
             { label: translateUi('Actions'), render: q => actions('question', Number(q.id), content.trivia[Number(q.id)]) },
           ]}/>
-        : <RecordTable key="r" title={translateUi('quotes')} pageSize={5} rows={content.quotes.map((q, i) => ({ ...q, id: String(i) }))} searchText={q => `${q.text} ${q.author}`} columns={[
+        : <RecordTable key="r" title={translateUi('quotes')} pageSize={5} bulkActions={[{ label: 'Delete', tone: 'danger', run: rows => removeMany('quote', rows.map(r => r.id)) }]} rows={content.quotes.map((q, i) => ({ ...q, id: String(i) }))} searchText={q => `${q.text} ${q.author}`} columns={[
             { label: translateUi('#'), render: q => Number(q.id) + 1 },
-            { label: translateUi('Quote'), render: q => <>“{q.text}”</> },
+            { label: translateUi('Quote'), render: q => <>“{translateUi(q.text)}”</> },
             { label: translateUi('Author'), render: q => q.author },
             { label: translateUi('Actions'), render: q => actions('quote', Number(q.id), content.quotes[Number(q.id)]) },
           ]}/>}
@@ -116,11 +122,11 @@ function QuestionForm({ initial, isNew, busy, onClose, onSave }: { initial: Triv
     const set = <K extends keyof TriviaQuestion>(key: K, value: TriviaQuestion[K]) => setQ(d => ({ ...d, [key]: value }));
     return <FormModal wide title={translateUi(isNew ? 'Add a quiz question' : 'Edit quiz question')} description={translateUi('Two to four answers. Pick the correct one, then explain it so visitors learn something either way.')} onClose={onClose}>
       <form className="hub-form" onSubmit={e => { e.preventDefault(); onSave(q); }}>
-        <div className="ws-form-grid"><Field label={translateUi('Topic label')}><input required maxLength={60} placeholder="A CULTURE OF PEACE" value={q.category} onChange={e => set('category', e.target.value)}/></Field><Field label={translateUi('Correct answer')}><select value={q.answer} onChange={e => set('answer', Number(e.target.value))}>{q.options.map((option, i) => <option key={i} value={i}>{String.fromCharCode(65 + i)}{option.trim() ? `: ${option.trim().slice(0, 40)}` : ''}</option>)}</select></Field></div>
+        <div className="ws-form-grid"><Field label={translateUi('Topic label')}><input required maxLength={60} placeholder={translateUi("A CULTURE OF PEACE")} value={q.category} onChange={e => set('category', e.target.value)}/></Field><Field label={translateUi('Correct answer')}><select value={q.answer} onChange={e => set('answer', Number(e.target.value))}>{q.options.map((option, i) => <option key={i} value={i}>{String.fromCharCode(65 + i)}{option.trim() ? `: ${option.trim().slice(0, 40)}` : ''}</option>)}</select></Field></div>
         <Field label={translateUi('Question')}><input required maxLength={300} value={q.question} onChange={e => set('question', e.target.value)}/></Field>
         <div className="ws-form-grid">{q.options.map((option, i) => <Field key={i} label={translateUi(`Option ${String.fromCharCode(65 + i)}${i < 2 ? '' : ' (optional)'}`)}><input required={i < 2} maxLength={160} value={option} onChange={e => set('options', q.options.map((o, j) => j === i ? e.target.value : o))}/></Field>)}</div>
         <Field label={translateUi('Explanation shown after answering')}><textarea required maxLength={600} rows={3} value={q.detail} onChange={e => set('detail', e.target.value)}/></Field>
-        <div className="ws-form-grid"><Field label={translateUi('Source link (optional)')}><input type="url" maxLength={1000} placeholder="https://" value={q.source} onChange={e => set('source', e.target.value)}/></Field><Field label={translateUi('Source name')}><input maxLength={80} placeholder="United Nations" value={q.sourceName} onChange={e => set('sourceName', e.target.value)}/></Field></div>
+        <div className="ws-form-grid"><Field label={translateUi('Source link (optional)')}><input type="url" maxLength={1000} placeholder="https://" value={q.source} onChange={e => set('source', e.target.value)}/></Field><Field label={translateUi('Source name')}><input maxLength={80} placeholder={translateUi("United Nations")} value={q.sourceName} onChange={e => set('sourceName', e.target.value)}/></Field></div>
         <div className="hub-actions"><button className="hub-button" disabled={busy}>{translateUi(busy ? 'Saving…' : 'Save and publish')}</button><button type="button" className="hub-button secondary" onClick={onClose}>{translateUi('Cancel')}</button></div>
       </form>
     </FormModal>;

@@ -46,7 +46,7 @@ try {
       await db.query(statement);
       await db.query("GRANT USAGE ON SCHEMA public TO plp_app");
       await db.query(
-        "GRANT SELECT,INSERT,UPDATE,DELETE ON users,sessions,schools,records,audit_log,content,enrollments,certificates,attendance,auth_limits,password_resets,files,certificate_requests,material_completions,register_attendance,credits,google_identities,oauth_states,recovery_mail,email_verifications,password_reset_codes,meetings,meeting_checkins,notification_mail,mentor_sessions,assessment_attempts,mentor_profiles TO plp_app",
+        "GRANT SELECT,INSERT,UPDATE,DELETE ON users,sessions,schools,records,audit_log,content,enrollments,certificates,attendance,auth_limits,password_resets,files,certificate_requests,material_completions,register_attendance,credits,google_identities,oauth_states,recovery_mail,email_verifications,password_reset_codes,meetings,meeting_checkins,notification_mail,notifications,reminder_receipts,mentor_sessions,assessment_attempts,mentor_profiles TO plp_app",
       );
       await db.query(
         "GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA public TO plp_app",

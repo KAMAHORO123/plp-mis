@@ -1,7 +1,9 @@
+import { ApplicantEmailDialog } from "./applicant-email";
+import { Link } from "react-router-dom";
 import { translateUi, useSiteLanguage, formatDate } from '../../i18n/language';
 import { useEffect, useState } from "react";
 import { useLiveTick } from './live';
-import { Ban, CheckCircle2, XCircle, FilePenLine, GraduationCap, HeartHandshake, RotateCcw, Trash2, UserPlus, UserRoundCheck, Users } from "lucide-react";
+import { Ban, CheckCircle2, Mail, XCircle, FilePenLine, GraduationCap, HeartHandshake, RotateCcw, Trash2, UserPlus, UserRoundCheck, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { confirmAction } from "@/components/shared/confirm-dialog";
@@ -20,18 +22,24 @@ type Person = {
     requested_role: string | null;
     role_review: string;
     created_at: string;
+    education_stage?: string | null;
+    institution?: string | null;
+    graduation_year?: number | string | null;
 };
 const roleName = (role: string) => ({ member: "Member", trainer: "Trainer", mentor: "Mentor", leader: "Club leader", admin: "Administrator" }[role] || role);
 const statusName = (status: string) => ({ pending: "Awaiting approval", approved: "Active", suspended: "Suspended", rejected: "Declined" }[status] || status);
 const VIEWS = ["All", "Awaiting approval", "Trainers", "Mentors", "Club leaders", "Members", "Administrators", "Suspended"] as const;
 const inView = (p: Person, view: string) => view === "All" || (view === "Awaiting approval" ? p.status === "pending" : view === "Suspended" ? ["suspended", "rejected"].includes(p.status) : p.status !== "pending" && p.role === { Trainers: "trainer", Mentors: "mentor", "Club leaders": "leader", Members: "member", Administrators: "admin" }[view]);
-export function MembershipsPage() {
+/** Accounts, or (inside the Applications page) only the staff applications waiting for a decision. */
+export function MembershipsPage({ section = "accounts" }: {
+    section?: "accounts" | "applications";
+} = {}) {
     useSiteLanguage();
     const [people, setPeople] = useState<Person[]>([]), [schools, setSchools] = useState<{
         id: string;
         name: string;
     }[]>([]), [self, setSelf] = useState("");
-    const [view, setView] = useState<string>("All"), [editing, setEditing] = useState<Person | null>(null), [adding, setAdding] = useState(false);
+    const [view, setView] = useState<string>("All"), [editing, setEditing] = useState<Person | null>(null), [adding, setAdding] = useState(false), [emailing, setEmailing] = useState<Person[] | null>(null);
     const [error, setError] = useState(""), [busy, setBusy] = useState(false), [loaded, setLoaded] = useState(false);
     const load = () => Promise.all([platformApi<Person[]>("/users"), platformApi<{
             id: string;
@@ -67,6 +75,57 @@ export function MembershipsPage() {
         if (await confirmAction({ title: `Decline ${p.name}'s ${roleName(p.requested_role || p.role).toLowerCase()} application?`, description: "They will not be able to sign in to a staff workspace.", confirmLabel: "Decline application", destructive: true }))
             await save(p, "member", "rejected", p.school_id, p.role_review, "Application declined");
     };
+    // Many applications at once: each is saved separately so one that needs attention (e.g. a missing school) is reported, not lost.
+    async function decideAll(rows: Person[], accept: boolean) {
+        if (!accept && !await confirmAction({ title: `Decline ${rows.length} application${rows.length === 1 ? "" : "s"}?`, description: "They will not be able to sign in to a staff workspace.", confirmLabel: "Decline", destructive: true }))
+            return;
+        let done = 0;
+        for (const p of rows) {
+            try {
+                await platformApi(`/users/${p.id}`, "PATCH", accept ? { role: p.requested_role || p.role, status: "approved", school_id: p.school_id, review: p.role_review ?? "" } : { role: "member", status: "rejected", school_id: p.school_id, review: p.role_review ?? "" });
+                done++;
+            }
+            catch { /* Counted below. */ }
+        }
+        await load();
+        if (done)
+            toast.success(translateUi(accept ? "{p0} approved" : "{p0} declined", { p0: done === 1 ? "1 application" : `${done} applications` }));
+        if (done < rows.length)
+            toast.error(translateUi("{p0} need individual review.", { p0: rows.length - done }));
+    }
+    // Bulk account changes: each account is saved on its own so one failure (e.g. an account with records that cannot be deleted) never blocks the rest.
+    async function each(rows: Person[], label: string, run: (p: Person) => Promise<unknown>) {
+        let done = 0;
+        const failed: string[] = [];
+        setBusy(true);
+        for (const p of rows) {
+            try { await run(p); done++; }
+            catch (e) { failed.push(`${p.name}: ${(e as Error).message}`); }
+        }
+        setBusy(false);
+        await load();
+        if (done)
+            toast.success(translateUi("{p0} {p1}", { p0: done === 1 ? "1 account" : `${done} accounts`, p1: label }));
+        if (failed.length)
+            toast.error(translateUi("{p0} could not be changed. {p1}", { p0: failed.length, p1: failed.slice(0, 2).join(" · ") }), { duration: 9000 });
+    }
+    const patch = (p: Person, status: string) => platformApi(`/users/${p.id}`, "PATCH", { role: p.role, status, school_id: p.school_id, review: p.role_review ?? "" });
+    const bulkSuspend = async (rows: Person[]) => {
+        rows = rows.filter((p) => p.status === "approved");
+        if (!rows.length) return toast.info(translateUi("Choose active accounts to suspend."));
+        if (await confirmAction({ title: `Suspend ${rows.length} account${rows.length === 1 ? "" : "s"}?`, description: "They are signed out immediately and cannot sign in until reactivated.", confirmLabel: "Suspend", destructive: true }))
+            await each(rows, "suspended", (p) => patch(p, "suspended"));
+    };
+    const bulkReactivate = async (rows: Person[]) => {
+        rows = rows.filter((p) => ["suspended", "rejected"].includes(p.status));
+        if (!rows.length) return toast.info(translateUi("Choose suspended or declined accounts to reactivate."));
+        await each(rows, "reactivated", (p) => patch(p, "approved"));
+    };
+    const bulkDelete = async (rows: Person[]) => {
+        if (!rows.length) return;
+        if (await confirmAction({ title: `Delete ${rows.length} account${rows.length === 1 ? "" : "s"}?`, description: "This permanently removes them. Accounts with learning, attendance or authored records are kept and reported back — suspend those instead.", confirmLabel: `Delete ${rows.length}`, destructive: true }))
+            await each(rows, "deleted", (p) => platformApi(`/users/${p.id}`, "DELETE"));
+    };
     const toggleSuspend = async (p: Person) => {
         const suspending = p.status === "approved";
         if (await confirmAction({ title: suspending ? `Suspend ${p.name}?` : `Reactivate ${p.name}?`, description: suspending ? "They are signed out immediately and cannot sign in until reactivated." : "They will be able to sign in again with their current role.", confirmLabel: suspending ? "Suspend" : "Reactivate", destructive: suspending }))
@@ -85,6 +144,41 @@ export function MembershipsPage() {
         }
     };
     const pending = people.filter((p) => p.status === "pending");
+    if (section === "applications")
+        return (<>
+      <Panel>
+        <div className="ws-panel-title"><h2>{translateUi("Staff applications ")}<span className="ws-count">{translateUi(pending.length)}</span></h2><span className="ws-pill">{translateUi("Trainers, mentors and club leaders cannot sign in until approved")}</span></div>
+        {translateUi(!loaded ? <p>{translateUi("Loading applications\u2026")}</p> : !pending.length ? <Empty>{translateUi("No staff applications awaiting approval.")}</Empty> : <RecordTable title={translateUi("staff applications")} rows={pending} pageSize={10} csv={{ name: "plp-staff-applications", columns: [["Name", (p) => p.name], ["Email", (p) => p.email], ["Requested role", (p) => roleName(p.requested_role || p.role)], ["Applied", (p) => p.created_at?.slice(0, 10)]] }} searchText={(p) => `${p.name} ${p.email} ${roleName(p.requested_role || p.role)}`}
+            filters={[{ label: "Role", options: ["trainer", "mentor", "leader"].map((r) => ({ label: roleName(r), test: (p: Person) => (p.requested_role || p.role) === r })) }]}
+            bulkActions={[{ label: "Send email", run: (rows) => setEmailing(rows) }, { label: "Approve", run: (rows) => decideAll(rows, true) }, { label: "Decline", tone: "danger", run: (rows) => decideAll(rows, false) }]}
+            columns={[{ label: "Applicant", render: (p) => <><strong>{translateUi(p.name)}</strong><small>{translateUi(p.email)}</small></> }, { label: "Requested role", render: (p) => <span className="ws-status">{translateUi(roleName(p.requested_role || p.role))}</span> }, { label: "Applied", render: (p) => formatDate(p.created_at) }, { label: "Actions", render: (p) => <div className="ms-row-actions">
+                  <button className="hub-button" disabled={busy} onClick={() => void approve(p)}><CheckCircle2 size={15}/>{translateUi(" Approve ")}{translateUi(roleName(p.requested_role || p.role).toLowerCase())}</button>
+                  <button className="hub-button secondary" disabled={busy} onClick={() => setEditing(p)}>{translateUi("Review")}</button>
+                  <button className="hub-button danger" disabled={busy} onClick={() => void decline(p)}><XCircle size={15}/>{translateUi(" Decline")}</button>
+                </div> }]}/>)}
+      </Panel>
+      <Dialog open={!!editing} onOpenChange={(o) => { if (!o)
+        setEditing(null); }}>
+        <DialogContent className="hub-app hub-dialog max-h-[90vh] overflow-y-auto">
+          {translateUi(editing && <>
+            <DialogTitle>{translateUi(editing.name)}</DialogTitle>
+            <DialogDescription>{translateUi(editing.email)}{translateUi(editing.requested_role ? ` · requested ${roleName(editing.requested_role)}` : "")}</DialogDescription>
+            <dl className="ae-facts">{([["Requested role", roleName(editing.requested_role || editing.role)], ["Applied", formatDate(editing.created_at)], ["School", schools.find((s) => s.id === editing.school_id)?.name], ["Studies", editing.education_stage], ["Institution", editing.institution], ["Graduation year", editing.graduation_year]] as [string, unknown][]).filter(([, v]) => v).map(([k, v]) => <div key={k}><dt>{translateUi(k)}</dt><dd>{String(v)}</dd></div>)}</dl>
+            {editing.status === "pending" && <button type="button" className="hub-button secondary" onClick={() => { setEmailing([editing]); setEditing(null); }}><Mail size={15}/>{translateUi("Email applicant")}</button>}
+            <form className="hub-form hub-space" onSubmit={(e) => { e.preventDefault(); const f = new FormData(e.currentTarget); void save(editing, String(f.get("role")), String(f.get("status")), String(f.get("school")) || null, String(f.get("review"))); }}>
+              <div className="ws-form-grid">
+                <Field label={translateUi("Role")}><select name="role" defaultValue={editing.requested_role || editing.role}>{translateUi(["member", "leader", "trainer", "mentor", "admin"].map((r) => <option key={r} value={r}>{translateUi(roleName(r))}</option>))}</select></Field>
+                <Field label={translateUi("Account status")}><select name="status" defaultValue={editing.status}>{translateUi(["pending", "approved", "suspended", "rejected"].map((s) => <option key={s} value={s}>{translateUi(statusName(s))}</option>))}</select></Field>
+              </div>
+              <Field label={translateUi("School (club leaders)")}><select name="school" defaultValue={editing.school_id || ""}><option value="">{translateUi("No school")}</option>{translateUi(schools.map((s) => <option key={s.id} value={s.id}>{translateUi(s.name)}</option>))}</select></Field>
+              <Field label={translateUi("Review note")}><textarea name="review" maxLength={1000} defaultValue={editing.role_review}/></Field>
+              <div className="hub-actions hub-dialog-actions"><button type="button" className="hub-button secondary" onClick={() => setEditing(null)}>{translateUi("Cancel")}</button><button className="hub-button" disabled={busy}>{translateUi("Save access")}</button></div>
+            </form>
+          </>)}
+        </DialogContent>
+      </Dialog>
+      {emailing && <ApplicantEmailDialog recipients={emailing.map((p) => ({ userId: p.id, name: p.name, email: p.email, appliedFor: `${roleName(p.requested_role || p.role)} role` }))} onClose={() => setEmailing(null)}/>}
+    </>);
     return (<div className="ws-page">
       <header className="ws-page-header">
         <div><p className="ws-kicker">{translateUi("ADMINISTRATION")}</p><h1>{translateUi("Members & staff")}</h1><p>{translateUi("Approve staff applications, assign roles, and manage account access.")}</p></div>
@@ -97,37 +191,33 @@ export function MembershipsPage() {
         <StatCard label={translateUi("Active trainers")} value={String(people.filter((p) => p.role === "trainer" && p.status === "approved").length)} icon={GraduationCap}/>
         <StatCard label={translateUi("Active mentors")} value={String(people.filter((p) => p.role === "mentor" && p.status === "approved").length)} icon={HeartHandshake}/>
       </div>
-      <Panel>
-        <div className="ws-panel-title"><h2>{translateUi("Staff applications ")}<span className="ws-count">{translateUi(pending.length)}</span></h2><span className="ws-pill">{translateUi("Trainers, mentors and club leaders cannot sign in until approved")}</span></div>
-        {translateUi(!loaded ? <p>{translateUi("Loading applications\u2026")}</p> : !pending.length ? <Empty>{translateUi("No staff applications awaiting approval.")}</Empty> : (<div className="ws-table-wrap"><table className="ws-table"><thead><tr><th>{translateUi("Applicant")}</th><th>{translateUi("Requested role")}</th><th>{translateUi("Applied")}</th><th>{translateUi("Actions")}</th></tr></thead><tbody>
-            {translateUi(pending.map((p) => (<tr key={p.id}>
-                <td><strong>{translateUi(p.name)}</strong><small>{translateUi(p.email)}</small></td>
-                <td><span className="ws-status">{translateUi(roleName(p.requested_role || p.role))}</span></td>
-                <td>{formatDate(p.created_at)}</td>
-                <td><div className="ms-row-actions">
-                  <button className="hub-button" disabled={busy} onClick={() => void approve(p)}><CheckCircle2 size={15}/>{translateUi(" Approve ")}{translateUi(roleName(p.requested_role || p.role).toLowerCase())}</button>
-                  <button className="hub-button secondary" disabled={busy} onClick={() => setEditing(p)}>{translateUi("Review")}</button>
-                  <button className="hub-button danger" disabled={busy} onClick={() => void decline(p)}><XCircle size={15}/>{translateUi(" Decline")}</button>
-                </div></td>
-              </tr>)))}
-          </tbody></table></div>))}
-      </Panel>
+      {translateUi(pending.length > 0 && <div className="act-review-callout" role="status"><UserRoundCheck size={20}/><div><strong>{translateUi("{p0} staff applications waiting for approval", { p0: pending.length })}</strong></div><Link className="hub-button" to="/applications?tab=Staff">{translateUi("Review applications")}</Link></div>)}
       <Panel>
         <div className="ws-tabs" role="tablist" aria-label={translateUi("Account filters")}>
           {translateUi(VIEWS.map((v) => <button key={v} role="tab" aria-selected={view === v} className={view === v ? "active" : ""} onClick={() => setView(v)}>{translateUi(v)}<span>{translateUi(people.filter((p) => inView(p, v)).length)}</span></button>))}
         </div>
-        <RecordTable key={view} title={translateUi("members and staff")} rows={people.filter((p) => inView(p, view))} searchText={(p) => `${p.name} ${p.email} ${roleName(p.role)} ${p.requested_role || ""}`} columns={[
+        {!loaded ? <p className="hub-caption">{translateUi("Loading accounts…")}</p> : <RecordTable key={view} title={translateUi("members and staff")} rows={people.filter((p) => inView(p, view))}
+          csv={{ name: "plp-accounts", columns: [["Name", (p) => p.name], ["Email", (p) => p.email], ["Role", (p) => roleName(p.role)], ["Status", (p) => statusName(p.status)], ["School", (p) => schools.find((s) => s.id === p.school_id)?.name ?? ""], ["Joined", (p) => p.created_at?.slice(0, 10)]] }} searchText={(p) => `${p.name} ${p.email} ${roleName(p.role)} ${p.requested_role || ""}`}
+          selectable={(p) => p.id !== self} bulkActions={[
+            ...(people.some((p) => p.status === "pending") ? [{ label: "Approve", run: (rows: Person[]) => { const r = rows.filter((p) => p.status === "pending"); return r.length ? decideAll(r, true) : toast.info(translateUi("Choose accounts awaiting approval.")); } }, { label: "Decline", tone: "danger" as const, run: (rows: Person[]) => { const r = rows.filter((p) => p.status === "pending"); return r.length ? decideAll(r, false) : toast.info(translateUi("Choose accounts awaiting approval.")); } }] : []),
+            { label: "Email", run: (rows) => setEmailing(rows) },
+            { label: "Reactivate", run: bulkReactivate },
+            { label: "Suspend", tone: "danger", run: bulkSuspend },
+            { label: "Delete", tone: "danger", run: bulkDelete },
+          ]}
+          filters={[{ label: "School", options: [{ label: "No school", test: (p: Person) => !p.school_id }, ...schools.map((sc) => ({ label: sc.name, test: (p: Person) => p.school_id === sc.id }))] }]} columns={[
             { label: "Name", render: (p) => <><strong>{translateUi(p.name)}</strong><small>{translateUi(p.email)}</small></> },
             { label: "Role", render: (p) => <span className="mb-role">{translateUi(roleName(p.role))}{translateUi(p.requested_role && p.status === "pending" && <small>{translateUi("requested ")}{translateUi(roleName(p.requested_role))}</small>)}</span> },
             { label: "Status", render: (p) => <span className={`ws-status ${p.status === "approved" ? "ws-status-issued" : p.status === "pending" ? "" : "ws-status-returned"}`}>{translateUi(statusName(p.status))}</span> },
             { label: "School", render: (p) => schools.find((s) => s.id === p.school_id)?.name ?? "—" },
+            { label: "Joined", render: (p) => formatDate(p.created_at) },
             { label: "Actions", render: (p) => p.id === self ? <small>{translateUi("Your account")}</small> : (<div className="mb-actions">
               {translateUi(p.status === "pending" && <button className="hub-record-icon hub-record-approve" disabled={busy} aria-label={translateUi("Approve {p0}", { p0: translateUi(p.name) })} title={translateUi("Approve as {p0}", { p0: translateUi(roleName(p.requested_role || p.role)) })} onClick={() => void approve(p)}><CheckCircle2 size={17}/></button>)}
               <button className="hub-record-icon hub-record-edit" disabled={busy} aria-label={translateUi("Edit {p0}", { p0: translateUi(p.name) })} title={translateUi("Edit role and access")} onClick={() => setEditing(p)}><FilePenLine size={17}/></button>
               {translateUi(["approved", "suspended", "rejected"].includes(p.status) && <button className="hub-record-icon hub-record-suspend" disabled={busy} aria-label={translateUi(`${p.status === "approved" ? "Suspend" : "Reactivate"} ${p.name}`)} title={translateUi(p.status === "approved" ? "Suspend account" : "Reactivate account")} onClick={() => void toggleSuspend(p)}>{translateUi(p.status === "approved" ? <Ban size={17}/> : <RotateCcw size={17}/>)}</button>)}
               <button className="hub-record-icon hub-record-delete" disabled={busy} aria-label={translateUi("Delete {p0}", { p0: translateUi(p.name) })} title={translateUi("Delete account")} onClick={() => void remove(p)}><Trash2 size={17}/></button>
             </div>) },
-        ]}/>
+        ]}/>}
       </Panel>
       <Dialog open={!!editing} onOpenChange={(o) => { if (!o)
         setEditing(null); }}>
@@ -178,5 +268,6 @@ export function MembershipsPage() {
           </form>
         </DialogContent>
       </Dialog>
+      {emailing && <ApplicantEmailDialog initial={3} recipients={emailing.map((p) => ({ userId: p.id, name: p.name, email: p.email, appliedFor: roleName(p.role) }))} onClose={() => setEmailing(null)}/>}
     </div>);
 }

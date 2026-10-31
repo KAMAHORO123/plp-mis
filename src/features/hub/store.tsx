@@ -80,6 +80,8 @@ export interface Session {
     topic?: string;
     reflection?: string;
     meetingLink?: string;
+    sessionType?: "Online" | "In person" | "Visit";
+    location?: string;
     mentorNotes?: string;
     declineReason?: string;
     requestedAt?: string;
@@ -216,7 +218,7 @@ function seed(): HubState {
             {
                 id: "dfe9f64c-c24d-4e5f-8e0a-64fa8d7f90d5",
                 name: "Israel Nuru",
-                email: "israelnuru1@gmail.com",
+                email: "info@peaceloveproclaimers.org",
                 role: "Administrator",
                 membership: "Approved",
                 bio: "Executive Director · Peace and Love Proclaimers",
@@ -252,11 +254,11 @@ function migrateState(state: HubState): HubState {
         mentorNotifications?: unknown;
     }).mentorNotifications;
     state.sessions = state.sessions.filter(r => !r.id.startsWith("sess-sample-"));
-    if (!state.profiles.some(p => p.email.toLowerCase() === "israelnuru1@gmail.com")) {
+    if (!state.profiles.some(p => p.id === "dfe9f64c-c24d-4e5f-8e0a-64fa8d7f90d5")) {
         state.profiles.push({
             id: "dfe9f64c-c24d-4e5f-8e0a-64fa8d7f90d5",
             name: "Israel Nuru",
-            email: "israelnuru1@gmail.com",
+            email: "info@peaceloveproclaimers.org",
             role: "Administrator",
             membership: "Approved",
             bio: "Executive Director · Peace and Love Proclaimers",
@@ -497,6 +499,8 @@ export function HubProvider({ children }: {
                     goal: string;
                     status: Session["status"];
                     meeting_link: string;
+                    session_type: Session["sessionType"];
+                    location: string;
                     mentor_notes: string;
                     decline_reason: string;
                     requested_at: string;
@@ -524,7 +528,7 @@ export function HubProvider({ children }: {
                 update(s => {
                     // Mentor profiles are written by the mentors themselves on the platform.
                     s.mentors = directory.map(m => ({ id: m.id, name: m.name, email: m.email, role: "Mentor", title: m.title || "PLP mentor", area: m.area || "Leadership Development", bio: m.bio || "", avatar: m.avatar, accepting: m.accepting, initials: m.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase() }));
-                    s.sessions = rows.map(r => ({ id: r.id, memberId: r.member_id === account.id ? session.profileId : r.member_id, mentorId: r.mentor_id, date: r.date, topic: r.topic, goal: r.goal, status: r.status, meetingLink: r.meeting_link, mentorNotes: r.mentor_notes, declineReason: r.decline_reason, requestedAt: r.requested_at, updatedAt: r.updated_at, reflection: s.sessions.find(x => x.id === r.id)?.reflection }));
+                    s.sessions = rows.map(r => ({ id: r.id, memberId: r.member_id === account.id ? session.profileId : r.member_id, mentorId: r.mentor_id, date: r.date, topic: r.topic, goal: r.goal, status: r.status, meetingLink: r.meeting_link, sessionType: r.session_type, location: r.location, mentorNotes: r.mentor_notes, declineReason: r.decline_reason, requestedAt: r.requested_at, updatedAt: r.updated_at, reflection: s.sessions.find(x => x.id === r.id)?.reflection }));
                     for (const row of rows)
                         if (row.member_id !== account.id && !s.profiles.some(p => p.id === row.member_id))
                             s.profiles.push({ id: row.member_id, name: row.member_name, email: row.member_email, role: "Community member", membership: "Approved", bio: "", skills: [], leadership: [], clubIds: [], managedClubIds: [], joined: "" });
@@ -565,6 +569,8 @@ export function HubProvider({ children }: {
             date?: string;
             activity_type?: CommunityActivity["type"];
             hours?: number;
+            start_time?: string;
+            location?: string;
             report?: string;
             status?: string;
             reference_id?: string;
@@ -641,7 +647,7 @@ export function HubProvider({ children }: {
                 if (completions)
                     s.operations.completions = completions.map(c => ({ materialId: c.material_id, schoolId: c.school_id, by: c.completed_by, completedAt: c.completed_at }));
                 if (events)
-                    s.operations.activities = events.map(e => ({ id: e.id, version: e.version, attachments: e.data.attachments ?? [], hostId: e.school_id ?? e.data.category ?? "plp", title: e.data.title, date: e.data.date ?? e.created_at.slice(0, 10), description: e.data.description ?? "", type: e.data.activity_type ?? "Meeting", hours: e.data.hours, photos: (e.data.attachments ?? []).map((id, i) => file(id, `Photo ${i + 1}`)), authorId: e.owner_id, report: e.data.report || undefined, reportedAt: e.data.report ? e.updated_at : undefined, reviewedAt: e.data.status === "approved" ? e.updated_at : undefined, attendees: (attendance.get(e.id) ?? []).map(a => a.member_id ?? a.register_member_id!) }));
+                    s.operations.activities = events.map(e => ({ id: e.id, version: e.version, attachments: e.data.attachments ?? [], hostId: e.school_id ?? e.data.category ?? "plp", title: e.data.title, date: e.data.date ?? e.created_at.slice(0, 10), description: e.data.description ?? "", type: e.data.activity_type ?? "Meeting", hours: e.data.hours, startTime: e.data.start_time, location: e.data.location, photos: (e.data.attachments ?? []).map((id, i) => file(id, `Photo ${i + 1}`)), authorId: e.owner_id, report: e.data.report || undefined, reportedAt: e.data.report ? e.updated_at : undefined, reviewedAt: e.data.status === "approved" ? e.updated_at : undefined, attendees: (attendance.get(e.id) ?? []).map(a => a.member_id ?? a.register_member_id!) }));
                 if (accounts)
                     s.schoolAccounts = accounts;
                 if (proofs)
@@ -664,9 +670,19 @@ export function HubProvider({ children }: {
         const refresh = () => platformApi<{
             id: string;
             avatar_file_id: string | null;
+            name?: string;
+            bio?: string;
+            skills?: string[];
+            leadership?: string[];
         }>("/me").then(me => { if (!active)
-            return; const url = me.avatar_file_id ? `/api/avatars/${me.id}?v=${me.avatar_file_id}` : undefined; update(s => { const p = s.profiles.find(x => x.id === session.profileId); if (p && p.avatarUrl !== url)
-            p.avatarUrl = url; }); }).catch(() => { });
+            return; const url = me.avatar_file_id ? `/api/avatars/${me.id}?v=${me.avatar_file_id}` : undefined; update(s => { const p = s.profiles.find(x => x.id === session.profileId); if (!p)
+            return; if (p.avatarUrl !== url)
+            p.avatarUrl = url;
+            // The server copy of the passport wins; an empty server value keeps what this browser already had until the member saves once.
+            if (me.name) p.name = me.name;
+            if (me.bio) p.bio = me.bio;
+            if (me.skills?.length) p.skills = me.skills;
+            if (me.leadership?.length) p.leadership = me.leadership; }); }).catch(() => { });
         void refresh();
         window.addEventListener("plp:profile-updated", refresh);
         return () => { active = false; window.removeEventListener("plp:profile-updated", refresh); };

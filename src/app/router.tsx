@@ -1,3 +1,4 @@
+import { DashboardCalendar, CalendarPage } from "@/features/hub/dashboard-calendar";
 import { translateUi, useSiteLanguage } from '../i18n/language';
 import { TrainerWorkspace } from "@/features/hub/trainer-workspace";
 import { MeetingsPage, MeetingManager } from "@/features/hub/meetings";
@@ -18,7 +19,7 @@ import { HubLayout, PublicSiteLayout, MemberWorkspaceLayout, } from "@/features/
 import { HomePage, AboutPage, StoriesPage, ProgrammesPage, AlbumPage, PublicHubPage, CanadaPage } from "@/features/hub/home";
 import { AcademyPage, CoursePage, AlxPage } from "@/features/hub/academy";
 import { PassportPage, CertificatesPage, VerifyPage, CreditsPage, } from "@/features/hub/passport";
-import { OpportunitiesPage } from "@/features/hub/opportunities";
+import { OpportunitiesPage, ApplicationsPage } from "@/features/hub/opportunities";
 import { MentorshipPage, MentorDashboard } from "@/features/hub/mentorship";
 import { StudioPage } from "@/features/hub/admin";
 import { JoinPage, StaffPendingPage, SignInPage, ForgotPasswordPage, ApplicationStatusPage, CoursePreviewPage, MemberGuard, } from "@/features/hub/access";
@@ -77,7 +78,7 @@ function MovedTo({ path }: {
     path: string;
 }) { useSiteLanguage(); const { search, hash } = useLocation(); return <Navigate to={{ pathname: path, search, hash }} replace/>; }
 function ProfileRoute() { useSiteLanguage(); const { profile } = useHub(); return ['Administrator', 'Trainer', 'Club leader', 'Mentor'].includes(profile.role) ? <StaffProfilePage /> : <PassportPage />; }
-function DashboardRoute() { useSiteLanguage(); const { profile } = useHub(); return profile.role === 'Trainer' ? <TrainerWorkspace overview/> : profile.role === 'Club leader' ? <SchoolLeaderDashboard /> : profile.role === 'Mentor' ? <MentorDashboard /> : <RoleDashboard />; }
+function DashboardRoute() { useSiteLanguage(); const { profile } = useHub(); return <>{profile.role === 'Trainer' ? <TrainerWorkspace overview/> : profile.role === 'Club leader' ? <SchoolLeaderDashboard /> : profile.role === 'Mentor' ? <MentorDashboard /> : <RoleDashboard />}{['Trainer','Club leader','Mentor'].includes(profile.role) && <DashboardCalendar/>}</>; }
 function SchoolRegisterRoute() { useSiteLanguage(); const { profile } = useHub(); return profile.role === 'Administrator' ? <SchoolDirectoryPage /> : <SchoolMembersPage />; }
 export const router = createBrowserRouter([
     {
@@ -146,6 +147,7 @@ export const router = createBrowserRouter([
                                     { path: "learning-certificates", element: <Navigate to="/certificates" replace/> },
                                     { element: <MemberGuard allowed={["Club leader", "Administrator"]}/>, children: [{ path: "school-members", element: <SchoolRegisterRoute /> }, { path: "learning-materials", element: <LearningMaterialsPage /> }] },
                                     { path: "credits", element: <CreditsPage /> },
+                                    { path: "calendar", element: <CalendarPage /> },
                                     {
                                         element: (<MemberGuard allowed={["Trainer", "Administrator"]}/>),
                                         children: [{ path: "studio", element: <StudioPage /> }],
@@ -162,6 +164,7 @@ export const router = createBrowserRouter([
                                         element: (<MemberGuard allowed={["Administrator"]}/>),
                                         children: [
                                             { path: "memberships", element: <MembershipsPage /> },
+                                            { path: "applications", element: <ApplicationsPage /> },
                                         ],
                                     },
                                 ],

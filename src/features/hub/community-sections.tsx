@@ -1,6 +1,6 @@
 import { translateUi, useSiteLanguage } from '../../i18n/language';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, ArrowLeft, ArrowRight, Sparkles, X } from 'lucide-react';
+import { ArrowUpRight, ArrowLeft, ArrowRight, BookOpen, X } from "lucide-react";
 import { albums } from './site-content';
 import './community-sections.css';
 const testimonials = [
@@ -203,7 +203,7 @@ export function FunCorner() {
   <div className="plp-section-heading"><div><p className="plp-section-label">{translateUi("LEARN. REMEMBER. BUILD PEACE.")}</p><h2 id="fun-title">{translateUi("Learn our history. Shape our peace.")}<span aria-hidden="true">{translateUi("\u2733")}</span></h2></div><p>{translateUi("The PLP fun corner.")}<br />{translateUi("Rwanda, remembrance, and everyday peacebuilding.")}</p></div>
   <div className="plp-play-grid">
    <div className="plp-trivia-card">
-    <div className="plp-trivia-meta"><span><Sparkles size={17}/>{translateUi(" THE PEACE & LEARNING CORNER")}</span><span>{translateUi(finished ? 'Round complete' : `${index + 1} / ${trivia.length}`)}</span></div>
+    <div className="plp-trivia-meta"><span><BookOpen size={17}/>{translateUi(" THE PEACE & LEARNING CORNER")}</span><span>{translateUi(finished ? 'Round complete' : `${index + 1} / ${trivia.length}`)}</span></div>
     <div className="plp-trivia-progress" aria-hidden="true">{translateUi(trivia.map((_, i) => <span key={i} className={finished || i <= index ? 'is-active' : ''}/>))}</div>
     {translateUi(finished ? <div className="plp-trivia-result"><p className="plp-section-label">{translateUi("KEEP LEARNING. KEEP BUILDING PEACE.")}</p><h3 ref={questionRef} tabIndex={-1}>{translateUi("You scored ")}{translateUi(score)}{translateUi(" / ")}{translateUi(trivia.length)}{translateUi("!")}</h3><p>{translateUi(score === trivia.length ? 'Thank you for taking time to learn. Carry these lessons into your community.' : 'Every question is an opportunity to understand more. Revisit the explanations and keep learning.')}</p><button className="plp-play-next" onClick={restart}>{translateUi("Review again ")}<ArrowRight size={18}/></button></div> : <>
      <p className="plp-section-label">{translateUi(q.category)}</p><h3 ref={questionRef} tabIndex={-1}>{translateUi(q.question)}</h3>

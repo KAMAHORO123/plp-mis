@@ -108,7 +108,6 @@ export function SignInPage() {
         return <Navigate to={returnDestination(params.get("returnTo") || sessionStorage.getItem("plp-meeting-return"))} replace/>;
     return (<div className="hub-access-shell">
       <Panel>
-        <img src="/favicon.svg" alt={translateUi("")} className="mx-auto mb-4 h-14 w-14"/>
         <Heading title={translateUi("Log in to your account")} description={translateUi("Enter your credentials to access your PLP Hub.")}/>
         <form className="hub-form" onSubmit={async (e) => {
             e.preventDefault();
@@ -205,7 +204,6 @@ export function ForgotPasswordPage() {
         }
     }
     return <div className="hub-access-shell"><Panel>
-    <img src="/favicon.svg" alt={translateUi("")} className="mx-auto mb-4 h-14 w-14"/>
     <Heading title={translateUi(step === "password" ? "Choose a new password" : step === "code" ? "Check your email" : "Forgot your password?")} description={translateUi(step === "email" ? "Enter your email and we’ll send you a code to reset your password." : step === "code" ? `If an eligible account uses ${email}, a 6-digit code will arrive shortly. Check your spam folder too.` : "Enter and confirm your new password.")}/>
     <form key={step} className="hub-form" onSubmit={async (e) => {
             e.preventDefault();

@@ -9,6 +9,7 @@ import {
 } from "./email-verification.mjs";
 import { googleClient, googleRoute } from "./google.mjs";
 import { mailConfigured } from "./mail-config.mjs";
+import { applicantMailRoute } from "./applicant-mail.mjs";
 import { schoolCertificates } from "./school-certificates.mjs";
 import { funCornerSchema } from "./fun-corner.mjs";
 import { filesRoute, validateAttachments, avatarRoute } from "./files.mjs";
@@ -16,6 +17,7 @@ import http from "node:http";
 import { isDeepStrictEqual } from "node:util";
 import { randomUUID } from "node:crypto";
 import { fileURLToPath } from "node:url";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
 import { connectDatabase, transaction } from "./db.mjs";
@@ -100,6 +102,7 @@ const recordSchema = z
     outcomes: z.array(z.string().trim().min(1).max(200)).max(12).optional(),
     organization: z.string().trim().max(100).optional(),
     location: z.string().trim().max(100).optional(),
+    start_time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional(),
     deadline: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
     eligibility: z.string().max(1000).optional(),
     opportunity_type: z.string().trim().max(40).optional(),
@@ -126,7 +129,7 @@ const recordSchema = z
       .optional(),
   })
   .strict();
-const userFields = "id,email,name,role,status,school_id,created_at,requested_role,role_review,avatar_file_id,education_stage,institution,graduation_year";
+const userFields = "id,email,name,role,status,school_id,created_at,requested_role,role_review,avatar_file_id,education_stage,institution,graduation_year,bio,skills,leadership";
 class HttpError extends Error {
   constructor(status, message) {
     super(message);
@@ -428,6 +431,20 @@ export function createServer({
         const row = (await db.query("SELECT data FROM content WHERE key='fun-corner'")).rows[0];
         return send(200, row?.data ?? { trivia: [], quotes: [] });
       }
+      // The welcome popup visitors see when no event is live; administrators edit it.
+      if (p === "/public/welcome-popup" && req.method === "GET") {
+        const row = (await db.query("SELECT data FROM content WHERE key='welcome-popup'")).rows[0];
+        return send(200, row?.data ?? null);
+      }
+      if ((p === "/public/announcement/flyer" || p === "/public/welcome-popup/image") && req.method === "GET") {
+        const [key, field] = p === "/public/announcement/flyer" ? ["announcement", "flyer"] : ["welcome-popup", "image"];
+        const id = (await db.query("SELECT data->>$2 AS id FROM content WHERE key=$1", [key, field])).rows[0]?.id;
+        const file = id && uploadDirectory ? (await db.query("SELECT id,mime FROM files WHERE id=$1 AND mime IN ('image/png','image/jpeg')", [id])).rows[0] : null;
+        const bytes = file && await readFile(path.join(uploadDirectory, file.id)).catch(() => null);
+        if (!bytes) return send(404, { error: "No image" });
+        res.writeHead(200, { "Content-Type": file.mime, "Cache-Control": "public, max-age=300", "X-Content-Type-Options": "nosniff" });
+        return res.end(bytes);
+      }
       if (p === "/public/announcement" && req.method === "GET") {
         const row = (
           await db.query("SELECT data FROM content WHERE key='announcement'")
@@ -452,6 +469,13 @@ export function createServer({
                 sample: false,
               },
         );
+      }
+      // QR codes printed on school certificates name the request and the register member; resolve them to the certificate.
+      const schoolCert = p.match(/^\/public\/certificates\/school\/([0-9a-f-]{36})\/([0-9a-f-]{36})$/);
+      if (schoolCert && req.method === "GET") {
+        const row = (await db.query("SELECT id FROM certificates WHERE request_id=$1 AND school_member_id=$2", [schoolCert[1], schoolCert[2]])).rows[0];
+        requireIt(row, 404, "Certificate not found");
+        return send(200, row);
       }
       if (p.startsWith("/public/certificates/") && req.method === "GET") {
         const id = uuid.parse(p.split("/").at(-1));
@@ -485,6 +509,7 @@ export function createServer({
       if (await teachingRoute({p,req,db,user,body:()=>body(req),send})) return;
       if (await assessmentsRoute({p,req,db,user,body:()=>body(req),send})) return;
       if (await mentorshipRoute({p,req,db,user,body:()=>body(req),send,origin,mailEnabled:recoveryEnabled})) return;
+      if (await applicantMailRoute({p,req,db,user,body:()=>body(req),send,origin,mailEnabled:recoveryEnabled})) return;
       if (
         p.startsWith("/files") &&
         (await filesRoute({
@@ -518,12 +543,15 @@ export function createServer({
           education_stage: z.enum(["high-school", "university", "graduated", "community"]),
           institution: z.string().trim().max(120),
           graduation_year: z.number().int().min(1990).max(new Date().getFullYear() + 8).nullable(),
+          bio: z.string().trim().max(1000).optional(),
+          skills: z.array(z.string().trim().min(1).max(60)).max(20).optional(),
+          leadership: z.array(z.string().trim().min(1).max(80)).max(20).optional(),
         }).strict().parse(await body(req));
         const leavesSchool = user.role === "member" && user.school_id && input.education_stage !== "high-school";
         const updated = await transaction(db, async (tx) => {
           const row = (await tx.query(
-            `UPDATE users SET name=$2, education_stage=$3, institution=$4, graduation_year=$5${leavesSchool ? ", school_id=NULL" : ""} WHERE id=$1 RETURNING ${userFields}`,
-            [user.id, input.name, input.education_stage, input.institution, input.graduation_year],
+            `UPDATE users SET name=$2, education_stage=$3, institution=$4, graduation_year=$5, bio=coalesce($6,bio), skills=coalesce($7,skills), leadership=coalesce($8,leadership)${leavesSchool ? ", school_id=NULL" : ""} WHERE id=$1 RETURNING ${userFields}`,
+            [user.id, input.name, input.education_stage, input.institution, input.graduation_year, input.bio ?? null, input.skills ?? null, input.leadership ?? null],
           )).rows[0];
           await audit(tx, user, leavesSchool ? "member.graduated" : "member.profile", user.id);
           return row;
@@ -881,6 +909,31 @@ export function createServer({
         });
         return send(201, { id });
       }
+      const schoolPath = p.match(/^\/schools\/([0-9a-f-]{36})$/);
+      if (schoolPath && ["PUT", "DELETE"].includes(req.method)) {
+        requireIt(user.role === "admin", 403, "Administrator required");
+        const id = schoolPath[1];
+        if (req.method === "PUT") {
+          const input = z.object({ name: text, district: text }).strict().parse(await body(req));
+          const done = await transaction(db, async (tx) => {
+            const r = await tx.query("UPDATE schools SET name=$2,district=$3 WHERE id=$1", [id, input.name, input.district]);
+            if (r.rowCount) await audit(tx, user, "school.update", id);
+            return r.rowCount;
+          });
+          requireIt(done, 404, "School not found");
+          return send(200, { id });
+        }
+        // A school with people or records keeps its history; only empty duplicates can be removed.
+        const used = (await db.query("SELECT (SELECT count(*) FROM users WHERE school_id=$1)::int + (SELECT count(*) FROM records WHERE school_id=$1)::int + (SELECT count(*) FROM material_completions WHERE school_id=$1)::int + (SELECT count(*) FROM certificate_requests WHERE school_id=$1)::int + (SELECT count(*) FROM certificates WHERE school_id=$1)::int AS n", [id])).rows[0].n;
+        requireIt(!used, 409, "This school has members or records, so it cannot be deleted.");
+        const done = await transaction(db, async (tx) => {
+          const r = await tx.query("DELETE FROM schools WHERE id=$1", [id]);
+          if (r.rowCount) await audit(tx, user, "school.delete", id);
+          return r.rowCount;
+        });
+        requireIt(done, 404, "School not found");
+        return send(200, { deleted: true });
+      }
       if (p === "/fun-corner" && req.method === "PUT") {
         requireIt(user.role === "admin", 403, "Administrator required");
         const input = funCornerSchema.parse(await body(req));
@@ -901,6 +954,30 @@ export function createServer({
         });
         return send(200, { trivia: [], quotes: [] });
       }
+      if (p === "/welcome-popup" && req.method === "PUT") {
+        requireIt(user.role === "admin", 403, "Administrator required");
+        const input = z
+          .object({
+            enabled: z.boolean(),
+            imageOnly: z.boolean().default(false),
+            title: z.string().trim().max(80).default(""),
+            text: z.string().trim().max(240).default(""),
+            cta: z.string().trim().max(30).default(""),
+            href: z.string().max(1000).default("").refine((v) => !v || (/^\/(?!\/)/.test(v) || v.startsWith("https://")) && !/[\\\s]/.test(v)),
+            image: z.union([z.string().uuid(), z.literal("")]),
+          })
+          .strict()
+          .parse(await body(req));
+        requireIt(input.imageOnly ? !!input.image : input.title.length >= 2 && input.cta.length >= 2 && !!input.href, 400, input.imageOnly ? "Upload a flyer first" : "Add a headline, button label and link");
+        // The image is shown publicly, so it must be a PNG or JPEG an administrator uploaded.
+        if (input.image)
+          requireIt((await db.query("SELECT 1 FROM files f JOIN users u ON u.id=f.owner_id WHERE f.id=$1 AND u.role='admin' AND f.mime IN ('image/png','image/jpeg')", [input.image])).rowCount, 400, "Choose a PNG or JPEG image you uploaded");
+        await transaction(db, async (tx) => {
+          await tx.query("INSERT INTO content(key,data) VALUES('welcome-popup',$1) ON CONFLICT(key) DO UPDATE SET data=$1,updated_at=now()", [input]);
+          await audit(tx, user, "welcome-popup.update", "welcome-popup");
+        });
+        return send(200, input);
+      }
       if (p === "/announcement" && req.method === "PUT") {
         requireIt(user.role === "admin", 403, "Administrator required");
         const input = z
@@ -918,9 +995,14 @@ export function createServer({
                   !/[\\\s]/.test(v),
               ),
             linkLabel: text,
+            description: z.string().trim().max(240).optional(),
+            flyer: z.union([z.string().uuid(), z.literal("")]).optional(),
           })
           .strict()
           .parse(await body(req));
+        // A flyer is shown publicly, so it must be an image an administrator uploaded.
+        if (input.flyer)
+          requireIt((await db.query("SELECT 1 FROM files f JOIN users u ON u.id=f.owner_id WHERE f.id=$1 AND u.role='admin' AND f.mime IN ('image/png','image/jpeg')", [input.flyer])).rowCount, 400, "Choose a PNG or JPEG flyer you uploaded");
         await transaction(db, async (tx) => {
           await tx.query(
             "INSERT INTO content(key,data) VALUES('announcement',$1) ON CONFLICT(key) DO UPDATE SET data=$1,updated_at=now()",
@@ -1108,6 +1190,11 @@ export function createServer({
                   "Only administrators can review submissions",
                 );
               }
+              // Once reviewed, an application is frozen for its owner; what it was submitted for never changes.
+              if (kind === "applications" && user.role !== "admin" && row.data.reference_id) {
+                requireIt(!["approved", "rejected"].includes(row.data.status), 409, "This application has been reviewed and can no longer be edited.");
+                requireIt(input.data.reference_id === row.data.reference_id && (input.data.category || "") === (row.data.category || ""), 403, "The opportunity of an application cannot be changed.");
+              }
               requireIt(
                 !input.data.school_id || input.data.school_id === row.school_id,
                 409,
@@ -1159,6 +1246,9 @@ export function createServer({
                 requireIt(!(await tx.query("SELECT 1 FROM enrollments WHERE course_id=$1 LIMIT 1", [id])).rowCount, 409, "Courses with enrolled learners cannot be deleted. Unpublish it instead.");
               if (kind === "opportunities")
                 requireIt(!(await tx.query("SELECT 1 FROM records WHERE kind='applications' AND data->>'reference_id'=$1 LIMIT 1", [id])).rowCount, 409, "This opportunity has applications. Unpublish it instead.");
+              // A decision is part of the record: members can withdraw only while an application is still being reviewed.
+              if (kind === "applications" && user.role !== "admin" && row.data.reference_id && !row.data.external)
+                requireIt(!["approved", "rejected"].includes(row.data.status), 409, "This application already has a decision and can no longer be withdrawn.");
               await tx.query("DELETE FROM records WHERE id=$1", [id]);
             }
             await audit(

@@ -1,0 +1,8 @@
+img[data-zoom] { cursor: zoom-in; transition: filter .15s ease; }
+img[data-zoom]:hover { filter: brightness(.94); }
+img[data-zoom]:focus-visible { outline: 2px solid #1c73bb; outline-offset: 2px; }
+.pv-viewer { width: fit-content; min-width: min(320px, 92vw); padding: 16px; border-radius: 20px; }
+.pv-viewer-title { margin: 0 32px 12px 4px; font-size: 15px; font-weight: 600; }
+.pv-viewer img { display: block; width: auto; max-width: 100%; height: auto; max-height: 72vh; margin: 0 auto; object-fit: contain; border-radius: 14px; }
+/* `.hub-app` gives app shells a full-height minimum; the viewer sizes to its photo. */
+.hub-app.pv-viewer { min-height: 0; height: auto; width: fit-content; max-width: min(560px, 92vw); }

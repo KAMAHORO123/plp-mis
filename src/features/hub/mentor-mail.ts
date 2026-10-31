@@ -33,6 +33,8 @@ export async function sendMentorshipEmail(kind: MentorshipEmail["kind"], session
       date: new Date(session.date).toISOString(),
       goal: session.goal,
       meeting_link: session.meetingLink ?? "",
+      session_type: session.sessionType ?? "Online",
+      location: session.location ?? "",
       note,
     });
     if (!result.queued) { entry.status = "Not delivered"; entry.error = result.reason ?? "Email delivery is unavailable."; }
