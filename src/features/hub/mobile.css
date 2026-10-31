@@ -1,0 +1,120 @@
+/* Phones and small tablets: a bottom tab bar, a quieter top bar, and dashboards trimmed to what is used on the go. */
+:root .hub-app.hub-mis.plp-dashboard { --tabbar-h: 64px; }
+
+/* Bottom tab bar */
+:root .hub-app.hub-mis.plp-dashboard .hub-tabbar {
+  position: fixed; z-index: 40; left: 0; right: 0; bottom: 0;
+  display: none; grid-template-columns: repeat(5, minmax(0, 1fr));
+  height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+  padding: 6px 6px env(safe-area-inset-bottom);
+  background: color-mix(in srgb, var(--ds-surface) 92%, transparent);
+  backdrop-filter: saturate(1.6) blur(14px); -webkit-backdrop-filter: saturate(1.6) blur(14px);
+  border-top: 1px solid var(--ds-line);
+  box-shadow: 0 -8px 24px -16px rgba(15, 35, 60, .25);
+}
+:root .hub-app.hub-mis.plp-dashboard .hub-tabbar > :is(a, button) {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  min-width: 0; min-height: 48px; padding: 4px 2px; border: 0; border-radius: 14px; background: none;
+  color: var(--ds-muted); font: 600 11px/1.1 Inter, system-ui, sans-serif; text-decoration: none; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; transition: color .15s ease, background-color .15s ease;
+}
+:root .hub-app.hub-mis.plp-dashboard .hub-tabbar span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:root .hub-app.hub-mis.plp-dashboard .hub-tabbar svg { transition: transform .15s ease; }
+:root .hub-app.hub-mis.plp-dashboard .hub-tabbar :is(.is-active, .is-open) { color: var(--ds-accent); }
+:root .hub-app.hub-mis.plp-dashboard .hub-tabbar .is-active::before {
+  content: ""; position: absolute; inset: 2px 14%; z-index: -1; border-radius: 14px; background: var(--ds-accent-soft);
+}
+:root .hub-app.hub-mis.plp-dashboard .hub-tabbar .is-active svg { transform: translateY(-1px); }
+:root .hub-app.hub-mis.plp-dashboard .hub-tabbar :is(a, button):focus-visible { outline: 2px solid var(--ds-accent); outline-offset: -2px; }
+:root .hub-app.hub-mis.plp-dashboard .hub-tabbar-badge {
+  position: absolute; top: 2px; left: calc(50% + 6px); min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+  background: #d92d20; color: #fff; font-size: 10.5px; font-weight: 700; line-height: 18px; text-align: center;
+  box-shadow: 0 0 0 2px var(--ds-surface);
+}
+:root .hub-app.hub-mis.plp-dashboard .hub-topbar-mark { display: none; width: 32px; height: 32px; align-items: center; justify-content: center; }
+:root .hub-app.hub-mis.plp-dashboard .hub-topbar-mark img { width: 28px; height: 28px; }
+
+@media (max-width: 1023px) {
+  :root .hub-app.hub-mis.plp-dashboard .hub-tabbar { display: grid; }
+  :root .hub-app.hub-mis.plp-dashboard .hub-topbar-mark { display: inline-flex; }
+  /* Leave room for the tab bar so the last card is never hidden behind it. */
+  :root .hub-app.hub-mis.plp-dashboard main { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 8px); }
+  :root .hub-app.hub-mis.plp-dashboard .hub-topbar-title { font-family: Sora, sans-serif; font-size: 16px; font-weight: 600; color: var(--ds-ink); }
+  /* The shortcut chips repeat what the tab bar already offers. */
+  :root .hub-app.hub-mis.plp-dashboard .ws-shortcuts { display: none; }
+}
+
+@media (max-width: 640px) {
+  :root .hub-app.hub-mis.plp-dashboard > div > header { height: 56px; padding: 0 12px; }
+  :root .hub-app.hub-mis.plp-dashboard .hub-content { padding: 14px 14px 20px; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-page { gap: 14px; }
+
+  /* Greeting: compact, with the main action full width and easy to hit. */
+  :root .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero { gap: 14px; padding: 20px 18px; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero h1 { font-size: 21px; line-height: 1.25; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero p { font-size: 13px; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-page-header.ws-hero .hub-button { width: 100%; justify-content: center; min-height: 46px; }
+
+  /* Figures: label above, number below, so long numbers never overflow. */
+  :root .hub-app.hub-mis.plp-dashboard .ws-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-stats .plp-stat-card { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 6px; min-height: 92px; padding: 14px; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-stats .plp-stat-card > * { margin: 0; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-stats .plp-stat-card p:first-of-type { order: 0; font-size: 12px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-stats .plp-stat-card .font-display { font-size: 26px; line-height: 1; color: var(--tone, var(--ds-ink)); }
+  :root .hub-app.hub-mis.plp-dashboard .ws-stats .plp-stat-card::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 0 3px 3px 0; background: var(--tone); }
+  :root .hub-app.hub-mis.plp-dashboard .ws-stats .plp-stat-card::after { display: none; }
+
+  /* Administrator totals: a swipeable row of chips instead of a tall grid. */
+  :root .hub-app.hub-mis.plp-dashboard .dv-totals {
+    display: flex; gap: 8px; margin: 0 -14px !important; padding: 2px 14px 6px !important; overflow-x: auto; scroll-snap-type: x proximity; scroll-padding: 0 14px; scrollbar-width: none;
+  }
+  :root .hub-app.hub-mis.plp-dashboard .dv-totals::-webkit-scrollbar { display: none; }
+  :root .hub-app.hub-mis.plp-dashboard .dv-totals a { flex: 0 0 auto; min-width: 116px; scroll-snap-align: start; }
+
+  /* Administrator charts: one card per swipe. */
+  :root .hub-app.hub-mis.plp-dashboard .dv-charts {
+    display: flex; gap: 12px; margin: 0 -14px; padding: 0 14px 8px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0 14px;
+    scrollbar-width: none;
+  }
+  :root .hub-app.hub-mis.plp-dashboard .dv-charts::-webkit-scrollbar { display: none; }
+  :root .hub-app.hub-mis.plp-dashboard .dv-charts > .dv-grid { display: contents; }
+  :root .hub-app.hub-mis.plp-dashboard .dv-charts > .dv-grid > * { flex: 0 0 86%; min-width: 0; scroll-snap-align: start; }
+  :root .hub-app.hub-mis.plp-dashboard .dv-charts:focus-visible { outline: 2px solid var(--ds-accent); outline-offset: 2px; }
+
+  /* Page titles stack above their main action, which becomes a full-width button. */
+  :root .hub-app.hub-mis.plp-dashboard :is(.hub-heading, .ws-page-header:not(.ws-hero)) { flex-direction: column; align-items: stretch; gap: 12px; }
+  :root .hub-app.hub-mis.plp-dashboard :is(.hub-heading, .ws-page-header:not(.ws-hero)) > * { flex: 0 0 auto; }
+  :root .hub-app.hub-mis.plp-dashboard :is(.hub-heading, .ws-page-header:not(.ws-hero)) h1 { font-size: 26px; line-height: 1.15; }
+  :root .hub-app.hub-mis.plp-dashboard :is(.hub-heading, .ws-page-header:not(.ws-hero)) p { font-size: 14px; }
+  :root .hub-app.hub-mis.plp-dashboard :is(.hub-heading, .ws-page-header:not(.ws-hero)) > :is(.hub-button, a.hub-button, .hub-actions) { width: 100%; justify-content: center; }
+
+  /* Placeholders with nothing in them are left off small screens. */
+  :root .hub-app.hub-mis.plp-dashboard .ws-mobile-optional { display: none; }
+
+  /* Tables: search stays, the rest folds behind "Filters". */
+  :root .hub-app.hub-mis.plp-dashboard .ws-table-tools { display: grid; grid-template-columns: 1fr auto; align-items: center; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-table-tools > input { grid-column: 1; width: 100%; min-height: 44px; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-table-tools > .ws-tools-toggle { grid-column: 2; grid-row: 1; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-table-tools > :is(select, .hub-text-button) { display: none; grid-column: 1 / -1; width: 100%; min-height: 44px; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-table-tools.is-open > :is(select, .hub-text-button) { display: block; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-table-tools > span { grid-column: 1 / -1; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-tools-toggle {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border: 1px solid var(--ds-line); border-radius: var(--ds-r-ctl);
+    background: var(--ds-surface); color: var(--ds-ink); font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  :root .hub-app.hub-mis.plp-dashboard .ws-tools-toggle[aria-expanded="true"] { border-color: var(--ds-accent); color: var(--ds-accent); background: var(--ds-accent-soft); }
+  :root .hub-app.hub-mis.plp-dashboard .ws-tools-toggle b { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--ds-accent); color: #fff; font-size: 11px; line-height: 18px; text-align: center; }
+
+  /* Comfortable touch targets everywhere. */
+  :root .hub-app.hub-mis.plp-dashboard :is(.hub-button, .hub-chips button, .ws-tabs button) { min-height: 44px; }
+  :root .hub-app.hub-mis.plp-dashboard .hub-record-icon { min-width: 40px; min-height: 40px; }
+}
+/* The swipe heading only appears where the charts swipe. */
+:root .hub-app.hub-mis.plp-dashboard .dv-charts-title { display: none; }
+@media (max-width: 640px) {
+  :root .hub-app.hub-mis.plp-dashboard .dv-charts-title { display: flex; align-items: baseline; justify-content: space-between; margin: 4px 0 -4px; font-family: Sora, sans-serif; font-size: 16px; font-weight: 600; color: var(--ds-ink); }
+  :root .hub-app.hub-mis.plp-dashboard .dv-charts-title small { font: 500 12px Inter, system-ui, sans-serif; color: var(--ds-muted); }
+}
+/* On wider screens every tool is always visible, so the toggle is not needed. */
+@media (min-width: 641px) { :root .hub-app.hub-mis.plp-dashboard .ws-tools-toggle { display: none; } }
+@media (prefers-reduced-motion: reduce) { :root .hub-app.hub-mis.plp-dashboard .hub-tabbar :is(a, button, svg) { transition: none; } }
