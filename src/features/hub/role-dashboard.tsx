@@ -130,8 +130,8 @@ export function RoleDashboard() {
  <DashboardCalendar/>
  {translateUi(!admin && !trainer && !coordinator && !leader && <CommunityDiscovery compact/>)}
  <div className="ws-shortcuts">{translateUi(shortcuts.map(([label, , to]) => <Link to={to} key={to}><strong>{translateUi(label)}<ArrowUpRight size={16}/></strong></Link>))}</div>
- {translateUi(!admin && <Panel><div className="ws-panel-title"><h2>{translateUi(chartTitle)}</h2></div>{translateUi(chart.every(c => !c.value) ? <Empty>{translateUi(trainer ? 'No enrolments yet.' : leader ? 'No attendance yet.' : coordinator ? 'No requests yet.' : 'No completions yet.')}</Empty> : <div className="ws-chart" role="img" aria-label={translateUi(chart.map(c => `${c.name}: ${c.value}`).join(', '))}><ResponsiveContainer width="100%" height={230}><BarChart data={chart}><CartesianGrid vertical={false} stroke="#eef0f4"/><XAxis dataKey="name" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} interval={0}/><YAxis allowDecimals={false} width={30} axisLine={false} tickLine={false}/><Tooltip /><Bar dataKey="value" name={trainer ? 'Enrolments' : leader ? 'Attendances' : coordinator ? 'Requests' : 'Completions'} fill="#659fe8" maxBarSize={64} radius={[4, 4, 0, 0]}/></BarChart></ResponsiveContainer></div>)}</Panel>)}
- <Panel><div className="ws-panel-title"><h2>{translateUi(tableTitle)} <span className="ws-count">{rows.length}</span></h2></div><RecordTable title={tableTitle} rows={rows} searchText={r=>`${r.title} ${r.detail} ${r.status}`} filters={[{label:'Status',options:[...new Set(rows.map(r=>r.status))].map(status=>({label:status,test:(r:Row)=>r.status===status}))}]} columns={[
+ {translateUi(!admin && <Panel className={chart.every(c => !c.value) ? "ws-mobile-optional" : undefined}><div className="ws-panel-title"><h2>{translateUi(chartTitle)}</h2></div>{translateUi(chart.every(c => !c.value) ? <Empty>{translateUi(trainer ? 'No enrolments yet.' : leader ? 'No attendance yet.' : coordinator ? 'No requests yet.' : 'No completions yet.')}</Empty> : <div className="ws-chart" role="img" aria-label={translateUi(chart.map(c => `${c.name}: ${c.value}`).join(', '))}><ResponsiveContainer width="100%" height={230}><BarChart data={chart}><CartesianGrid vertical={false} stroke="#eef0f4"/><XAxis dataKey="name" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} interval={0}/><YAxis allowDecimals={false} width={30} axisLine={false} tickLine={false}/><Tooltip /><Bar dataKey="value" name={trainer ? 'Enrolments' : leader ? 'Attendances' : coordinator ? 'Requests' : 'Completions'} fill="#659fe8" maxBarSize={64} radius={[4, 4, 0, 0]}/></BarChart></ResponsiveContainer></div>)}</Panel>)}
+ <Panel className={rows.length ? undefined : "ws-mobile-optional"}><div className="ws-panel-title"><h2>{translateUi(tableTitle)} <span className="ws-count">{rows.length}</span></h2></div><RecordTable title={tableTitle} rows={rows} searchText={r=>`${r.title} ${r.detail} ${r.status}`} filters={[{label:'Status',options:[...new Set(rows.map(r=>r.status))].map(status=>({label:status,test:(r:Row)=>r.status===status}))}]} columns={[
  {label:'Name',render:r=><><strong>{r.title}</strong><small>{r.detail}</small></>},{label:'Status',render:r=>r.status},{label:'Details',render:r=>r.value},{label:'Action',render:r=><Link className="hub-text-link" to={r.to}>{translateUi('Open →')}</Link>}
  ]}/></Panel>
  </div>;
@@ -153,6 +153,8 @@ function AdminCharts({ ad }: {
   <nav className="dv-totals" aria-label={translateUi("Organisation totals")}>
    {([['Schools', ad?.schools, '/school-members'], ['Staff', ad?.staff, '/memberships'], ['Awaiting approval', ad?.pendingAccounts, '/applications?tab=Staff'], ['Open opportunities', ad?.openOpportunities, '/studio?tab=Opportunities'], ['Courses published', ad?.coursesPublished, '/studio'], ['Courses in progress', ad?.coursesInProgress, '/studio'], ['Certificates issued', ad?.certificatesIssued, '/certificate-centre']] as const).map(([label, value, to]) => <Link key={label} to={to} className={label === 'Awaiting approval' && value ? 'is-alert' : undefined}><strong>{figure(value)}</strong><span>{translateUi(label)}</span></Link>)}
   </nav>
+  <h2 id="dv-charts-title" className="dv-charts-title">{translateUi("Insights")}<small>{translateUi("Swipe to see more")}</small></h2>
+  <section className="dv-charts" aria-labelledby="dv-charts-title" tabIndex={0}>
   <div className="dv-grid wide">
    <TrendCard title={translateUi("Attendance per month")} data={ad?.trend ?? []} dataKey="attendance" unit="attendances"/>
    <ShareCard title={translateUi("Activities by type")} rows={ad?.activityTypes ?? []} unit="activities" empty="Activity types appear once schools publish activities."/>
@@ -165,5 +167,6 @@ function AdminCharts({ ad }: {
    <TrendCard title={translateUi("Course completions")} data={ad?.trend ?? []} dataKey="completions" unit="completions" columns/>
    <ShareCard title={translateUi("Mentoring sessions")} rows={ad?.mentoring ?? []} unit="sessions" empty="Mentoring sessions appear once members book them."/>
   </div>
+  </section>
  </>;
 }

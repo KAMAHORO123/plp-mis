@@ -18,6 +18,7 @@ import "./hub.css";
 import "./landing.css";
 import "./dashboard-theme.css";
 import "./design-system.css";
+import "./mobile.css";
 import { PhotoViewer } from "./photo-viewer";
 import { LandingFooter } from "./landing-art";
 export const hubNav = [
@@ -155,6 +156,14 @@ function Layout({ privateWorkspace = false }: {
             location.pathname.startsWith(pathOf(item.to) + "/"));
         const current = onPath.find((item) => item.to.includes("?") && location.search === item.to.slice(item.to.indexOf("?"))) ??
             onPath.find((item) => !item.to.includes("?"));
+        // Phones get the role's four most used sections as tabs; "More" opens the full menu.
+        const tabPaths: [string, string][] = admin ? [['/hub', 'Home'], ['/memberships', 'Members'], ['/applications', 'Applications'], ['/studio', 'Studio']]
+            : trainer ? [['/hub', 'Home'], ['/studio', 'Studio'], ['/academy', 'Learn'], ['/calendar', 'Calendar']]
+                : mentor ? [['/hub', 'Home'], ['/academy', 'Learn'], ['/opportunities', 'Openings'], ['/calendar', 'Calendar']]
+                    : coordinator ? [['/hub', 'Home'], ['/school-members', 'Members'], ['/clubs', 'Activities'], ['/certificate-centre', 'Certificates']]
+                        : [['/hub', 'Home'], ['/academy', 'Learn'], ['/opportunities', 'Openings'], ['/mentorship', 'Mentors']];
+        const tabs = tabPaths.flatMap(([to, label]) => { const item = links.find((l) => l.to === to); return item ? [{ ...item, label }] : []; });
+        const onTab = tabs.some((t) => t.to === current?.to);
         const sidebar = (mobile = false) => (<>
         <Link to="/hub" className="hub-brand block px-5 py-5">
           <Logo subtitle={profile.role === "Club leader" ? "School workspace" : profile.role === "Administrator" ? "Administration" : profile.role === "Trainer" ? "Trainer workspace" : profile.role === "Mentor" ? "Mentor workspace" : "Member workspace"}/>
@@ -169,9 +178,12 @@ function Layout({ privateWorkspace = false }: {
             </Link>)))}
         </nav>
         <div className="space-y-3 border-t border-border p-4">
-          <Link to="/" className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary" aria-label={translateUi("Back to website")} title={translateUi("Back to website")}>
-            <ArrowLeft size={20} aria-hidden="true"/>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link to="/" className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary" aria-label={translateUi("Back to website")} title={translateUi("Back to website")}>
+              <ArrowLeft size={20} aria-hidden="true"/>
+            </Link>
+            {mobile && <ThemeToggle/>}
+          </div>
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
               <strong className="block truncate text-sm">{translateUi(profile.name)}</strong>
@@ -199,19 +211,14 @@ function Layout({ privateWorkspace = false }: {
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b border-border bg-background px-4 sm:px-6">
             <div className="flex min-w-0 items-center gap-3">
-              <button className="rounded-md p-1.5 text-muted-foreground lg:hidden" aria-label={translateUi("Open navigation")} aria-expanded={open} onClick={() => setOpen(true)}>
-                <Menu size={20}/>
-              </button>
+              <Link to="/hub" className="hub-topbar-mark lg:hidden" aria-label={translateUi("Dashboard")}><img src="/favicon.svg" alt=""/></Link>
               <span className="hidden text-sm text-muted-foreground sm:inline">{translateUi(" Hub / ")}</span>
-              <span className="hidden truncate text-sm font-medium sm:inline">
+              <span className="hub-topbar-title truncate text-sm font-medium">
                 {translateUi(current?.label ?? "Member workspace")}
               </span>
             </div>
-            <button aria-label={translateUi("Sign out")} onClick={signout} className="ml-auto rounded-md p-2 hover:bg-secondary lg:hidden">
-              <LogOut size={18}/>
-            </button>
             <div className="flex shrink-0 items-center gap-2">
-              <LanguageSwitcher compact/><ThemeToggle/><NotificationBell />
+              <LanguageSwitcher compact/><span className="hidden sm:contents"><ThemeToggle/></span><NotificationBell />
               <Link to="/passport" aria-label={translateUi("Your profile")}><ProfilePhoto size={36} editable={false}/></Link>
             </div>
           </header>
@@ -220,6 +227,17 @@ function Layout({ privateWorkspace = false }: {
               <Outlet key={`${session?.profileId}-${location.pathname}`}/>
             </div>
           </main>
+          <nav className="hub-tabbar lg:hidden" aria-label={translateUi("Main sections")}>
+            {tabs.map((t) => <Link key={t.to} to={t.to} aria-current={current?.to === t.to ? "page" : undefined} className={current?.to === t.to ? "is-active" : ""}>
+                <t.icon size={21} aria-hidden="true"/>
+                <span>{translateUi(t.label)}</span>
+                {t.to === "/applications" && pendingCount > 0 && <b className="hub-tabbar-badge" aria-label={translateUi("{p0} waiting", { p0: pendingCount })}>{pendingCount > 99 ? "99+" : pendingCount}</b>}
+              </Link>)}
+            <button type="button" className={!onTab && !open ? "is-active" : open ? "is-open" : ""} aria-expanded={open} aria-haspopup="dialog" onClick={() => setOpen(true)}>
+              <Menu size={21} aria-hidden="true"/>
+              <span>{translateUi("More")}</span>
+            </button>
+          </nav>
         </div>
         <SignOutDialog open={showSignoutConfirm} onOpenChange={setShowSignoutConfirm} onConfirm={handleConfirmSignout} userName={profile.name} userEmail={profile.email}/>
       </div>);

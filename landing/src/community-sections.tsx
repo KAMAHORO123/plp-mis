@@ -200,7 +200,7 @@ export function FunCorner() {
     } requestAnimationFrame(() => questionRef.current?.focus()); };
     const restart = () => { setIndex(0); setAnswer(null); setScore(0); setFinished(false); requestAnimationFrame(() => questionRef.current?.focus()); };
     return <section className="plp-community-section plp-fun-corner" id="fun-corner" aria-labelledby="fun-title">
-  <div className="plp-section-heading"><div><p className="plp-section-label">{translateUi("LEARN. REMEMBER. BUILD PEACE.")}</p><h2 id="fun-title">{translateUi("Learn our history. Shape our peace.")}<span aria-hidden="true">{translateUi("\u2733")}</span></h2></div><p>{translateUi("The PLP fun corner.")}<br />{translateUi("Rwanda, remembrance, and everyday peacebuilding.")}</p></div>
+  <div className="plp-section-heading"><div><p className="plp-section-label">{translateUi("LEARN. REMEMBER. BUILD PEACE.")}</p><h2 id="fun-title">{translateUi("Learn our history. Shape our peace.")}</h2></div><p>{translateUi("The PLP fun corner.")}<br />{translateUi("Rwanda, remembrance, and everyday peacebuilding.")}</p></div>
   <div className="plp-play-grid">
    <div className="plp-trivia-card">
     <div className="plp-trivia-meta"><span><BookOpen size={17}/>{translateUi(" THE PEACE & LEARNING CORNER")}</span><span>{translateUi(finished ? 'Round complete' : `${index + 1} / ${trivia.length}`)}</span></div>
