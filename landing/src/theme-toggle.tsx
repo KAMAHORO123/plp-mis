@@ -5,8 +5,9 @@ import './dark-auto.css';
 import './theme.css';
 const KEY = 'plp-theme';
 function preferredTheme(): 'dark' | 'light' {
-  try { const saved = localStorage.getItem(KEY); if (saved === 'dark' || saved === 'light') return saved; } catch { /* Use system preference. */ }
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  // Light unless the reader has chosen dark with the toggle.
+  try { if (localStorage.getItem(KEY) === 'dark') return 'dark'; } catch { /* Light by default. */ }
+  return 'light';
 }
 function applyTheme(theme: 'dark' | 'light') {
   document.documentElement.dataset.theme = theme;
@@ -19,10 +20,8 @@ export function ThemeToggle() {
   useEffect(() => applyTheme(theme), [theme]);
   useEffect(() => {
     const sync = () => setTheme(preferredTheme());
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
     window.addEventListener('storage', sync);
-    media.addEventListener('change', sync);
-    return () => { window.removeEventListener('storage', sync); media.removeEventListener('change', sync); };
+    return () => window.removeEventListener('storage', sync);
   }, []);
   return <button type="button" className="plp-theme-toggle" aria-label={translateUi(theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme')} title={translateUi(theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme')} onClick={() => {
     const next = theme === 'dark' ? 'light' : 'dark';
