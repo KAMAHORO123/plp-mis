@@ -708,3 +708,43 @@ html[data-theme="dark"] .plp-hero-dots button[aria-current="true"]::before { bac
 .plp-public-site .hub-header:not(.is-nav-collapsed) > .hub-header-actions { flex: 1 1 0; }
 .plp-public-site .hub-header:not(.is-nav-collapsed) > .hub-header-actions { justify-content: flex-end; }
 .plp-public-site .hub-header:not(.is-nav-collapsed) > .hub-top-nav { justify-content: center; }
+
+/* Footer in the style of the moving announcement banner: the same deep-blue band, the same imigongo
+   diamonds drifting slowly, and a woven imigongo border along the top edge. */
+.plp-public-site .plp-art-footer, .plp-art-footer {
+  background: linear-gradient(90deg, #0b3f71 0%, #0d4a83 30%, #155f9f 50%, #0d4a83 70%, #0b3f71 100%);
+  border-top: 0;
+}
+.plp-art-footer::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='112' height='80' viewBox='0 0 112 80'%3E%3Cg fill='none' stroke='%23d5edff' stroke-width='2'%3E%3Cpath d='M0 40 56 0 112 40 56 80Z M14 40 56 10 98 40 56 70Z M28 40 56 20 84 40 56 60Z M42 40 56 30 70 40 56 50Z'/%3E%3Cpath d='M0 0 20 0 0 14 M112 0 92 0 112 14 M0 80 20 80 0 66 M112 80 92 80 112 66'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 112px 80px;
+  opacity: .11;
+  /* Strongest at the edges, quiet behind the links so the text stays easy to read. */
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, rgba(0,0,0,.35) 30%, rgba(0,0,0,.2) 50%, rgba(0,0,0,.35) 70%, #000 100%);
+  mask-image: linear-gradient(90deg, #000 0%, rgba(0,0,0,.35) 30%, rgba(0,0,0,.2) 50%, rgba(0,0,0,.35) 70%, #000 100%);
+  animation: plp-footer-drift 60s linear infinite;
+}
+@keyframes plp-footer-drift { to { background-position: 112px 0; } }
+/* Woven border: a row of imigongo triangles, as on the banner's edge. */
+.plp-art-footer::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 12px; z-index: 0; pointer-events: none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12' viewBox='0 0 24 12'%3E%3Cpath d='M0 0h24L12 12Z' fill='%2391c5eb'/%3E%3Cpath d='M6 0h12L12 6Z' fill='%23ffffff' fill-opacity='.55'/%3E%3C/svg%3E") repeat-x top left / 24px 12px,
+    #0b3f71;
+}
+.plp-art-footer .plp-footer-tiles { display: none; }
+.plp-art-footer .plp-footer-inner { position: relative; z-index: 1; padding-top: 77px; }
+.plp-art-footer .plp-footer-email { background: rgba(255, 255, 255, .1); border: 1px solid rgba(213, 237, 255, .22); }
+.plp-art-footer :is(.plp-footer-invitation, .plp-footer-wordmark) { border-color: rgba(213, 237, 255, .22); }
+.plp-art-footer .plp-footer-columns h2 { color: #bfe0fa; letter-spacing: .04em; }
+.plp-art-footer p, .plp-art-footer .plp-footer-bottom { color: #d6e9f8; }
+.plp-art-footer .plp-footer-spark { color: #91c5eb; }
+@media (prefers-reduced-motion: reduce) { .plp-art-footer::before { animation: none; } }
+@media (max-width: 700px) { .plp-art-footer .plp-footer-inner { padding-top: 57px; } }
+/* Dark theme: the same pattern on the dark footer, in muted blue. */
+html[data-theme="dark"] .plp-art-footer::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='112' height='80' viewBox='0 0 112 80'%3E%3Cg fill='none' stroke='%235f8fbd' stroke-width='2'%3E%3Cpath d='M0 40 56 0 112 40 56 80Z M14 40 56 10 98 40 56 70Z M28 40 56 20 84 40 56 60Z M42 40 56 30 70 40 56 50Z'/%3E%3Cpath d='M0 0 20 0 0 14 M112 0 92 0 112 14 M0 80 20 80 0 66 M112 80 92 80 112 66'/%3E%3C/g%3E%3C/svg%3E"); opacity: .14; }
+html[data-theme="dark"] .plp-art-footer::after { background-color: #0f0f0f; opacity: .8; }
+/* Phones: one link per line, so neighbouring links never run together. */
+@media (max-width: 700px) {
+  .plp-public-site .plp-art-footer .plp-footer-columns a { display: flex; width: fit-content; margin-bottom: 2px; }
+}
