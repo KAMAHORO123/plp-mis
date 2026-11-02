@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, Pause, Play, Download, BookOpen, C
 import { TestimonialsSection, FunCorner, AlbumSection, CanadaSection } from "./community-sections";
 import { PhotoPlayground } from "./landing-art";
 const programmes = [
-    { id: "peace-memory", label: "Peace & memory", title: "Remembering together. Taking responsibility.", image: "plp-remembrance", alt: "Thousands gathered in an arena for a remembrance event", caption: "Peace & memory", intro: "Memory is part of how we build peace. PLP brings young people, survivors, and communities together to remember the 1994 Genocide against the Tutsi and confront the divisions that lead to violence.", items: [
+    { id: "peace-memory", label: "Peace & memory", title: "Remembering together. Taking responsibility.", image: "plp-walk-to-remember", alt: "Thousands of young people dressed in black walking together in Kigali during the Walk to Remember", caption: "Peace & memory", intro: "Memory is part of how we build peace. PLP brings young people, survivors, and communities together to remember the 1994 Genocide against the Tutsi and confront the divisions that lead to violence.", items: [
             ["Walk to Remember", "Initiated by PLP in 2009, this youth-led campaign brings remembrance walks, survivor testimonies, poetry, and art into a shared act of commemoration. The initiative has reached more than 25 countries."],
             ["Ku Gicaniro Dialogue", "Honest conversations about history, responsibility, and unity give young people a space to learn about genocide prevention and challenge divisionism and hate."]
         ] },
@@ -89,10 +89,11 @@ function Team() {
 }
 /** Full-width hero slider: each photo carries its own headline and link; the first slide is the page title. */
 const HERO_SLIDES = [
-    { src: "/images/plp/albums/camp-8.jpg", position: "center 35%", title: "Young people. Shared purpose.", accent: "A peaceful future.", text: "A youth-led community rooted in Rwanda, reaching beyond borders.", to: "/programmes", cta: "Explore our work" },
-    { src: "/images/plp/plp-remembrance.webp", position: "center 45%", title: "Remember together.", accent: "", text: "We honour our history and stand as one for unity.", to: "/about", cta: "Our story" },
+    // The first slide introduces the PLP Hub: its name and "Learn and lead" each in their own colour.
+    { src: "/images/plp/albums/camp-8.jpg", position: "center 35%", hub: true, title: "Young people. Shared purpose.", accent: "", text: "Courses, mentoring and real opportunities for young people, all in one place.", to: "/plp-hub", cta: "Discover the PLP Hub" },
+    { src: "/images/plp/plp-walk-to-remember.webp", position: "center 60%", title: "Remember together.", accent: "", text: "Every year, thousands walk with us to remember and to stand as one for unity.", to: "/about", cta: "Our story" },
     { src: "/images/plp/plp-arts.webp", position: "center 40%", title: "Create freely.", accent: "", text: "Art, music and expression that bring young people together.", to: "/programmes", cta: "Our programmes" },
-    { src: "/images/plp/albums/academy-8.jpg", position: "center 30%", title: "Learn and lead.", accent: "", text: "Courses, mentoring and real opportunities through the PLP Hub.", to: "/plp-hub", cta: "Discover the Hub" },
+    { src: "/images/plp/albums/academy-8.jpg", position: "center 30%", title: "Explore our work.", accent: "", text: "A youth-led community rooted in Rwanda, reaching beyond borders.", to: "/programmes", cta: "Our programmes" },
     { src: "/images/plp/plp-dialogue.webp", position: "center 55%", title: "Speak up.", accent: "", text: "Dialogue that turns young voices into action.", to: "/stories", cta: "Our impact" },
 ];
 function HeroSlider() {
@@ -113,7 +114,7 @@ function HeroSlider() {
           <img src={s.src} alt="" style={{ objectPosition: s.position }} loading={i === 0 ? "eager" : "lazy"} {...(i === 0 ? { fetchpriority: "high" } : {})}/>
           <div className="plp-showcase-copy">
             <p className="plp-showcase-kicker">{translateUi("PEACE AND LOVE PROCLAIMERS · SINCE 2007")}</p>
-            <Heading>{translateUi(s.title)}{s.accent && <><br /><span>{translateUi(s.accent)}</span></>}</Heading>
+            <Heading className={s.hub ? "plp-hero-hub" : undefined}>{s.hub ? <><span className="plp-hero-name">{translateUi("PLP Hub")}</span><br />{translateUi(s.title)}<br /><span>{translateUi("Learn and lead")}</span> {translateUi("for a peaceful future.")}</> : <>{translateUi(s.title)}{s.accent && <><br /><span>{translateUi(s.accent)}</span></>}</>}</Heading>
             <p>{translateUi(s.text)}</p>
             <Link to={s.to} className="hub-button" tabIndex={active ? undefined : -1}>{translateUi(s.cta)}<ArrowRight size={18}/></Link>
           </div>
