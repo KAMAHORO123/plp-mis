@@ -788,3 +788,6 @@ html[data-theme="dark"] .plp-art-footer::after { background-color: #0f0f0f; opac
 .plp-showcase-copy { width: min(900px, calc(100% - 48px)); }
 .plp-showcase-copy > p:not(.plp-showcase-kicker) { max-width: 520px; }
 @media (max-width: 420px) { .plp-showcase :is(h1, h2) .plp-hero-name { white-space: normal; } }
+/* A smaller, quieter sentence under the heading so the gold and blue lines lead. */
+.plp-showcase-copy > p:not(.plp-showcase-kicker) { margin: 14px 0 22px; max-width: 440px; font-size: clamp(13.5px, 1.05vw, 15.5px); line-height: 1.6; color: rgba(255,255,255,.8); }
+@media (max-width: 420px) { .plp-showcase-copy > p:not(.plp-showcase-kicker) { font-size: 13.5px; margin: 10px 0 18px; } }
