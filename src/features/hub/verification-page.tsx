@@ -76,6 +76,7 @@ export function EmailVerificationPage() {
           </>) : (<>
             <Heading title={translateUi("Verify your email")} description={translateUi("Enter the 6-digit code we sent to your email.")}/>
             <p className="hub-code-email">{translateUi(email)}</p>
+            <p className="hub-caption">{translateUi("The code is valid for 10 minutes. If it isn’t in your inbox, check your Spam or Promotions folder.")}</p>
             <form className="hub-form" onSubmit={async (e) => {
                 e.preventDefault();
                 setBusy(true);

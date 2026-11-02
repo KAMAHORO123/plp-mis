@@ -145,7 +145,14 @@ export function SignInPage() {
                         : "/application-status", { replace: true });
             }
             catch (error) {
-                setError((error as Error).message);
+                const message = (error as Error).message;
+                // Unverified accounts go straight to the code page, which sends a fresh code (the first one expires after 10 minutes).
+                if (/^Verify your email/.test(message)) {
+                    sessionStorage.setItem("plp-verification-email", String(form.get("email")).trim().toLowerCase());
+                    navigate("/auth/verify-email");
+                    return;
+                }
+                setError(message);
             }
             finally {
                 setBusy(false);
