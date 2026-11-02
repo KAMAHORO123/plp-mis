@@ -5,6 +5,8 @@ import { mailConfigured, createMailTransport } from "./mail-config.mjs";
 import { fileURLToPath } from "node:url";
 import { connectDatabase, transaction } from "./db.mjs";
 import { digest } from "./auth.mjs";
+// Logs show the first letter and domain only, enough to confirm a delivery without exposing the address.
+const masked = (address) => address.replace(/^(.)[^@]*/, "$1***");
 export async function deliverRecovery(db, transporter, origin, from) {
   return transaction(db, async (tx) => {
     await tx.query("DELETE FROM recovery_mail WHERE expires_at<now()");
@@ -41,6 +43,7 @@ export async function deliverRecovery(db, transporter, origin, from) {
     }
     if (!valid) {
       await tx.query("DELETE FROM recovery_mail WHERE id=$1", [mail.id]);
+      console.log(`Skipped ${mail.purpose} email to ${masked(mail.recipient)}: a newer code replaced it or it expired.`);
       return true;
     }
     try {
@@ -52,14 +55,13 @@ export async function deliverRecovery(db, transporter, origin, from) {
             : { subject: "Reset your PLP password", ...renderEmail({ origin, heading: "Reset your password", paragraphs: ["You asked to reset the password for your PLP Hub account."], button: { label: "Choose a new password", url: `${new URL("/auth/reset", origin).href}#${mail.token}` }, footnote: "This link expires in 30 minutes and can be used once. If you did not ask for this, you can ignore this email." }) };
       await transporter.sendMail({ from, to: mail.recipient, subject: message.subject, text: message.text, html: message.html });
       await tx.query("DELETE FROM recovery_mail WHERE id=$1", [mail.id]);
-    } catch {
+      console.log(`Sent ${mail.purpose} email to ${masked(mail.recipient)}.`);
+    } catch (error) {
       await tx.query(
         "UPDATE recovery_mail SET attempts=attempts+1,next_attempt_at=now()+interval '2 minutes' WHERE id=$1",
         [mail.id],
       );
-      console.error(
-        "Password recovery email delivery failed; queued for retry.",
-      );
+      console.error(`Could not send ${mail.purpose} email to ${masked(mail.recipient)}; retrying in 2 minutes (${error?.responseCode ?? error?.code ?? 'unknown error'}).`);
     }
     return true;
   });

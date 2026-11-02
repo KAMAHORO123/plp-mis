@@ -752,7 +752,8 @@ export function createServer({
           .parse(await body(req));
         await transaction(db, async (tx) => {
           const r = await tx.query(
-            "UPDATE users SET role=$1,status=$2,school_id=$3,requested_role=NULL,role_review=$5 WHERE id=$4 RETURNING id",
+            // Approving an account also confirms its email, so an administrator can admit someone whose code never arrived.
+            "UPDATE users SET role=$1,status=$2,school_id=$3,requested_role=NULL,role_review=$5,email_verified_at=CASE WHEN $2='approved' THEN coalesce(email_verified_at,now()) ELSE email_verified_at END WHERE id=$4 RETURNING id",
             [input.role, input.status, input.school_id, id,input.review || ""],
           );
           requireIt(r.rowCount, 404, "User not found");
