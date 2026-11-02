@@ -23,6 +23,12 @@ export function validateRecord(kind, data, before) {
     if (notPast && data[key] < kigaliToday()) fail(`${label} cannot be in the past.`);
   };
 
+  if (kind === "agenda") {
+    text("title", "Event title", 2, 120);
+    date("date", "Event date");
+    text("location", "Location", 2, 100, false);
+    text("description", "Notes", 0, 1000, false);
+  }
   if (kind === "events") {
     text("title", "Activity title", 3, 120);
     date("date", "Activity date");

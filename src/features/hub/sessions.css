@@ -60,3 +60,16 @@ html[data-theme=dark] .ms-segment{background:#1b2636}html[data-theme=dark] .ms-s
 html[data-theme=dark] .hub-app .ms-session{border-color:#273449}
 @media(max-width:700px){.ms-side{align-self:start}}
 .week-strip{align-content:start;align-self:start;padding-top:4px}
+/* Personal events: the person's own entries, in teal. */
+.calendar-dot.personal{background:#0f9488}
+.calendar-chips em.personal{border-color:#0f9488;background:#ecfdf8;color:#115e59}
+html[data-theme=dark] .calendar-chips em.personal{background:#0f2a27;color:#99f6e4}
+.my-events{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.my-events li{display:flex;align-items:flex-start;gap:14px;padding:12px 14px;border:1px solid var(--ds-line,#e4e7ec);border-radius:12px;border-left:3px solid #0f9488}
+.my-events time{flex:0 0 44px;display:grid;justify-items:center;padding:6px 0;border-radius:10px;background:#ecfdf8;color:#115e59;line-height:1.1}
+.my-events time b{font-size:18px}.my-events time small{font-size:11px;text-transform:uppercase}
+.my-events li>div:nth-child(2){flex:1;min-width:0;display:grid;gap:2px}
+.my-events strong{color:var(--ds-ink,#101828);overflow-wrap:anywhere}.my-events small{color:var(--ds-muted,#667085);font-size:12.5px}
+.my-events p{margin:4px 0 0;font-size:13px;color:var(--ds-muted,#475467);white-space:pre-wrap;overflow-wrap:anywhere}
+.my-events-where{position:relative;display:block}.my-events-where svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#98a2b3;pointer-events:none}.my-events-where input{width:100%;padding-left:34px}
+html[data-theme=dark] .my-events time{background:#0f2a27;color:#99f6e4}

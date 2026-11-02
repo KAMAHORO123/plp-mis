@@ -1025,6 +1025,11 @@ export function createServer({
             values.push(id);
             where += " AND id=$2";
           }
+          // Personal calendar entries stay private, administrators included.
+          if (kind === "agenda") {
+            values.push(user.id);
+            where += " AND owner_id=$" + values.length;
+          }
           if (user.role !== "admin") {
             let owner = "";
             if (

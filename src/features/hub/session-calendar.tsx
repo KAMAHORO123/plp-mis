@@ -3,9 +3,9 @@ import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { translateUi, useSiteLanguage } from '../../i18n/language';
 import type { Session } from './store';
 import './sessions.css';
-export interface CalendarItem { id: string; date: string; title: string; kind: string; href?: string; category?: "session" | "activity" | "deadline" | "meeting" }
+export interface CalendarItem { id: string; date: string; title: string; kind: string; href?: string; category?: "session" | "activity" | "deadline" | "meeting" | "personal" }
 /** Each kind of date has its own colour: red is always a deadline. */
-export const CALENDAR_KINDS = [['deadline','Deadlines'],['session','Sessions'],['meeting','Meetings'],['activity','Activities']] as const;
+export const CALENDAR_KINDS = [['deadline','Deadlines'],['session','Sessions'],['meeting','Meetings'],['activity','Activities'],['personal','My events']] as const;
 const dayKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 const eventDay = (date: string) => date.length === 10 ? date : dayKey(new Date(date));
 export function DueBadge({ date, ending = false }: { date: string; ending?: boolean }) {
