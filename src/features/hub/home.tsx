@@ -90,7 +90,7 @@ function Team() {
 /** Full-width hero slider: each photo carries its own headline and link; the first slide is the page title. */
 const HERO_SLIDES = [
     // The first slide introduces the PLP Hub: its name and "Learn and lead" each in their own colour.
-    { src: "/images/plp/albums/camp-8.jpg", position: "center 35%", hub: true, title: "Young people. Shared purpose.", accent: "", text: "Courses, mentoring and real opportunities for young people, all in one place.", to: "/plp-hub", cta: "Discover the PLP Hub" },
+    { src: "/images/plp/albums/camp-8.jpg", position: "center 35%", hub: true, title: "PLP Hub", accent: "", text: "Courses, mentoring and real opportunities for young people, all in one place.", to: "/plp-hub", cta: "Discover the PLP Hub" },
     { src: "/images/plp/plp-walk-to-remember.webp", position: "center 60%", title: "Remember together.", accent: "", text: "Every year, thousands walk with us to remember and to stand as one for unity.", to: "/about", cta: "Our story" },
     { src: "/images/plp/plp-arts.webp", position: "center 40%", title: "Create freely.", accent: "", text: "Art, music and expression that bring young people together.", to: "/programmes", cta: "Our programmes" },
     { src: "/images/plp/albums/academy-8.jpg", position: "center 30%", title: "Explore our work.", accent: "", text: "A youth-led community rooted in Rwanda, reaching beyond borders.", to: "/programmes", cta: "Our programmes" },
@@ -114,7 +114,7 @@ function HeroSlider() {
           <img src={s.src} alt="" style={{ objectPosition: s.position }} loading={i === 0 ? "eager" : "lazy"} {...(i === 0 ? { fetchpriority: "high" } : {})}/>
           <div className="plp-showcase-copy">
             <p className="plp-showcase-kicker">{translateUi("PEACE AND LOVE PROCLAIMERS · SINCE 2007")}</p>
-            <Heading className={s.hub ? "plp-hero-hub" : undefined}>{s.hub ? <><span className="plp-hero-name">{translateUi("PLP Hub")}</span><br />{translateUi(s.title)}<br /><span>{translateUi("Learn and lead")}</span> {translateUi("for a peaceful future.")}</> : <>{translateUi(s.title)}{s.accent && <><br /><span>{translateUi(s.accent)}</span></>}</>}</Heading>
+            <Heading className={s.hub ? "plp-hero-hub" : undefined}>{s.hub ? <><span className="plp-hero-name">{translateUi("PLP Hub")}</span><br /><span>{translateUi("Learn and lead")}</span> {translateUi("for a peaceful future.")}</> : <>{translateUi(s.title)}{s.accent && <><br /><span>{translateUi(s.accent)}</span></>}</>}</Heading>
             <p>{translateUi(s.text)}</p>
             <Link to={s.to} className="hub-button" tabIndex={active ? undefined : -1}>{translateUi(s.cta)}<ArrowRight size={18}/></Link>
           </div>
