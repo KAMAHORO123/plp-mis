@@ -775,7 +775,10 @@ html[data-theme="dark"] .plp-art-footer::after { background-color: #0f0f0f; opac
   .plp-public-site .plp-art-footer .plp-footer-columns a { margin-bottom: 0; min-height: 40px; }
   .plp-art-footer .plp-footer-bottom { flex-wrap: wrap; gap: 6px 16px; }
 }
-/* First slide: "PLP Hub" in warm gold, "Learn and lead" in the light-blue accent; three lines, so a little smaller. */
-.plp-public-site .plp-showcase :is(h1, h2).plp-hero-hub { font-size: clamp(32px, 4.4vw, 60px); line-height: 1.08; }
-.plp-showcase .plp-hero-hub .plp-hero-name { color: #ffd27a; }
-.plp-showcase .plp-hero-hub span:not(.plp-hero-name) { color: #9fd0ff; }
+/* Slide headings: the name in warm gold, the message in light blue, the same on every slide. */
+.plp-showcase :is(h1, h2) .plp-hero-name { color: #ffd27a; }
+.plp-showcase :is(h1, h2) span:not(.plp-hero-name) { color: #9fd0ff; }
+/* The gold name sits as a shorter line above the message and never wraps, so every slide has the same shape. */
+.plp-showcase :is(h1, h2) .plp-hero-name { display: inline-block; margin-bottom: .08em; font-size: .62em; letter-spacing: -.03em; white-space: nowrap; }
+.plp-showcase :is(h1, h2) span:not(.plp-hero-name) { white-space: nowrap; }
+@media (max-width: 420px) { .plp-showcase :is(h1, h2) span:not(.plp-hero-name) { white-space: normal; } }
