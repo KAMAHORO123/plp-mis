@@ -18,3 +18,10 @@
 .ws-chat-language select { max-width: 160px; padding: 5px; border: 1px solid #cbd5df; border-radius: 6px; background: white; color: #10233c; }
 
 @media(max-width:750px){.ws-chat{right:16px;bottom:16px;}}
+
+/* Phones: a small round help button tucked in the corner, so it never covers links or tabs. */
+@media (max-width: 700px) {
+  .ws-chat { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); }
+  .ws-chat-toggle { width: 48px; height: 48px; padding: 0; justify-content: center; border-radius: 50%; }
+  .ws-chat-toggle .ws-chat-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}

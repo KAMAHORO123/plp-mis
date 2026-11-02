@@ -118,3 +118,10 @@
 /* On wider screens every tool is always visible, so the toggle is not needed. */
 @media (min-width: 641px) { :root .hub-app.hub-mis.plp-dashboard .ws-tools-toggle { display: none; } }
 @media (prefers-reduced-motion: reduce) { :root .hub-app.hub-mis.plp-dashboard .hub-tabbar :is(a, button, svg) { transition: none; } }
+
+/* Inside the Hub on phones and tablets, the help button sits above the tab bar, not on top of it. */
+@media (max-width: 1023px) {
+  :root .hub-app.hub-mis.plp-dashboard .ws-chat { right: 14px; bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 12px); }
+  :root .hub-app.hub-mis.plp-dashboard .ws-chat-toggle { width: 48px; height: 48px; padding: 0; justify-content: center; border-radius: 50%; }
+  :root .hub-app.hub-mis.plp-dashboard .ws-chat-toggle .ws-chat-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
