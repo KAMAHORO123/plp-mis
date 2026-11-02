@@ -710,3 +710,6 @@ html[data-theme=dark] .dv-totals a{background:#111827;border-color:#273449}html[
 .hub-app .hub-button.alx-enrolled { background: #e7f6ee !important; color: #0f7a4f !important; border-color: #b7e4cb !important; box-shadow: none; }
 .hub-app .hub-button.alx-enrolled:hover { background: #d3efdf !important; }
 html[data-theme="dark"] .alx-status.enrolled, html[data-theme="dark"] .hub-app .hub-button.alx-enrolled { background: #10271b !important; color: #6ee7a8 !important; border-color: #1f4a33 !important; }
+/* Card buttons fill the card width, side by side, so they line up with the card edges. */
+.alx-card footer .alx-actions { margin-left: 0; width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+.alx-card footer .alx-actions .hub-button { width: 100%; justify-content: center; margin: 0; white-space: nowrap; }
