@@ -1,4 +1,4 @@
-import { translateUi, useSiteLanguage } from '../../i18n/language';
+import { translateUi, useSiteLanguage, formatDate } from '../../i18n/language';
 import { AnnouncementEditor, WelcomePopupEditor } from "./announcement";
 import { FunCornerEditor } from "./fun-corner-editor";
 import { useLiveTick } from './live';
@@ -14,14 +14,14 @@ import { readRecord, saveRecord } from "./platform-records";
 import { BarChart3, Users } from "lucide-react";
 import { alxPrograms, categories, clubs, } from "./data";
 import { useHub, uid, today } from "./store";
-import { Empty, Field, Heading, Panel, Progress, Stats, Tag, downloadCSV, } from "./ui";
+import { Empty, Field, Heading, Panel, Progress, Spinner, Stats, Tag, downloadCSV, } from "./ui";
 export function StudioPage() {
     useSiteLanguage();
     const { state, profile } = useHub();
     const [searchParams, setSearchParams] = useSearchParams();
     // The section lives in the URL, so sidebar links, back/forward and shared links all land on the right one.
     const requested = searchParams.get("tab");
-    const tab = (requested === "Assignments" && profile.role !== "Administrator") || (profile.role === "Administrator" && ["ALX certificates", "Opportunities", "Website banner", "Fun corner"].includes(requested ?? "")) ? requested! : requested === "ALX reviews" && profile.role === "Administrator" ? "ALX certificates" : "Courses";
+    const tab = (requested === "Assignments" && profile.role !== "Administrator") || (profile.role === "Administrator" && ["ALX enrolments", "ALX certificates", "Opportunities", "Website banner", "Fun corner"].includes(requested ?? "")) ? requested! : requested === "ALX reviews" && profile.role === "Administrator" ? "ALX certificates" : "Courses";
     const admin = profile.role === "Administrator";
     // ALX certificates are recognised on upload; an administrator can revoke one that turns out to be invalid.
     const [people, setPeople] = useState<{
@@ -29,6 +29,9 @@ export function StudioPage() {
         name: string;
     }[]>([]);
     const live = useLiveTick();
+    const [enrolments, setEnrolments] = useState<{ id: string; owner_id: string; created_at: string; data: { title: string; category: string } }[] | null>(null);
+    useEffect(() => { if (admin && tab === "ALX enrolments")
+        platformApi<typeof enrolments & object>("/records/alx").then(setEnrolments).catch(() => setEnrolments([])); }, [admin, tab, live]);
     useEffect(() => { if (admin)
         platformApi<{
             id: string;
@@ -58,12 +61,12 @@ export function StudioPage() {
     if (!admin)
         return <TrainerWorkspace />;
     return (<>
-      <Heading eyebrow="MAKE ROOM FOR LEARNING" title={translateUi(admin ? "Content studio" : "Trainer studio")} description={translateUi(admin ? "See published courses, ALX certificates members have uploaded, opportunities, the website banner and the landing page fun corner." : "Create learning experiences, review assignments, and support the next generation.")}/>
+      <Heading eyebrow="MAKE ROOM FOR LEARNING" title={translateUi(admin ? "Content studio" : "Trainer studio")} description={translateUi(admin ? "See published courses, ALX enrolments and certificates, opportunities, the website banner and the landing page fun corner." : "Create learning experiences, review assignments, and support the next generation.")}/>
       <div className="hub-chips">
         {translateUi([
             "Courses",
             // Assignment feedback belongs to the course's trainer.
-            ...(admin ? ["ALX certificates", "Opportunities", "Website banner", "Fun corner"] : ["Assignments"]),
+            ...(admin ? ["ALX enrolments", "ALX certificates", "Opportunities", "Website banner", "Fun corner"] : ["Assignments"]),
         ].map((t) => (<button key={t} className={tab === t ? "active" : ""} onClick={() => setSearchParams(t === "Courses" ? {} : { tab: t })}>
             {translateUi(admin && t === "Courses" ? "Published courses" : t)}
           </button>)))}
@@ -87,6 +90,26 @@ export function StudioPage() {
                 { label: "Actions", render: (p) => p.status === "Recognized" ? <button className="hub-text-button" onClick={() => void reviewProofs([p.id], "returned")}>{translateUi("Revoke")}</button> : <button className="hub-text-button" onClick={() => void reviewProofs([p.id], "approved")}>{translateUi("Recognise")}</button> },
               ]}/> : <Empty>{translateUi(" No ALX certificates yet. Members upload them in the ALX learning zone and they are recognised straight away. ")}</Empty>)}</Panel>;
         })())}
+      {tab === "ALX enrolments" && admin && (() => {
+            const rows = (enrolments ?? []).map((e) => {
+                const proof = state.proofs.find((p) => p.memberId === e.owner_id && p.programId === e.data.category && p.file);
+                const progress = !proof ? "Enrolled" : proof.status === "Recognized" ? "Certificate recognised" : proof.status === "Returned" ? "Certificate revoked" : "Certificate submitted";
+                return { id: e.id, member: people.find((m) => m.id === e.owner_id)?.name ?? state.profiles.find((m) => m.id === e.owner_id)?.name ?? "Member", programme: alxPrograms.find((a) => a.id === e.data.category)?.title ?? e.data.title, enrolledOn: e.created_at, progress };
+            });
+            type Row = typeof rows[number];
+            return <Panel>
+              <div className="ws-panel-title"><div><h2>{translateUi("ALX enrolments")} <span className="ws-count">{rows.length}</span></h2><p className="hub-caption">{translateUi("Members who marked an ALX programme as enrolled, and whether they have uploaded the completion certificate.")}</p></div></div>
+              {enrolments === null ? <Spinner label="Loading enrolments…"/> : rows.length ? <RecordTable title={translateUi("ALX enrolments")} rows={rows} searchText={(r) => `${r.member} ${r.programme} ${r.progress}`}
+                filters={[{ label: "Programme", options: alxPrograms.filter((a) => rows.some((r) => r.programme === a.title)).map((a) => ({ label: a.title, test: (r: Row) => r.programme === a.title })) }, { label: "Progress", options: ["Enrolled", "Certificate submitted", "Certificate recognised", "Certificate revoked"].filter((v) => rows.some((r) => r.progress === v)).map((v) => ({ label: v, test: (r: Row) => r.progress === v })) }]}
+                csv={{ name: "alx-enrolments", columns: [["Member", (r: Row) => r.member], ["Programme", (r: Row) => r.programme], ["Enrolled on", (r: Row) => r.enrolledOn.slice(0, 10)], ["Progress", (r: Row) => r.progress]] }}
+                columns={[
+                    { label: "Member", render: (r) => <strong>{r.member}</strong> },
+                    { label: "Programme", render: (r) => translateUi(r.programme) },
+                    { label: "Enrolled on", render: (r) => formatDate(r.enrolledOn) },
+                    { label: "Progress", render: (r) => <span className={`ws-status${r.progress === "Certificate recognised" ? " ws-status-issued" : r.progress === "Certificate revoked" ? " ws-status-returned" : ""}`}>{translateUi(r.progress)}</span> },
+                ]}/> : <Empty>{translateUi("No enrolments yet. Members mark a programme as enrolled in the ALX learning zone.")}</Empty>}
+            </Panel>;
+        })()}
       {translateUi(tab === "Opportunities" && admin && <OpportunityAdmin />)}
 
     </>);

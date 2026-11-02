@@ -556,6 +556,27 @@ export function AlxPage() {
     const [busy, setBusy] = useState(false);
     const [uploading, setUploading] = useState<(typeof alxPrograms)[number] | null>(null);
     const statusOf = (id: string) => state.proofs.find((p) => p.memberId === profile.id && p.programId === id);
+    // Programmes the member says they enrolled in on ALX, so PLP can follow up.
+    const [enrolled, setEnrolled] = useState<{ id: string; data: { category: string } }[] | null>(null);
+    const loadEnrolled = () => platformApi<{ id: string; data: { category: string } }[]>("/records/alx").then(setEnrolled).catch(() => setEnrolled([]));
+    useEffect(() => { void loadEnrolled(); }, [profile.id]);
+    const enrolment = (id: string) => enrolled?.find((e) => e.data.category === id);
+    const toggleEnrolled = async (program: (typeof alxPrograms)[number]) => {
+        const existing = enrolment(program.id);
+        setBusy(true);
+        try {
+            if (existing) await platformApi(`/records/alx/${existing.id}`, "DELETE");
+            else await platformApi("/records/alx", "POST", { title: program.title, category: program.id });
+            toast.success(translateUi(existing ? "Removed from your ALX programmes" : "Marked as enrolled. PLP can now follow your progress."));
+            await loadEnrolled();
+        }
+        catch (e) {
+            toast.error(translateUi((e as Error).message));
+        }
+        finally {
+            setBusy(false);
+        }
+    };
     return (<div className="ws-page">
       <Heading title={translateUi("ALX learning zone")} description={translateUi("Take a programme on ALX, then upload your completion certificate here. PLP recognises it straight away.")} action={<a className="hub-button secondary" href="https://www.alxafrica.com/" target="_blank" rel="noreferrer">{translateUi("Visit ALX \u2197")}</a>}/>
       <div className="alx-grid">
@@ -565,13 +586,16 @@ export function AlxPage() {
             return (<article className="alx-card" key={program.id}>
               <div className="alx-top">
                 <span className="alx-focus">{translateUi(program.focus)}</span>
-                <span className={`alx-status${recognised ? " done" : proof?.status === "Returned" ? " review" : ""}`}>{translateUi(recognised ? "Recognised" : proof?.status === "Returned" ? "Revoked" : proof?.file ? "Processing" : "Not submitted")}</span>
+                <span className={`alx-status${recognised ? " done" : proof?.status === "Returned" ? " review" : enrolment(program.id) && !proof?.file ? " enrolled" : ""}`}>{translateUi(recognised ? "Recognised" : proof?.status === "Returned" ? "Revoked" : proof?.file ? "Processing" : enrolment(program.id) ? "Enrolled" : "Not started")}</span>
               </div>
               <h2>{translateUi(program.title)}</h2>
               <p>{translateUi(program.description)}</p>
               <footer>
                 <a className="hub-text-link" href={program.url} target="_blank" rel="noreferrer">{translateUi("Open on ALX \u2197")}</a>
-                {translateUi(!recognised && <button className="hub-button secondary" onClick={() => setUploading(program)}>{translateUi(proof?.file ? "Replace" : "Upload certificate")}</button>)}
+                <div className="alx-actions">
+                  {!recognised && !proof?.file && enrolled !== null && <button type="button" className={`hub-button${enrolment(program.id) ? " alx-enrolled" : ""}`} disabled={busy} aria-pressed={!!enrolment(program.id)} title={translateUi(enrolment(program.id) ? "Click to undo" : "Tell PLP you enrolled in this programme")} onClick={() => void toggleEnrolled(program)}>{enrolment(program.id) ? <><CheckCircle2 size={15}/>{translateUi("Enrolled")}</> : translateUi("Mark as enrolled")}</button>}
+                  {translateUi(!recognised && <button className="hub-button secondary" onClick={() => setUploading(program)}>{translateUi(proof?.file ? "Replace" : "Upload certificate")}</button>)}
+                </div>
               </footer>
             </article>);
         }))}

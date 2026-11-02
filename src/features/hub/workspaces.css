@@ -334,7 +334,8 @@
 .hub-mis .ws-page .alx-card h2, .alx-card h2 { margin: 0; font-size: 16px; }
 .alx-card p { margin: 0; font-size: 13px; line-height: 1.6; color: #475467; flex: 1; }
 .alx-card footer { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 14px; margin-top: 6px; border-top: 1px solid #f0f2f5; }
-.alx-card footer .hub-button { margin-left: auto; padding: 8px 12px; }
+.alx-card footer .hub-button { padding: 8px 12px; }
+.alx-card footer .alx-actions { margin-left: auto; }
 .alx-status { font-size: 11px; padding: 3px 9px; border-radius: 999px; background: #f2f4f7; color: #475467; }
 .alx-status.review { background: #fff4e5; color: #a15c00; }
 .alx-status.done { background: #e9f8f1; color: #12805a; }
@@ -703,3 +704,9 @@ html[data-theme=dark] .ae-facts>div,html[data-theme=dark] .ae-answer,html[data-t
 html[data-theme=dark] .dv-totals a{background:#111827;border-color:#273449}html[data-theme=dark] .dv-totals strong{color:#f1f5f9}html[data-theme=dark] .dv-totals span{color:#a8b8cb}html[data-theme=dark] .dv-totals a.is-alert{background:#2a2212;border-color:#78591c}
 .ws-overview-error{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .hub-text-button.danger-text{color:#b91c1c}html[data-theme=dark] .hub-text-button.danger-text{color:#fca5a5}
+/* Enrolment: members mark a programme as enrolled; the button turns green and can be clicked again to undo. */
+.alx-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.alx-status.enrolled { background: #e7f6ee; color: #0f7a4f; }
+.hub-app .hub-button.alx-enrolled { background: #e7f6ee !important; color: #0f7a4f !important; border-color: #b7e4cb !important; box-shadow: none; }
+.hub-app .hub-button.alx-enrolled:hover { background: #d3efdf !important; }
+html[data-theme="dark"] .alx-status.enrolled, html[data-theme="dark"] .hub-app .hub-button.alx-enrolled { background: #10271b !important; color: #6ee7a8 !important; border-color: #1f4a33 !important; }

@@ -1038,6 +1038,7 @@ export function createServer({
                 "mentorship",
                 "projects",
                 "proofs",
+                "alx",
                 "courses",
               ].includes(kind)
             ) {
@@ -1045,7 +1046,7 @@ export function createServer({
               owner = "$" + values.length;
             }
             if (
-              ["applications", "mentorship", "projects", "proofs"].includes(
+              ["applications", "mentorship", "projects", "proofs", "alx"].includes(
                 kind,
               )
             )

@@ -12,8 +12,10 @@ export const kinds = [
   "posts",
   // Personal calendar entries: only the person who adds one can see or change it.
   "agenda",
+  // ALX programme enrolments a member records; administrators see them all.
+  "alx",
 ];
-const ownKinds = ["applications", "mentorship", "projects", "proofs", "posts"];
+const ownKinds = ["applications", "mentorship", "projects", "proofs", "posts", "alx"];
 export function canWrite(user, kind, record) {
   if (user.status !== "approved") return false;
   if (kind === "agenda") return !record || record.owner_id === user.id;
@@ -35,7 +37,7 @@ export function canRead(user, record) {
   )
     return false;
   if (
-    ["applications", "mentorship", "projects", "proofs"].includes(record.kind)
+    ["applications", "mentorship", "projects", "proofs", "alx"].includes(record.kind)
   )
     return record.owner_id === user.id;
   if (record.kind === "members")
