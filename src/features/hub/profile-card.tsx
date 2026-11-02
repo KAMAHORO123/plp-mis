@@ -23,7 +23,6 @@ export function ProfileCard({ kicker, subtitle, actions, bio, stats }: {
     return (<section className="pv-id" aria-label={translateUi(kicker.toLowerCase())}>
       <div className="pv-cover">
         <span>{translateUi(kicker)}</span>
-        <span className="pv-number">{translateUi("No. PLP-")}{translateUi(profile.id.replace(/[^a-z0-9]/gi, '').slice(-8).toUpperCase())}</span>
       </div>
       <div className="pv-identity">
         <ProfilePhoto size={112} badge/>
