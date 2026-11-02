@@ -31,6 +31,15 @@ export function Tag({ children }: {
     useSiteLanguage();
     return <span className="hub-tag">{translateUi(children)}</span>;
 }
+/** A blue loading circle. `page` centres it in the content area; `screen` in the middle of the window. */
+export function Spinner({ label = "Loading…", page = false, screen = false }: {
+    label?: string;
+    page?: boolean;
+    screen?: boolean;
+}) {
+    useSiteLanguage();
+    return <div className={`hub-spinner${page || screen ? " is-page" : ""}${screen ? " is-screen" : ""}`} role="status" aria-live="polite"><span className="hub-spinner-ring" aria-hidden="true"/><span className="sr-only">{translateUi(label)}</span></div>;
+}
 export function Empty({ children }: {
     children: ReactNode;
 }) {

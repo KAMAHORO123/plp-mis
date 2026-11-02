@@ -1,4 +1,5 @@
 import { translateUi, useSiteLanguage } from '../../i18n/language';
+import { Spinner } from "./ui";
 import { useEffect, useState } from 'react';
 import { useLiveTick } from './live';
 import { CalendarCheck2, CheckCircle2, ClipboardList, Megaphone, UserCheck } from 'lucide-react';
@@ -66,7 +67,7 @@ export function ActivityManager({ activity: a, host, admin, onClose, onReport }:
 
       <section className="am-section">
         <h3>{translateUi("Registered members ")}<span>{translateUi(registrations?.length ?? '')}</span></h3>
-        {translateUi(registrations === null ? <p className="hub-caption">{translateUi("Loading registrations\u2026")}</p>
+        {translateUi(registrations === null ? <Spinner label="Loading registrations…"/>
             : registrations.length ? <><ul className="am-people">{translateUi(paged.items.map(r => <li key={r.id}><span className="am-initial">{translateUi(r.name.slice(0, 1).toUpperCase())}</span><div><strong>{translateUi(r.name)}</strong><small>{translateUi(r.email)}</small></div><small>{translateUi(new Date(r.created_at).toLocaleDateString())}</small>{translateUi(a.attendees.includes(r.member_id) && <em>{translateUi("Attended")}</em>)}</li>))}</ul><Pager {...paged}/></>
                 : <p className="am-empty">{translateUi("No one has registered yet. You can still record attendance from your school register on the day.")}</p>)}
       </section>

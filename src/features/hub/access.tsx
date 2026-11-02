@@ -7,7 +7,7 @@ import { Link, Navigate, Outlet, useLocation, useNavigate, useSearchParams, } fr
 import { ArrowRight, LockKeyhole, Eye, EyeOff, } from "lucide-react";
 import { categories, type HubRole } from "./data";
 import { today, uid, useHub, type Profile } from "./store";
-import { Empty, Field, Heading, Panel, Tag, TextLink, } from "./ui";
+import { Empty, Field, Heading, Panel, Spinner, Tag, TextLink, } from "./ui";
 async function authRequest(path: string, body: object) {
     const response = await fetch("/api/auth/" + path, {
         method: "POST",
@@ -25,25 +25,32 @@ async function authRequest(path: string, body: object) {
         throw Error(data.error || "Please try again.");
     return data;
 }
+/** The account last confirmed by the server, kept while the app is open. */
+let confirmedAccess: { profileId: string; role: HubRole } | null = null;
 export function MemberGuard({ allowed }: {
     allowed?: HubRole[];
 }) {
     useSiteLanguage();
     const { session, isMember, signOut } = useHub();
     const location = useLocation();
-    const [checked, setChecked] = useState(false);
+    // Sections remount this guard, so the last confirmed access is remembered: moving between
+    // sections re-checks quietly instead of showing the spinner each time.
+    const known = confirmedAccess && confirmedAccess.profileId === session?.profileId ? confirmedAccess.role : null;
+    const [checked, setChecked] = useState(!!known);
     const [accessError, setAccessError] = useState("");
-    const [serverRole, setServerRole] = useState<HubRole | null>(null);
+    const [serverRole, setServerRole] = useState<HubRole | null>(known);
     useEffect(() => {
         let active = true;
-        setChecked(false);
         setAccessError("");
         platformApi<{
             role: string;
         }>("/me").then(account => {
+            const role: HubRole = account.role === 'admin' ? 'Administrator' : account.role === 'trainer' ? 'Trainer' : account.role === 'mentor' ? 'Mentor' : account.role === 'leader' ? 'Club leader' : 'Community member';
+            confirmedAccess = session ? { profileId: session.profileId, role } : null;
             if (active)
-                setServerRole(account.role === 'admin' ? 'Administrator' : account.role === 'trainer' ? 'Trainer' : account.role === 'mentor' ? 'Mentor' : account.role === 'leader' ? 'Club leader' : 'Community member');
+                setServerRole(role);
         }).catch(e => { if (active) {
+            confirmedAccess = null;
             setServerRole(null);
             setAccessError(e.message);
             if (e.status === 401)
@@ -55,7 +62,7 @@ export function MemberGuard({ allowed }: {
     if (!session)
         return (<Navigate to={`/auth/login?returnTo=${encodeURIComponent(location.pathname + location.search)}`} replace/>);
     if (!checked)
-        return <div className="hub-content"><p role="status">{translateUi("Checking account access\u2026")}</p></div>;
+        return <Spinner screen label="Checking account access…"/>;
     if (!serverRole)
         return <div className="hub-access-shell"><Panel><Heading title={translateUi("Sign in required")} description={translateUi(accessError || "Your account access could not be confirmed.")}/><Link className="hub-button" to="/auth/login">{translateUi("Sign in again")}</Link></Panel></div>;
     if (!isMember)

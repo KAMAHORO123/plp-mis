@@ -18,7 +18,7 @@ import { ArrowRight, Award, BookOpen, Clock3, Coins, Download, Fingerprint, Plus
 import { toast } from "sonner";
 import { clubs, mentors } from "./data";
 import { useHub, balance, type HubCertificate } from "./store";
-import { Empty, Field, Heading, Panel, Progress, Stats, Tag, TextLink, } from "./ui";
+import { Empty, Field, Heading, Panel, Progress, Stats, Tag, TextLink, Spinner } from "./ui";
 
 // Where a member is in their studies, saved on the platform so it follows them to every device.
 type Stage = "high-school" | "university" | "graduated" | "community";
@@ -408,7 +408,7 @@ export function CreditsPage() {
       {creditsError&&<p role="alert">{translateUi('Could not load your verified credits. ')}{creditsError}</p>}
       <Panel><div className="ws-panel-title"><div><h2>{translateUi('Credit history')}</h2><p className="hub-caption">{translateUi('Search your activity, filter by source, or choose a date range.')}</p></div></div>
         <div className="credit-dates"><Field label={translateUi('From date')}><input type="date" value={from} onChange={e=>setFrom(e.target.value)}/></Field><Field label={translateUi('To date')}><input type="date" min={from} value={to} onChange={e=>setTo(e.target.value)}/></Field>{(from||to)&&<button className="hub-text-button" onClick={()=>{setFrom('');setTo('');}}>{translateUi('Clear dates')}</button>}</div>
-        {creditsLoading?<p role="status">{translateUi('Loading credit history…')}</p>:creditsError?<Empty>{translateUi('Credit history is unavailable.')}</Empty>:<RecordTable title="credit history" rows={shown} searchText={c=>`${c.label} ${c.source} ${c.date} ${c.amount}`} filters={[
+        {creditsLoading?<Spinner label="Loading credit history…"/>:creditsError?<Empty>{translateUi('Credit history is unavailable.')}</Empty>:<RecordTable title="credit history" rows={shown} searchText={c=>`${c.label} ${c.source} ${c.date} ${c.amount}`} filters={[
           {label:'Source',options:sources.map(source=>({label:source,test:(c:typeof ledger[number])=>sourceLabel(c.source)===source}))},
           {label:'Type',options:[{label:'Earned',test:(c:typeof ledger[number])=>c.amount>0},{label:'Adjustments',test:(c:typeof ledger[number])=>c.amount<=0}]}
         ]} columns={[

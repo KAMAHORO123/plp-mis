@@ -11,7 +11,7 @@ import { StatCard } from "@/components/shared/stat-card";
 import { opportunityTypes, type Opportunity } from "./data";
 import { platformApi, uploadFile } from "./platform-api";
 import { useHub, today } from "./store";
-import { Empty, Field, Heading, SearchBox, Stats } from "./ui";
+import { Empty, Field, Heading, SearchBox, Stats , Spinner } from "./ui";
 import { Link, useSearchParams } from "react-router-dom";
 import { MembershipsPage } from "./memberships";
 import { RecordTable, usePaged, Pager } from "./management-ui";
@@ -213,7 +213,7 @@ export function OpportunitiesPage() {
       <div className="op-types" aria-label={translateUi("Opportunity types")}>
         {translateUi(["All", ...opportunityTypes].map((t) => { return <button key={t} className={type === t ? "active" : ""} onClick={() => setType(t)}>{translateUi(t)}</button>; }))}
       </div>
-      {translateUi(!loaded ? <p role="status">{translateUi("Loading opportunities\u2026")}</p> : list.length ? (<div className="op-grid">
+      {translateUi(!loaded ? <Spinner label="Loading opportunities…"/> : list.length ? (<div className="op-grid">
           {translateUi(opportunityPage.items.map((o) => {
                 const Icon = typeIcon[o.type] ?? BriefcaseBusiness, left = daysLeft(o.deadline);
                 return (<article key={o.id} className="op-card">
@@ -488,7 +488,7 @@ export function ApplicationsPage() {
       {tab === "Staff" ? <MembershipsPage section="applications"/> : <>
       <Stats items={[{ label: "Waiting", value: waiting, icon: Clock3 }, { label: "Accepted", value: applications.filter((a) => a.status === "approved" && !a.external).length, icon: CheckCircle2 }, { label: "Applied externally", value: applications.filter((a) => a.external).length, icon: ExternalLink }]}/>
       <section className="hub-panel">
-      {translateUi(!loaded ? <p className="hub-caption">{translateUi("Loading applications…")}</p> : applications.length ? <RecordTable title={translateUi("applications")} rows={[...applications].sort((a, b) => Number(b.status === "pending") - Number(a.status === "pending") || b.date.localeCompare(a.date))} searchText={(a) => `${nameOf(a.memberId)} ${titleOf(a.opportunityId)} ${reviewLabel[a.status]}`} pageSize={10}
+      {translateUi(!loaded ? <Spinner label="Loading applications…"/> : applications.length ? <RecordTable title={translateUi("applications")} rows={[...applications].sort((a, b) => Number(b.status === "pending") - Number(a.status === "pending") || b.date.localeCompare(a.date))} searchText={(a) => `${nameOf(a.memberId)} ${titleOf(a.opportunityId)} ${reviewLabel[a.status]}`} pageSize={10}
         filters={[{ label: "Status", options: [...(Object.keys(reviewLabel) as ReviewStatus[]).map((k) => ({ label: reviewLabel[k], test: (a: Application) => !a.external && a.status === k })), { label: "Applied externally", test: (a: Application) => !!a.external }] }, { label: "Opportunity", options: opportunities.filter((o) => count(o)).map((o) => ({ label: o.title, test: (a: Application) => a.opportunityId === o.id })) }]}
         csv={{ name: "plp-applications", columns: [["Applicant", (a) => nameOf(a.memberId)], ["Email", (a) => people.find((p) => p.id === a.memberId)?.email], ["Opportunity", (a) => titleOf(a.opportunityId)], ["Status", (a) => a.external ? "Applied externally" : reviewLabel[a.status]], ["Applied", (a) => a.date], ["Documents", (a) => a.documents.map((d) => d.kind).join("; ")], ["Answer", (a) => a.note]] }}
         bulkActions={[{ label: "Send email", run: (rows) => setEmailing({ rows, template: 0 }) }, { label: "Accept", run: (rows) => decide(rows, "approved") }, { label: "Not selected", tone: "danger", run: (rows) => decide(rows, "rejected") }]}

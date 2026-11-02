@@ -6,7 +6,7 @@ import { ArrowLeft, ArrowRight, Award, BookOpen, CheckCircle2, CircleDot, Clock3
 import { toast } from "sonner";
 import { confirmAction } from "@/components/shared/confirm-dialog";
 import { platformApi, refreshVerifiedCredits } from "./platform-api";
-import { Empty, Field, Panel, Progress, Tag } from "./ui";
+import { Empty, Field, Panel, Progress, Tag , Spinner } from "./ui";
 import { OutlineItem, StepNav, formatClock, type Item } from "./academy";
 import { LessonVideoPlayer } from "./lesson-video";
 import { CameraRequired, ProctorCamera, startProctoring, useProctoring, type Departure } from "./proctoring";
@@ -87,7 +87,7 @@ export function PlatformCoursePage() {
         setItem(progress.active.assessment_id === "final" ? "final" : `quiz-${progress.active.assessment_id.split("-")[1]}`);
     } }, [progress?.active?.id]);
     if (!course)
-        return <div className="ac-page"><Empty>{translateUi(error || "Loading course…")}</Empty></div>;
+        return (error ? <div className="ac-page"><Empty>{translateUi(error)}</Empty></div> : <Spinner page label="Loading course…"/>);
     const data = course.data, lessons = data.lessons || [], assessments = serverAssessments(data);
     // Courses built before timed assessments keep their original single-question flow.
     if (!data.exam?.length)

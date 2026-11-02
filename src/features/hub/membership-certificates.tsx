@@ -8,7 +8,7 @@ import { resyncSchoolData } from './platform-records';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useHub } from './store';
-import { Heading, Panel, Field, Empty, Stats, Tag } from './ui';
+import { Heading, Panel, Field, Empty, Stats, Tag , Spinner } from './ui';
 import { RecordTable, usePaged, Pager } from './management-ui';
 import { FormModal } from './modal';
 import { downloadCertificates } from './workspaces';
@@ -185,7 +185,7 @@ function MyCertificatesPage() {
     const local = issued.length ? [] : state.schoolRecords.requests.filter(r => r.status === 'Issued').flatMap(r => r.members.filter(m => m.email && m.email.toLowerCase() === email).map(m => ({ request: r, member: m })));
     const total = issued.length + local.length;
     return <div className="ws-page"><Heading eyebrow="MY ACHIEVEMENTS" title={translateUi("My school certificates")} description={translateUi("Certificates issued to you for your service as a PLP member. Only your own certificates appear here.")}/>
-  {translateUi(!loaded ? <p role="status">{translateUi("Loading your certificates\u2026")}</p> : !total ? <Empty><Award size={32}/><h2>{translateUi("No school certificate yet")}</h2><p>{translateUi("When your club leader requests a membership certificate for you and PLP approves it, it appears here for you to download.")}</p></Empty> :
+  {translateUi(!loaded ? <Spinner label="Loading your certificates…"/> : !total ? <Empty><Award size={32}/><h2>{translateUi("No school certificate yet")}</h2><p>{translateUi("When your club leader requests a membership certificate for you and PLP approves it, it appears here for you to download.")}</p></Empty> :
             <div className="cs-list">
    {translateUi(issued.map(c => <CertificateSummary key={c.id} design={issuedCertificateDesign(c)} revoked={!!c.revoked_at}/>))}
    {translateUi(local.map(({ request, member }) => <CertificateSummary key={`${request.id}-${member.id}`} design={schoolCertificateDesign({ id: `${request.id}/${member.id}`, recipient: member.name, issued: request.issued ?? request.submitted, school: hostName(request.schoolId), title: request.title, programme: request.programme, citation: request.citation, role: member.role, periodFrom: request.periodFrom, periodTo: request.periodTo, verificationUrl: `${window.location.origin}/certificate-check/${encodeURIComponent(request.id)}/${encodeURIComponent(member.id)}` })}/>))}

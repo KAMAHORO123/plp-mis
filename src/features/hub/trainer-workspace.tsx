@@ -9,7 +9,7 @@ import { confirmAction } from "@/components/shared/confirm-dialog";
 import { StatCard } from "@/components/shared/stat-card";
 import { platformApi } from "./platform-api";
 import { LessonVideoEditor, LessonVideoPlayer } from "./lesson-video";
-import { Empty, Field, Panel, Tag, greeting, dashboardSubtitle } from "./ui";
+import { Empty, Field, Panel, Tag, greeting, dashboardSubtitle , Spinner } from "./ui";
 import { FormModal } from "./modal";
 import { RecordTable, usePaged, Pager } from "./management-ui";
 import { categories } from "./data";
@@ -86,7 +86,7 @@ export function TrainerWorkspace({ overview = false, initialTab = "Courses", emb
     const shown = visible.filter((c) => (activeFilter === "All" || stateLabel(c.data) === activeFilter) && `${c.data.title} ${c.data.category} ${c.trainer_name}`.toLowerCase().includes(courseSearch.toLowerCase()));
     const coursePage = usePaged(shown, 9, `${courseSearch}|${activeFilter}`);
     if (!loaded)
-        return <div className="ws-page"><p role="status">{translateUi("Loading your teaching workspace\u2026")}</p></div>;
+        return <Spinner page label="Loading your teaching workspace…"/>;
     if (!account || !["trainer", "admin"].includes(account.role))
         return <div className="ws-page"><header className="ws-page-header"><div><h1>{translateUi("Trainer access pending")}</h1><p>{translateUi("An administrator must approve your trainer application before the course studio and learner tools become available.")}</p></div></header>{translateUi(error && <p role="alert" className="hub-access-error">{translateUi(error)}</p>)}</div>;
     if (editing)

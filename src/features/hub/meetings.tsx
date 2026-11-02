@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { StatCard } from '@/components/shared/stat-card';
 import { platformApi, refreshVerifiedCredits } from './platform-api';
-import { Heading, Panel, Field, Empty, downloadCSV } from './ui';
+import { Heading, Panel, Field, Empty, downloadCSV , Spinner } from './ui';
 import './workspaces.css';
 type Meeting = {
     id: string;
@@ -71,7 +71,7 @@ export function MeetingsPage() {
         return () => { active = false; };
     }, [id]);
     if (!loaded)
-        return <div className="hub-meeting-layout"><Panel><p role="status">{translateUi("Loading meeting\u2026")}</p></Panel></div>;
+        return <Spinner page label="Loading meeting…"/>;
     if (error && !meeting && !list.length)
         return <div className="hub-meeting-layout"><Panel><p role="alert">{translateUi(error)}</p><Link to="/meetings">{translateUi("Back to meetings")}</Link></Panel></div>;
     if (!id)
@@ -179,7 +179,7 @@ export function MeetingManager() {
   </div>
   <Panel>
    <div className="ws-panel-title"><h2>{translateUi("Scheduled meetings ")}<span className="ws-count">{translateUi(list.length)}</span></h2></div>
-   {translateUi(!loaded ? <p>{translateUi("Loading meetings\u2026")}</p> : !list.length ? <Empty>{translateUi("No meetings yet. Use \u201CCreate meeting\u201D to schedule the first one.")}</Empty> : <div className="ws-table-wrap"><RecordTable title="meetings" rows={list} bulkActions={[{ label: "Delete", tone: "danger", run: removeMeetings }]} searchText={m=>`${m.title} ${m.location} ${meetingStatus(m)}`} filters={[{label:'Status',options:['Scheduled','Open now','Closed'].map(status=>({label:status,test:(m:Meeting)=>meetingStatus(m)===status}))}]} columns={[{label:translateUi("Meeting"),render:(m)=>{return <><strong>{translateUi(m.title)}</strong><small><MapPin size={11}/> {translateUi(m.location)}</small></>;}},
+   {translateUi(!loaded ? <Spinner label="Loading meetings…"/> : !list.length ? <Empty>{translateUi("No meetings yet. Use \u201CCreate meeting\u201D to schedule the first one.")}</Empty> : <div className="ws-table-wrap"><RecordTable title="meetings" rows={list} bulkActions={[{ label: "Delete", tone: "danger", run: removeMeetings }]} searchText={m=>`${m.title} ${m.location} ${meetingStatus(m)}`} filters={[{label:'Status',options:['Scheduled','Open now','Closed'].map(status=>({label:status,test:(m:Meeting)=>meetingStatus(m)===status}))}]} columns={[{label:translateUi("Meeting"),render:(m)=>{return <><strong>{translateUi(m.title)}</strong><small><MapPin size={11}/> {translateUi(m.location)}</small></>;}},
 {label:translateUi("Attendance window"),render:(m)=>{return <>{translateUi(formatDate(m.opens_at))}<small>{translateUi("until ")}{translateUi(formatDate(m.closes_at))}{translateUi(" \u00B7 Kigali time")}</small></>;}},
 {label:translateUi("Status"),render:(m)=>{const status = meetingStatus(m);return <><span className={`ws-status ${status === 'Open now' ? 'ws-status-issued' : status === 'Closed' ? 'ws-status-returned' : ''}`}>{translateUi(status)}</span></>;}},
 {label:translateUi("Checked in"),render:(m)=>{return <><button className="hub-text-button" onClick={() => void openRegister(m)}>{translateUi(m.attendees || 0)}{translateUi(" people")}</button><small>{translateUi(m.credits)}{translateUi(" credits each")}</small></>;}},

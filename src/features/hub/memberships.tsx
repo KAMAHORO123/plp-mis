@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { confirmAction } from "@/components/shared/confirm-dialog";
 import { StatCard } from "@/components/shared/stat-card";
 import { platformApi } from "./platform-api";
-import { Empty, Field, Panel } from "./ui";
+import { Empty, Field, Panel , Spinner } from "./ui";
 import { RecordTable } from "./management-ui";
 import "./workspaces.css";
 type Person = {
@@ -148,7 +148,7 @@ export function MembershipsPage({ section = "accounts" }: {
         return (<>
       <Panel>
         <div className="ws-panel-title"><h2>{translateUi("Staff applications ")}<span className="ws-count">{translateUi(pending.length)}</span></h2><span className="ws-pill">{translateUi("Trainers, mentors and club leaders cannot sign in until approved")}</span></div>
-        {translateUi(!loaded ? <p>{translateUi("Loading applications\u2026")}</p> : !pending.length ? <Empty>{translateUi("No staff applications awaiting approval.")}</Empty> : <RecordTable title={translateUi("staff applications")} rows={pending} pageSize={10} csv={{ name: "plp-staff-applications", columns: [["Name", (p) => p.name], ["Email", (p) => p.email], ["Requested role", (p) => roleName(p.requested_role || p.role)], ["Applied", (p) => p.created_at?.slice(0, 10)]] }} searchText={(p) => `${p.name} ${p.email} ${roleName(p.requested_role || p.role)}`}
+        {translateUi(!loaded ? <Spinner label="Loading applications…"/> : !pending.length ? <Empty>{translateUi("No staff applications awaiting approval.")}</Empty> : <RecordTable title={translateUi("staff applications")} rows={pending} pageSize={10} csv={{ name: "plp-staff-applications", columns: [["Name", (p) => p.name], ["Email", (p) => p.email], ["Requested role", (p) => roleName(p.requested_role || p.role)], ["Applied", (p) => p.created_at?.slice(0, 10)]] }} searchText={(p) => `${p.name} ${p.email} ${roleName(p.requested_role || p.role)}`}
             filters={[{ label: "Role", options: ["trainer", "mentor", "leader"].map((r) => ({ label: roleName(r), test: (p: Person) => (p.requested_role || p.role) === r })) }]}
             bulkActions={[{ label: "Send email", run: (rows) => setEmailing(rows) }, { label: "Approve", run: (rows) => decideAll(rows, true) }, { label: "Decline", tone: "danger", run: (rows) => decideAll(rows, false) }]}
             columns={[{ label: "Applicant", render: (p) => <><strong>{translateUi(p.name)}</strong><small>{translateUi(p.email)}</small></> }, { label: "Requested role", render: (p) => <span className="ws-status">{translateUi(roleName(p.requested_role || p.role))}</span> }, { label: "Applied", render: (p) => formatDate(p.created_at) }, { label: "Actions", render: (p) => <div className="ms-row-actions">
@@ -196,7 +196,7 @@ export function MembershipsPage({ section = "accounts" }: {
         <div className="ws-tabs" role="tablist" aria-label={translateUi("Account filters")}>
           {translateUi(VIEWS.map((v) => <button key={v} role="tab" aria-selected={view === v} className={view === v ? "active" : ""} onClick={() => setView(v)}>{translateUi(v)}<span>{translateUi(people.filter((p) => inView(p, v)).length)}</span></button>))}
         </div>
-        {!loaded ? <p className="hub-caption">{translateUi("Loading accounts…")}</p> : <RecordTable key={view} title={translateUi("members and staff")} rows={people.filter((p) => inView(p, view))}
+        {!loaded ? <Spinner label="Loading accounts…"/> : <RecordTable key={view} title={translateUi("members and staff")} rows={people.filter((p) => inView(p, view))}
           csv={{ name: "plp-accounts", columns: [["Name", (p) => p.name], ["Email", (p) => p.email], ["Role", (p) => roleName(p.role)], ["Status", (p) => statusName(p.status)], ["School", (p) => schools.find((s) => s.id === p.school_id)?.name ?? ""], ["Joined", (p) => p.created_at?.slice(0, 10)]] }} searchText={(p) => `${p.name} ${p.email} ${roleName(p.role)} ${p.requested_role || ""}`}
           selectable={(p) => p.id !== self} bulkActions={[
             ...(people.some((p) => p.status === "pending") ? [{ label: "Approve", run: (rows: Person[]) => { const r = rows.filter((p) => p.status === "pending"); return r.length ? decideAll(r, true) : toast.info(translateUi("Choose accounts awaiting approval.")); } }, { label: "Decline", tone: "danger" as const, run: (rows: Person[]) => { const r = rows.filter((p) => p.status === "pending"); return r.length ? decideAll(r, false) : toast.info(translateUi("Choose accounts awaiting approval.")); } }] : []),

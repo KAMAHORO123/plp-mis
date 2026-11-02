@@ -12,7 +12,7 @@ import { useHub, uid, type HubState, type MentorshipEmail, type Profile, type Se
 import { sendMentorshipEmail } from "./mentor-mail";
 import { platformApi } from "./platform-api";
 import { ProfilePhoto } from "./profile-photo";
-import { Empty, Field, Heading, Panel, SearchBox, Tag, greeting, dashboardSubtitle } from "./ui";
+import { Empty, Field, Heading, Panel, SearchBox, Tag, greeting, dashboardSubtitle , Spinner } from "./ui";
 import "./workspaces.css";
 const toLocalInput = (date: Date) => new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 const nowLocal = () => toLocalInput(new Date(Date.now() + 60000));
@@ -252,7 +252,7 @@ export function MentorDashboard() {
     const [editingProfile, setEditingProfile] = useState(false);
     if (!me)
         return (<div className="ws-page">
-        <header className="ws-page-header"><div><p className="ws-kicker">{translateUi("MENTOR WORKSPACE")}</p><h1>{translateUi("Mentor dashboard")}</h1><p>{translateUi("Loading your mentor account\u2026")}</p></div></header>
+        <header className="ws-page-header"><div><p className="ws-kicker">{translateUi("MENTOR WORKSPACE")}</p><h1>{translateUi("Mentor dashboard")}</h1><Spinner label="Loading your mentor account…"/></div></header>
         <Empty>{translateUi("If this message stays, your mentor access may still be awaiting approval or has been suspended. Contact a PLP administrator.")}</Empty>
       </div>);
     const now = Date.now();
