@@ -783,3 +783,8 @@ html[data-theme="dark"] .plp-art-footer::after { background-color: #0f0f0f; opac
 .plp-showcase :is(h1, h2) .plp-hero-name { display: inline-block; margin-bottom: .08em; font-size: .62em; letter-spacing: -.03em; white-space: nowrap; }
 .plp-showcase :is(h1, h2) span:not(.plp-hero-name) { white-space: nowrap; }
 @media (max-width: 420px) { .plp-showcase :is(h1, h2) span:not(.plp-hero-name) { white-space: normal; } }
+/* The gold name is as large as the message, and the copy is wide enough to keep each line whole. */
+.plp-showcase :is(h1, h2) .plp-hero-name { font-size: 1em; letter-spacing: inherit; margin-bottom: 0; }
+.plp-showcase-copy { width: min(900px, calc(100% - 48px)); }
+.plp-showcase-copy > p:not(.plp-showcase-kicker) { max-width: 520px; }
+@media (max-width: 420px) { .plp-showcase :is(h1, h2) .plp-hero-name { white-space: normal; } }
