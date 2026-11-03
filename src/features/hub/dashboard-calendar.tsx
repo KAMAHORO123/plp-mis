@@ -76,8 +76,11 @@ export function CalendarPage() {
   const language = useSiteLanguage();
   const items = useCalendarItems();
   const personal = usePersonalEvents();
-  const [editing, setEditing] = useState<Personal | 'new' | null>(null), [busy, setBusy] = useState(false);
-  const current = editing && editing !== 'new' ? editing : null;
+  // A new event carries the day it starts on: today from the button, or the day clicked on the calendar.
+  const [editing, setEditing] = useState<Personal | { date: string } | null>(null), [busy, setBusy] = useState(false);
+  const current = editing && 'id' in editing ? editing : null;
+  const newDate = editing && !('id' in editing) ? editing.date : '';
+  const onDay = newDate ? items.filter(i => dayOf(i.date) === newDate) : [];
   const locale = language === 'fr' ? 'fr' : language === 'rw' ? 'rw' : 'en-GB';
   const todayKey = dayKey(new Date());
   const upcoming = (personal ?? []).filter(p => p.data.date >= todayKey).sort((a, b) => personalDate(a).localeCompare(personalDate(b)));
@@ -99,8 +102,8 @@ export function CalendarPage() {
     try { await platformApi(`/records/agenda/${p.id}`, 'DELETE'); toast.success(translateUi('Event deleted')); changed(); }
     catch (e) { toast.error(translateUi((e as Error).message)); }
   };
-  return <div className="ws-page"><Heading title={translateUi('Calendar')} description={translateUi(CALENDAR_KINDS.map(([,label])=>label).join(' · '))} action={<button type="button" className="hub-button" onClick={() => setEditing('new')}><CalendarPlus size={16}/>{translateUi('Add event')}</button>}/>
-    <Panel className="calendar-page"><SessionCalendar items={items}/></Panel>
+  return <div className="ws-page"><Heading title={translateUi('Calendar')} description={translateUi(CALENDAR_KINDS.map(([,label])=>label).join(' · '))} action={<button type="button" className="hub-button" onClick={() => setEditing({ date: todayKey })}><CalendarPlus size={16}/>{translateUi('Add event')}</button>}/>
+    <Panel className="calendar-page"><SessionCalendar items={items} onPickDay={(date) => setEditing({ date })}/></Panel>
     <Panel>
       <div className="ws-panel-title"><h2>{translateUi('My events')} <span className="ws-count">{upcoming.length}</span></h2></div>
       {personal === null ? <Spinner label="Loading your events…"/> : upcoming.length ? <ul className="my-events">{upcoming.map(p => { const d = new Date(`${p.data.date}T12:00:00`); return <li key={p.id}>
@@ -112,11 +115,12 @@ export function CalendarPage() {
         </div>
       </li>; })}</ul> : <Empty>{translateUi('Nothing added yet. Use “Add event” to put your own plans on the calendar. Only you can see them.')}</Empty>}
     </Panel>
-    {editing && <FormModal title={translateUi(current ? 'Edit event' : 'Add an event')} description={translateUi('Only you can see events you add.')} onClose={() => { if (!busy) setEditing(null); }}>
+    {editing && <FormModal title={current ? translateUi('Edit event') : translateUi('Add an event on {p0}', { p0: new Date(`${newDate}T12:00:00`).toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' }) })} description={translateUi('Only you can see events you add.')} onClose={() => { if (!busy) setEditing(null); }}>
+      {onDay.length > 0 && <div className="cal-day-existing"><small>{translateUi('Already on this day')}</small><ul>{onDay.map(i => <li key={`${i.category}${i.id}`}><i className={`calendar-dot ${i.category || 'activity'}`} aria-hidden="true"/>{i.title}<small>{translateUi(i.kind)}</small></li>)}</ul></div>}
       <form className="hub-form" onSubmit={(e) => { e.preventDefault(); void save(new FormData(e.currentTarget)); }}>
         <Field label={translateUi('What')}><input name="title" required minLength={2} maxLength={120} defaultValue={current?.data.title} placeholder={translateUi('e.g. Study group')} autoFocus/></Field>
         <div className="ws-form-grid">
-          <Field label={translateUi('Date')}><input name="date" type="date" required defaultValue={current?.data.date ?? todayKey}/></Field>
+          <Field label={translateUi('Date')}><input name="date" type="date" required defaultValue={current?.data.date ?? (newDate || todayKey)}/></Field>
           <Field label={translateUi('Time (optional)')}><input name="start_time" type="time" defaultValue={current?.data.start_time}/></Field>
         </div>
         <Field label={translateUi('Where (optional)')}><span className="my-events-where"><MapPin size={15} aria-hidden="true"/><input name="location" maxLength={100} defaultValue={current?.data.location}/></span></Field>

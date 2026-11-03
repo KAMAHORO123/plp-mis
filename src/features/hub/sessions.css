@@ -73,3 +73,11 @@ html[data-theme=dark] .calendar-chips em.personal{background:#0f2a27;color:#99f6
 .my-events p{margin:4px 0 0;font-size:13px;color:var(--ds-muted,#475467);white-space:pre-wrap;overflow-wrap:anywhere}
 .my-events-where{position:relative;display:block}.my-events-where svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#98a2b3;pointer-events:none}.my-events-where input{width:100%;padding-left:34px}
 html[data-theme=dark] .my-events time{background:#0f2a27;color:#99f6e4}
+/* In the add-event pop-up: what is already on the chosen day. */
+.cal-day-existing{margin:2px 0 14px;padding:10px 12px;border:1px solid var(--ds-line,#e4e7ec);border-radius:10px;background:var(--ds-segment,#f8fafc)}
+.cal-day-existing>small{display:block;margin-bottom:6px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ds-muted,#667085)}
+.cal-day-existing ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.cal-day-existing li{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ds-ink,#101828)}
+.cal-day-existing li small{margin-left:auto;font-size:12px;color:var(--ds-muted,#667085)}
+/* Days on the full calendar can be clicked to add an event. */
+.calendar-page .calendar-grid button{cursor:pointer}
