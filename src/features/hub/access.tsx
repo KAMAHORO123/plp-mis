@@ -115,7 +115,6 @@ export function SignInPage() {
         return <Navigate to={returnDestination(params.get("returnTo") || sessionStorage.getItem("plp-meeting-return"))} replace/>;
     return (<div className="hub-access-shell">
       <Panel>
-        <a className="hub-text-link" href={import.meta.env.VITE_SITE_URL || "/"}>{translateUi("← Back to PLP website")}</a>
         <Heading title={translateUi("Log in to your account")} description={translateUi("Enter your credentials to access your PLP Hub.")}/>
         <form className="hub-form" onSubmit={async (e) => {
             e.preventDefault();

@@ -27,9 +27,9 @@ export const hubNav = [
     { to: "/alx", label: "ALX learning zone", icon: GraduationCap },
     { to: "/opportunities", label: "Opportunities", icon: BriefcaseBusiness },
     { to: "/mentorship", label: "Mentorship", icon: Users },
-    { to: "/clubs", label: "Clubs & homegroups", icon: Globe },
+    { to: "/clubs", label: "Activities", icon: Globe },
     { to: "/passport", label: "Youth passport", icon: Fingerprint },
-    { to: "/certificates", label: "My certificates", icon: Award },
+    { to: "/certificates", label: "My achievements", icon: Award },
     { to: "/credits", label: "PLP credits", icon: Coins },
 ];
 const publicNav = [
@@ -141,6 +141,7 @@ function Layout({ privateWorkspace = false }: {
                 ...(leader ? [{ to: '/clubs', label: 'Club management', icon: Globe }, { to: '/memberships', label: 'Club invitations', icon: ShieldCheck }] : []),
                 { to: '/academy', label: 'Learning academy', icon: BookOpen },
                 { to: '/alx', label: 'ALX learning zone', icon: GraduationCap },
+                { to: '/learning-materials', label: 'Learning materials', icon: BookOpen },
                 { to: '/opportunities', label: 'Opportunities', icon: BriefcaseBusiness },
                 { to: '/mentorship', label: 'Mentorship', icon: Users },
                 ...(!leader ? [{ to: '/clubs', label: 'Activities', icon: Globe }] : []),
@@ -150,10 +151,11 @@ function Layout({ privateWorkspace = false }: {
             { to: '/calendar', label: 'Calendar', icon: CalendarDays },
             { to: '/passport', label: admin || trainer || mentor || coordinator ? 'My profile' : 'Youth passport', icon: Fingerprint },
         ];
-        // Member benefits are shared by every role, alongside its specialist tools.
-        for (const item of [...hubNav, { to: '/learning-materials', label: 'Learning materials', icon: BookOpen }, ...(mentor && profile.schoolId ? [{ to: '/school-members', label: 'My school', icon: Users }] : [])]) {
-            if (!links.some(link => link.to === item.to)) links.push(item);
-        }
+        // Member benefits are shared by every role: the role's own tools come first, then the member pages
+        // in one fixed order, then Calendar and the profile at the end.
+        const tail = links.filter(link => link.to === '/calendar' || link.to === '/passport');
+        const shared = [...(mentor && profile.schoolId ? [{ to: '/school-members', label: 'My school', icon: Users }] : []), hubNav[1], hubNav[2], { to: '/learning-materials', label: 'Learning materials', icon: BookOpen }, hubNav[3], hubNav[4], hubNav[5], hubNav[7], hubNav[8]];
+        links.splice(0, links.length, ...links.filter(link => !tail.includes(link)), ...shared.filter(item => !links.some(link => link.to === item.to)), ...tail);
         // Several links can share a path (e.g. studio tabs); the one whose query matches wins.
         const pathOf = (to: string) => to.split("?")[0];
         const onPath = links.filter((item) => location.pathname === pathOf(item.to) ||

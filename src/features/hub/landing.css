@@ -328,13 +328,13 @@
 .plp-programme-wall { max-width: 1250px; margin: 35px auto 90px; display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 30px; align-items: start; }
 .plp-programme-poster { grid-column: span 3; min-width: 0; scroll-margin-top: 30px; }
 .plp-programme-poster.poster-0 { grid-column: span 4; }
-.plp-programme-poster.poster-1 { grid-column: span 2; margin-top: 80px; }
+.plp-programme-poster.poster-1 { grid-column: span 2; margin-top: 0; }
 .plp-programme-poster.poster-2 { grid-column: span 2; }
 .plp-programme-poster.poster-3 { grid-column: span 2; margin-top: 50px; }
 .plp-programme-poster.poster-4 { grid-column: span 2; margin-top: 100px; }
 .plp-poster-link { display: block; position: relative; isolation: isolate; overflow: hidden; background: #18273c; color: white; min-height: 410px; border-radius: 8px; }
-.poster-0 .plp-poster-link { min-height: 490px; }
-.poster-1 .plp-poster-link { min-height: 410px; border-radius: 8px; }
+.poster-0 .plp-poster-link,.poster-1 .plp-poster-link { min-height: 490px; }
+.poster-1 .plp-poster-link { border-radius: 8px; }
 .poster-2 .plp-poster-link { border-radius: 8px 8px 120px 8px; }
 .poster-4 .plp-poster-link { border-radius: 120px 8px 8px 8px; }
 .plp-poster-link > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; transition: transform .6s cubic-bezier(.2,.65,.3,1) !important; }
@@ -350,6 +350,7 @@
 .plp-poster-link:hover .plp-poster-caption > svg { transform: translate(4px,-4px); }
 .plp-wall-full .plp-programme-poster { grid-column: span 3; margin-top: 0; }
 .plp-wall-full .plp-programme-poster:nth-child(even) { margin-top: 85px; }
+.plp-wall-full .plp-programme-poster.poster-1 { margin-top: 0; }
 .plp-wall-full .plp-poster-link { min-height: 390px; }
 .plp-wall-full .poster-4 { grid-column: 2 / span 4; }
 .plp-poster-details { padding: 22px 5px; }
@@ -369,7 +370,7 @@
 @media(max-width:767px) {
  .plp-programme-wall { margin: 30px 22px 55px; grid-template-columns: 1fr; gap: 28px; }
  .plp-programme-wall .plp-programme-poster,.plp-wall-full .plp-programme-poster:nth-child(even) { grid-column: auto; margin-top: 0; }
- .plp-poster-link,.poster-0 .plp-poster-link,.plp-wall-full .plp-poster-link { min-height: 390px; }
+ .plp-poster-link,.poster-0 .plp-poster-link,.poster-1 .plp-poster-link,.plp-wall-full .plp-poster-link { min-height: 390px; }
  .plp-poster-caption h2 { font-size: 32px; }
  .poster-1,.poster-3 { margin-left: 22px; }
  .poster-2,.poster-4 { margin-right: 22px; }
@@ -791,3 +792,12 @@ html[data-theme="dark"] .plp-art-footer::after { background-color: #0f0f0f; opac
 /* A smaller, quieter sentence under the heading so the gold and blue lines lead. */
 .plp-showcase-copy > p:not(.plp-showcase-kicker) { margin: 14px 0 22px; max-width: 440px; font-size: clamp(13.5px, 1.05vw, 15.5px); line-height: 1.6; color: rgba(255,255,255,.8); }
 @media (max-width: 420px) { .plp-showcase-copy > p:not(.plp-showcase-kicker) { font-size: 13.5px; margin: 10px 0 18px; } }
+/* Home page: Walk to Remember and The Boardroom side by side at the same width and height. */
+.plp-programme-wall:not(.plp-wall-full) .plp-programme-poster.poster-0, .plp-programme-wall:not(.plp-wall-full) .plp-programme-poster.poster-1 { grid-column: span 3; }
+/* Back to top: a round button above the help button, shown once the page is scrolled. */
+.plp-to-top { position: fixed; z-index: 44; right: 24px; bottom: 84px; width: 46px; height: 46px; display: grid; place-items: center; border: 0; border-radius: 50%; background: #0d4a83; color: #fff; box-shadow: 0 8px 24px -8px rgba(13, 74, 131, .6); cursor: pointer; opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity .2s ease, transform .2s ease, background .2s ease; }
+.plp-to-top.is-shown { opacity: 1; transform: none; pointer-events: auto; }
+.plp-to-top:hover { background: #1c73bb; }
+.plp-to-top:focus-visible { outline: 3px solid #76bbec; outline-offset: 3px; }
+@media (max-width: 700px) { .plp-to-top { right: 14px; bottom: calc(76px + env(safe-area-inset-bottom)); width: 44px; height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .plp-to-top { transition: none; } }

@@ -167,12 +167,12 @@ export function MentorshipPage() {
                 {translateUi(m.avatar ? <img data-zoom tabIndex={0} role="button" src={m.avatar} alt={translateUi(m.name)} className="hub-mentor-photo" onError={(e) => { (e.currentTarget as HTMLElement).style.display = "none"; }}/> : null)}
                 <span className="hub-mentor-initials">{translateUi(m.initials)}</span>
               </div>
-              <Tag>{translateUi(m.area)}</Tag>
+              <div className="hub-mentor-tags"><Tag>{translateUi(m.area)}</Tag>{m.accepting === false && <span className="hub-mentor-paused">{translateUi("Not accepting new requests")}</span>}</div>
               <h3>{translateUi(m.name)}</h3>
               <p className="hub-mentor-role">{translateUi(m.title)}</p>
               <p>{translateUi(m.bio || "Available for mentorship sessions.")}</p>
               {translateUi(m.accepting === false
-                ? <button className="hub-button secondary" disabled>{translateUi("Not accepting new requests")}</button>
+                ? <button className="hub-button secondary" disabled title={translateUi("This mentor has paused new requests. Try again later or choose another mentor.")}>{translateUi("Paused for now")}</button>
                 : <div className="hub-actions"><button className="hub-button secondary" onClick={() => { setRequestFormat("Online"); setRequesting(m); }}>{translateUi("Request a session ")}<HeartHandshake size={16}/></button><button className="hub-text-button" onClick={() => { setRequestFormat("Visit"); setRequesting(m); }}>{translateUi("Request a visit")}</button></div>)}
             </div>)))}
         </div>

@@ -181,3 +181,5 @@ html[data-theme="dark"] .plp-imigongo-banner.plp-banner-bold { background: linea
 .plp-photo-thumbnails button[aria-current="true"], .plp-photo-thumbnails button:focus-visible { border-color:#facc15; outline-offset:2px; }
 .plp-photo-thumbnails button img { width:100%; height:66px; object-fit:cover; border-radius:4px; }
 .plp-photo-thumbnails button span { display:block; font-size:12px; }
+/* Photo viewers open in the middle of the screen. */
+.plp-photo-dialog[open] { position:fixed; inset:0; margin:auto; }

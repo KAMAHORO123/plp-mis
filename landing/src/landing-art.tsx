@@ -1,6 +1,6 @@
 import { translateUi, useSiteLanguage } from './i18n/language';
 import { socialLinks } from "./site-content";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SiteLink as Link } from "./site-link";
 import { ArrowUpRight, ArrowUp, Pause, Play, Mail } from "lucide-react";
 export function Spark({ className = "" }: {
@@ -31,11 +31,14 @@ export function PhotoPlayground() {
 }
 export function LandingFooter() {
     useSiteLanguage();
-    return <footer className="plp-art-footer">
+    const [scrolled, setScrolled] = useState(false);
+    useEffect(() => { const check = () => setScrolled(window.scrollY > 600); check(); window.addEventListener('scroll', check, { passive: true }); return () => window.removeEventListener('scroll', check); }, []);
+    const toTop = () => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    return <><button type="button" className={`plp-to-top${scrolled ? ' is-shown' : ''}`} aria-label={translateUi("Back to top")} title={translateUi("Back to top")} tabIndex={scrolled ? 0 : -1} aria-hidden={!scrolled} onClick={toTop}><ArrowUp size={20} aria-hidden="true"/></button><footer className="plp-art-footer">
     <svg className="plp-footer-tiles" viewBox="0 0 1440 110" preserveAspectRatio="none" aria-hidden="true"><g fill="currentColor"><path opacity=".25" d="M0 80h160v30H0zM320 80h160v30H320zM960 80h160v30H960zM1280 80h160v30h-160z"/><path opacity=".5" d="M160 80h160v30H160zM480 80h160v30H480zM800 80h160v30H800zM1120 80h160v30h-160z"/><path opacity=".35" d="M80 50h160v30H80zM400 50h160v30H400zM880 50h160v30H880zM1200 50h160v30h-160z"/><path opacity=".18" d="M240 50h160v30H240zM1040 50h160v30h-160zM160 20h160v30H160zM1120 20h160v30h-160z"/></g></svg>
     <div className="plp-footer-inner"><div className="plp-footer-invitation"><span>{translateUi("YOUR NEXT CHAPTER?")}</span><Link to="/auth/signup">{translateUi("Be part of")}<br /><em>{translateUi("PLP\u2019s next chapter.")}</em><ArrowUpRight /></Link><Spark className="plp-footer-spark"/></div>
       <div className="plp-footer-columns"><div className="plp-footer-brand"><Link to="/" className="plp-footer-logo" aria-label={translateUi("PLP home")}><img src="/favicon.svg" alt={translateUi("")} width="76" height="66"/><span><strong>{translateUi("PLP")}</strong><small>{translateUi("Peace and Love")}<br />{translateUi("Proclaimers")}</small></span></Link><p>{translateUi("Rooted in Rwanda.")}<br />{translateUi("Youth for Change, everywhere.")}</p></div><nav aria-label={translateUi("Footer explore")}><h2>{translateUi("Find your place")}</h2><Link to="/about">{translateUi("Our story")}</Link><Link to="/programmes">{translateUi("Our programmes")}</Link><Link to="/stories">{translateUi("Our impact")}</Link><Link to="/album">{translateUi("PLP album")}</Link><Link to="/#fun-corner">{translateUi("Fun corner")}</Link><Link to="/plp-canada">{translateUi("PLP Canada")}</Link><Link to="/auth/signup">{translateUi("Join the community")}</Link></nav><nav aria-label={translateUi("Footer resources")}><h2>{translateUi("Take a closer look")}</h2><a href="/resources/plp-portfolio.pdf" download>{translateUi("Organization portfolio ")}<ArrowUpRight size={13}/></a><a href="/resources/plp-impact-brief.pdf" download>{translateUi("Impact brief")}</a><Link to="/plp-hub">{translateUi("PLP Hub")}</Link><Link to="/auth/login">{translateUi("Member sign-in")}</Link></nav><div><h2>{translateUi("Say hello")}</h2><a className="plp-footer-email" href="mailto:info@peaceloveproclaimers.org"><Mail size={16}/>{translateUi("info@peaceloveproclaimers.org")}</a><a href="tel:+250788236141">{translateUi("+250 788 236 141")}</a><p>{translateUi("Kigali, Rwanda \u00B7 Canada chapter")}</p><nav className="plp-social-links" aria-label={translateUi("PLP social media")}>{translateUi(socialLinks.map(s => <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer">{translateUi(s.name)}<ArrowUpRight size={13}/></a>))}</nav></div></div>
       <div className="plp-footer-bottom"><span>{translateUi("\u00A9 ")}{translateUi(new Date().getFullYear())}{translateUi(" Peace and Love Proclaimers")}</span><span>{translateUi("Small steps. Shared futures.")}</span><button onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })}>{translateUi("Back to top ")}<ArrowUp size={16}/></button></div>
     </div>
-  </footer>;
+  </footer></>;
 }

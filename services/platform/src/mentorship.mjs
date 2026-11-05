@@ -82,7 +82,7 @@ export async function mentorshipRoute({ p, req, db, user, body, send, origin, ma
       demand(mentor,400,'Choose an approved mentor');
       demand(mentor.id!==user.id,400,'Choose another mentor');
       if(input.kind==='requested') {
-        demand(!(await tx.query('SELECT 1 FROM mentor_profiles WHERE user_id=$1 AND NOT accepting',[mentor.id])).rowCount,409,'This mentor is not taking new requests right now');
+        demand(!(await tx.query('SELECT 1 FROM mentor_profiles WHERE user_id=$1 AND NOT accepting',[mentor.id])).rowCount,409,'This mentor is not accepting new requests right now');
         demand(!existing,409,'Session already exists');demand(new Date(input.date)>new Date(),400,'Choose a future session time');
         await tx.query("INSERT INTO mentor_sessions(id,member_id,mentor_id,date,topic,goal,session_type,location,meeting_link) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)",[input.session_id,user.id,mentor.id,input.date,input.topic,input.goal,input.session_type,input.location,input.meeting_link]);
       } else {

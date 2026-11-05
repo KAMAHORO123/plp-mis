@@ -273,3 +273,7 @@
   :root .hub-spinner-ring { animation: hub-pulse 1.6s ease-in-out infinite; border-top-color: var(--ds-accent-soft, #e3effa); border-color: var(--ds-accent, #1c73bb); }
   @keyframes hub-pulse { 50% { opacity: .35; } }
 }
+
+/* Mentor cards: a paused mentor shows a clear amber badge next to the focus area. */
+:root .hub-app .hub-mentor-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+:root .hub-app .hub-mentor-paused { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; background: var(--ds-warn-soft, #fff4dc); color: var(--ds-warn, #92400e); font-size: 11.5px; font-weight: 600; }

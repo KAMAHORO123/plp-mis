@@ -1,6 +1,7 @@
 // The language is chosen on the public website and carried into sign-in and the Hub.
 import { translateUi, useSiteLanguage } from '../i18n/language';
 import type { ReactNode } from "react";
+import { ArrowLeft } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 const COLLAGE = {
     march: "/auth/march.jpg",
@@ -15,9 +16,15 @@ export function AuthLayout({ actions }: {
     useSiteLanguage();
     // The sign-in form always fits the screen, so it stays still; longer forms such as signup scroll.
     const still = useLocation().pathname === "/auth/login";
-    return (<div className="grid h-[100dvh] overflow-hidden overscroll-none bg-background lg:grid-cols-2">
+    return (<div className="flex h-[100dvh] flex-col overflow-hidden overscroll-none bg-background">
+      <div className="flex h-14 shrink-0 items-center justify-center">
+        <a href={import.meta.env.VITE_SITE_URL || "/"} aria-label={translateUi("Back to PLP website")} className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-primary hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+          <ArrowLeft size={22} aria-hidden="true"/>
+        </a>
+      </div>
+      <div className="grid min-h-0 flex-1 lg:grid-cols-2">
       {/* Form side */}
-      <div className="relative flex h-[100dvh] flex-col px-5 py-4 sm:px-8 sm:py-5">
+      <div className="relative flex h-full min-h-0 flex-col px-5 py-4 sm:px-8 sm:py-5">
         <div className="absolute right-5 top-5 flex items-center gap-3 sm:right-6 sm:top-6">{actions}</div>
         <Link to="/" className="shrink-0 self-start rounded-md" aria-label={translateUi("Peace and Love Proclaimers home")}>
           <img src="/logo.svg" alt="" className="plp-logo-light h-11 w-auto object-contain sm:h-16"/><img src="/logo-dark.svg" alt="" aria-hidden="true" className="plp-logo-dark h-11 w-auto object-contain sm:h-16"/>
@@ -49,6 +56,7 @@ export function AuthLayout({ actions }: {
 
         {/* Top fade so the top images blend into the background like the bottom */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background to-transparent"/>
+      </div>
       </div>
     </div>);
 }
