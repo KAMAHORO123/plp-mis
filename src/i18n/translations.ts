@@ -7816,10 +7816,6 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "rw": "Urubyiruko ruyoboye ibikorwa.",
     "fr": "Les jeunes mènent l’action."
   },
-  "Remembering our history. Creating space for expression. Supporting one another. Building skills and putting them to use. These are connected parts of PLP’s work.": {
-    "rw": "Kwibuka amateka yacu. Gutanga umwanya wo kwigaragaza. Gufashanya. Kunguka ubumenyi no kubushyira mu bikorwa. Ibi byose biruzuzanya mu bikorwa bya PLP.",
-    "fr": "Se souvenir de notre histoire. Créer des espaces d’expression. S’entraider. Développer des compétences et les mettre en pratique. Ces dimensions se rejoignent dans le travail de PLP."
-  },
   "OUR WORK": {
     "rw": "IBIKORWA BYACU",
     "fr": "NOS ACTIONS"
