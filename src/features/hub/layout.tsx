@@ -155,7 +155,8 @@ function Layout({ privateWorkspace = false }: {
         // in one fixed order, then Calendar and the profile at the end.
         const tail = links.filter(link => link.to === '/calendar' || link.to === '/passport');
         const shared = [...(mentor && profile.schoolId ? [{ to: '/school-members', label: 'My school', icon: Users }] : []), hubNav[1], hubNav[2], { to: '/learning-materials', label: 'Learning materials', icon: BookOpen }, hubNav[3], hubNav[4], hubNav[5], hubNav[7], hubNav[8]];
-        links.splice(0, links.length, ...links.filter(link => !tail.includes(link)), ...shared.filter(item => !links.some(link => link.to === item.to)), ...tail);
+        // Administrators manage courses, ALX, opportunities and mentoring from their own tools, so they skip the member pages.
+        links.splice(0, links.length, ...links.filter(link => !tail.includes(link)), ...(admin ? [] : shared.filter(item => !links.some(link => link.to === item.to))), ...tail);
         // Several links can share a path (e.g. studio tabs); the one whose query matches wins.
         const pathOf = (to: string) => to.split("?")[0];
         const onPath = links.filter((item) => location.pathname === pathOf(item.to) ||
