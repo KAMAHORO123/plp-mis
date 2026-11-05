@@ -1,15 +1,29 @@
-/* Complete your profile: numbered sections, tap-to-add tags, and a work-situation chooser. */
-.cp-page { max-width: 860px; }
-.cp-page .hub-form { display: grid; gap: 16px; }
+/* Complete your profile: a full-width page with a progress header, two-up sections on wide screens,
+   tap-to-add tags, a work-situation chooser, and a save bar that stays in view. */
+.hub-app .cp-page { max-width: none; width: 100%; padding-bottom: 0; }
+.cp-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; padding: 28px 30px; border-radius: var(--ds-r-card, 16px); color: #fff; background: linear-gradient(120deg, #0d3a63 0%, #1c73bb 70%, #3a8fd6 100%); box-shadow: 0 18px 40px -24px rgba(13, 58, 99, .6); }
+.cp-hero h1 { margin: 4px 0 8px; font-family: Sora, sans-serif; font-size: 28px; font-weight: 600; letter-spacing: -.03em; color: #fff; }
+.cp-hero p { margin: 0; max-width: 560px; font-size: 14px; line-height: 1.6; color: rgba(255, 255, 255, .85); }
+.cp-hero .cp-kicker { font-size: 11px; font-weight: 600; letter-spacing: .16em; color: rgba(255, 255, 255, .7); }
+.cp-progress { flex: 0 0 230px; display: grid; gap: 6px; padding: 14px 16px; border-radius: 14px; background: rgba(255, 255, 255, .12); backdrop-filter: blur(4px); }
+.cp-progress strong { font-family: Sora, sans-serif; font-size: 26px; line-height: 1; }
+.cp-progress span { font-size: 12px; color: rgba(255, 255, 255, .8); }
+.cp-progress i { display: block; height: 6px; border-radius: 999px; background: rgba(255, 255, 255, .22); overflow: hidden; }
+.cp-progress i b { display: block; height: 100%; border-radius: inherit; background: #ffd27a; transition: width .3s ease; }
+.cp-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.cp-form > :nth-child(n+3) { grid-column: 1 / -1; }
+.cp-section { height: 100%; }
 .cp-section h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; font-family: Sora, sans-serif; font-size: 17px; font-weight: 600; color: var(--ds-ink, #101828); }
 .cp-section h2 b { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--ds-accent-soft, #e3effa); color: var(--ds-accent, #1c73bb); font-size: 13px; }
 .cp-section h2 small { font: 500 12px Inter, system-ui, sans-serif; color: var(--ds-muted, #667085); }
-.cp-photo { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
-.cp-three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.cp-work { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0; border: 0; }
+.hub-app .cp-page .cp-photo { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 16px; }
+.cp-label { margin: 0; font-size: 13px; font-weight: 600; color: var(--ds-ink, #344054); }
+.cp-label small { font-weight: 500; color: var(--ds-muted, #667085); }
+.cp-three { grid-template-columns: 1fr; }
+.hub-app .cp-page .cp-work { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0; border: 0; }
 .cp-work legend { margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--ds-ink, #344054); }
-.cp-work label { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid var(--ds-line, #d0d5dd); border-radius: 999px; background: var(--ds-surface, #fff); font-size: 13.5px; cursor: pointer; }
-.cp-work label.on { border-color: var(--ds-accent, #1c73bb); background: var(--ds-accent-soft, #e3effa); color: var(--ds-accent, #1c73bb); font-weight: 600; }
+.hub-app .cp-page .cp-work label { display: inline-flex; align-items: center; width: auto; margin: 0; min-height: 40px; padding: 0 16px; border: 1px solid var(--ds-line, #d0d5dd); border-radius: 999px; background: var(--ds-surface, #fff); font-size: 13.5px; cursor: pointer; }
+.hub-app .cp-page .cp-work label.on { border-color: var(--ds-accent, #1c73bb); background: var(--ds-accent-soft, #e3effa); color: var(--ds-accent, #1c73bb); font-weight: 600; }
 .cp-work input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .cp-work label:focus-within { outline: 2px solid var(--ds-accent, #1c73bb); outline-offset: 2px; }
 .cp-work + .hub-field { margin-top: 14px; }
@@ -23,12 +37,10 @@
 .cp-ideas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 .cp-ideas button { padding: 4px 10px; border: 1px dashed var(--ds-line, #d0d5dd); border-radius: 999px; background: transparent; color: var(--ds-muted, #475467); font-size: 12.5px; cursor: pointer; }
 .cp-ideas button:hover { border-color: var(--ds-accent, #1c73bb); color: var(--ds-accent, #1c73bb); }
-.cp-submit { display: flex; justify-content: flex-end; }
+/* The save bar sticks to the bottom of the dashboard area, so the button is always reachable. */
+.cp-submit { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 -4px; padding: 14px 18px; border: 1px solid var(--ds-line, #e4e7ec); border-radius: var(--ds-r-card, 16px) var(--ds-r-card, 16px) 0 0; background: color-mix(in srgb, var(--ds-surface, #fff) 94%, transparent); backdrop-filter: blur(10px); box-shadow: 0 -10px 30px -20px rgba(15, 35, 60, .35); }
 .cp-submit .hub-button { min-height: 48px; padding: 0 22px; }
-@media (max-width: 640px) { .cp-three { grid-template-columns: 1fr; } .cp-submit .hub-button { width: 100%; justify-content: center; } .cp-photo { align-items: flex-start; } }
-/* Win over the general form label rules so the work choices stay compact pills. */
-.hub-app .cp-page .cp-work label { display: inline-flex; width: auto; margin: 0; gap: 0; }
-.hub-app .cp-page .cp-work { display: flex; }
-.hub-app .cp-page .cp-photo { flex-direction: column; align-items: flex-start; gap: 8px; }
-.cp-label { margin: 0; font-size: 13px; font-weight: 600; color: var(--ds-ink, #344054); }
-.cp-label small { font-weight: 500; color: var(--ds-muted, #667085); }
+@media (max-width: 960px) { .cp-form { grid-template-columns: 1fr; } .cp-hero { flex-direction: column; align-items: stretch; } .cp-progress { flex: none; } }
+@media (max-width: 1023px) { .cp-submit { bottom: 0; } }
+@media (max-width: 640px) { .cp-hero { padding: 22px 18px; } .cp-hero h1 { font-size: 22px; } .cp-submit { flex-direction: column; align-items: stretch; } .cp-submit .hub-button { width: 100%; justify-content: center; } }
+html[data-theme="dark"] .cp-hero { background: linear-gradient(120deg, #0c2238 0%, #164a7c 70%, #1f5f9c 100%); }

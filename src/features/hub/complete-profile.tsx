@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowRight, X } from "lucide-react";
 import { toast } from "sonner";
 import { platformApi } from "./platform-api";
-import { Field, Heading, Panel, Spinner } from "./ui";
+import { Field, Panel, Spinner } from "./ui";
 import { ProfilePhoto } from "./profile-photo";
 import { markProfileComplete } from "./access";
 import "./complete-profile.css";
@@ -45,7 +45,9 @@ export function CompleteProfilePage() {
     const [me, setMe] = useState<ProfileDetails | null>(null), [busy, setBusy] = useState(false);
     const [languages, setLanguages] = useState<string[]>([]), [skills, setSkills] = useState<string[]>([]), [interests, setInterests] = useState<string[]>([]);
     const [work, setWork] = useState("");
-    useEffect(() => { platformApi<ProfileDetails>("/me").then((m) => { setMe(m); setLanguages(m.languages ?? []); setSkills(m.skills ?? []); setInterests(m.interests ?? []); setWork(m.employment_status ?? ""); }).catch((e: Error) => toast.error(translateUi(e.message))); }, []);
+    // Required answers filled so far, for the progress bar in the header.
+    const [filled, setFilled] = useState({ birth: false, phone: false, education: false });
+    useEffect(() => { platformApi<ProfileDetails>("/me").then((m) => { setMe(m); setLanguages(m.languages ?? []); setSkills(m.skills ?? []); setInterests(m.interests ?? []); setWork(m.employment_status ?? ""); setFilled({ birth: !!m.birth_date, phone: !!m.phone, education: !!m.education_stage }); }).catch((e: Error) => toast.error(translateUi(e.message))); }, []);
     if (!me)
         return <Spinner page label="Loading your profile…"/>;
     const first = !me.profile_completed_at;
@@ -68,9 +70,21 @@ export function CompleteProfilePage() {
         }
     };
     const today = new Date(), latest = `${today.getFullYear() - 10}-12-31`;
+    const steps = [filled.birth, filled.phone, filled.education, !!work, languages.length > 0, skills.length > 0, interests.length > 0];
+    const done = steps.filter(Boolean).length, percent = Math.round((done / steps.length) * 100);
     return <div className="ws-page cp-page">
-      <Heading eyebrow={first ? "ONE LAST STEP" : "YOUR PROFILE"} title={translateUi(first ? "Complete your profile" : "Your profile details")} description={translateUi(first ? "Tell us a little about yourself so PLP can match you with the right courses, mentors and opportunities. It takes about two minutes." : "Keep your details up to date.")}/>
-      <form className="hub-form" onSubmit={(e) => { e.preventDefault(); void save(new FormData(e.currentTarget)); }}>
+      <header className="cp-hero">
+        <div>
+          <p className="cp-kicker">{translateUi(first ? "ONE LAST STEP" : "YOUR PROFILE")}</p>
+          <h1>{translateUi(first ? "Complete your profile" : "Your profile details")}</h1>
+          <p>{translateUi(first ? "Tell us a little about yourself so PLP can match you with the right courses, mentors and opportunities. It takes about two minutes." : "Keep your details up to date so PLP can keep matching you with the right opportunities.")}</p>
+        </div>
+        <div className="cp-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-label={translateUi("Profile completion")}>
+          <strong>{percent}%</strong><span>{translateUi("{p0} of {p1} required answers", { p0: done, p1: steps.length })}</span>
+          <i><b style={{ width: `${percent}%` }}/></i>
+        </div>
+      </header>
+      <form className="hub-form cp-form" onInput={(e) => { const f = new FormData(e.currentTarget); setFilled({ birth: !!f.get("birth_date"), phone: String(f.get("phone") ?? "").trim().length >= 7, education: !!f.get("education_stage") }); }} onSubmit={(e) => { e.preventDefault(); void save(new FormData(e.currentTarget)); }}>
         <Panel className="cp-section">
           <h2><b>1</b>{translateUi("About you")}</h2>
           <div className="cp-photo"><p className="cp-label">{translateUi("Profile picture")} <small>{translateUi("optional")}</small></p><ProfilePhoto size={88}/></div>
@@ -104,7 +118,7 @@ export function CompleteProfilePage() {
           <TagPicker label="Skills" values={skills} onChange={setSkills} ideas={SKILL_IDEAS} placeholder="Type a skill and press Enter"/>
           <TagPicker label="Interests" values={interests} onChange={setInterests} ideas={INTEREST_IDEAS} placeholder="Type an interest and press Enter"/>
         </Panel>
-        <div className="cp-submit"><button className="hub-button" disabled={busy}>{translateUi(busy ? "Saving…" : first ? "Finish and go to my dashboard" : "Save details")}<ArrowRight size={16}/></button></div>
+        <div className="cp-submit"><span className="hub-caption">{translateUi(done === steps.length ? "All set. Save to continue." : "Fields marked as optional can be left empty.")}</span><button className="hub-button" disabled={busy}>{translateUi(busy ? "Saving…" : first ? "Finish and go to my dashboard" : "Save details")}<ArrowRight size={16}/></button></div>
       </form>
     </div>;
 }
