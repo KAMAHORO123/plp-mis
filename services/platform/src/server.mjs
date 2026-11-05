@@ -129,7 +129,7 @@ const recordSchema = z
       .optional(),
   })
   .strict();
-const userFields = "id,email,name,role,status,school_id,created_at,requested_role,role_review,avatar_file_id,education_stage,institution,graduation_year,bio,skills,leadership";
+const userFields = "id,email,name,role,status,school_id,created_at,requested_role,role_review,avatar_file_id,education_stage,institution,graduation_year,bio,skills,leadership,birth_date,phone,linkedin,instagram,facebook,employment_status,employment_detail,languages,interests,profile_completed_at";
 class HttpError extends Error {
   constructor(status, message) {
     super(message);
@@ -535,6 +535,32 @@ export function createServer({
         return;
       if (await avatarRoute({ req, res, pathname: p, db, user, directory: uploadDirectory })) return;
       if (p === "/me" && req.method === "GET") return send(200, user);
+      if (p === "/me/details" && req.method === "PUT") {
+        // The "complete your profile" step: personal, contact, work and interest details in one save.
+        const link = (host) => z.string().trim().max(200).refine((v) => !v || /^https:\/\//i.test(v) && new URL(v).hostname.replace(/^www\./, "").endsWith(host), `Use a full https:// link to your ${host} profile.`);
+        const list = z.array(z.string().trim().min(1).max(60)).min(1).max(20);
+        const oldest = new Date(); oldest.setFullYear(oldest.getFullYear() - 100);
+        const youngest = new Date(); youngest.setFullYear(youngest.getFullYear() - 10);
+        const input = z.object({
+          birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine((v) => { const d = new Date(v); return d >= oldest && d <= youngest; }, "Enter a real date of birth."),
+          phone: z.string().trim().regex(/^\+?[0-9 ()-]{7,20}$/, "Enter a valid phone number."),
+          linkedin: link("linkedin.com"), instagram: link("instagram.com"), facebook: link("facebook.com"),
+          education_stage: z.enum(["high-school", "university", "graduated", "community"]),
+          institution: z.string().trim().max(120),
+          employment_status: z.enum(["Student", "Employed", "Self-employed", "Intern", "Volunteer", "Unemployed"]),
+          employment_detail: z.string().trim().max(120).default(""),
+          languages: list, skills: list, interests: list,
+        }).strict().parse(await body(req));
+        requireIt(input.employment_status !== "Self-employed" || input.employment_detail, 400, "Tell us the name of your business.");
+        // As with study details, a member who has left high school leaves the school's register scope.
+        const leavesSchool = user.role === "member" && user.school_id && input.education_stage !== "high-school";
+        const row = (await db.query(
+          `UPDATE users SET birth_date=$2, phone=$3, linkedin=$4, instagram=$5, facebook=$6, education_stage=$7, institution=$8, employment_status=$9, employment_detail=$10, languages=$11, skills=$12, interests=$13, profile_completed_at=coalesce(profile_completed_at, now())${leavesSchool ? ", school_id=NULL" : ""} WHERE id=$1 RETURNING ${userFields}`,
+          [user.id, input.birth_date, input.phone, input.linkedin, input.instagram, input.facebook, input.education_stage, input.institution, input.employment_status, input.employment_detail, input.languages, input.skills, input.interests],
+        )).rows[0];
+        await audit(db, user, "member.details", user.id);
+        return send(200, row);
+      }
       if (p === "/me/profile" && req.method === "PUT") {
         // Members keep their study details current. Moving on from high school leaves the school's
         // register scope; attendance, certificates and credits stay with the member.

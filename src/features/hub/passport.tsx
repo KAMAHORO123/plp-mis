@@ -14,7 +14,7 @@ import { FormModal } from './modal';
 import { confirmAction } from "@/components/shared/confirm-dialog";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowRight, Award, BookOpen, Clock3, Coins, Download, Fingerprint, Plus, PencilLine, Flag, Users } from "lucide-react";
+import { ArrowRight, Award, BookOpen, Clock3, Coins, Download, Fingerprint, Plus, PencilLine, Flag, Users, IdCard } from "lucide-react";
 import { toast } from "sonner";
 import { clubs, mentors } from "./data";
 import { useHub, balance, type HubCertificate } from "./store";
@@ -199,6 +199,7 @@ export function PassportPage() {
     return (<div className="ws-page pv-page">
       <ProfileCard kicker="PLP DIGITAL YOUTH PASSPORT" bio={profile.bio || "Add a short bio so mentors and communities know what you care about."} actions={<>
           <button className="hub-button secondary" onClick={() => setEdit(true)}><PencilLine size={16}/>{translateUi(" Edit profile")}</button>
+          <Link className="hub-button secondary" to="/complete-profile"><IdCard size={16}/>{translateUi("Profile details")}</Link>
           <button className="hub-button" onClick={downloadPassport}><Download size={16}/>{translateUi(" Download PDF")}</button>
         </>} stats={[{ label: "Courses completed", value: courses, icon: BookOpen }, { label: "Certificates", value: certificates, icon: Award }, { label: "Verified credits", value: figure(balance(state, profile.id)), icon: Coins }, { label: "Volunteer hours", value: overview ? figure(volunteerHours) : "—", icon: Clock3 }]}/>
       {translateUi(edit && (<FormModal title={translateUi("Edit your passport")} description={translateUi("Shown on your youth passport and in the PDF you download.")} onClose={() => setEdit(false)}>

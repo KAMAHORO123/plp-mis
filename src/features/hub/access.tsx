@@ -26,7 +26,9 @@ async function authRequest(path: string, body: object) {
     return data;
 }
 /** The account last confirmed by the server, kept while the app is open. */
-let confirmedAccess: { profileId: string; role: HubRole } | null = null;
+let confirmedAccess: { profileId: string; role: HubRole; complete: boolean } | null = null;
+/** Called once the profile details are saved, so the guard stops sending the person to the form. */
+export const markProfileComplete = () => { if (confirmedAccess) confirmedAccess.complete = true; };
 export function MemberGuard({ allowed }: {
     allowed?: HubRole[];
 }) {
@@ -39,16 +41,22 @@ export function MemberGuard({ allowed }: {
     const [checked, setChecked] = useState(!!known);
     const [accessError, setAccessError] = useState("");
     const [serverRole, setServerRole] = useState<HubRole | null>(known);
+    const [complete, setComplete] = useState(confirmedAccess?.complete ?? true);
     useEffect(() => {
         let active = true;
         setAccessError("");
         platformApi<{
             role: string;
+            profile_completed_at: string | null;
         }>("/me").then(account => {
             const role: HubRole = account.role === 'admin' ? 'Administrator' : account.role === 'trainer' ? 'Trainer' : account.role === 'mentor' ? 'Mentor' : account.role === 'leader' ? 'Club leader' : 'Community member';
-            confirmedAccess = session ? { profileId: session.profileId, role } : null;
-            if (active)
+            // Administrators are not asked to complete the member profile.
+            const done = role === 'Administrator' || !!account.profile_completed_at || !!confirmedAccess?.complete;
+            confirmedAccess = session ? { profileId: session.profileId, role, complete: done } : null;
+            if (active) {
                 setServerRole(role);
+                setComplete(done);
+            }
         }).catch(e => { if (active) {
             confirmedAccess = null;
             setServerRole(null);
@@ -67,6 +75,9 @@ export function MemberGuard({ allowed }: {
         return <div className="hub-access-shell"><Panel><Heading title={translateUi("Sign in required")} description={translateUi(accessError || "Your account access could not be confirmed.")}/><Link className="hub-button" to="/auth/login">{translateUi("Sign in again")}</Link></Panel></div>;
     if (!isMember)
         return <Navigate to="/application-status" replace/>;
+    // The saved form marks the cache straight away, before the next server check catches up.
+    if (!complete && !confirmedAccess?.complete && location.pathname !== "/complete-profile")
+        return <Navigate to={`/complete-profile?returnTo=${encodeURIComponent(location.pathname + location.search)}`} replace/>;
     if (allowed && !allowed.includes(serverRole))
         return (<div className="hub-content">
         <Empty>

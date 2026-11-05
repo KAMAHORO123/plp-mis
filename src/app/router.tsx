@@ -22,6 +22,7 @@ import { PassportPage, CertificatesPage, VerifyPage, CreditsPage, } from "@/feat
 import { OpportunitiesPage, ApplicationsPage } from "@/features/hub/opportunities";
 import { MentorshipPage, MentorDashboard } from "@/features/hub/mentorship";
 import { StudioPage } from "@/features/hub/admin";
+import { CompleteProfilePage } from "@/features/hub/complete-profile";
 import { JoinPage, StaffPendingPage, SignInPage, ForgotPasswordPage, ApplicationStatusPage, CoursePreviewPage, MemberGuard, } from "@/features/hub/access";
 import { MembershipsPage } from "@/features/hub/memberships";
 const OverviewPage = lazy(() => import("@/features/dashboard/pages/overview-page").then((m) => ({
@@ -138,6 +139,7 @@ export const router = createBrowserRouter([
                                     { path: "community", element: <Navigate to="/clubs" replace/> },
                                     { path: "clubs", element: <ActivitiesPage /> },
                                     { path: "passport", element: <ProfileRoute /> },
+                                    { path: "complete-profile", element: <CompleteProfilePage /> },
                                     {
                                         path: "profile",
                                         element: <Navigate to="/passport" replace/>,

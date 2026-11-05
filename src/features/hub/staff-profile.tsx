@@ -94,6 +94,7 @@ export function StaffProfilePage() {
     return (<div className="ws-page pv-page">
       <ProfileCard kicker="PLP STAFF PROFILE" subtitle={subtitle} bio={profile.bio || mentorCard?.bio} actions={<>
           <button className="hub-button secondary" onClick={() => setEdit(true)}><PencilLine size={16}/>{translateUi(" Edit profile")}</button>
+          <Link className="hub-button secondary" to="/complete-profile"><IdCard size={16}/>{translateUi("Profile details")}</Link>
           {translateUi(links[0] && <Link className="hub-button" to={links[0][0]}><LayoutGrid size={16}/> {translateUi(links[0][1])}</Link>)}
         </>} stats={stats}/>
       {translateUi(edit && (<FormModal title={translateUi("Edit your profile")} description={translateUi(role === 'Mentor' ? 'Your mentor title, area and availability are edited from the mentor dashboard.' : 'Shown on your profile.')} onClose={() => setEdit(false)}>

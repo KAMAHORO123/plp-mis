@@ -1,0 +1,34 @@
+/* Complete your profile: numbered sections, tap-to-add tags, and a work-situation chooser. */
+.cp-page { max-width: 860px; }
+.cp-page .hub-form { display: grid; gap: 16px; }
+.cp-section h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; font-family: Sora, sans-serif; font-size: 17px; font-weight: 600; color: var(--ds-ink, #101828); }
+.cp-section h2 b { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--ds-accent-soft, #e3effa); color: var(--ds-accent, #1c73bb); font-size: 13px; }
+.cp-section h2 small { font: 500 12px Inter, system-ui, sans-serif; color: var(--ds-muted, #667085); }
+.cp-photo { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+.cp-three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cp-work { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0; border: 0; }
+.cp-work legend { margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--ds-ink, #344054); }
+.cp-work label { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid var(--ds-line, #d0d5dd); border-radius: 999px; background: var(--ds-surface, #fff); font-size: 13.5px; cursor: pointer; }
+.cp-work label.on { border-color: var(--ds-accent, #1c73bb); background: var(--ds-accent-soft, #e3effa); color: var(--ds-accent, #1c73bb); font-weight: 600; }
+.cp-work input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.cp-work label:focus-within { outline: 2px solid var(--ds-accent, #1c73bb); outline-offset: 2px; }
+.cp-work + .hub-field { margin-top: 14px; }
+.cp-tags + .cp-tags { margin-top: 18px; }
+.cp-tag-box { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 44px; padding: 6px 8px; border: 1px solid var(--ds-line, #d0d5dd); border-radius: var(--ds-r-ctl, 10px); background: var(--ds-surface, #fff); }
+.cp-tag-box:focus-within { border-color: var(--ds-accent, #1c73bb); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ds-accent, #1c73bb) 18%, transparent); }
+.cp-tag-box input { flex: 1; min-width: 140px; border: 0 !important; box-shadow: none !important; padding: 4px !important; min-height: 0 !important; background: transparent; outline: none; }
+.cp-tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 6px 4px 10px; border-radius: 999px; background: var(--ds-accent-soft, #e3effa); color: var(--ds-accent, #1c73bb); font-size: 13px; font-weight: 600; }
+.cp-tag button { display: grid; place-items: center; width: 20px; height: 20px; border: 0; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; }
+.cp-tag button:hover { background: rgba(28, 115, 187, .15); }
+.cp-ideas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.cp-ideas button { padding: 4px 10px; border: 1px dashed var(--ds-line, #d0d5dd); border-radius: 999px; background: transparent; color: var(--ds-muted, #475467); font-size: 12.5px; cursor: pointer; }
+.cp-ideas button:hover { border-color: var(--ds-accent, #1c73bb); color: var(--ds-accent, #1c73bb); }
+.cp-submit { display: flex; justify-content: flex-end; }
+.cp-submit .hub-button { min-height: 48px; padding: 0 22px; }
+@media (max-width: 640px) { .cp-three { grid-template-columns: 1fr; } .cp-submit .hub-button { width: 100%; justify-content: center; } .cp-photo { align-items: flex-start; } }
+/* Win over the general form label rules so the work choices stay compact pills. */
+.hub-app .cp-page .cp-work label { display: inline-flex; width: auto; margin: 0; gap: 0; }
+.hub-app .cp-page .cp-work { display: flex; }
+.hub-app .cp-page .cp-photo { flex-direction: column; align-items: flex-start; gap: 8px; }
+.cp-label { margin: 0; font-size: 13px; font-weight: 600; color: var(--ds-ink, #344054); }
+.cp-label small { font-weight: 500; color: var(--ds-muted, #667085); }
