@@ -134,7 +134,7 @@ export function HomePage() {
     return <>
   <HeroSlider />
   <Reach />
-  <section className="plp-org-intro"><p className="plp-section-label">{translateUi("WHAT BRINGS US TOGETHER")}</p><h2>{translateUi("Peace is at the heart.")}<br />{translateUi("Young people lead the work.")}</h2><p>{translateUi("Remembering our history. Creating space for expression. Supporting one another. Building skills and putting them to use. These are connected parts of PLP\u2019s work.")}</p></section>
+  <section className="plp-org-intro"><p className="plp-section-label">{translateUi("WHAT BRINGS US TOGETHER")}</p><h2>{translateUi("Peace is at the heart.")}<br />{translateUi("Young people lead the work.")}</h2></section>
   <ProgrammeFeatures />
   <Pathway />
   <PhotoPlayground />
