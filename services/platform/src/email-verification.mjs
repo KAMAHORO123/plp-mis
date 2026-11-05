@@ -47,6 +47,12 @@ export async function confirmVerification(db, email, code) {
       "UPDATE email_verifications SET attempts=attempts+1 WHERE user_id=$1",
       [row.user_id],
     );
+    // A daily cap per account that a new code does not reset, so codes cannot be guessed across many requests.
+    const daily = (await tx.query(
+      "INSERT INTO auth_limits(key,count,expires_at) VALUES($1,1,now()+interval '24 hours') ON CONFLICT(key) DO UPDATE SET count=CASE WHEN auth_limits.expires_at<now() THEN 1 ELSE auth_limits.count+1 END,expires_at=CASE WHEN auth_limits.expires_at<now() THEN now()+interval '24 hours' ELSE auth_limits.expires_at END RETURNING count",
+      [`code-guess:verify:${row.user_id}`],
+    )).rows[0].count;
+    if (daily > 15) return false;
     if (!(await verifyPassword(code, row.code_hash))) return false;
     await tx.query("UPDATE users SET email_verified_at=now(), status=CASE WHEN status='pending' AND role='member' AND requested_role IS NULL THEN 'approved' ELSE status END WHERE id=$1", [
       row.user_id,

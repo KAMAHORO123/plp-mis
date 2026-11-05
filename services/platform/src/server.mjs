@@ -182,6 +182,12 @@ async function body(req) {
     throw new HttpError(400, "Invalid JSON");
   }
 }
+/** The caller's network: an IPv4 /24 or an IPv6 /64, so one host cannot dodge limits by rotating addresses. */
+function clientNetwork(req, trustProxy) {
+  const ip = String((trustProxy ? req.headers["x-real-ip"] : "") || req.socket.remoteAddress || "").replace(/^::ffff:/, "");
+  if (ip.includes(":")) return ip.split(":").slice(0, 4).join(":") + "::/64";
+  return ip.split(".").slice(0, 3).join(".") + ".0/24";
+}
 async function audit(db, user, action, id) {
   await db.query(
     "INSERT INTO audit_log(actor_id,action,entity_id) VALUES($1,$2,$3)",
@@ -232,9 +238,7 @@ export function createServer({
           (req.method === "POST" || p === "/auth/google")) ||
         (p === "/me/password" && req.method === "PUT")
       ) {
-        const key = digest(
-          `${trustProxy ? req.headers["x-real-ip"] || req.socket.remoteAddress : req.socket.remoteAddress}:${p}`,
-        );
+        const key = digest(`${clientNetwork(req, trustProxy)}:${p}`);
         const limit = await db.query(
           "INSERT INTO auth_limits(key,count,expires_at) VALUES($1,1,now()+interval '15 minutes') ON CONFLICT(key) DO UPDATE SET count=CASE WHEN auth_limits.expires_at<now() THEN 1 ELSE auth_limits.count+1 END,expires_at=CASE WHEN auth_limits.expires_at<now() THEN now()+interval '15 minutes' ELSE auth_limits.expires_at END RETURNING count",
           [key],
@@ -366,10 +370,16 @@ export function createServer({
         requireIt(!weak, 400, weak);
         requireIt(recoveryEnabled, 503, "Email delivery is currently unavailable. Please try again later.");
         const hash = await hashPassword(input.password);
-        await db.query(
-          "INSERT INTO users(id,email,name,password_hash,requested_role) VALUES($1,$2,$3,$4,$5) ON CONFLICT(email) DO NOTHING",
+        // An address nobody has verified yet belongs to whoever proves they own it: a new sign-up replaces
+        // the unverified details, so no one can claim someone else's email ahead of them.
+        const claimed = (await db.query(
+          "INSERT INTO users(id,email,name,password_hash,requested_role) VALUES($1,$2,$3,$4,$5) ON CONFLICT(email) DO UPDATE SET name=excluded.name, password_hash=excluded.password_hash, requested_role=excluded.requested_role WHERE users.email_verified_at IS NULL RETURNING id",
           [randomUUID(), input.email, input.name, hash, input.requested_role || null],
-        );
+        )).rows[0];
+        if (claimed) {
+          await db.query("DELETE FROM email_verifications WHERE user_id=$1", [claimed.id]);
+          await db.query("DELETE FROM sessions WHERE user_id=$1", [claimed.id]);
+        }
         await requestVerification(db, input.email);
         return send(202, {
           message:
@@ -379,7 +389,8 @@ export function createServer({
       if (p === "/auth/login" && req.method === "POST") {
         const input = credentials.parse(await body(req));
         // Per-account lockout on top of the per-address limit: 10 failed attempts lock the account for 15 minutes.
-        const accountKey = digest(`login-account:${input.email}`);
+        // Counted per account and per network, so failed guesses from elsewhere cannot lock the owner out.
+        const accountKey = digest(`login-account:${input.email}:${clientNetwork(req, trustProxy)}`);
         const failures = (await db.query("SELECT count FROM auth_limits WHERE key=$1 AND expires_at>now()", [accountKey])).rows[0]?.count ?? 0;
         requireIt(failures < 10, 429, "Too many failed sign-in attempts for this account. Wait 15 minutes or reset your password.");
         const result = await db.query("SELECT * FROM users WHERE email=$1", [
@@ -537,7 +548,9 @@ export function createServer({
       if (p === "/me" && req.method === "GET") return send(200, user);
       if (p === "/me/details" && req.method === "PUT") {
         // The "complete your profile" step: personal, contact, work and interest details in one save.
-        const link = (host) => z.string().trim().max(200).refine((v) => !v || /^https:\/\//i.test(v) && new URL(v).hostname.replace(/^www\./, "").endsWith(host), `Use a full https:// link to your ${host} profile.`);
+        // The link must be https and on the real site (or one of its subdomains), never a look-alike domain.
+        const onHost = (v, host) => { try { const u = new URL(v); const h = u.hostname.toLowerCase(); return u.protocol === "https:" && (h === host || h.endsWith("." + host)); } catch { return false; } };
+        const link = (host) => z.string().trim().max(200).refine((v) => !v || onHost(v, host), `Use a full https:// link to your ${host} profile.`);
         const list = z.array(z.string().trim().min(1).max(60)).min(1).max(20);
         const oldest = new Date(); oldest.setFullYear(oldest.getFullYear() - 100);
         const youngest = new Date(); youngest.setFullYear(youngest.getFullYear() - 10);
@@ -1143,6 +1156,12 @@ export function createServer({
           }
           // ALX certificates are recognised on upload; administrators can revoke one afterwards.
           if (kind === "proofs") input.status = "approved";
+          if (kind === "events" && user.role !== "admin") {
+            // Activities are recorded as they happen: no back-dating beyond a month, and no self-approval.
+            const earliest = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+            requireIt(!input.date || input.date >= earliest, 400, "Activities can be recorded up to 30 days after they happen.");
+            requireIt(!["approved", "returned", "rejected"].includes(input.status || ""), 403, "Only administrators can review activities.");
+          }
           if (kind === "applications" && input.category?.startsWith("activity:")) {
             const event = (await db.query("SELECT data FROM records WHERE kind='events' AND id::text=$1", [input.category.slice(9)])).rows[0];
             requireIt(event, 404, "Activity not found");
@@ -1223,6 +1242,9 @@ export function createServer({
                   "Only administrators can review submissions",
                 );
               }
+              // Only administrators approve, return or reject an activity.
+              if (kind === "events" && user.role !== "admin")
+                requireIt((input.data.status || "") === (row.data.status || "") || !["approved", "returned", "rejected"].includes(input.data.status || ""), 403, "Only administrators can review activities.");
               // Once reviewed, an application is frozen for its owner; what it was submitted for never changes.
               if (kind === "applications" && user.role !== "admin" && row.data.reference_id) {
                 requireIt(!["approved", "rejected"].includes(row.data.status), 409, "This application has been reviewed and can no longer be edited.");
@@ -1563,6 +1585,8 @@ export function createServer({
               [id],
             )
           ).rows;
+          // A leader reporting an activity earns no credits from their own report; an administrator's credits stand.
+          if (user.role !== "admin") for (let i = attendees.length - 1; i >= 0; i--) if (attendees[i].member_id === user.id) attendees.splice(i, 1);
           const amount = {
             Meeting: 10,
             Volunteering: 20,

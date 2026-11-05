@@ -18,7 +18,7 @@ export interface AssessmentAttempt {
   passed: boolean;
   reason: "submitted" | "time" | "focus";
   focusLosses: number;
-  results: boolean[];
+  results?: boolean[];
 }
 export interface ActiveAttempt {
   assessmentId: string;

@@ -29,7 +29,8 @@ function shuffle(items) {
   for (let i = copy.length - 1; i > 0; i--) { const j = randomInt(i + 1); [copy[i], copy[j]] = [copy[j], copy[i]]; }
   return copy;
 }
-const summary = (a, kind) => ({ id: a.id, assessment_id: a.assessment_id, started_at: a.started_at, submitted_at: a.submitted_at, score: a.score, total: a.total, percent: a.percent, passed: a.passed, reason: a.reason, focus_losses: a.focus_losses, ...(kind === "quiz" ? { results: a.results } : {}) });
+// Which questions were right is shown only after a pass, so repeated attempts cannot reveal the answers.
+const summary = (a, kind) => ({ id: a.id, assessment_id: a.assessment_id, started_at: a.started_at, submitted_at: a.submitted_at, score: a.score, total: a.total, percent: a.percent, passed: a.passed, reason: a.reason, focus_losses: a.focus_losses, ...(kind === "quiz" && a.passed ? { results: a.results } : {}) });
 
 export async function completeIfEligible(tx, e, course) {
   const lessons = course.data.lessons || [];

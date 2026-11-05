@@ -1,6 +1,7 @@
 import { useSiteLanguage } from './i18n/language';
 import { Link, type LinkProps } from 'react-router-dom';
-const systemPaths = ['/auth/signup', '/auth/login', '/hub', '/courses'];
+// Pages that live in the Hub (signing in first where needed), not on the public website.
+const systemPaths = ['/auth/signup', '/auth/login', '/hub', '/courses', '/opportunities', '/clubs', '/passport'];
 export function SiteLink(props: LinkProps) {
     const language = useSiteLanguage();
     const path = typeof props.to === 'string' ? props.to : '';

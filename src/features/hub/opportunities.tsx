@@ -24,7 +24,8 @@ const isHttps = (v: string) => { try {
 catch {
     return false;
 } };
-const daysLeft = (deadline: string) => Math.ceil((new Date(`${deadline}T23:59:59`).getTime() - Date.now()) / 86400000);
+// Whole calendar days until the deadline: 0 on the deadline day itself, negative once it has passed.
+const daysLeft = (deadline: string) => { const now = new Date(), [y, m, d] = deadline.split("-").map(Number); return Math.round((Date.UTC(y, m - 1, d) - Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000); };
 const deadlineLabel = (deadline: string) => { const d = daysLeft(deadline); return d < 0 ? "Closed" : d === 0 ? "Closes today" : d === 1 ? "1 day left" : d <= 14 ? `${d} days left` : `Apply by ${new Date(`${deadline}T12:00:00`).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}`; };
 const shortDate = (day: string) => new Date(`${day}T12:00:00`).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
 const external = (o: Opportunity) => o.applyMode === "external" && !!o.applyUrl;

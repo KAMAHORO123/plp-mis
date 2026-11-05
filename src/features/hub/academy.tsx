@@ -515,7 +515,7 @@ function AssessmentPanel({ course, enrollment, assessment }: {
           <div>
             <strong>{translateUi("Latest attempt: ")}{translateUi(last.percent)}{translateUi("% (")}{translateUi(last.score)}{translateUi("/")}{translateUi(last.total)}{translateUi(") \u00B7 ")}{translateUi(last.passed ? "Passed" : "Not passed")}</strong>
             <small>{translateUi("Submitted ")}{translateUi(new Date(last.submittedAt).toLocaleString())}{translateUi(last.reason === "time" ? " · time expired" : last.reason === "focus" ? " · terminated after leaving the assessment" : "")}</small>
-            {translateUi(assessment.kind === "quiz" && <p>{translateUi(last.results.map((ok, i) => <span key={i} className={ok ? "ok" : "no"}>{translateUi("Q")}{translateUi(i + 1)} {translateUi(ok ? "correct" : "incorrect")}</span>))}</p>)}
+            {translateUi(assessment.kind === "quiz" && last.results && <p>{translateUi(last.results.map((ok, i) => <span key={i} className={ok ? "ok" : "no"}>{translateUi("Q")}{translateUi(i + 1)} {translateUi(ok ? "correct" : "incorrect")}</span>))}</p>)}
             {translateUi(assessment.kind === "exam" && !last.passed && <p className="hub-caption">{translateUi("Exam answers are not revealed. Review the modules before your next attempt.")}</p>)}
           </div>
         </div>))}
