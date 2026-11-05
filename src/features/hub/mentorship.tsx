@@ -172,7 +172,7 @@ export function MentorshipPage() {
               <p className="hub-mentor-role">{translateUi(m.title)}</p>
               <p>{translateUi(m.bio || "Available for mentorship sessions.")}</p>
               {translateUi(m.accepting === false
-                ? <button className="hub-button secondary" disabled>{translateUi("Not taking new requests")}</button>
+                ? <button className="hub-button secondary" disabled>{translateUi("Not accepting new requests")}</button>
                 : <div className="hub-actions"><button className="hub-button secondary" onClick={() => { setRequestFormat("Online"); setRequesting(m); }}>{translateUi("Request a session ")}<HeartHandshake size={16}/></button><button className="hub-text-button" onClick={() => { setRequestFormat("Visit"); setRequesting(m); }}>{translateUi("Request a visit")}</button></div>)}
             </div>)))}
         </div>

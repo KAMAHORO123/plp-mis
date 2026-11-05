@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/server.mjs",
     "migrate": "node src/migrate.mjs",
-    "test": "node --test test/*.test.mjs",
+    "test": "node --test test/*.test.mjs regression/*.test.mjs",
     "bootstrap-admin": "node src/bootstrap-admin.mjs",
     "mail:check": "node src/check-mail.mjs",
     "mail:worker": "node src/mail-worker.mjs",

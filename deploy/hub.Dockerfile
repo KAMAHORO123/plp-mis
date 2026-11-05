@@ -7,6 +7,8 @@ COPY index.html vite.config.ts tailwind.config.ts postcss.config.js tsconfig*.js
 COPY public ./public
 COPY src ./src
 COPY scripts/prepare-vision.mjs ./scripts/prepare-vision.mjs
+ARG VITE_SITE_URL
+ENV VITE_SITE_URL=$VITE_SITE_URL
 RUN npm run build
 FROM nginx:alpine
 COPY deploy/hub-nginx.conf /etc/nginx/conf.d/default.conf

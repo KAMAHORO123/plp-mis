@@ -116,6 +116,8 @@ services:
     build:
       context: ..
       dockerfile: deploy/hub.Dockerfile
+      args:
+        VITE_SITE_URL: https://${SITE_HOST}
     networks: [edge]
     logging: *logging
     restart: unless-stopped

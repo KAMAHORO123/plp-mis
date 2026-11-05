@@ -334,14 +334,14 @@
 .plp-programme-poster.poster-4 { grid-column: span 2; margin-top: 100px; }
 .plp-poster-link { display: block; position: relative; isolation: isolate; overflow: hidden; background: #18273c; color: white; min-height: 410px; border-radius: 8px; }
 .poster-0 .plp-poster-link { min-height: 490px; }
-.poster-1 .plp-poster-link { min-height: 410px; border-radius: 160px 160px 8px 8px; }
+.poster-1 .plp-poster-link { min-height: 410px; border-radius: 8px; }
 .poster-2 .plp-poster-link { border-radius: 8px 8px 120px 8px; }
 .poster-4 .plp-poster-link { border-radius: 120px 8px 8px 8px; }
 .plp-poster-link > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; transition: transform .6s cubic-bezier(.2,.65,.3,1) !important; }
 .plp-poster-link::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg,#07152430 0%,transparent 25%,#06142670 55%,#061426f5 100%); }
 .plp-poster-link:hover > img,.plp-poster-link:focus-visible > img { transform: scale(1.055); }
 .plp-poster-number { position: absolute; left: 25px; top: 25px; letter-spacing: .15em; font-size: 10px; }
-.poster-1 .plp-poster-number { top: 55px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+.poster-1 .plp-poster-number { top: 25px; left: 25px; }
 .plp-poster-caption { position: absolute; bottom: 28px; left: 26px; right: 26px; padding-right: 20px; }
 .plp-public-site .plp-poster-caption p { color: #d2e5ff; font-size: 10px; text-transform: uppercase; letter-spacing: .12em; }
 .plp-poster-caption h2 { font-size: clamp(24px,2.7vw,38px); color: white; font-weight: 500; letter-spacing: -.04em; margin: 10px 0; }

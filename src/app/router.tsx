@@ -72,7 +72,7 @@ const CoordinatorProfilePage = lazy(() => import("@/features/coordinator/pages/c
     default: m.CoordinatorProfilePage,
 })));
 const withSuspense = (node: React.ReactNode) => (<Suspense fallback={<PageLoader />}>{translateUi(node)}</Suspense>);
-function AcademyRoute() { useSiteLanguage(); const { profile } = useHub(); return profile.role === 'Club leader' ? <Navigate to="/learning-materials" replace/> : <AcademyPage />; }
+function AcademyRoute() { useSiteLanguage(); return <AcademyPage />; }
 /** Redirects an old address to its new one, keeping ?query and #fragment (returnTo, reset tokens). */
 function MovedTo({ path }: {
     path: string;
@@ -145,7 +145,8 @@ export const router = createBrowserRouter([
                                     { path: "certificates", element: <CertificatesPage /> },
                                     { path: "certificate-centre", element: <MembershipCertificatesPage /> },
                                     { path: "learning-certificates", element: <Navigate to="/certificates" replace/> },
-                                    { element: <MemberGuard allowed={["Club leader", "Administrator"]}/>, children: [{ path: "school-members", element: <SchoolRegisterRoute /> }, { path: "learning-materials", element: <LearningMaterialsPage /> }] },
+                                    { path: "learning-materials", element: <LearningMaterialsPage /> },
+                                    { element: <MemberGuard allowed={["Club leader", "Administrator", "Mentor"]}/>, children: [{ path: "school-members", element: <SchoolRegisterRoute /> }] },
                                     { path: "credits", element: <CreditsPage /> },
                                     { path: "calendar", element: <CalendarPage /> },
                                     {

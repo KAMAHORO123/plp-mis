@@ -29,7 +29,7 @@ export function buildSchoolReport(state: HubState, schoolId: string, schoolName:
       reported: held.filter((a) => a.report).length,
       hours: held.reduce((n, a) => n + (a.hours ?? 0) * a.attendees.length, 0),
       certificates: issued.filter((r) => inRange(r.issued ?? r.submitted)).reduce((n, r) => n + r.members.length, 0),
-      materials: state.operations.completions.filter((c) => c.schoolId === schoolId && inRange(c.completedAt.slice(0, 10))).length,
+      materials: state.operations.completions.filter((c) => c.stage === "Completed" && c.schoolId === schoolId && inRange(c.completedAt.slice(0, 10))).length,
     },
     activities: activities.map((a) => ({
       id: a.id, date: a.date, title: a.title, type: a.type ?? 'Meeting', hours: a.hours ?? 0, attended: a.attendees.length,

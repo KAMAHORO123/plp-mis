@@ -607,14 +607,15 @@ export function HubProvider({ children }: {
             }>("/me");
             if (!me || !active)
                 return;
-            const staff = me.role === "admin" || (me.role === "leader" && !!me.school_id);
+            const staff = me.role === "admin" || (["leader", "mentor"].includes(me.role) && !!me.school_id);
             const [schools, members, requests, materials, completions, events, accounts, proofs, applications] = await Promise.all([
-                get<School[]>("/schools"), staff ? get<Rec<Data>[]>("/records/members") : null, staff ? get<Req[]>("/certificate-requests") : null,
+                get<School[]>("/schools"), staff ? get<Rec<Data>[]>("/records/members") : null, staff && me.role !== "mentor" ? get<Req[]>("/certificate-requests") : null,
                 get<Rec<Data>[]>("/records/materials"), staff ? get<{
                     material_id: string;
                     school_id: string;
                     completed_by: string;
                     completed_at: string;
+                    stage: "Not started" | "In progress" | "Completed";
                 }[]>("/material-completions") : null,
                 get<Rec<Data>[]>("/records/events"), staff ? get<{
                     id: string;
@@ -645,7 +646,7 @@ export function HubProvider({ children }: {
                 if (materials)
                     s.operations.materials = materials.map(m => ({ id: m.id, version: m.version, title: m.data.title, file: file(m.data.attachments?.[0] ?? "", m.data.description || m.data.title), schoolIds: m.data.school_ids ?? [], createdAt: m.created_at }));
                 if (completions)
-                    s.operations.completions = completions.map(c => ({ materialId: c.material_id, schoolId: c.school_id, by: c.completed_by, completedAt: c.completed_at }));
+                    s.operations.completions = completions.map(c => ({ materialId: c.material_id, schoolId: c.school_id, by: c.completed_by, completedAt: c.completed_at, stage: c.stage }));
                 if (events)
                     s.operations.activities = events.map(e => ({ id: e.id, version: e.version, attachments: e.data.attachments ?? [], hostId: e.school_id ?? e.data.category ?? "plp", title: e.data.title, date: e.data.date ?? e.created_at.slice(0, 10), description: e.data.description ?? "", type: e.data.activity_type ?? "Meeting", hours: e.data.hours, startTime: e.data.start_time, location: e.data.location, photos: (e.data.attachments ?? []).map((id, i) => file(id, `Photo ${i + 1}`)), authorId: e.owner_id, report: e.data.report || undefined, reportedAt: e.data.report ? e.updated_at : undefined, reviewedAt: e.data.status === "approved" ? e.updated_at : undefined, attendees: (attendance.get(e.id) ?? []).map(a => a.member_id ?? a.register_member_id!) }));
                 if (accounts)

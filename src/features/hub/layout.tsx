@@ -35,11 +35,11 @@ export const hubNav = [
 const publicNav = [
     { to: "/", label: "Home" },
     { to: "/about", label: "About PLP" },
+    { to: "/plp-hub", label: "PLP Hub" },
     { to: "/programmes", label: "Our programmes" },
     { to: "/stories", label: "Our impact" },
     { to: "/album", label: "PLP album" },
     { to: "/plp-canada", label: "PLP Canada" },
-    { to: "/plp-hub", label: "PLP Hub" },
 ];
 function Layout({ privateWorkspace = false }: {
     privateWorkspace?: boolean;
@@ -150,6 +150,10 @@ function Layout({ privateWorkspace = false }: {
             { to: '/calendar', label: 'Calendar', icon: CalendarDays },
             { to: '/passport', label: admin || trainer || mentor || coordinator ? 'My profile' : 'Youth passport', icon: Fingerprint },
         ];
+        // Member benefits are shared by every role, alongside its specialist tools.
+        for (const item of [...hubNav, { to: '/learning-materials', label: 'Learning materials', icon: BookOpen }, ...(mentor && profile.schoolId ? [{ to: '/school-members', label: 'My school', icon: Users }] : [])]) {
+            if (!links.some(link => link.to === item.to)) links.push(item);
+        }
         // Several links can share a path (e.g. studio tabs); the one whose query matches wins.
         const pathOf = (to: string) => to.split("?")[0];
         const onPath = links.filter((item) => location.pathname === pathOf(item.to) ||
@@ -277,15 +281,15 @@ function Layout({ privateWorkspace = false }: {
                 <LogOut size={19}/>
               </button>
             </>) : (<>
-              <Link to={accessLink} className="hub-signin">
+              <Link to={session ? accessLink : "/auth/signup"} className="hub-signin">
                 {translateUi(isMember
                 ? "My Hub"
                 : session
                     ? "Account status"
-                    : "Sign in")}
+                    : "Join PLP")}
                 <ArrowUpRight size={15}/>
               </Link>
-              {translateUi(!session ? (<Link className="hub-button" to="/auth/signup">{translateUi(" Join PLP ")}</Link>) : (<button className="hub-text-button" onClick={signout}>{translateUi(" Sign out ")}</button>))}
+              {translateUi(!session ? (<Link className="hub-button" to="/auth/login">{translateUi(" PLP Hub ")}</Link>) : (<button className="hub-text-button" onClick={signout}>{translateUi(" Sign out ")}</button>))}
             </>))}
           <button className="hub-menu" aria-label={translateUi(open ? "Close navigation" : "Open navigation")} aria-expanded={open} aria-controls="plp-public-navigation" onClick={() => setOpen(!open)}>
             {translateUi(open ? <X /> : <Menu />)}

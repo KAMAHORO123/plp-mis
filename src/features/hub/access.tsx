@@ -115,6 +115,7 @@ export function SignInPage() {
         return <Navigate to={returnDestination(params.get("returnTo") || sessionStorage.getItem("plp-meeting-return"))} replace/>;
     return (<div className="hub-access-shell">
       <Panel>
+        <a className="hub-text-link" href={import.meta.env.VITE_SITE_URL || "/"}>{translateUi("← Back to PLP website")}</a>
         <Heading title={translateUi("Log in to your account")} description={translateUi("Enter your credentials to access your PLP Hub.")}/>
         <form className="hub-form" onSubmit={async (e) => {
             e.preventDefault();
@@ -325,8 +326,8 @@ export function JoinPage() {
                     id,
                     name,
                     email,
-                    role: f.get("category") === "High school" ? "Student member" : f.get("category") === "University" ? "University member" : "Community member",
-                    memberCategory: String(f.get("category") || "Community"),
+                    role: "Community member",
+                    memberCategory: "Community",
                     requestedRole: f.get("accountRole") === "Member" ? undefined : String(f.get("accountRole")),
                     schoolName: String(f.get("school") || "").trim().toUpperCase() || undefined,
                     schoolId: demoSchools.find(s => s.name.toUpperCase() === String(f.get("school") || "").trim().toUpperCase())?.id,
@@ -366,7 +367,6 @@ export function JoinPage() {
           <Field label={translateUi("Account type")}>
             <select name="accountRole" value={accountRole} onChange={e => setAccountRole(e.target.value)}><option value={"Member"}>{translateUi("Member")}</option><option value={"Club leader"}>{translateUi("Club leader")}</option><option value={"Trainer"}>{translateUi("Trainer")}</option><option value={"Mentor"}>{translateUi("Mentor")}</option></select>
           </Field>
-          {translateUi(accountRole === "Member" && <Field label={translateUi("Member category")}><select name="category"><option value={"Community"}>{translateUi("Community")}</option><option value={"High school"}>{translateUi("High school")}</option><option value={"University"}>{translateUi("University")}</option></select></Field>)}
           <Field label={translateUi("School (if applicable)")}><input name="school" list="school-suggestions" maxLength={160} autoCapitalize="characters" placeholder={translateUi("TYPE YOUR SCHOOL NAME")} onChange={e => { e.currentTarget.value = e.currentTarget.value.toUpperCase(); }}/><datalist id="school-suggestions">{translateUi(demoSchools.map(s => <option key={s.id} value={s.name.toUpperCase()}/>))}</datalist></Field>
           <PasswordField label={translateUi("Password")} name="password" creating/>
           <PasswordField label={translateUi("Confirm password")} name="confirmPassword" creating/>

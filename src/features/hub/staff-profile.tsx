@@ -85,7 +85,7 @@ export function StaffProfilePage() {
             { label: 'School members', value: state.schoolRecords.members.filter((m) => m.schoolId === profile.schoolId).length, icon: Users },
             { label: 'Activities', value: schoolActs.length, icon: CalendarDays },
             { label: 'Reports submitted', value: schoolActs.filter((a) => a.report).length, icon: FileText },
-            { label: 'Materials completed', value: state.operations.completions.filter((c) => c.schoolId === profile.schoolId).length, icon: BookOpen },
+            { label: 'Materials completed', value: state.operations.completions.filter((c) => c.stage === "Completed" && c.schoolId === profile.schoolId).length, icon: BookOpen },
         ];
         links = [['/school-members', 'Member register'], ['/clubs', 'Activities & reports'], ['/learning-materials', 'Learning materials'], ['/certificate-centre', 'Membership certificates']];
         focus = <List empty="Upcoming school activities appear here." items={schoolActs.filter((a) => a.date >= today()).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 5).map((a) => [a.title, a.date])}/>;

@@ -685,7 +685,7 @@ export function createServer({
       }
       if (p === "/school-members" && req.method === "GET") {
         requireIt(
-          user.role === "admin" || (user.role === "leader" && user.school_id),
+          user.role === "admin" || (["leader", "mentor"].includes(user.role) && user.school_id),
           403,
           "School management access required",
         );
@@ -806,7 +806,7 @@ export function createServer({
         throw new HttpError(403, "Courses are created by trainers. Approve a trainer in Members & staff instead.");
       if (p === "/material-completions" && req.method === "GET") {
         requireIt(
-          user.role === "admin" || (user.role === "leader" && user.school_id),
+          user.role === "admin" || (["leader", "mentor"].includes(user.role) && user.school_id),
           403,
           "School leadership access required",
         );
@@ -831,7 +831,7 @@ export function createServer({
         );
         const id = uuid.parse(p.split("/")[2]);
         const input = z
-          .object({ school_id: uuid })
+          .object({ school_id: uuid, stage: z.enum(["Not started", "In progress", "Completed"]).default("Completed") })
           .strict()
           .parse(await body(req));
         requireIt(
@@ -859,16 +859,16 @@ export function createServer({
             "Material is not assigned to this school",
           );
           await tx.query(
-            "INSERT INTO material_completions(material_id,school_id,completed_by) VALUES($1,$2,$3) ON CONFLICT(material_id,school_id) DO NOTHING",
-            [id, input.school_id, user.id],
+            "INSERT INTO material_completions(material_id,school_id,completed_by,stage) VALUES($1,$2,$3,$4) ON CONFLICT(material_id,school_id) DO UPDATE SET stage=$4,completed_by=$3,completed_at=now()",
+            [id, input.school_id, user.id, input.stage],
           );
-          await audit(tx, user, "material.complete", id);
+          await audit(tx, user, "material.progress", id);
         });
         return send(200, { ok: true });
       }
       if (p === "/reports" && req.method === "GET") {
         requireIt(
-          user.role === "admin" || (user.role === "leader" && user.school_id),
+          user.role === "admin" || (["leader", "mentor"].includes(user.role) && user.school_id),
           403,
           "Reporting access required",
         );
@@ -881,7 +881,7 @@ export function createServer({
          (SELECT count(*)::int FROM users u WHERE u.school_id=s.id AND u.status='approved') AS accounts,
          (SELECT count(*)::int FROM records r WHERE r.school_id=s.id AND r.kind='members') AS register_members,
          (SELECT count(*)::int FROM records r WHERE r.school_id=s.id AND r.kind='events') AS events,
-         (SELECT count(*)::int FROM material_completions m WHERE m.school_id=s.id) AS completed_materials,
+         (SELECT count(*)::int FROM material_completions m WHERE m.school_id=s.id AND m.stage='Completed') AS completed_materials,
          (SELECT count(*)::int FROM certificates c WHERE c.school_id=s.id AND c.revoked_at IS NULL) AS certificates
          FROM schools s WHERE ($1::uuid IS NULL OR s.id=$1) ORDER BY s.name`,
               [scope],
@@ -1054,7 +1054,7 @@ export function createServer({
             if (kind === "courses")
               where += ` AND (data->>'published'='true' OR owner_id=${owner})`;
             if (kind === "members") {
-              if (user.role === "leader") {
+              if (["leader", "mentor"].includes(user.role) && user.school_id) {
                 values.push(user.school_id);
                 where += " AND school_id=$" + values.length;
               } else where += " AND false";

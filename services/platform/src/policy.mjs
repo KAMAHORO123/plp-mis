@@ -42,7 +42,7 @@ export function canRead(user, record) {
     return record.owner_id === user.id;
   if (record.kind === "members")
     return (
-      user.role === "leader" &&
+      ["leader", "mentor"].includes(user.role) &&
       !!user.school_id &&
       record.school_id === user.school_id
     );
