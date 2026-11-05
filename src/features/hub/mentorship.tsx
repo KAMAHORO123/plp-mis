@@ -272,6 +272,17 @@ export function MentorDashboard() {
     const incomplete = !me.bio || me.title === "PLP mentor";
     const counts: Record<string, number> = { Requests: requests.length, Upcoming: upcoming.length, "Needs notes": needsNotes.length, History: history.length, "My mentees": mentees.length, Notifications: emails.length };
     const rows = tab === "Requests" ? requests : tab === "Upcoming" ? upcoming : tab === "Needs notes" ? needsNotes : history;
+    const setAccepting = async (accepting: boolean) => {
+        try {
+            await platformApi("/mentors/me/accepting", "PUT", { accepting });
+            window.dispatchEvent(new Event("plp:mentorship-updated"));
+            return true;
+        }
+        catch (e) {
+            toast.error(translateUi((e as Error).message));
+            return false;
+        }
+    };
     const saveProfile = async (patch: Partial<Mentor>) => {
         const stored = me.avatar?.startsWith("/api/avatars/") ? "" : me.avatar ?? "";
         const body = { title: patch.title ?? me.title, area: patch.area ?? me.area, bio: patch.bio ?? me.bio, avatar: patch.avatar ?? stored, accepting: patch.accepting ?? me.accepting ?? true };
@@ -299,7 +310,7 @@ export function MentorDashboard() {
 
         </div>
         <div className="hub-actions">
-          <button className="hub-button secondary" onClick={async () => { if (await saveProfile({ accepting: me.accepting === false }))
+          <button className="hub-button secondary" onClick={async () => { if (await setAccepting(me.accepting === false))
         toast.success(translateUi(me.accepting === false ? "You're accepting new requests again." : "New requests are paused. Existing sessions are unaffected.")); }}>
             {translateUi(me.accepting === false ? <><PlayCircle size={16}/>{translateUi(" Resume requests")}</> : <><PauseCircle size={16}/>{translateUi(" Pause new requests")}</>)}
           </button>

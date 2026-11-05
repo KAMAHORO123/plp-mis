@@ -60,6 +60,14 @@ export async function mentorshipRoute({ p, req, db, user, body, send, origin, ma
   if (p === "/mentors" && req.method === "GET") {
     send(200,(await db.query("SELECT u.id,u.name,u.email,coalesce(m.title,'') AS title,coalesce(m.area,'') AS area,coalesce(m.bio,'') AS bio,CASE WHEN u.avatar_file_id IS NOT NULL THEN '/api/avatars/'||u.id||'?v='||u.avatar_file_id ELSE coalesce(m.avatar,'') END AS avatar,coalesce(m.accepting,true) AS accepting FROM users u LEFT JOIN mentor_profiles m ON m.user_id=u.id WHERE u.role='mentor' AND u.status='approved' AND u.email_verified_at IS NOT NULL ORDER BY u.name")).rows);return true;
   }
+  if (p === "/mentors/me/accepting" && req.method === "PUT") {
+    // Pausing or resuming new requests changes only that setting, whatever state the rest of the profile is in.
+    demand(user.role === "mentor", 403, "Approved mentor access required");
+    const { accepting } = z.object({ accepting: z.boolean() }).strict().parse(await body());
+    await db.query("INSERT INTO mentor_profiles(user_id,accepting) VALUES($1,$2) ON CONFLICT(user_id) DO UPDATE SET accepting=$2,updated_at=now()", [user.id, accepting]);
+    send(200, { ok: true, accepting });
+    return true;
+  }
   if (p === "/mentors/me" && req.method === "PUT") {
     demand(user.role === "mentor", 403, "Approved mentor access required");
     const input = profileSchema.parse(await body());
