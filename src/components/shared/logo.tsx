@@ -16,7 +16,7 @@ export function Logo({ className, showText = true, subtitle }: LogoProps) {
     return (<div className={cn("flex items-center gap-2.5", className)}>
       <LogoMark className="text-primary"/>
       {translateUi(showText && (<div className="leading-tight">
-          <p className="text-[15px] font-bold tracking-tight text-foreground">{translateUi(" PLP MIS ")}</p>
+          <p className="text-[15px] font-bold tracking-tight text-foreground">{translateUi("PLP Hub")}</p>
           <p className="text-xs font-medium text-primary">
             {translateUi(subtitle ?? "National Dashboard")}
           </p>

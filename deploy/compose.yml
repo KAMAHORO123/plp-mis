@@ -50,6 +50,7 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       MAIL_FROM: ${MAIL_FROM:-}
       SMTP_HELO_NAME: ${SMTP_HELO_NAME:-}
+      MENTOR_EMAIL_DOMAINS: ${MENTOR_EMAIL_DOMAINS:-peaceloveproclaimers.org}
     volumes:
       - uploads:/app/uploads
     depends_on:

@@ -8,7 +8,7 @@ It takes about an hour. Commands in **On your Mac** blocks run in Terminal on yo
 
 - The server's IP address and root password (in the netcup Customer Control Panel / SCP).
 - Your domain name and access to its DNS settings.
-- Two addresses for PLP, for example `peaceloveproclaimers.org` for the public website and `hub.peaceloveproclaimers.org` for the Hub.
+- Two addresses for PLP. Production uses `plpyouth.org` for the public website and `hub.plpyouth.org` for the Hub. `www.plpyouth.org` redirects to the website.
 - An SMTP account for sending email (verification codes, password resets, application emails). For example, use a Google Workspace SMTP relay, Brevo, Mailgun or your email host's SMTP.
 
 ## 1. Point your domain at the server
@@ -18,6 +18,7 @@ At your domain provider, create two **A records**, both pointing to the server's
 | Name | Type | Value |
 |---|---|---|
 | `@` (the website) | A | `YOUR_SERVER_IP` |
+| `www` | A | `YOUR_SERVER_IP` |
 | `hub` | A | `YOUR_SERVER_IP` |
 
 If netcup also gave you an IPv6 address, add matching **AAAA** records. DNS can take a few minutes to an hour to update. Check with `ping hub.your-domain`.
@@ -85,8 +86,8 @@ Set at least:
 | Setting | Example |
 |---|---|
 | `DB_PASSWORD`, `APP_DB_PASSWORD`, `JWT_SECRET` | the values printed above |
-| `SITE_HOST` | `peaceloveproclaimers.org` (no `https://`) |
-| `HUB_HOST` | `hub.peaceloveproclaimers.org` |
+| `SITE_HOST` | `plpyouth.org` (no `https://`) |
+| `HUB_HOST` | `hub.plpyouth.org` |
 | `TLS_EMAIL` | an address that receives certificate expiry notices |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` | from your email provider |
 | `MAIL_FROM` | `PLP <no-reply@peaceloveproclaimers.org>` |
@@ -163,6 +164,29 @@ Add this line to back up every night at 02:30 server time:
 ```
 
 Each backup writes a database dump and an archive of the uploaded files to `/opt/plp/deploy/backups/`. Copy them off the server regularly, because a backup on the same machine doesn't protect against losing the server. netcup's own snapshots (in the SCP) are a good extra layer. To prove a backup can be restored, run `./restore-test.sh backups/plp-….dump`. It restores into a new database and never touches the live one.
+
+## Moving to a new domain (plpyouth.org)
+
+Use this when the server is already running on temporary addresses.
+
+1. **The domain must be active.** A newly registered domain is put on hold until the registrant clicks the verification link the registrar emails them. While on hold, `dig NS plpyouth.org` shows `registrant-verification.com` and the website shows "Verification of Contact Information". Look for that email (including spam) at the address used to buy the domain, or ask the seller to resend it.
+2. **Point DNS at the server.** At the DNS provider, add A records for `@`, `www` and `hub` to the server's IPv4 address, `62.83.78.88`. Check from your Mac until all three print that address:
+   ```sh
+   for h in plpyouth.org www.plpyouth.org hub.plpyouth.org; do dig +short A $h; done
+   ```
+3. **Switch the server to the new names.** On the server:
+   ```sh
+   cd /opt/plp && git pull && cd deploy
+   ./backup.sh
+   sed -i -E 's/^SITE_HOST=.*/SITE_HOST=plpyouth.org/; s/^HUB_HOST=.*/HUB_HOST=hub.plpyouth.org/' .env
+   docker compose --env-file .env -f compose.yml --profile mail up -d --build
+   docker compose --env-file .env -f compose.yml logs --tail 50 gateway
+   ```
+   The rebuild is required, because the website and the Hub have their addresses built in. Caddy gets the new certificates on its own. The gateway log should show `certificate obtained successfully` for each name.
+4. **Google sign-in.** In Google Cloud Console → Credentials, add `https://hub.plpyouth.org/api/auth/google/callback` as an authorised redirect URI and `https://hub.plpyouth.org` as an authorised JavaScript origin. Keep the old entries until the switch is confirmed.
+5. **Check it.** `https://plpyouth.org`, `https://www.plpyouth.org` (redirects) and `https://hub.plpyouth.org` all load with a padlock. Sign in, and request a password reset: the link in the email must start with `https://hub.plpyouth.org`.
+
+Members signed in on the old address need to sign in again on the new one. Their accounts and data are unchanged.
 
 ## Updating the site later
 
