@@ -11151,5 +11151,65 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "The PLP team together, smiling and giving thumbs up": {
     "rw": "Itsinda rya PLP hamwe, bamwenyura kandi bazamuye igikumwe",
     "fr": "L’équipe PLP réunie, souriante, pouces levés"
+  },
+  "A quick quiz for meetings, classes and conferences, played from your phone.": {
+    "rw": "Ikibazo-mukino cyihuse cyo mu nama, mu ishuri no mu nama nkuru, ukinira kuri telefoni yawe.",
+    "fr": "Un quiz rapide pour les réunions, les cours et les conférences, joué depuis votre téléphone."
+  },
+  "HOW IT WORKS": {
+    "rw": "UKO BIKORA",
+    "fr": "COMMENT ÇA MARCHE"
+  },
+  "Three steps to play": {
+    "rw": "Intambwe eshatu zo gukina",
+    "fr": "Trois étapes pour jouer"
+  },
+  "Enter the PIN": {
+    "rw": "Andika PIN",
+    "fr": "Saisissez le code PIN"
+  },
+  "Type the PIN from the host’s screen and pick a nickname. No account needed.": {
+    "rw": "Andika PIN iri kuri ekarani y’uyobora umukino, uhitemo izina ry’umukino. Nta konti ikenewe.",
+    "fr": "Saisissez le code PIN affiché par l’animateur et choisissez un pseudo. Aucun compte nécessaire."
+  },
+  "Tap the colour that matches your answer. Faster correct answers score more.": {
+    "rw": "Kanda ibara rihuye n’igisubizo cyawe. Abasubiza neza vuba babona amanota menshi.",
+    "fr": "Touchez la couleur de votre réponse. Les bonnes réponses rapides rapportent plus."
+  },
+  "See the right answer and the leaderboard. The top three take the podium.": {
+    "rw": "Reba igisubizo nyacyo n’urutonde rw’amanota. Abatatu ba mbere bajya ku rubyiniro.",
+    "fr": "Découvrez la bonne réponse et le classement. Les trois premiers montent sur le podium."
+  },
+  "Photos of the PLP team": {
+    "rw": "Amafoto y’itsinda rya PLP",
+    "fr": "Photos de l’équipe PLP"
+  },
+  "Play photos": {
+    "rw": "Kina amafoto",
+    "fr": "Lire les photos"
+  },
+  "Pause photos": {
+    "rw": "Hagarika amafoto",
+    "fr": "Mettre les photos en pause"
+  },
+  "Leadership and directors": {
+    "rw": "Ubuyobozi n’abayobozi b’amashami",
+    "fr": "Direction et directeurs"
+  },
+  "One team, working for young people.": {
+    "rw": "Itsinda rimwe, rikorera urubyiruko.",
+    "fr": "Une seule équipe, au service des jeunes."
+  },
+  "PLP team": {
+    "rw": "Itsinda rya PLP",
+    "fr": "Équipe PLP"
+  },
+  "IT manager": {
+    "rw": "Ushinzwe ikoranabuhanga",
+    "fr": "Responsable informatique"
+  },
+  "Boardroom · Strategy & Research": {
+    "rw": "Boardroom · Ingamba n’Ubushakashatsi",
+    "fr": "Boardroom · Stratégie et recherche"
   }
 };

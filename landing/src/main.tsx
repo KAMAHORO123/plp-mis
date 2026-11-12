@@ -15,7 +15,7 @@ import { LiveQuizPage } from './live-quiz-page';
 import './globals.css';
 import './hub.css';
 import './landing.css';
-const nav = [['/', 'Home'], ['/about', 'About PLP'], ['/plp-hub', 'PLP Hub'], ['/programmes', 'Our programmes'], ['/stories', 'Our impact'], ['/album', 'PLP album'], ['/live-quiz', 'Live quiz'], ['/plp-canada', 'PLP Canada']];
+const nav = [['/', 'Home'], ['/about', 'About PLP'], ['/plp-hub', 'PLP Hub'], ['/programmes', 'Our programmes'], ['/stories', 'Our impact'], ['/album', 'PLP album'], ['/plp-canada', 'PLP Canada'], ['/live-quiz', 'Live quiz']];
 function Layout() {
     useSiteLanguage();
     useRouteSeo();

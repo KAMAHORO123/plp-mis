@@ -1,5 +1,5 @@
 import { translateUi, useSiteLanguage } from '../../i18n/language';
-import { teamPhotos } from './team-photos';
+import { teamPhotos, teamGallery } from './team-photos';
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Pause, Play, Download, BookOpen, Compass, Users, Award } from "lucide-react";
@@ -75,21 +75,38 @@ const teams: [
     ["Partnerships", "Strategy and resources", [["Strategy & Research", "Shema Dan"], ["Resource Mobilization & Strategic Outreach", "Caessy Ngarambe"]]],
 ];
 const initials = (name: string) => name.replace(/^[A-Z]\.\s*/, "").split(/\s+/).filter(w => /^[A-Z]/.test(w)).slice(0, 2).map(w => w[0]).join("");
-function Person({ person: [name, role], lead = false }: {
-    person: string[];
-    lead?: boolean;
-}) { useSiteLanguage(); const photo = teamPhotos[name]; return <li className={lead ? "plp-team-lead" : undefined}>{photo ? <img className="plp-team-portrait" src={`/images/plp/team/${photo}.webp`} alt="" width={480} height={600} loading="lazy" decoding="async"/> : <span className="plp-team-portrait is-empty" aria-hidden="true">{translateUi(initials(name))}</span>}<div><h3>{translateUi(name)}</h3><p className="plp-team-role">{translateUi(role)}</p></div></li>; }
+/** A leader or director: their face (or initials), name and role. */
+function Person({ person: [name, role] }: { person: string[] }) {
+    useSiteLanguage();
+    const photo = teamPhotos[name];
+    return <li>{photo ? <img src={`/images/plp/team/${photo}-face.webp`} alt="" width={64} height={64} loading="lazy" decoding="async"/> : <span className="plp-team-monogram" aria-hidden="true">{translateUi(initials(name))}</span>}<div><h3>{translateUi(name)}</h3><p className="plp-team-role">{translateUi(role)}</p></div></li>;
+}
 /** A team member in a programme list: their face (or initials) and name. */
 function Member({ name }: { name: string }) {
     const photo = teamPhotos[name];
     return <span className="plp-team-member">{photo ? <img src={`/images/plp/team/${photo}-face.webp`} alt="" width={36} height={36} loading="lazy" decoding="async"/> : <i aria-hidden="true">{initials(name) || "PLP"}</i>}{translateUi(name)}</span>;
 }
+/**
+ * Everyone's photo in a banner that moves slowly from left to right. It pauses on hover or keyboard focus and with the
+ * Pause button (WCAG 2.2.2); with reduced motion it stays still and can be scrolled sideways. The list is drawn twice
+ * so the loop is seamless; the copy is hidden from screen readers.
+ */
+function TeamBanner({ paused }: { paused: boolean }) {
+    useSiteLanguage();
+    const cards = () => teamGallery.map(p => <li key={p.name}><img src={`/images/plp/team/${teamPhotos[p.name]}-card.webp`} alt="" width={320} height={400} loading="lazy" decoding="async"/><div><strong>{translateUi(p.name)}</strong><small>{translateUi(p.role)}</small></div></li>);
+    return <div className={`plp-team-marquee${paused ? " is-paused" : ""}`} role="region" aria-label={translateUi("Photos of the PLP team")} tabIndex={0}>
+    <div className="plp-team-track"><ul>{cards()}</ul><ul aria-hidden="true">{cards()}</ul></div>
+  </div>;
+}
 function Team() {
     useSiteLanguage();
+    const [paused, setPaused] = useState(false);
     return <section className="plp-team" id="team" aria-labelledby="team-title">
-  <div className="plp-team-intro"><p className="plp-section-label">{translateUi("THE PEOPLE BEHIND PLP")}</p><h2 id="team-title">{translateUi("Meet our team")}</h2><p>{translateUi("Working together for young people, with our club leaders, mentors, and volunteers.")}</p></div>
-  <figure className="plp-team-group"><img src="/images/plp/team/plp-team-group.webp" alt={translateUi("The PLP team together, smiling and giving thumbs up")} width={1600} height={667} loading="lazy" decoding="async"/></figure>
-  <div className="plp-team-groups"><p className="plp-team-group-label">{translateUi("Leadership")}</p><ul className="plp-team-leadership">{translateUi(leadership.map(p => <Person key={p[0]} person={p} lead/>))}</ul><p className="plp-team-group-label">{translateUi("Directors")}</p><ul className="plp-team-directors">{translateUi(directors.map(p => <Person key={p[0]} person={p}/>))}</ul><p className="plp-team-group-label">{translateUi("Programmes and teams")}</p><div className="plp-team-units">{translateUi(teams.map(([area, , units]) => <section key={area}><h3>{translateUi(area)}</h3><dl>{translateUi(units.map(([unit, people]) => <div key={unit}><dt>{translateUi(unit)}</dt><dd>{people.split(" · ").map(name => <Member key={name} name={name}/>)}</dd></div>))}</dl></section>))}</div><p className="plp-source-note">{translateUi("PLP is governed by a Board of Directors and supported by an Advisory Council.")}</p></div>
+  <div className="plp-team-head"><div className="plp-team-intro"><p className="plp-section-label">{translateUi("THE PEOPLE BEHIND PLP")}</p><h2 id="team-title">{translateUi("Meet our team")}</h2><p>{translateUi("Working together for young people, with our club leaders, mentors, and volunteers.")}</p></div>
+   <button type="button" className="plp-team-pause" aria-pressed={paused} onClick={() => setPaused(!paused)}>{paused ? <Play size={16}/> : <Pause size={16}/>}{translateUi(paused ? "Play photos" : "Pause photos")}</button></div>
+  <TeamBanner paused={paused}/>
+  <div className="plp-team-groups"><p className="plp-team-group-label">{translateUi("Leadership and directors")}</p><ul className="plp-team-leaders">{translateUi([...leadership, ...directors].map(p => <Person key={p[0]} person={p}/>))}</ul><p className="plp-team-group-label">{translateUi("Programmes and teams")}</p><div className="plp-team-units">{translateUi(teams.map(([area, , units]) => <section key={area}><h3>{translateUi(area)}</h3><dl>{translateUi(units.map(([unit, people]) => <div key={unit}><dt>{translateUi(unit)}</dt><dd>{people.split(" · ").map(name => <Member key={name} name={name}/>)}</dd></div>))}</dl></section>))}</div>
+  <figure className="plp-team-group"><img src="/images/plp/team/plp-team-group.webp" alt={translateUi("The PLP team together, smiling and giving thumbs up")} width={1600} height={667} loading="lazy" decoding="async"/><figcaption>{translateUi("One team, working for young people.")}</figcaption></figure><p className="plp-source-note">{translateUi("PLP is governed by a Board of Directors and supported by an Advisory Council.")}</p></div>
     </section>;
 }
 /** Full-width hero slider: each photo carries its own headline and link; the first slide is the page title. */

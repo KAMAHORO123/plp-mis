@@ -801,30 +801,52 @@ html[data-theme="dark"] .plp-art-footer::after { background-color: #0f0f0f; opac
 @media (max-width: 700px) { .plp-to-top { right: 14px; bottom: calc(76px + env(safe-area-inset-bottom)); width: 44px; height: 44px; } }
 @media (prefers-reduced-motion: reduce) { .plp-to-top { transition: none; } }
 
-/* Meet our team, with portraits: a group photo, portrait cards for leadership and directors, faces beside programme names. */
-.plp-team .plp-team-group { margin: 0; border-radius: 24px; overflow: hidden; background: #e8eef4; }
-.plp-team .plp-team-group img { display: block; width: 100%; height: auto; aspect-ratio: 2.4 / 1; object-fit: cover; }
-.plp-team .plp-team-leadership, .plp-team .plp-team-directors { gap: 18px; }
-.plp-team .plp-team-directors { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-.plp-team .plp-team-leadership li, .plp-team .plp-team-directors li { flex-direction: column; gap: 0; padding: 0; overflow: hidden; border-radius: 18px; }
-.plp-team .plp-team-portrait { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: center top; background: #dfe7ef; transition: transform .5s ease; }
-.plp-team .plp-team-portrait.is-empty { display: grid; place-items: center; font: 500 34px/1 Sora, sans-serif; color: #fff; background: #173b59 url('/images/patterns/imigongo-blue.svg') center/120%; background-blend-mode: soft-light; }
-.plp-team .plp-team-leadership li > div, .plp-team .plp-team-directors li > div { padding: 16px 18px 18px; }
-.plp-team .plp-team-leadership h3 { font-size: 18px; }
-.plp-team .plp-team-directors h3 { font-size: 15px; }
-.plp-team li:hover .plp-team-portrait { transform: scale(1.03); }
-.plp-team li.plp-team-lead { box-shadow: inset 0 -3px 0 var(--hub-blue); }
-.plp-team li.plp-team-lead:hover { box-shadow: inset 0 -3px 0 var(--hub-blue), 0 12px 26px -20px rgba(16,35,60,.45); }
+/* Meet our team: everyone's photo in a slow banner moving left to right, then leaders, programmes and the group photo. */
+.plp-team { overflow: visible; }
+.plp-team-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.plp-team-pause { display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 18px; border-radius: 999px; border: 1px solid #cfdbe7; background: #fff; color: #1d4f80; font-weight: 600; font-size: 13px; cursor: pointer; }
+.plp-team-pause:hover { background: #eef4fb; }
+.plp-team-pause:focus-visible, .plp-team-marquee:focus-visible { outline: 3px solid var(--hub-blue); outline-offset: 4px; }
+/* The banner runs edge to edge across the page, fading out at both sides. */
+.plp-team-marquee { position: relative; width: 100vw; margin-left: calc(50% - 50vw); overflow: hidden; padding: 6px 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
+.plp-team-track { display: flex; width: max-content; animation: plp-team-scroll 140s linear infinite; }
+.plp-team-marquee.is-paused .plp-team-track, .plp-team-marquee:hover .plp-team-track, .plp-team-marquee:focus-within .plp-team-track { animation-play-state: paused; }
+@keyframes plp-team-scroll { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+.plp-team .plp-team-track ul { display: flex; gap: 16px; margin: 0; padding: 0 8px; list-style: none; }
+.plp-team .plp-team-track li { position: relative; display: block; flex: none; width: 200px; padding: 0; border: 0; border-radius: 20px; overflow: hidden; background: #dfe7ef; box-shadow: 0 14px 30px -22px rgba(16, 35, 60, .7); }
+.plp-team .plp-team-track li:hover { box-shadow: 0 18px 34px -20px rgba(16, 35, 60, .75); }
+.plp-team-track img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; transition: transform .5s ease; }
+.plp-team-track li:hover img { transform: scale(1.05); }
+.plp-team-track li > div { position: absolute; inset: auto 0 0; display: grid; gap: 2px; padding: 40px 14px 13px; background: linear-gradient(180deg, transparent, rgba(8, 20, 35, .88)); color: #fff; }
+.plp-team-track strong { font: 600 14.5px/1.3 Sora, sans-serif; overflow-wrap: anywhere; }
+.plp-team-track small { font-size: 11.5px; line-height: 1.35; color: #cfe0f0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* Leaders and directors: a compact row with round photos. */
+.plp-team .plp-team-leaders { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.plp-team .plp-team-leaders li { align-items: center; gap: 14px; padding: 14px 16px; border-radius: 16px; }
+.plp-team .plp-team-leaders img, .plp-team .plp-team-leaders .plp-team-monogram { width: 56px; height: 56px; flex: none; border-radius: 50%; object-fit: cover; }
+.plp-team .plp-team-leaders h3 { font-size: 15px; margin-bottom: 2px; }
+.plp-team .plp-team-leaders .plp-team-role { font-size: 11.5px; line-height: 1.45; }
 .plp-team-units dd .plp-team-member { display: inline-flex; align-items: center; gap: 8px; padding: 3px 12px 3px 3px; }
 .plp-team-member img, .plp-team-member i { width: 30px; height: 30px; flex: none; border-radius: 50%; object-fit: cover; }
 .plp-team-member i { display: grid; place-items: center; font: 500 10.5px/1 Sora, sans-serif; font-style: normal; background: #dce7f2; color: #1d5f99; }
+.plp-team .plp-team-group { position: relative; margin: 8px 0 0; border-radius: 24px; overflow: hidden; background: #e8eef4; }
+.plp-team .plp-team-group img { display: block; width: 100%; height: auto; aspect-ratio: 2.6 / 1; object-fit: cover; }
+.plp-team .plp-team-group figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 50px 28px 22px; background: linear-gradient(180deg, transparent, rgba(8, 20, 35, .8)); color: #fff; font: 500 clamp(18px, 2vw, 26px)/1.3 Sora, sans-serif; letter-spacing: -.02em; }
+html[data-theme="dark"] .plp-team-pause { background: #142335; border-color: #2c4157; color: #cfe0f0; }
 html[data-theme="dark"] .plp-team-units dd .plp-team-member { background: #1b2b3d; border-color: #2c4157; }
-html[data-theme="dark"] .plp-team .plp-team-group, html[data-theme="dark"] .plp-team .plp-team-portrait { background: #1b2b3d; }
-@media (max-width: 1100px) { .plp-team .plp-team-directors { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 1000px) { .plp-team .plp-team-leaders { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) {
-  .plp-team .plp-team-leadership, .plp-team .plp-team-directors { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .plp-team .plp-team-leadership li > div, .plp-team .plp-team-directors li > div { padding: 12px 12px 14px; }
-  .plp-team .plp-team-leadership h3, .plp-team .plp-team-directors h3 { font-size: 14px; }
+  .plp-team .plp-team-track li { width: 150px; }
+  .plp-team .plp-team-leaders { grid-template-columns: 1fr; }
   .plp-team .plp-team-group img { aspect-ratio: 16 / 10; }
 }
-@media (prefers-reduced-motion: reduce) { .plp-team .plp-team-portrait { transition: none; } .plp-team li:hover .plp-team-portrait { transform: none; } }
+/* Reduced motion: no movement; the row stays still and can be scrolled sideways. */
+@media (prefers-reduced-motion: reduce) {
+  .plp-team-marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+  .plp-team-track { animation: none; }
+  .plp-team-track ul[aria-hidden="true"] { display: none; }
+  .plp-team-pause { display: none; }
+  .plp-team-track img, .plp-team-track li:hover img { transition: none; transform: none; }
+}
+/* The team banner runs edge to edge; keep the page itself from scrolling sideways. */
+.plp-public-site { overflow-x: clip; }

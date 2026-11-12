@@ -1,5 +1,6 @@
-// Team portraits (black and white, from the PLP team shoot). Names match the names shown on the About page.
-// Each person has /images/plp/team/<file>.webp (4:5 portrait) and <file>-face.webp (square, for small avatars).
+// Team photos (black and white, from the PLP team shoot), by the name shown on the About page.
+// Each person has /images/plp/team/<file>-card.webp (320x400, for the scrolling team banner)
+// and <file>-face.webp (192x192, for small round avatars in the programme lists).
 export const teamPhotos: Record<string, string> = {
  "Israel Nuru": "israel-nuru",
  "Aime Mutemura": "aime-mutemura",
@@ -24,4 +25,42 @@ export const teamPhotos: Record<string, string> = {
  "Maxine": "maxine",
  "Divine Kayonga": "divine-kayonga",
  "Ornella Nene": "ornella-nene",
+ "Igihozo Joie Chelda": "igihozo-joie-chelda",
+ "Ineza Albinah Loxanne": "ineza-albinah-loxanne",
+ "Inema Furaha Eunice": "inema-furaha-eunice",
+ "Ingabire Eunice": "ingabire-eunice",
+ "Maniraguha Fabrice": "maniraguha-fabrice",
+ "Munyaneza Denis": "munyaneza-denis",
 };
+/** Everyone with a photo, in the order the banner shows them: leadership, directors, then the teams. */
+export const teamGallery: { name: string; role: string }[] = [
+ { name: "Israel Nuru", role: "Executive Director" },
+ { name: "Aime Mutemura", role: "Deputy Executive Director \u00b7 Programs & Impact" },
+ { name: "Divin Ibambasi", role: "Deputy Executive Director \u00b7 Strategic Planning & Development" },
+ { name: "Gaju Alidah", role: "Executive Secretary" },
+ { name: "Ntwari Abdallah", role: "Creative Director" },
+ { name: "N. Jean De Dieu", role: "Director of IT & Digital Systems" },
+ { name: "Rita Sandrine", role: "Director of Partnerships" },
+ { name: "Kamahoro Linda Kellia", role: "IT manager" },
+ { name: "Livia", role: "IT manager" },
+ { name: "Kelly Gisubizo", role: "IT manager" },
+ { name: "Mutabazi", role: "PLP Clubs" },
+ { name: "Amelia", role: "PLP Clubs" },
+ { name: "Patrick", role: "Homegroups" },
+ { name: "Phocas", role: "Homegroups" },
+ { name: "Shema Dan", role: "Boardroom \u00b7 Strategy & Research" },
+ { name: "ABI", role: "Walk to Remember & Ku Gicaniro" },
+ { name: "Princess R.", role: "Walk to Remember & Ku Gicaniro" },
+ { name: "Danny Kaberuka", role: "Anda Art Festival" },
+ { name: "Dalynah", role: "MegaCare" },
+ { name: "Micha", role: "MegaCare" },
+ { name: "Maxine", role: "Sober Nights & Entertainment" },
+ { name: "Divine Kayonga", role: "Administration" },
+ { name: "Ornella Nene", role: "Account manager" },
+ { name: "Igihozo Joie Chelda", role: "PLP team" },
+ { name: "Ineza Albinah Loxanne", role: "PLP team" },
+ { name: "Inema Furaha Eunice", role: "PLP team" },
+ { name: "Ingabire Eunice", role: "PLP team" },
+ { name: "Maniraguha Fabrice", role: "PLP team" },
+ { name: "Munyaneza Denis", role: "PLP team" },
+];

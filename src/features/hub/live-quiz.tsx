@@ -116,7 +116,7 @@ export function LiveQuizPage() {
     return (<Studio>
       <section className="lq-hero">
         <div>
-          <p className="lq-eyebrow">{translateUi("FUN CORNER · LIVE QUIZ")}</p>
+          <p className="lq-eyebrow">{translateUi("LIVE QUIZ")}</p>
           <h1>{translateUi("Make any room a game.")}</h1>
           <p>{translateUi("Create a quiz, start a game and share the PIN. Everyone in the room plays on their phone, and the fastest correct answers win.")}</p>
           <button className="lq-btn lq-btn-gold" onClick={() => setEditing({ title: "", questions: [blankQuestion()] })}><Plus size={18}/>{translateUi("New quiz")}</button>
