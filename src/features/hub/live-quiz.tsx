@@ -1,12 +1,12 @@
 // Live quiz (Fun corner): build a quiz, start a game with a PIN, and play it live in a meeting, class or conference.
 // Hosts build and run games at /live-quiz (signed in); players join at /play with the PIN and a nickname, no account needed.
 // The public website has its own Live quiz page that sends people here.
-import { translateUi, useSiteLanguage } from '../../i18n/language';
+import { translateUi, useSiteLanguage, formatDate } from '../../i18n/language';
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import QRCode from "qrcode";
-import { ArrowLeft, ArrowRight, Check, Clock3, Crown, Gamepad2, LayoutDashboard, Pencil, Play, Plus, Trash2, Trophy, Users, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarDays, Check, Clock3, Crown, Gamepad2, LayoutDashboard, ListChecks, Pencil, Play, Plus, Trash2, Trophy, Users, X } from "lucide-react";
 import { platformApi } from "./platform-api";
 import { Spinner } from "./ui";
 import { confirmAction } from "@/components/shared/confirm-dialog";
@@ -134,15 +134,26 @@ export function LiveQuizPage() {
             <p>{translateUi("You have no quizzes yet. Create one to play it live in a meeting, class or conference.")}</p>
             <button className="lq-btn" onClick={() => setEditing({ title: "", questions: [blankQuestion()] })}><Plus size={17}/>{translateUi("Create your first quiz")}</button>
           </div>) : (<div className="lq-grid">
-            {quizzes.map((quiz, n) => (<article key={quiz.id} className={`lq-card lq-card-${n % 4}`}>
-                <div className="lq-card-top"><span>{SHAPES[n % 4]}</span><small>{translateUi(quiz.questions.length === 1 ? "1 question" : "{p0} questions", { p0: quiz.questions.length })}</small></div>
-                <h3>{translateUi(quiz.title)}</h3>
+            {quizzes.map((quiz, n) => {
+                const seconds = quiz.questions.reduce((sum, q) => sum + q.seconds, 0);
+                return (<article key={quiz.id} className={`lq-card lq-card-${n % 4}`}>
+                <div className="lq-card-cover" aria-hidden="true"><span className="lq-card-shape">{SHAPES[n % 4]}</span><span className="lq-card-mark">{SHAPES[(n + 1) % 4]}</span></div>
+                <div className="lq-card-body">
+                  <h3>{translateUi(quiz.title)}</h3>
+                  <ul className="lq-card-meta">
+                    <li><ListChecks size={15} aria-hidden="true"/>{translateUi(quiz.questions.length === 1 ? "1 question" : "{p0} questions", { p0: quiz.questions.length })}</li>
+                    <li><Clock3 size={15} aria-hidden="true"/>{translateUi(seconds < 60 ? "{p0} sec" : "{p0} min", { p0: seconds < 60 ? seconds : Math.ceil(seconds / 60) })}</li>
+                    <li><CalendarDays size={15} aria-hidden="true"/>{formatDate(quiz.updated_at, { day: "numeric", month: "short" })}</li>
+                  </ul>
+                </div>
                 <div className="lq-card-actions">
-                  <button className="lq-btn" disabled={busy} onClick={() => void start(quiz)}><Play size={16}/>{translateUi("Start game")}</button>
+                  <button className="lq-btn lq-start" disabled={busy} onClick={() => void start(quiz)}><Play size={16} fill="currentColor"/>{translateUi("Start game")}</button>
                   <button className="lq-icon" aria-label={translateUi("Edit {p0}", { p0: quiz.title })} title={translateUi("Edit quiz")} onClick={() => setEditing(quiz)}><Pencil size={16}/></button>
                   <button className="lq-icon is-danger" aria-label={translateUi("Delete {p0}", { p0: quiz.title })} title={translateUi("Delete quiz")} onClick={() => void remove(quiz)}><Trash2 size={16}/></button>
                 </div>
-              </article>))}
+              </article>);
+            })}
+            <button type="button" className="lq-card-new" onClick={() => setEditing({ title: "", questions: [blankQuestion()] })}><span><Plus size={26}/></span><strong>{translateUi("New quiz")}</strong><small>{translateUi("Write questions and tick the right answers")}</small></button>
           </div>)}
       </section>
     </Studio>);

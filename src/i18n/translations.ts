@@ -11331,5 +11331,17 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "The PLP team together, smiling and giving thumbs up": {
     "rw": "Itsinda rya PLP hamwe, bamwenyura kandi bazamuye igikumwe",
     "fr": "L’équipe PLP réunie, souriante, pouces levés"
+  },
+  "{p0} sec": {
+    "rw": "Amasegonda {p0}",
+    "fr": "{p0} s"
+  },
+  "{p0} min": {
+    "rw": "Iminota {p0}",
+    "fr": "{p0} min"
+  },
+  "Write questions and tick the right answers": {
+    "rw": "Andika ibibazo uhitemo ibisubizo nyabyo",
+    "fr": "Rédigez les questions et cochez les bonnes réponses"
   }
 };
