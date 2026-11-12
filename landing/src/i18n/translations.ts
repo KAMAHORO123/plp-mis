@@ -11279,5 +11279,13 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "Next team member": {
     "rw": "Ukurikiyeho mu itsinda",
     "fr": "Membre suivant"
+  },
+  "View all team": {
+    "rw": "Reba itsinda ryose",
+    "fr": "Voir toute l’équipe"
+  },
+  "The whole PLP team": {
+    "rw": "Itsinda ryose rya PLP",
+    "fr": "Toute l’équipe PLP"
   }
 };

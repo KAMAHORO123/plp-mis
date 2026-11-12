@@ -1,8 +1,8 @@
 import { translateUi, useSiteLanguage } from '../../i18n/language';
 import { teamPhotos, teamGallery } from './team-photos';
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Pause, Play, Download, BookOpen, Compass, Users, Award } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Pause, Play, Download, BookOpen, Compass, Users, Award, X } from "lucide-react";
 import { TestimonialsSection, FunCorner, AlbumSection, CanadaSection } from "./community-sections";
 import { PhotoPlayground } from "./landing-art";
 const programmes = [
@@ -54,18 +54,21 @@ function Partnership() { useSiteLanguage(); return <section className="plp-partn
 function Team() {
     useSiteLanguage();
     const [index, setIndex] = useState(0);
+    const all = useRef<HTMLDialogElement>(null);
     const count = teamGallery.length;
     const at = (offset: number) => teamGallery[(index + offset + count) % count];
     const go = (step: number) => setIndex(i => (i + step + count) % count);
+    const photo = (name: string) => `/images/plp/team/${teamPhotos[name]}`;
     const card = (offset: -1 | 0 | 1) => {
         const p = at(offset);
         const place = offset === 0 ? "is-current" : offset < 0 ? "is-prev" : "is-next";
-        const content = <><img src={`/images/plp/team/${teamPhotos[p.name]}-card.webp`} alt="" width={320} height={400} loading="lazy" decoding="async"/><div><strong>{translateUi(p.name)}</strong><small>{translateUi(p.role)}</small></div></>;
+        // The large card loads the HD photo; side cards use the light one on ordinary screens and HD on sharp ones.
+        const content = <><img src={`${photo(p.name)}-${offset === 0 ? "hd" : "card"}.webp`} srcSet={`${photo(p.name)}-card.webp 320w, ${photo(p.name)}-hd.webp 800w`} sizes={offset === 0 ? "(max-width: 640px) 60vw, 420px" : "(max-width: 640px) 28vw, 300px"} alt="" width={800} height={1000} decoding="async"/><div><strong>{translateUi(p.name)}</strong><small>{translateUi(p.role)}</small></div></>;
         return offset === 0
             ? <figure key={p.name} className={`plp-team-card ${place}`} aria-live="polite">{content}</figure>
             : <button key={p.name} type="button" className={`plp-team-card ${place}`} aria-label={translateUi("Show {p0}", { p0: p.name })} onClick={() => go(offset)}>{content}</button>;
     };
-    return <section className="plp-team" id="team" aria-labelledby="team-title" onKeyDown={e => { if (e.key === "ArrowLeft") go(-1); if (e.key === "ArrowRight") go(1); }}>
+    return <section className="plp-team" id="team" aria-labelledby="team-title" onKeyDown={e => { if ((e.target as HTMLElement).closest("dialog")) return; if (e.key === "ArrowLeft") go(-1); if (e.key === "ArrowRight") go(1); }}>
   <div className="plp-team-intro"><p className="plp-section-label">{translateUi("THE PEOPLE BEHIND PLP")}</p><h2 id="team-title">{translateUi("Meet our team")}</h2><p>{translateUi("Working together for young people, with our club leaders, mentors, and volunteers.")}</p></div>
   <div className="plp-team-stage" role="group" aria-roledescription={translateUi("carousel")} aria-label={translateUi("PLP team members")}>
    {card(-1)}{card(0)}{card(1)}
@@ -74,7 +77,16 @@ function Team() {
    <button type="button" onClick={() => go(-1)} aria-label={translateUi("Previous team member")}><ArrowLeft size={20}/></button>
    <span>{translateUi("{p0} / {p1}", { p0: index + 1, p1: count })}</span>
    <button type="button" onClick={() => go(1)} aria-label={translateUi("Next team member")}><ArrowRight size={20}/></button>
+   <button type="button" className="plp-team-all-open" onClick={() => all.current?.showModal()}><Users size={17}/>{translateUi("View all team")}</button>
   </div>
+  {/* The whole team in one scrollable grid; choosing someone shows them in the carousel. */}
+  <dialog ref={all} className="plp-team-all" aria-labelledby="team-all-title" onClick={e => { if (e.target === e.currentTarget) all.current?.close(); }}>
+   <div className="plp-team-all-head"><div><p className="plp-section-label">{translateUi("THE PEOPLE BEHIND PLP")}</p><h3 id="team-all-title">{translateUi("The whole PLP team")}</h3></div><button type="button" className="plp-team-all-close" aria-label={translateUi("Close")} onClick={() => all.current?.close()}><X size={20}/></button></div>
+   <ul className="plp-team-all-grid">{teamGallery.map((p, i) => <li key={p.name}><button type="button" aria-current={i === index ? "true" : undefined} onClick={() => { setIndex(i); all.current?.close(); document.getElementById("team")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>
+    <img src={`${photo(p.name)}-card.webp`} srcSet={`${photo(p.name)}-card.webp 320w, ${photo(p.name)}-hd.webp 800w`} sizes="(max-width: 640px) 45vw, 200px" alt="" width={320} height={400} loading="lazy" decoding="async"/>
+    <strong>{translateUi(p.name)}</strong><small>{translateUi(p.role)}</small>
+   </button></li>)}</ul>
+  </dialog>
  </section>;
 }
 /** Full-width hero slider: each photo carries its own headline and link; the first slide is the page title. */
