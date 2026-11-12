@@ -53,6 +53,8 @@ async function admin(db) {
         FROM certificate_requests r JOIN schools s ON s.id=r.school_id WHERE r.status IN ('submitted','corrected')
       UNION ALL SELECT id, name, 'Staff access request: ' || coalesce(requested_role,'staff'), 'Verify assignment', email, '/memberships', created_at
         FROM users WHERE email_verified_at IS NOT NULL AND (status='pending' OR (status='approved' AND requested_role IS NOT NULL))
+      UNION ALL SELECT id, name, 'School assignment: ' || requested_school, 'Assign school', email, '/memberships', created_at
+        FROM users WHERE status='approved' AND requested_role IS NULL AND role IN ('leader','mentor') AND school_id IS NULL AND requested_school<>''
       ORDER BY at DESC LIMIT 100`)).rows.map(({ at, ...t }) => t);
   const trend = await series(db, {
     activities: `SELECT count(*) FROM records e WHERE e.kind='events' AND left(e.data->>'date',7)=m.month`,

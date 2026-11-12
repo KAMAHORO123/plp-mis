@@ -48,8 +48,8 @@ function Pathway() {
 function Partnership() { useSiteLanguage(); return <section className="plp-partnership" id="partner"><p className="plp-section-label">{translateUi("WORK WITH PLP")}</p><h2>{translateUi("Put your experience")}<br />{translateUi("to work with young people.")}</h2><div><p>{translateUi("Partner on a programme, contribute a curriculum, host an internship, or co-create a community initiative. PLP\u2019s network connects partners with youth-led work in schools and communities.")}</p><a className="plp-editorial-link" href="mailto:info@peaceloveproclaimers.org?subject=Partner%20with%20PLP">{translateUi("Talk to PLP about a partnership ")}<ArrowUpRight size={18}/></a><PortfolioLink /></div></section>; }
 const leadership = [
     ["Israel Nuru", "Executive Director", "Leads PLP and works alongside the Board of Directors."],
-    ["Aime Mutemura", "Deputy Executive Director · Programs & Impact", "Discover & Develop and Demonstrate: clubs, homegroups, and PLP’s signature initiatives."],
-    ["Divin Ibambasi", "Deputy Executive Director · Strategic Planning & Development", "PLP Connect: jobs, internships, mentorship, and membership."],
+    ["Aime Mutemura", "Deputy Executive Director · Programs & Impact", "Discover & Develop, and PLP’s signature initiatives in Do & Demonstrate: clubs, homegroups, and community programmes."],
+    ["Divin Ibambasi", "Deputy Executive Director · Strategic Planning & Development", "Do & Demonstrate through PLP Connect: jobs, internships, mentorship, and membership."],
 ];
 const directors = [
     ["Gaju Alidah", "Executive Secretary", "The executive office and administration."],
@@ -68,8 +68,7 @@ const teams: [
 ][] = [
     ["IT & Digital Systems", "PLP Hub and digital tools", [["IT managers", "Kamahoro Linda Kellia · Livia · Kelly Gisubizo"]]],
     ["Discover & Develop", "PLP Hub", [["PLP Clubs", "Mutabazi · Amelia"], ["Homegroups", "Patrick · Phocas"], ["Youth Learning Hub", "Arnold M. · Beline"]]],
-    ["Demonstrate", "Signature initiatives", [["Boardroom", "Shema Dan · Amanda Lelsie"], ["Walk to Remember & Ku Gicaniro", "ABI · Princess R."], ["Anda Art Festival", "Danny Kaberuka · Eviddy"], ["MegaCare", "Dalynah · Micha"], ["Sober Nights & Entertainment", "Colin K. · Biggy · Maxine"]]],
-    ["Do", "PLP Connect", [["Jobs & Internships", "Parfine · Eunice"], ["Mentorship", "Natacha K."], ["Membership & Engagement", "Hirwa Djasiri · Ikaze Team"]]],
+    ["Do & Demonstrate", "PLP Connect and signature initiatives", [["Jobs & Internships", "Parfine · Eunice"], ["Mentorship", "Natacha K."], ["Membership & Engagement", "Hirwa Djasiri · Ikaze Team"], ["Boardroom", "Shema Dan · Amanda Lelsie"], ["Walk to Remember & Ku Gicaniro", "ABI · Princess R."], ["Anda Art Festival", "Danny Kaberuka · Eviddy"], ["MegaCare", "Dalynah · Micha"], ["Sober Nights & Entertainment", "Colin K. · Biggy · Maxine"]]],
     ["Executive office", "With the Executive Secretary", [["Administration", "Divine Kayonga"]]],
     ["Creative", "Organizational branding", [["Copyright", "J-Yane · Caessy Ngarambe"], ["Account manager", "Ornella Nene"]]],
     ["Partnerships", "Strategy and resources", [["Strategy & Research", "Shema Dan"], ["Resource Mobilization & Strategic Outreach", "Caessy Ngarambe"]]],

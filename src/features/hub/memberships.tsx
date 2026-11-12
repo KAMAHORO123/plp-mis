@@ -20,6 +20,7 @@ type Person = {
     status: string;
     school_id: string | null;
     requested_role: string | null;
+    requested_school?: string;
     role_review: string;
     created_at: string;
     education_stage?: string | null;
@@ -67,9 +68,11 @@ export function MembershipsPage({ section = "accounts" }: {
             setBusy(false);
         }
     }
+    // The school an applicant named, matched to a registered school so approving assigns it.
+    const schoolFor = (p: Person) => p.school_id || schools.find((sc) => sc.name.trim().toLowerCase() === (p.requested_school ?? "").trim().toLowerCase())?.id || null;
     const approve = (p: Person) => {
         const role = p.requested_role || p.role;
-        return save(p, role, "approved", p.school_id, p.role_review, `${p.name} is approved as ${roleName(role).toLowerCase()}. Their ${roleName(role).toLowerCase()} dashboard is available at their next sign-in.`);
+        return save(p, role, "approved", schoolFor(p), p.role_review, `${p.name} is approved as ${roleName(role).toLowerCase()}. Their ${roleName(role).toLowerCase()} dashboard is available at their next sign-in.`);
     };
     // Someone already using the Hub as a member keeps that access when their request is declined.
     const declinedStatus = (p: Person) => p.status === "approved" ? "approved" : "rejected";
@@ -84,7 +87,7 @@ export function MembershipsPage({ section = "accounts" }: {
         let done = 0;
         for (const p of rows) {
             try {
-                await platformApi(`/users/${p.id}`, "PATCH", accept ? { role: p.requested_role || p.role, status: "approved", school_id: p.school_id, review: p.role_review ?? "" } : { role: "member", status: declinedStatus(p), school_id: p.school_id, review: p.role_review ?? "" });
+                await platformApi(`/users/${p.id}`, "PATCH", accept ? { role: p.requested_role || p.role, status: "approved", school_id: schoolFor(p), review: p.role_review ?? "" } : { role: "member", status: declinedStatus(p), school_id: p.school_id, review: p.role_review ?? "" });
                 done++;
             }
             catch { /* Counted below. */ }
@@ -155,7 +158,7 @@ export function MembershipsPage({ section = "accounts" }: {
         {translateUi(!loaded ? <Spinner label="Loading applications…"/> : !pending.length ? <Empty>{translateUi("No staff applications awaiting approval.")}</Empty> : <RecordTable title={translateUi("staff applications")} rows={pending} pageSize={10} csv={{ name: "plp-staff-applications", columns: [["Name", (p) => p.name], ["Email", (p) => p.email], ["Requested role", (p) => roleName(p.requested_role || p.role)], ["Applied", (p) => p.created_at?.slice(0, 10)]] }} searchText={(p) => `${p.name} ${p.email} ${roleName(p.requested_role || p.role)}`}
             filters={[{ label: "Role", options: ["trainer", "mentor", "leader"].map((r) => ({ label: roleName(r), test: (p: Person) => (p.requested_role || p.role) === r })) }]}
             bulkActions={[{ label: "Send email", run: (rows) => setEmailing(rows) }, { label: "Approve", run: (rows) => decideAll(rows, true) }, { label: "Decline", tone: "danger", run: (rows) => decideAll(rows, false) }]}
-            columns={[{ label: "Applicant", render: (p) => <><strong>{translateUi(p.name)}</strong><small>{translateUi(p.email)}</small></> }, { label: "Requested role", render: (p) => <span className="ws-status">{translateUi(roleName(p.requested_role || p.role))}</span> }, { label: "Applied", render: (p) => formatDate(p.created_at) }, { label: "Actions", render: (p) => <div className="ms-row-actions">
+            columns={[{ label: "Applicant", render: (p) => <><strong>{translateUi(p.name)}</strong><small>{translateUi(p.email)}</small></> }, { label: "Requested role", render: (p) => <span className="ws-status">{translateUi(roleName(p.requested_role || p.role))}</span> }, { label: "School", render: (p) => schools.find((sc) => sc.id === p.school_id)?.name ?? (p.requested_school ? <>{translateUi(p.requested_school)}{!schoolFor(p) && <small>{translateUi("Not registered yet: add it under Schools, or pick one in Review")}</small>}</> : "—") }, { label: "Applied", render: (p) => formatDate(p.created_at) }, { label: "Actions", render: (p) => <div className="ms-row-actions">
                   <button className="hub-button" disabled={busy} onClick={() => void approve(p)}><CheckCircle2 size={15}/>{translateUi(" Approve ")}{translateUi(roleName(p.requested_role || p.role).toLowerCase())}</button>
                   <button className="hub-button secondary" disabled={busy} onClick={() => setEditing(p)}>{translateUi("Review")}</button>
                   <button className="hub-button danger" disabled={busy} onClick={() => void decline(p)}><XCircle size={15}/>{translateUi(" Decline")}</button>
@@ -174,7 +177,7 @@ export function MembershipsPage({ section = "accounts" }: {
                 <Field label={translateUi("Role")}><select name="role" defaultValue={editing.requested_role || editing.role}>{translateUi(["member", "leader", "trainer", "mentor", "admin"].map((r) => <option key={r} value={r}>{translateUi(roleName(r))}</option>))}</select></Field>
                 <Field label={translateUi("Account status")}><select name="status" defaultValue={editing.status}>{translateUi(["pending", "approved", "suspended", "rejected"].map((s) => <option key={s} value={s}>{translateUi(statusName(s))}</option>))}</select></Field>
               </div>
-              <Field label={translateUi("School (club leaders and mentors)")}><select name="school" defaultValue={editing.school_id || ""}><option value="">{translateUi("No school")}</option>{translateUi(schools.map((s) => <option key={s.id} value={s.id}>{translateUi(s.name)}</option>))}</select></Field>
+              <Field label={translateUi("School (club leaders and mentors)")}><select name="school" defaultValue={schoolFor(editing) || ""}><option value="">{translateUi("No school")}</option>{translateUi(schools.map((s) => <option key={s.id} value={s.id}>{translateUi(s.name)}</option>))}</select></Field>
               <Field label={translateUi("Review note")}><textarea name="review" maxLength={1000} defaultValue={editing.role_review}/></Field>
               <div className="hub-actions hub-dialog-actions"><button type="button" className="hub-button secondary" onClick={() => setEditing(null)}>{translateUi("Cancel")}</button><button className="hub-button" disabled={busy}>{translateUi("Save access")}</button></div>
             </form>
@@ -213,7 +216,7 @@ export function MembershipsPage({ section = "accounts" }: {
             { label: "Name", render: (p) => <><strong>{translateUi(p.name)}</strong><small>{translateUi(p.email)}</small></> },
             { label: "Role", render: (p) => <span className="mb-role">{translateUi(roleName(p.role))}{translateUi(p.requested_role && (p.status === "pending" || requesting(p)) && <small>{translateUi("requested ")}{translateUi(roleName(p.requested_role))}</small>)}</span> },
             { label: "Status", render: (p) => <span className={`ws-status ${p.status === "approved" ? "ws-status-issued" : p.status === "pending" ? "" : "ws-status-returned"}`}>{translateUi(statusName(p.status))}</span> },
-            { label: "School", render: (p) => schools.find((s) => s.id === p.school_id)?.name ?? "—" },
+            { label: "School", render: (p) => schools.find((s) => s.id === p.school_id)?.name ?? (p.requested_school ? <span className="mb-role">{translateUi("—")}<small>{translateUi("asked for {p0}", { p0: p.requested_school })}</small></span> : "—") },
             { label: "Joined", render: (p) => formatDate(p.created_at) },
             { label: "Actions", render: (p) => p.id === self ? <small>{translateUi("Your account")}</small> : (<div className="mb-actions">
               {translateUi((p.status === "pending" || requesting(p)) && <button className="hub-record-icon hub-record-approve" disabled={busy} aria-label={translateUi("Approve {p0}", { p0: translateUi(p.name) })} title={translateUi("Approve as {p0}", { p0: translateUi(roleName(p.requested_role || p.role)) })} onClick={() => void approve(p)}><CheckCircle2 size={17}/></button>)}
@@ -234,7 +237,7 @@ export function MembershipsPage({ section = "accounts" }: {
                 <Field label={translateUi("Role")}><select name="role" defaultValue={editing.requested_role || editing.role}>{translateUi(["member", "leader", "trainer", "mentor", "admin"].map((r) => <option key={r} value={r}>{translateUi(roleName(r))}</option>))}</select></Field>
                 <Field label={translateUi("Account status")}><select name="status" defaultValue={editing.status}>{translateUi(["pending", "approved", "suspended", "rejected"].map((s) => <option key={s} value={s}>{translateUi(statusName(s))}</option>))}</select></Field>
               </div>
-              <Field label={translateUi("School (club leaders and mentors)")}><select name="school" defaultValue={editing.school_id || ""}><option value="">{translateUi("No school")}</option>{translateUi(schools.map((s) => <option key={s.id} value={s.id}>{translateUi(s.name)}</option>))}</select></Field>
+              <Field label={translateUi("School (club leaders and mentors)")}><select name="school" defaultValue={schoolFor(editing) || ""}><option value="">{translateUi("No school")}</option>{translateUi(schools.map((s) => <option key={s.id} value={s.id}>{translateUi(s.name)}</option>))}</select></Field>
               <Field label={translateUi("Review note")}><textarea name="review" maxLength={1000} defaultValue={editing.role_review}/></Field>
               <div className="hub-actions hub-dialog-actions"><button type="button" className="hub-button secondary" onClick={() => setEditing(null)}>{translateUi("Cancel")}</button><button className="hub-button" disabled={busy}>{translateUi("Save access")}</button></div>
             </form>

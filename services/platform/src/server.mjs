@@ -33,7 +33,7 @@ import {
   jwtSecrets,
 } from "./auth.mjs";
 import { kinds, canWrite, canRead, publicRecord } from "./policy.mjs";
-import { liveRoute, broadcast } from "./live.mjs";
+import { liveRoute, broadcast, notify } from "./live.mjs";
 import { liveQuizRoute } from "./live-quiz.mjs";
 import { reportsRoute } from "./reports.mjs";
 import { validateRecord, validatePublishable, kigaliToday } from "./validation.mjs";
@@ -130,7 +130,7 @@ const recordSchema = z
       .optional(),
   })
   .strict();
-const userFields = "id,email,name,role,status,school_id,created_at,requested_role,role_review,avatar_file_id,education_stage,institution,graduation_year,bio,skills,leadership,birth_date,phone,linkedin,instagram,facebook,employment_status,employment_detail,languages,interests,profile_completed_at";
+const userFields = "id,email,name,role,status,school_id,created_at,requested_role,requested_school,role_review,avatar_file_id,education_stage,institution,graduation_year,bio,skills,leadership,birth_date,phone,linkedin,instagram,facebook,employment_status,employment_detail,languages,interests,profile_completed_at";
 class HttpError extends Error {
   constructor(status, message) {
     super(message);
@@ -366,11 +366,11 @@ export function createServer({
           awaitingApproval: verified?.status === "pending",
           requestedRole: verified?.requested_role || null,
           message: verified?.status === "pending" ? "Email verified. Your staff application is awaiting administrator approval."
-            : verified?.requested_role ? "Email verified. You can now sign in as a member while PLP reviews your mentor request." : "Email verified. You can now sign in.",
+            : verified?.requested_role ? "Email verified. You can now sign in as a member while PLP reviews your role request." : "Email verified. You can now sign in.",
         });
       }
       if (p === "/auth/register" && req.method === "POST") {
-        const input = credentials.extend({ name: text, requested_role: z.enum(["mentor"]).optional() }).parse(await body(req));
+        const input = credentials.extend({ name: text, requested_role: z.enum(["leader","trainer","mentor"]).optional(), school: z.string().trim().max(160).default("") }).parse(await body(req));
         const weak = passwordProblem(input.password, { email: input.email, name: input.name });
         requireIt(!weak, 400, weak);
         requireIt(recoveryEnabled, 503, "Email delivery is currently unavailable. Please try again later.");
@@ -378,8 +378,8 @@ export function createServer({
         // An address nobody has verified yet belongs to whoever proves they own it: a new sign-up replaces
         // the unverified details, so no one can claim someone else's email ahead of them.
         const claimed = (await db.query(
-          "INSERT INTO users(id,email,name,password_hash,requested_role) VALUES($1,$2,$3,$4,$5) ON CONFLICT(email) DO UPDATE SET name=excluded.name, password_hash=excluded.password_hash, requested_role=excluded.requested_role WHERE users.email_verified_at IS NULL RETURNING id",
-          [randomUUID(), input.email, input.name, hash, input.requested_role || null],
+          "INSERT INTO users(id,email,name,password_hash,requested_role,requested_school) VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(email) DO UPDATE SET name=excluded.name, password_hash=excluded.password_hash, requested_role=excluded.requested_role, requested_school=excluded.requested_school WHERE users.email_verified_at IS NULL RETURNING id",
+          [randomUUID(), input.email, input.name, hash, input.requested_role || null, input.school],
         )).rows[0];
         if (claimed) {
           await db.query("DELETE FROM email_verifications WHERE user_id=$1", [claimed.id]);
@@ -562,6 +562,16 @@ export function createServer({
         return;
       if (await avatarRoute({ req, res, pathname: p, db, user, directory: uploadDirectory })) return;
       if (p === "/me" && req.method === "GET") return send(200, user);
+      // Club leaders and mentors (or people asking to be one) name the school they work with; an administrator confirms it.
+      if (p === "/me/school" && req.method === "PUT") {
+        requireIt(["leader", "mentor"].includes(user.role) || ["leader", "mentor"].includes(user.requested_role), 403, "Only club leaders and mentors are assigned a school.");
+        requireIt(!user.school_id, 409, "Your school is already assigned. Ask PLP to change it.");
+        const { school } = z.object({ school: z.string().trim().min(2, "Enter your school's name.").max(160) }).strict().parse(await body(req));
+        await db.query("UPDATE users SET requested_school=$2 WHERE id=$1", [user.id, school]);
+        await audit(db, user, "member.school-request", user.id);
+        await notify(db, "admin", { title: `${user.name} asked to be assigned to a school`, body: school, link: "/applications" }, user.id);
+        return send(200, { requested_school: school });
+      }
       if (p === "/me/details" && req.method === "PUT") {
         // The "complete your profile" step: personal, contact, work and interest details in one save.
         // The link must be https and on the real site (or one of its subdomains), never a look-alike domain.
@@ -811,7 +821,7 @@ export function createServer({
           requireIt(before, 404, "User not found");
           const r = await tx.query(
             // Approving an account also confirms its email, so an administrator can admit someone whose code never arrived.
-            "UPDATE users SET role=$1,status=$2,school_id=$3,requested_role=NULL,role_review=$5,email_verified_at=CASE WHEN $2='approved' THEN coalesce(email_verified_at,now()) ELSE email_verified_at END WHERE id=$4 RETURNING id",
+            "UPDATE users SET role=$1,status=$2,school_id=$3,requested_role=NULL,requested_school=CASE WHEN $3::uuid IS NULL THEN requested_school ELSE '' END,role_review=$5,email_verified_at=CASE WHEN $2='approved' THEN coalesce(email_verified_at,now()) ELSE email_verified_at END WHERE id=$4 RETURNING id",
             [input.role, input.status, input.school_id, id,input.review || ""],
           );
           requireIt(r.rowCount, 404, "User not found");
@@ -866,7 +876,7 @@ export function createServer({
         throw new HttpError(403, "Courses are created by trainers. Approve a trainer in Members & staff instead.");
       if (p === "/material-completions" && req.method === "GET") {
         requireIt(
-          user.role === "admin" || (user.role === "leader" && user.school_id),
+          user.role === "admin" || (["leader", "mentor"].includes(user.role) && user.school_id),
           403,
           "School leadership access required",
         );
@@ -1120,7 +1130,6 @@ export function createServer({
               } else where += " AND false";
             }
           }
-          if (user.role !== "admin" && kind === "materials" && user.role !== "leader") where += " AND false";
           if (user.role !== "admin" && kind === "materials") {
             values.push(user.school_id);
             where += ` AND (COALESCE(jsonb_array_length(data->'school_ids'),0)=0 OR data->'school_ids' @> jsonb_build_array($${values.length}::text))`;

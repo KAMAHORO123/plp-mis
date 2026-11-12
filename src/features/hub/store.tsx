@@ -26,6 +26,8 @@ export interface Profile {
     schoolId?: string;
     schoolName?: string;
     requestedRole?: string;
+    /** The school a club leader or mentor named, waiting for an administrator to confirm it. */
+    requestedSchool?: string;
     memberCategory?: string;
     community?: string;
     /** Uploaded profile picture served by the platform, if any. */
@@ -604,6 +606,8 @@ export function HubProvider({ children }: {
                 id: string;
                 role: string;
                 school_id: string | null;
+                requested_role: string | null;
+                requested_school: string;
             }>("/me");
             if (!me || !active)
                 return;
@@ -637,8 +641,11 @@ export function HubProvider({ children }: {
             const file = (id: string, name = "Attachment"): HubFile => ({ name, type: "", data: `/api/files/${id}`, size: 0 });
             update(s => {
                 const current = s.profiles.find(p => p.id === session.profileId);
-                if (current)
+                if (current) {
                     current.schoolId = me.school_id ?? undefined;
+                    current.requestedSchool = me.requested_school || undefined;
+                    current.requestedRole = ({ leader: "Club leader", trainer: "Trainer", mentor: "Mentor" } as Record<string, string>)[me.requested_role ?? ""];
+                }
                 if (members)
                     s.schoolRecords.members = members.map(m => ({ id: m.id, version: m.version, schoolId: m.school_id ?? "", name: m.data.title, email: m.data.email ?? "", category: m.data.category || "High school" }));
                 if (requests)

@@ -8,6 +8,8 @@ import { ArrowRight, LockKeyhole, Eye, EyeOff, } from "lucide-react";
 import { categories, type HubRole } from "./data";
 import { today, uid, useHub, type Profile } from "./store";
 import { Empty, Field, Heading, Panel, Spinner, Tag, TextLink, } from "./ui";
+/** The staff role someone asked for at sign-up, as the dashboard names it. */
+const roleRequest = (role?: string | null) => ({ leader: "Club leader", trainer: "Trainer", mentor: "Mentor" } as Record<string, string>)[role ?? ""];
 async function authRequest(path: string, body: object) {
     const response = await fetch("/api/auth/" + path, {
         method: "POST",
@@ -146,13 +148,13 @@ export function SignInPage() {
                     }) } as Profile;
                 member.membership = "Approved";
                 member.role = account.role === "admin" ? "Administrator" : account.role === "trainer" ? "Trainer" : account.role === "leader" ? "Club leader" : account.role === "mentor" ? "Mentor" : "Community member";
-                member.requestedRole = account.requested_role === "mentor" ? "Mentor" : undefined;
+                member.requestedRole = roleRequest(account.requested_role);
                 update((s) => {
                     const existing = s.profiles.find(p => p.id === member.id);
                     if (existing) {
                         existing.membership = "Approved";
                         existing.role = member.role;
-                        existing.requestedRole = account.requested_role === "mentor" ? "Mentor" : undefined;
+                        existing.requestedRole = roleRequest(account.requested_role);
                     }
                     else
                         s.profiles.push(member);
@@ -331,7 +333,7 @@ export function JoinPage() {
             }
             setBusy(true);
             try {
-                await authRequest("register", { email, name, password, ...(accountRole === "Mentor" ? { requested_role: "mentor" } : {}) });
+                await authRequest("register", { email, name, password, school: String(f.get("school") || "").trim(), ...(accountRole !== "Member" ? { requested_role: accountRole === "Trainer" ? "trainer" : accountRole === "Mentor" ? "mentor" : "leader" } : {}) });
                 const id = uid();
                 const next: Profile = {
                     id,
@@ -339,7 +341,7 @@ export function JoinPage() {
                     email,
                     role: "Community member",
                     memberCategory: "Community",
-                    requestedRole: accountRole === "Mentor" ? "Mentor" : undefined,
+                    requestedRole: accountRole === "Member" ? undefined : accountRole,
                     schoolName: String(f.get("school") || "").trim().toUpperCase() || undefined,
                     schoolId: demoSchools.find(s => s.name.toUpperCase() === String(f.get("school") || "").trim().toUpperCase())?.id,
                     bio: "",
@@ -376,10 +378,10 @@ export function JoinPage() {
             <input name="email" type="email" autoComplete="email" required defaultValue={validInvitation ? invitation.email : ""}/>
           </Field>
           <Field label={translateUi("Account type")}>
-            <select name="accountRole" value={accountRole} onChange={e => setAccountRole(e.target.value)}><option value={"Member"}>{translateUi("Member")}</option><option value={"Mentor"}>{translateUi("Mentor")}</option></select>
-            {accountRole === "Mentor" && <small className="hub-field-note">{translateUi("You start with member access straight away. PLP reviews your mentor request, and your mentor workspace opens once it is approved.")}</small>}
+            <select name="accountRole" value={accountRole} onChange={e => setAccountRole(e.target.value)}><option value={"Member"}>{translateUi("Member")}</option><option value={"Club leader"}>{translateUi("Club leader")}</option><option value={"Trainer"}>{translateUi("Trainer")}</option><option value={"Mentor"}>{translateUi("Mentor")}</option></select>
+            <small className="hub-field-note">{translateUi(accountRole === "Member" ? "Everyone in PLP is a member. Club leaders, trainers and mentors are members too." : "You start with member access straight away. PLP reviews your request, and your dashboard changes once it is approved.")}</small>
           </Field>
-          <Field label={translateUi("School (if applicable)")}><input name="school" list="school-suggestions" maxLength={160} autoCapitalize="characters" placeholder={translateUi("TYPE YOUR SCHOOL NAME")} onChange={e => { e.currentTarget.value = e.currentTarget.value.toUpperCase(); }}/><datalist id="school-suggestions">{translateUi(demoSchools.map(s => <option key={s.id} value={s.name.toUpperCase()}/>))}</datalist></Field>
+          <Field label={translateUi(accountRole === "Club leader" || accountRole === "Mentor" ? "School you work with" : "School (if applicable)")}><input name="school" list="school-suggestions" maxLength={160} required={accountRole === "Club leader"} autoCapitalize="characters" placeholder={translateUi("TYPE YOUR SCHOOL NAME")} onChange={e => { e.currentTarget.value = e.currentTarget.value.toUpperCase(); }}/><datalist id="school-suggestions">{translateUi(demoSchools.map(s => <option key={s.id} value={s.name.toUpperCase()}/>))}</datalist></Field>
           <PasswordField label={translateUi("Password")} name="password" creating/>
           <PasswordField label={translateUi("Confirm password")} name="confirmPassword" creating/>
           {translateUi(error && (<p role="alert" className="hub-access-error">

@@ -15,6 +15,7 @@ import { useHub, balance } from './store';
 import { clubs } from './data';
 import { demoSchools } from './school-data';
 import { Panel, Empty, greeting, dashboardSubtitle } from './ui';
+import { toast } from 'sonner';
 import './workspaces.css';
 type Row = {
     id: string;
@@ -174,4 +175,36 @@ function AdminCharts({ ad }: {
   </div>
   </section>
  </>;
+}
+
+/**
+ * Club leaders and mentors work with one school. Until an administrator assigns it, they name it here
+ * (or at sign-up) and PLP confirms it; the school's register and progress then appear on their dashboard.
+ */
+export function SchoolRequest() {
+    useSiteLanguage();
+    const { profile, update } = useHub();
+    const [busy, setBusy] = useState(false);
+    const [editing, setEditing] = useState(false);
+    const schoolRole = ['Mentor', 'Club leader'].includes(profile.role) || ['Mentor', 'Club leader'].includes(profile.requestedRole ?? '');
+    if (!schoolRole || profile.schoolId) return null;
+    if (profile.requestedSchool && !editing)
+        return <p className="hub-feedback ws-school-request">{translateUi("You asked to work with {p0}. PLP will confirm your school soon, and its data will appear here.", { p0: profile.requestedSchool })} <button type="button" className="hub-text-button" onClick={() => setEditing(true)}>{translateUi("Change")}</button></p>;
+    return <Panel className="ws-school-request"><form onSubmit={async (event) => {
+        event.preventDefault();
+        const school = String(new FormData(event.currentTarget).get('school') || '').trim();
+        setBusy(true);
+        try {
+            const saved = await platformApi<{ requested_school: string }>('/me/school', 'PUT', { school });
+            update(s => { const me = s.profiles.find(p => p.id === profile.id); if (me) me.requestedSchool = saved.requested_school; });
+            setEditing(false);
+            toast.success(translateUi('Sent to PLP for confirmation'));
+        }
+        catch (e) { toast.error(translateUi((e as Error).message)); }
+        finally { setBusy(false); }
+    }}>
+      <label htmlFor="school-request"><strong>{translateUi("Which school do you work with?")}</strong><span>{translateUi("PLP confirms it, then you see the school\u2019s members, materials and progress.")}</span></label>
+      <div><input id="school-request" name="school" list="school-request-options" required minLength={2} maxLength={160} defaultValue={profile.requestedSchool ?? ''} placeholder={translateUi("School name")}/><datalist id="school-request-options">{demoSchools.map(sc => <option key={sc.id} value={sc.name}/>)}</datalist>
+      <button className="hub-button" disabled={busy}>{translateUi(busy ? "Sending…" : "Send")}</button></div>
+    </form></Panel>;
 }

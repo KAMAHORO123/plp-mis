@@ -30,10 +30,10 @@ export function canWrite(user, kind, record) {
 export function canRead(user, record) {
   if (record.kind === "agenda") return record.owner_id === user.id;
   if (user.role === "admin") return true;
-  // Learning materials are for club leaders only (and administrators, above), limited to their school when assigned.
+  // Learning materials are for club leaders and mentors (and administrators, above), limited to their school when assigned.
   if (
     record.kind === "materials" &&
-    (user.role !== "leader" ||
+    (!["leader", "mentor"].includes(user.role) ||
       (record.data.school_ids?.length && !record.data.school_ids.includes(user.school_id)))
   )
     return false;

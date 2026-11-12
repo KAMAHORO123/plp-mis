@@ -55,7 +55,7 @@ export function EmailVerificationPage() {
     return (<div className="hub-access-shell">
       <Panel>
         {translateUi(done ? (<>
-            <Heading title={translateUi("Email confirmed")} description={translateUi(awaitingApproval ? "Your email is verified. An administrator will review your staff application before dashboard access is enabled." : mentorRequested ? "Your email is verified. Sign in to start using the PLP Hub as a member. Your mentor workspace opens once PLP approves your request." : "Your email is verified. You can now sign in and get started.")}/>
+            <Heading title={translateUi("Email confirmed")} description={translateUi(awaitingApproval ? "Your email is verified. An administrator will review your staff application before dashboard access is enabled." : mentorRequested ? "Your email is verified. Sign in to start using the PLP Hub as a member. Your dashboard changes once PLP approves your request." : "Your email is verified. You can now sign in and get started.")}/>
             <div className="flex justify-center">
               <Link to="/auth/login" className="hub-button hub-access-submit">{translateUi(" Continue to sign in ")}<ArrowRight size={16}/>
               </Link>
@@ -85,7 +85,7 @@ export function EmailVerificationPage() {
                 try {
                     const result = await request("confirm", { email, code });
                     setAwaitingApproval(Boolean(result.awaitingApproval));
-                    setMentorRequested(result.requestedRole === "mentor");
+                    setMentorRequested(Boolean(result.requestedRole));
                     sessionStorage.removeItem("plp-verification-email");
                     setDone(true);
                 }

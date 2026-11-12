@@ -10975,5 +10975,65 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "Members keep their member access; other applicants cannot sign in.": {
     "rw": "Abanyamuryango bakomeza kugira uburenganzira bwabo; abandi basaba ntibashobora kwinjira.",
     "fr": "Les membres conservent leur accès ; les autres candidats ne peuvent pas se connecter."
+  },
+  "PLP Connect and signature initiatives": {
+    "rw": "PLP Connect n’ibikorwa by’ingenzi",
+    "fr": "PLP Connect et initiatives phares"
+  },
+  "Discover & Develop, and PLP’s signature initiatives in Do & Demonstrate: clubs, homegroups, and community programmes.": {
+    "rw": "Menya kandi utere imbere, n’ibikorwa by’ingenzi bya PLP muri Shyira mu bikorwa kandi ugaragaze: amaclub, amatsinda yo mu rugo, na gahunda z’abaturage.",
+    "fr": "Découvrir et se développer, et les initiatives phares de PLP dans Agir et démontrer : clubs, groupes de maison et programmes communautaires."
+  },
+  "Do & Demonstrate through PLP Connect: jobs, internships, mentorship, and membership.": {
+    "rw": "Shyira mu bikorwa kandi ugaragaze binyuze muri PLP Connect: akazi, imenyerezamwuga, ubujyanama n’ubunyamuryango.",
+    "fr": "Agir et démontrer avec PLP Connect : emplois, stages, mentorat et adhésion."
+  },
+  "Everyone in PLP is a member. Club leaders, trainers and mentors are members too.": {
+    "rw": "Buri wese muri PLP ni umunyamuryango. Abayobozi b’amaclub, abarimu n’abajyanama na bo ni abanyamuryango.",
+    "fr": "Tout le monde à PLP est membre. Les responsables de club, formateurs et mentors sont aussi membres."
+  },
+  "You start with member access straight away. PLP reviews your request, and your dashboard changes once it is approved.": {
+    "rw": "Uhita ubona uburenganzira bw’umunyamuryango. PLP isuzuma ubusabe bwawe, kandi ibikubiye ku rubuga rwawe bihinduka bumaze kwemezwa.",
+    "fr": "Vous avez tout de suite un accès membre. PLP examine votre demande, et votre tableau de bord change dès qu’elle est approuvée."
+  },
+  "School you work with": {
+    "rw": "Ishuri mukorana",
+    "fr": "École avec laquelle vous travaillez"
+  },
+  "Your email is verified. Sign in to start using the PLP Hub as a member. Your dashboard changes once PLP approves your request.": {
+    "rw": "Imeyili yawe yemejwe. Injira utangire gukoresha PLP Hub nk’umunyamuryango. Ibikubiye ku rubuga rwawe bihinduka PLP imaze kwemeza ubusabe bwawe.",
+    "fr": "Votre adresse e-mail est vérifiée. Connectez-vous pour utiliser le PLP Hub en tant que membre. Votre tableau de bord change dès que PLP approuve votre demande."
+  },
+  "You asked to work with {p0}. PLP will confirm your school soon, and its data will appear here.": {
+    "rw": "Wasabye gukorana na {p0}. PLP izemeza ishuri ryawe vuba, kandi amakuru yaryo azagaragara hano.",
+    "fr": "Vous avez demandé à travailler avec {p0}. PLP confirmera bientôt votre école, et ses données apparaîtront ici."
+  },
+  "Change": {
+    "rw": "Hindura",
+    "fr": "Modifier"
+  },
+  "Sent to PLP for confirmation": {
+    "rw": "Byoherejwe kuri PLP ngo byemezwe",
+    "fr": "Envoyé à PLP pour confirmation"
+  },
+  "Which school do you work with?": {
+    "rw": "Ni irihe shuri mukorana?",
+    "fr": "Avec quelle école travaillez-vous ?"
+  },
+  "PLP confirms it, then you see the school’s members, materials and progress.": {
+    "rw": "PLP irabyemeza, hanyuma ukabona abanyamuryango b’ishuri, imfashanyigisho n’aho rigeze.",
+    "fr": "PLP la confirme, puis vous voyez les membres, les supports et la progression de l’école."
+  },
+  "Send": {
+    "rw": "Ohereza",
+    "fr": "Envoyer"
+  },
+  "asked for {p0}": {
+    "rw": "yasabye {p0}",
+    "fr": "a demandé {p0}"
+  },
+  "Not registered yet: add it under Schools, or pick one in Review": {
+    "rw": "Ntiriranditse: ryongere muri Amashuri, cyangwa uhitemo rimwe muri Suzuma",
+    "fr": "Pas encore enregistrée : ajoutez-la dans Écoles ou choisissez-en une dans Examiner"
   }
 };

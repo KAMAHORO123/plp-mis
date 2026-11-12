@@ -131,6 +131,7 @@ function Layout({ privateWorkspace = false }: {
                 { to: '/certificate-centre', label: 'School certificates', icon: Award },
             ] : trainer ? [{ to: '/studio', label: 'Trainer studio', icon: PenTool }, { to: '/academy', label: 'Learning academy', icon: BookOpen }] : mentor ? [
                 { to: '/academy', label: 'Learning academy', icon: BookOpen },
+                { to: '/learning-materials', label: 'Learning materials', icon: BookOpen },
                 { to: '/opportunities', label: 'Opportunities', icon: BriefcaseBusiness },
             ] : coordinator ? [
                 { to: '/school-members', label: 'School members', icon: Users },

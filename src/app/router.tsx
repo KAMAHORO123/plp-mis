@@ -8,7 +8,7 @@ import { StaffProfilePage } from '@/features/hub/staff-profile';
 import { LiveQuizPage, LiveQuizHostPage, PlayPage } from "@/features/hub/live-quiz";
 import { LearningMaterialsPage, ActivitiesPage, OperationsAnalyticsPage, SchoolDirectoryPage, SchoolLeaderDashboard } from '@/features/hub/school-operations';
 import { MembershipCertificatesPage } from '@/features/hub/membership-certificates';
-import { RoleDashboard } from '@/features/hub/role-dashboard';
+import { RoleDashboard, SchoolRequest } from '@/features/hub/role-dashboard';
 import { SchoolMembersPage, CertificateCheckPage } from "@/features/hub/workspaces";
 import { lazy, Suspense } from "react";
 import { createBrowserRouter, Navigate, useLocation } from "react-router-dom";
@@ -80,7 +80,7 @@ function MovedTo({ path }: {
     path: string;
 }) { useSiteLanguage(); const { search, hash } = useLocation(); return <Navigate to={{ pathname: path, search, hash }} replace/>; }
 function ProfileRoute() { useSiteLanguage(); const { profile } = useHub(); return ['Administrator', 'Trainer', 'Club leader', 'Mentor'].includes(profile.role) ? <StaffProfilePage /> : <PassportPage />; }
-function DashboardRoute() { useSiteLanguage(); const { profile } = useHub(); return <>{profile.role === 'Trainer' ? <TrainerWorkspace overview/> : profile.role === 'Club leader' ? <SchoolLeaderDashboard /> : profile.role === 'Mentor' ? <MentorDashboard /> : <RoleDashboard />}{['Trainer','Club leader','Mentor'].includes(profile.role) && <DashboardCalendar/>}</>; }
+function DashboardRoute() { useSiteLanguage(); const { profile } = useHub(); return <><SchoolRequest />{profile.role === 'Trainer' ? <TrainerWorkspace overview/> : profile.role === 'Club leader' ? <SchoolLeaderDashboard /> : profile.role === 'Mentor' ? <MentorDashboard /> : <RoleDashboard />}{['Trainer','Club leader','Mentor'].includes(profile.role) && <DashboardCalendar/>}</>; }
 function SchoolRegisterRoute() { useSiteLanguage(); const { profile } = useHub(); return profile.role === 'Administrator' ? <SchoolDirectoryPage /> : <SchoolMembersPage />; }
 export const router = createBrowserRouter([
     {
@@ -152,8 +152,8 @@ export const router = createBrowserRouter([
                                     { path: "certificates", element: <CertificatesPage /> },
                                     { path: "certificate-centre", element: <MembershipCertificatesPage /> },
                                     { path: "learning-certificates", element: <Navigate to="/certificates" replace/> },
-                                    // Learning materials are for club leaders (and administrators, who manage them).
-                                    { element: <MemberGuard allowed={["Club leader", "Administrator"]}/>, children: [{ path: "learning-materials", element: <LearningMaterialsPage /> }] },
+                                    // Learning materials are for club leaders and mentors (and administrators, who manage them).
+                                    { element: <MemberGuard allowed={["Club leader", "Mentor", "Administrator"]}/>, children: [{ path: "learning-materials", element: <LearningMaterialsPage /> }] },
                                     { element: <MemberGuard allowed={["Club leader", "Administrator", "Mentor"]}/>, children: [{ path: "school-members", element: <SchoolRegisterRoute /> }] },
                                     { path: "credits", element: <CreditsPage /> },
                                     { path: "live-quiz", element: <LiveQuizPage /> },
