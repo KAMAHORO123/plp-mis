@@ -93,6 +93,7 @@ services:
       dockerfile: deploy/hub.Dockerfile
       args:
         VITE_SITE_URL: http://localhost:5174
+        VITE_PREVIEW_TESTIMONIALS: "true"
     healthcheck:
       test: [CMD, wget, -q, --spider, http://127.0.0.1/]
       interval: 5s
@@ -105,6 +106,8 @@ services:
       args:
         VITE_HUB_URL: http://localhost:5173
         VITE_CONTENT_API_URL: /content
+        # Local preview only: show testimonials that are still waiting for approval.
+        VITE_PREVIEW_TESTIMONIALS: "true"
     healthcheck:
       test: [CMD, wget, -q, --spider, http://127.0.0.1/]
       interval: 5s

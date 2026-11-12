@@ -41,6 +41,8 @@ const publicNav = [
     { to: "/album", label: "PLP album" },
     { to: "/plp-canada", label: "PLP Canada" },
 ];
+// The Live quiz page lives on the public website, not in the Hub.
+const liveQuizUrl = `${(import.meta.env.VITE_SITE_URL || "").replace(/\/$/, "")}/live-quiz`;
 function Layout({ privateWorkspace = false }: {
     privateWorkspace?: boolean;
 }) {
@@ -269,6 +271,7 @@ function Layout({ privateWorkspace = false }: {
             {translateUi(publicNav.map((n) => (<NavLink key={n.to} to={n.to} end={n.to === "/"}>
                 {translateUi(n.label)}
               </NavLink>)))}
+            <a href={liveQuizUrl}>{translateUi("Live quiz")}</a>
           </nav>) : (<p className="hub-workspace-label">
             <ShieldCheck size={16}/>{translateUi(" Your member workspace ")}</p>))}
         <div className="hub-header-actions"><LanguageSwitcher compact/><ThemeToggle/>
@@ -306,6 +309,7 @@ function Layout({ privateWorkspace = false }: {
           {translateUi((privateWorkspace ? [...hubNav, ...extra] : publicNav).map((n) => (<NavLink key={n.to} to={n.to} end={n.to === "/"} onClick={() => setOpen(false)}>
               {translateUi(n.label)}
             </NavLink>)))}
+          {!privateWorkspace && <a href={liveQuizUrl} onClick={() => setOpen(false)}>{translateUi("Live quiz")}</a>}
           {translateUi(!privateWorkspace && (<Link to={accessLink}>
               {translateUi(isMember ? "My Hub" : "Member sign-in")}
             </Link>))}

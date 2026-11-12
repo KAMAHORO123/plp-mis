@@ -5,7 +5,8 @@ import { albums } from './site-content';
 import { teamPhotos } from './team-photos';
 import './community-sections.css';
 // Voices of PLP. Each quote must come from (or be approved by) the person it names before it is published:
-// set approved: true once they agree. Drafts are only visible in development or with ?preview=testimonials.
+// set approved: true once they agree. Drafts are only visible in development, local Docker previews
+// (VITE_PREVIEW_TESTIMONIALS) or with ?preview=testimonials; the production build never sets that flag.
 const testimonials = [
     { name: 'Amelia', role: 'PLP Clubs', topic: 'Finding my voice', approved: false, quote: 'I joined a school club to make friends. Leading one taught me that everyone in the room has something to give, if you make space for them to speak.' },
     { name: 'Patrick', role: 'Homegroups', topic: 'A place to belong', approved: false, quote: 'Homegroups are where people stop being strangers. Week after week, we listen, we share, and we carry each other a little further.' },
@@ -14,7 +15,7 @@ const testimonials = [
     { name: 'Kamahoro Linda Kellia', role: 'IT & Digital Systems', topic: 'Building for young people', approved: false, quote: 'Building the PLP Hub means every young person can learn, find opportunities and keep their journey in one place, wherever they are.' },
     { name: 'ABI', role: 'Walk to Remember & Ku Gicaniro', topic: 'Remembering together', approved: false, quote: 'Walking to remember connects us to our history. It reminds us why choosing peace, every day, matters so much.' },
 ];
-const showDrafts = () => import.meta.env.DEV || (typeof location !== 'undefined' && new URLSearchParams(location.search).get('preview') === 'testimonials');
+const showDrafts = () => import.meta.env.DEV || import.meta.env.VITE_PREVIEW_TESTIMONIALS === 'true' || (typeof location !== 'undefined' && new URLSearchParams(location.search).get('preview') === 'testimonials');
 export function TestimonialsSection() {
     useSiteLanguage();
     const items = testimonials.filter(t => t.approved || showDrafts());
