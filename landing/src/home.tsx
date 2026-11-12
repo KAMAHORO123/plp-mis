@@ -47,45 +47,6 @@ function Pathway() {
         ].map(([title, text, to, label], i) => <li key={title}><span>{translateUi("0")}{translateUi(i + 1)}</span><div><h3>{translateUi(title)}</h3><p>{translateUi(text)}</p><Link className="plp-editorial-link" to={to}>{translateUi(label)}<ArrowUpRight size={16}/></Link></div></li>))}</ol></section>;
 }
 function Partnership() { useSiteLanguage(); return <section className="plp-partnership" id="partner"><p className="plp-section-label">{translateUi("WORK WITH PLP")}</p><h2>{translateUi("Put your experience")}<br />{translateUi("to work with young people.")}</h2><div><p>{translateUi("Partner on a programme, contribute a curriculum, host an internship, or co-create a community initiative. PLP\u2019s network connects partners with youth-led work in schools and communities.")}</p><a className="plp-editorial-link" href="mailto:info@peaceloveproclaimers.org?subject=Partner%20with%20PLP">{translateUi("Talk to PLP about a partnership ")}<ArrowUpRight size={18}/></a><PortfolioLink /></div></section>; }
-const leadership = [
-    ["Israel Nuru", "Executive Director", "Leads PLP and works alongside the Board of Directors."],
-    ["Aime Mutemura", "Deputy Executive Director · Programs & Impact", "Discover & Develop, and PLP’s signature initiatives in Do & Demonstrate: clubs, homegroups, and community programmes."],
-    ["Divin Ibambasi", "Deputy Executive Director · Strategic Planning & Development", "Do & Demonstrate through PLP Connect: jobs, internships, mentorship, and membership."],
-];
-const directors = [
-    ["Gaju Alidah", "Executive Secretary", "The executive office and administration."],
-    ["Ntwari Abdallah", "Creative Director", "Organizational branding and creative direction."],
-    ["N. Jean De Dieu", "Director of IT & Digital Systems", "PLP’s digital systems, including the PLP Hub."],
-    ["Giramata Sandra", "Director of Finance", "Budgeting, accounting, and financial reporting."],
-    ["Rita Sandrine", "Director of Partnerships", "Strategy, research, and resource mobilization."],
-];
-const teams: [
-    string,
-    string,
-    [
-        string,
-        string
-    ][]
-][] = [
-    ["IT & Digital Systems", "PLP Hub and digital tools", [["IT managers", "Kamahoro Linda Kellia · Livia · Kelly Gisubizo"]]],
-    ["Discover & Develop", "PLP Hub", [["PLP Clubs", "Mutabazi · Amelia"], ["Homegroups", "Patrick · Phocas"], ["Youth Learning Hub", "Arnold M. · Beline"]]],
-    ["Do & Demonstrate", "PLP Connect and signature initiatives", [["Jobs & Internships", "Parfine · Eunice"], ["Mentorship", "Natacha K."], ["Membership & Engagement", "Hirwa Djasiri · Ikaze Team"], ["Boardroom", "Shema Dan · Amanda Lelsie"], ["Walk to Remember & Ku Gicaniro", "ABI · Princess R."], ["Anda Art Festival", "Danny Kaberuka · Eviddy"], ["MegaCare", "Dalynah · Micha"], ["Sober Nights & Entertainment", "Colin K. · Biggy · Maxine"]]],
-    ["Executive office", "With the Executive Secretary", [["Administration", "Divine Kayonga"]]],
-    ["Creative", "Organizational branding", [["Copyright", "J-Yane · Caessy Ngarambe"], ["Account manager", "Ornella Nene"]]],
-    ["Partnerships", "Strategy and resources", [["Strategy & Research", "Shema Dan"], ["Resource Mobilization & Strategic Outreach", "Caessy Ngarambe"]]],
-];
-const initials = (name: string) => name.replace(/^[A-Z]\.\s*/, "").split(/\s+/).filter(w => /^[A-Z]/.test(w)).slice(0, 2).map(w => w[0]).join("");
-/** A leader or director: their face (or initials), name and role. */
-function Person({ person: [name, role] }: { person: string[] }) {
-    useSiteLanguage();
-    const photo = teamPhotos[name];
-    return <li>{photo ? <img src={`/images/plp/team/${photo}-face.webp`} alt="" width={64} height={64} loading="lazy" decoding="async"/> : <span className="plp-team-monogram" aria-hidden="true">{translateUi(initials(name))}</span>}<div><h3>{translateUi(name)}</h3><p className="plp-team-role">{translateUi(role)}</p></div></li>;
-}
-/** A team member in a programme list: their face (or initials) and name. */
-function Member({ name }: { name: string }) {
-    const photo = teamPhotos[name];
-    return <span className="plp-team-member">{photo ? <img src={`/images/plp/team/${photo}-face.webp`} alt="" width={36} height={36} loading="lazy" decoding="async"/> : <i aria-hidden="true">{initials(name) || "PLP"}</i>}{translateUi(name)}</span>;
-}
 /**
  * Everyone's photo in a banner that moves slowly from left to right. It pauses on hover or keyboard focus and with the
  * Pause button (WCAG 2.2.2); with reduced motion it stays still and can be scrolled sideways. The list is drawn twice
@@ -105,8 +66,6 @@ function Team() {
   <div className="plp-team-head"><div className="plp-team-intro"><p className="plp-section-label">{translateUi("THE PEOPLE BEHIND PLP")}</p><h2 id="team-title">{translateUi("Meet our team")}</h2><p>{translateUi("Working together for young people, with our club leaders, mentors, and volunteers.")}</p></div>
    <button type="button" className="plp-team-pause" aria-pressed={paused} onClick={() => setPaused(!paused)}>{paused ? <Play size={16}/> : <Pause size={16}/>}{translateUi(paused ? "Play photos" : "Pause photos")}</button></div>
   <TeamBanner paused={paused}/>
-  <div className="plp-team-groups"><p className="plp-team-group-label">{translateUi("Leadership and directors")}</p><ul className="plp-team-leaders">{translateUi([...leadership, ...directors].map(p => <Person key={p[0]} person={p}/>))}</ul><p className="plp-team-group-label">{translateUi("Programmes and teams")}</p><div className="plp-team-units">{translateUi(teams.map(([area, , units]) => <section key={area}><h3>{translateUi(area)}</h3><dl>{translateUi(units.map(([unit, people]) => <div key={unit}><dt>{translateUi(unit)}</dt><dd>{people.split(" · ").map(name => <Member key={name} name={name}/>)}</dd></div>))}</dl></section>))}</div>
-  <figure className="plp-team-group"><img src="/images/plp/team/plp-team-group.webp" alt={translateUi("The PLP team together, smiling and giving thumbs up")} width={1600} height={667} loading="lazy" decoding="async"/><figcaption>{translateUi("One team, working for young people.")}</figcaption></figure><p className="plp-source-note">{translateUi("PLP is governed by a Board of Directors and supported by an Advisory Council.")}</p></div>
     </section>;
 }
 /** Full-width hero slider: each photo carries its own headline and link; the first slide is the page title. */

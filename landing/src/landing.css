@@ -850,3 +850,17 @@ html[data-theme="dark"] .plp-team-units dd .plp-team-member { background: #1b2b3
 }
 /* The team banner runs edge to edge; keep the page itself from scrolling sideways. */
 .plp-public-site { overflow-x: clip; }
+/* Meet our team, simplified: the heading, then one slow row of everyone's photo with their name and role below it. */
+.plp-team { gap: 34px; }
+.plp-team-track { animation-duration: 200s; }
+.plp-team .plp-team-track ul { gap: 22px; padding: 0 11px; }
+.plp-team .plp-team-track li { width: 220px; border-radius: 22px; background: #fff; border: 1px solid #e1e7ed; box-shadow: 0 16px 34px -28px rgba(16, 35, 60, .55); }
+.plp-team-track img { border-radius: 22px 22px 0 0; }
+.plp-team-track li > div { position: static; padding: 14px 16px 16px; background: none; color: inherit; gap: 4px; }
+.plp-team-track strong { color: #173b59; font-size: 15px; }
+.plp-team-track small { color: #61758c; font-size: 12px; }
+.plp-team-track li:hover img { transform: none; }
+html[data-theme="dark"] .plp-team .plp-team-track li { background: #142335; border-color: #24384d; }
+html[data-theme="dark"] .plp-team-track strong { color: #eef4fa; }
+html[data-theme="dark"] .plp-team-track small { color: #a9bccd; }
+@media (max-width: 600px) { .plp-team .plp-team-track li { width: 170px; } }
