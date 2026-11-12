@@ -10627,5 +10627,353 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "Programme": {
     "rw": "Gahunda",
     "fr": "Programme"
+  },
+  "From discovering and developing your strengths to putting them into action. The two stages connect PLP’s work across schools, universities, and communities.": {
+    "rw": "Kuva mu kumenya no guteza imbere impano zawe kugera mu kuzishyira mu bikorwa. Izi ntambwe ebyiri zihuza ibikorwa bya PLP mu mashuri, muri kaminuza no mu baturage.",
+    "fr": "De la découverte et du développement de vos talents à leur mise en action. Ces deux étapes relient les activités de PLP dans les écoles, les universités et les communautés."
+  },
+  "Do & Demonstrate": {
+    "rw": "Shyira mu bikorwa kandi ugaragaze",
+    "fr": "Agir et démontrer"
+  },
+  "Through PLP Connect, put what you have learned into action. PLP connects you with communities and opens up opportunities: internships, volunteering, apprenticeships, professional mentorship, business, and leadership in PLP’s peace, arts, wellness, and service initiatives.": {
+    "rw": "Binyuze muri PLP Connect, shyira mu bikorwa ibyo wize. PLP iguhuza n’abaturage kandi ikagufungurira amahirwe: imenyerezamwuga, ubukorerabushake, kwiga umwuga, abajyanama b’umwuga, ubucuruzi, no kuyobora mu bikorwa bya PLP by’amahoro, ubuhanzi, ubuzima bwiza n’ubwitange.",
+    "fr": "Avec PLP Connect, mettez en pratique ce que vous avez appris. PLP vous relie aux communautés et vous ouvre des opportunités : stages, bénévolat, apprentissages, mentorat professionnel, entrepreneuriat et leadership dans les initiatives de PLP pour la paix, les arts, le bien-être et le service."
+  },
+  "Explore opportunities": {
+    "rw": "Reba amahirwe ahari",
+    "fr": "Découvrir les opportunités"
+  },
+  "Quiz deleted": {
+    "rw": "Ikibazo-mukino cyasibwe",
+    "fr": "Quiz supprimé"
+  },
+  "New quiz": {
+    "rw": "Ikibazo-mukino gishya",
+    "fr": "Nouveau quiz"
+  },
+  "Write your questions and tick the right answer.": {
+    "rw": "Andika ibibazo byawe hanyuma uhitemo igisubizo nyacyo.",
+    "fr": "Rédigez vos questions et cochez la bonne réponse."
+  },
+  "Share the PIN": {
+    "rw": "Sangiza PIN",
+    "fr": "Partagez le code PIN"
+  },
+  "Show your screen. Players go to {p0} and enter the PIN.": {
+    "rw": "Erekana ekarani yawe. Abakina bajya kuri {p0} bakandika PIN.",
+    "fr": "Affichez votre écran. Les joueurs vont sur {p0} et saisissent le code PIN."
+  },
+  "Play": {
+    "rw": "Kina",
+    "fr": "Jouer"
+  },
+  "Start the questions, show the answers, and announce the winner.": {
+    "rw": "Tangiza ibibazo, erekana ibisubizo, hanyuma utangaze uwatsinze.",
+    "fr": "Lancez les questions, montrez les réponses et annoncez le gagnant."
+  },
+  "You have no quizzes yet. Create one to play it live in a meeting, class or conference.": {
+    "rw": "Nta kibazo-mukino uragira. Kora kimwe ugikinire mu nama, mu ishuri cyangwa mu nama nkuru.",
+    "fr": "Vous n’avez pas encore de quiz. Créez-en un pour le jouer en direct en réunion, en classe ou en conférence."
+  },
+  "Start game": {
+    "rw": "Tangiza umukino",
+    "fr": "Lancer la partie"
+  },
+  "Edit quiz": {
+    "rw": "Hindura ikibazo-mukino",
+    "fr": "Modifier le quiz"
+  },
+  "Delete quiz": {
+    "rw": "Siba ikibazo-mukino",
+    "fr": "Supprimer le quiz"
+  },
+  "Quiz saved": {
+    "rw": "Ikibazo-mukino cyabitswe",
+    "fr": "Quiz enregistré"
+  },
+  "e.g. Peace and history challenge": {
+    "rw": "urugero: Irushanwa ku mahoro n’amateka",
+    "fr": "ex. : Défi paix et histoire"
+  },
+  "Question {p0}": {
+    "rw": "Ikibazo cya {p0}",
+    "fr": "Question {p0}"
+  },
+  "Time": {
+    "rw": "Igihe",
+    "fr": "Durée"
+  },
+  "{p0} seconds": {
+    "rw": "Amasegonda {p0}",
+    "fr": "{p0} secondes"
+  },
+  "Remove question {p0}": {
+    "rw": "Kuramo ikibazo cya {p0}",
+    "fr": "Retirer la question {p0}"
+  },
+  "Answers (tick the right one)": {
+    "rw": "Ibisubizo (hitamo igisubizo nyacyo)",
+    "fr": "Réponses (cochez la bonne)"
+  },
+  "Answer {p0}": {
+    "rw": "Igisubizo cya {p0}",
+    "fr": "Réponse {p0}"
+  },
+  "Right answer": {
+    "rw": "Igisubizo nyacyo",
+    "fr": "Bonne réponse"
+  },
+  "Remove answer {p0}": {
+    "rw": "Kuramo igisubizo cya {p0}",
+    "fr": "Retirer la réponse {p0}"
+  },
+  "Add an answer": {
+    "rw": "Ongeraho igisubizo",
+    "fr": "Ajouter une réponse"
+  },
+  "Add a question": {
+    "rw": "Ongeraho ikibazo",
+    "fr": "Ajouter une question"
+  },
+  "Save quiz": {
+    "rw": "Bika ikibazo-mukino",
+    "fr": "Enregistrer le quiz"
+  },
+  "Back to my quizzes": {
+    "rw": "Subira ku bibazo-mikino byanjye",
+    "fr": "Retour à mes quiz"
+  },
+  "Question {p0} of {p1}": {
+    "rw": "Ikibazo cya {p0} muri {p1}",
+    "fr": "Question {p0} sur {p1}"
+  },
+  "PIN": {
+    "rw": "PIN",
+    "fr": "PIN"
+  },
+  "End game": {
+    "rw": "Soza umukino",
+    "fr": "Terminer la partie"
+  },
+  "Join at": {
+    "rw": "Injira kuri",
+    "fr": "Rejoignez sur"
+  },
+  "Game PIN": {
+    "rw": "PIN y’umukino",
+    "fr": "PIN du jeu"
+  },
+  "Game PIN {p0}": {
+    "rw": "PIN y’umukino {p0}",
+    "fr": "PIN du jeu {p0}"
+  },
+  "{p0} seconds left": {
+    "rw": "Hasigaye amasegonda {p0}",
+    "fr": "Il reste {p0} secondes"
+  },
+  "{p0} of {p1} answered": {
+    "rw": "{p0} kuri {p1} basubije",
+    "fr": "{p0} sur {p1} ont répondu"
+  },
+  "Show the answer now": {
+    "rw": "Erekana igisubizo ubu",
+    "fr": "Afficher la réponse maintenant"
+  },
+  "Leaderboard": {
+    "rw": "Urutonde rw’amanota",
+    "fr": "Classement"
+  },
+  "No one played this game.": {
+    "rw": "Nta muntu wakinnye uyu mukino.",
+    "fr": "Personne n’a joué à cette partie."
+  },
+  "The winner is": {
+    "rw": "Uwatsinze ni",
+    "fr": "Le gagnant est"
+  },
+  "Join a live quiz": {
+    "rw": "Injira mu kibazo-mukino kiri kuba",
+    "fr": "Rejoindre un quiz en direct"
+  },
+  "Your nickname": {
+    "rw": "Izina ryawe ry’umukino",
+    "fr": "Votre pseudo"
+  },
+  "How others will see you": {
+    "rw": "Uko abandi bazakubona",
+    "fr": "Comment les autres vous verront"
+  },
+  "You’re in, {p0}!": {
+    "rw": "Winjiye, {p0}!",
+    "fr": "Vous y êtes, {p0} !"
+  },
+  "See your name on the host’s screen. The quiz starts soon.": {
+    "rw": "Reba izina ryawe kuri ekarani y’uyobora umukino. Umukino uratangira vuba.",
+    "fr": "Votre nom s’affiche sur l’écran de l’animateur. Le quiz commence bientôt."
+  },
+  "Answer locked in": {
+    "rw": "Igisubizo cyawe cyakiriwe",
+    "fr": "Réponse enregistrée"
+  },
+  "Waiting for the others…": {
+    "rw": "Dutegereje abandi…",
+    "fr": "En attente des autres…"
+  },
+  "Time’s up": {
+    "rw": "Igihe kirarangiye",
+    "fr": "Temps écoulé"
+  },
+  "The right answer was: {p0}": {
+    "rw": "Igisubizo nyacyo cyari: {p0}",
+    "fr": "La bonne réponse était : {p0}"
+  },
+  "You’re in {p0} place with {p1} points.": {
+    "rw": "Uri ku mwanya wa {p0} n’amanota {p1}.",
+    "fr": "Vous êtes {p0} avec {p1} points."
+  },
+  "You finished {p0} of {p1} with {p2} points.": {
+    "rw": "Wabaye uwa {p0} muri {p1} n’amanota {p2}.",
+    "fr": "Vous terminez {p0} sur {p1} avec {p2} points."
+  },
+  "Join another game": {
+    "rw": "Injira mu wundi mukino",
+    "fr": "Rejoindre une autre partie"
+  },
+  "The quiz and its questions are removed.": {
+    "rw": "Ikibazo-mukino n’ibibazo byacyo birasibwa.",
+    "fr": "Le quiz et ses questions sont supprimés."
+  },
+  "FUN CORNER": {
+    "rw": "AKANYA KO KWISHIMISHA",
+    "fr": "COIN DÉTENTE"
+  },
+  "Live quiz": {
+    "rw": "Ikibazo-mukino kiri kuba",
+    "fr": "Quiz en direct"
+  },
+  "Create a quiz, start a game and share the PIN. Everyone in the room plays on their phone, and the fastest correct answers win.": {
+    "rw": "Kora ikibazo-mukino, tangiza umukino hanyuma usangize PIN. Buri wese uri mu cyumba akinira kuri telefoni ye, kandi abasubiza neza vuba ni bo batsinda.",
+    "fr": "Créez un quiz, lancez une partie et partagez le code PIN. Chacun joue depuis son téléphone, et les bonnes réponses les plus rapides l’emportent."
+  },
+  "Loading your quizzes…": {
+    "rw": "Turimo kuzana ibibazo-mikino byawe…",
+    "fr": "Chargement de vos quiz…"
+  },
+  "LIVE QUIZ": {
+    "rw": "IKIBAZO-MUKINO KIRI KUBA",
+    "fr": "QUIZ EN DIRECT"
+  },
+  "Each question needs 2 to 4 answers. Tick the right one.": {
+    "rw": "Buri kibazo gikenera ibisubizo 2 kugeza kuri 4. Hitamo igisubizo nyacyo.",
+    "fr": "Chaque question a besoin de 2 à 4 réponses. Cochez la bonne."
+  },
+  "Quiz title": {
+    "rw": "Umutwe w’ikibazo-mukino",
+    "fr": "Titre du quiz"
+  },
+  "End this game?": {
+    "rw": "Usoze uyu mukino?",
+    "fr": "Terminer cette partie ?"
+  },
+  "Players see the final results.": {
+    "rw": "Abakina barabona ibyavuye mu mukino.",
+    "fr": "Les joueurs voient les résultats finaux."
+  },
+  "Opening the game…": {
+    "rw": "Turimo gufungura umukino…",
+    "fr": "Ouverture de la partie…"
+  },
+  "Joining the game…": {
+    "rw": "Turimo kukwinjiza mu mukino…",
+    "fr": "Connexion à la partie…"
+  },
+  "1 question": {
+    "rw": "Ikibazo 1",
+    "fr": "1 question"
+  },
+  "{p0} questions": {
+    "rw": "Ibibazo {p0}",
+    "fr": "{p0} questions"
+  },
+  "1 player": {
+    "rw": "Ukina 1",
+    "fr": "1 joueur"
+  },
+  "{p0} players": {
+    "rw": "Abakina {p0}",
+    "fr": "{p0} joueurs"
+  },
+  "Start the quiz": {
+    "rw": "Tangiza ikibazo-mukino",
+    "fr": "Lancer le quiz"
+  },
+  "Waiting for players…": {
+    "rw": "Dutegereje abakina…",
+    "fr": "En attente des joueurs…"
+  },
+  "See the winner": {
+    "rw": "Reba uwatsinze",
+    "fr": "Voir le gagnant"
+  },
+  "Joining…": {
+    "rw": "Turimo kukwinjiza…",
+    "fr": "Connexion…"
+  },
+  "Join game": {
+    "rw": "Injira mu mukino",
+    "fr": "Rejoindre la partie"
+  },
+  "Correct!": {
+    "rw": "Ni byo!",
+    "fr": "Bonne réponse !"
+  },
+  "Not this time": {
+    "rw": "Si byo kuri iyi nshuro",
+    "fr": "Pas cette fois"
+  },
+  "You won!": {
+    "rw": "Watsinze!",
+    "fr": "Vous avez gagné !"
+  },
+  "Game over": {
+    "rw": "Umukino urarangiye",
+    "fr": "Partie terminée"
+  },
+  "Playing in a meeting, class or conference?": {
+    "rw": "Murakinira mu nama, mu ishuri cyangwa mu nama nkuru?",
+    "fr": "Vous jouez en réunion, en classe ou en conférence ?"
+  },
+  "Enter the game PIN shown on the host’s screen and play from your phone.": {
+    "rw": "Andika PIN y’umukino igaragara kuri ekarani y’uyobora umukino, ukinire kuri telefoni yawe.",
+    "fr": "Saisissez le code PIN affiché sur l’écran de l’animateur et jouez depuis votre téléphone."
+  },
+  "Join": {
+    "rw": "Injira",
+    "fr": "Rejoindre"
+  },
+  "Host your own quiz in the PLP Hub": {
+    "rw": "Yobora ikibazo-mukino cyawe muri PLP Hub",
+    "fr": "Animez votre propre quiz dans le PLP Hub"
+  },
+  "You start with member access straight away. PLP reviews your mentor request, and your mentor workspace opens once it is approved.": {
+    "rw": "Uhita ubona uburenganzira bw’umunyamuryango. PLP isuzuma ubusabe bwawe bwo kuba umujyanama, kandi umwanya w’umujyanama ufunguka bumaze kwemezwa.",
+    "fr": "Vous avez tout de suite un accès membre. PLP examine votre demande de mentorat, et votre espace mentor s’ouvre dès qu’elle est approuvée."
+  },
+  "Your email is verified. Sign in to start using the PLP Hub as a member. Your mentor workspace opens once PLP approves your request.": {
+    "rw": "Imeyili yawe yemejwe. Injira utangire gukoresha PLP Hub nk’umunyamuryango. Umwanya w’umujyanama ufunguka PLP imaze kwemeza ubusabe bwawe.",
+    "fr": "Votre adresse e-mail est vérifiée. Connectez-vous pour utiliser le PLP Hub en tant que membre. Votre espace mentor s’ouvre dès que PLP approuve votre demande."
+  },
+  "Applicants use the Hub as members until their role is approved": {
+    "rw": "Abasaba bakoresha Hub nk’abanyamuryango kugeza inshingano zabo zemejwe",
+    "fr": "Les candidats utilisent le Hub comme membres jusqu’à l’approbation de leur rôle"
+  },
+  "They keep their member access.": {
+    "rw": "Bakomeza kugira uburenganzira bw’umunyamuryango.",
+    "fr": "Ils conservent leur accès membre."
+  },
+  "Members keep their member access; other applicants cannot sign in.": {
+    "rw": "Abanyamuryango bakomeza kugira uburenganzira bwabo; abandi basaba ntibashobora kwinjira.",
+    "fr": "Les membres conservent leur accès ; les autres candidats ne peuvent pas se connecter."
   }
 };

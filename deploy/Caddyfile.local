@@ -15,6 +15,9 @@ http://:5173 {
 }
 http://:5174 {
  encode gzip
+ # Live quiz: the short /play address opens the player page in the Hub, as in production.
+ @play path /play /play/*
+ redir @play http://localhost:5173{uri} 302
  handle /api/public/* {
   reverse_proxy platform:8082
  }

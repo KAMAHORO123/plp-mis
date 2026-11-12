@@ -33,10 +33,14 @@ test('member materials, mentor school boundaries and reversible leader learning 
       await db.query('INSERT INTO records(id,kind,owner_id,school_id,data) VALUES($1,$2,$3,$4,$5)', [id, kind, admin.id, school, data]);
     }
     const shared = records[2];
-    for (const user of [member, leader, mentor, unassigned]) {
+    // Learning materials are for club leaders only (administrators manage them).
+    const materials = await call(leader, '/records/materials'); assert.equal(materials.status, 200);
+    assert.ok(materials.data.some(r => r.id === shared)); assert.ok(!materials.data.some(r => r.id === records[3]));
+    for (const user of [member, mentor, unassigned]) {
       const response = await call(user, '/records/materials'); assert.equal(response.status, 200);
-      assert.ok(response.data.some(r => r.id === shared)); assert.ok(!response.data.some(r => r.id === records[3]));
+      assert.equal(response.data.length, 0);
     }
+    assert.equal((await call(mentor, '/material-completions')).status, 403);
     const register = await call(mentor, '/records/members'); assert.equal(register.status, 200);
     assert.ok(register.data.some(r => r.id === records[0])); assert.ok(!register.data.some(r => r.id === records[1]));
     assert.equal((await call(unassigned, '/school-members')).status, 403);
@@ -44,7 +48,7 @@ test('member materials, mentor school boundaries and reversible leader learning 
     assert.equal((await call(mentor, '/records/members', 'POST', { title: 'Unauthorized student' })).status, 403);
     for (const stage of ['In progress', 'Completed', 'Not started']) {
       assert.equal((await call(leader, `/materials/${shared}/completion`, 'PUT', { school_id: schools[0], stage })).status, 200);
-      const progress = await call(mentor, '/material-completions');
+      const progress = await call(leader, '/material-completions');
       assert.equal(progress.data.find(r => r.material_id === shared).stage, stage);
       const report = await call(mentor, '/reports');
       assert.equal(report.data.length, 1);

@@ -93,7 +93,7 @@ function returnDestination(value: string | null) {
     // Only known local member routes may be used as a post-sign-in destination.
     // Backslashes and double slashes are refused outright: browsers can read them as another site.
     return value && !/[\\]|\/\//.test(value) &&
-        /^\/(meetings|hub|academy|alx|opportunities|mentorship|community|clubs|passport|profile|certificates|credits|studio|hub-analytics|memberships|verify|school-members|certificate-centre)(\/[^?#]*)?(\?[^#]*)?$/.test(value)
+        /^\/(meetings|hub|academy|alx|opportunities|mentorship|community|clubs|passport|profile|certificates|credits|studio|hub-analytics|memberships|verify|school-members|certificate-centre|live-quiz)(\/[^?#]*)?(\?[^#]*)?$/.test(value)
         ? value
         : "/hub";
 }
@@ -143,15 +143,16 @@ export function SignInPage() {
                         id: account.id, name: account.name, email,
                         role: "Community member" as const, bio: "", skills: [], leadership: [],
                         clubIds: [], managedClubIds: [], joined: today(), membership: "Approved" as const,
-                    }) };
+                    }) } as Profile;
                 member.membership = "Approved";
                 member.role = account.role === "admin" ? "Administrator" : account.role === "trainer" ? "Trainer" : account.role === "leader" ? "Club leader" : account.role === "mentor" ? "Mentor" : "Community member";
+                member.requestedRole = account.requested_role === "mentor" ? "Mentor" : undefined;
                 update((s) => {
                     const existing = s.profiles.find(p => p.id === member.id);
                     if (existing) {
                         existing.membership = "Approved";
                         existing.role = member.role;
-                        existing.requestedRole = undefined;
+                        existing.requestedRole = account.requested_role === "mentor" ? "Mentor" : undefined;
                     }
                     else
                         s.profiles.push(member);
@@ -330,7 +331,7 @@ export function JoinPage() {
             }
             setBusy(true);
             try {
-                await authRequest("register", { email, name, password, ...(accountRole !== "Member" ? { requested_role: accountRole === "Trainer" ? "trainer" : accountRole === "Mentor" ? "mentor" : "leader" } : {}) });
+                await authRequest("register", { email, name, password, ...(accountRole === "Mentor" ? { requested_role: "mentor" } : {}) });
                 const id = uid();
                 const next: Profile = {
                     id,
@@ -338,7 +339,7 @@ export function JoinPage() {
                     email,
                     role: "Community member",
                     memberCategory: "Community",
-                    requestedRole: f.get("accountRole") === "Member" ? undefined : String(f.get("accountRole")),
+                    requestedRole: accountRole === "Mentor" ? "Mentor" : undefined,
                     schoolName: String(f.get("school") || "").trim().toUpperCase() || undefined,
                     schoolId: demoSchools.find(s => s.name.toUpperCase() === String(f.get("school") || "").trim().toUpperCase())?.id,
                     bio: "",
@@ -375,7 +376,8 @@ export function JoinPage() {
             <input name="email" type="email" autoComplete="email" required defaultValue={validInvitation ? invitation.email : ""}/>
           </Field>
           <Field label={translateUi("Account type")}>
-            <select name="accountRole" value={accountRole} onChange={e => setAccountRole(e.target.value)}><option value={"Member"}>{translateUi("Member")}</option><option value={"Club leader"}>{translateUi("Club leader")}</option><option value={"Trainer"}>{translateUi("Trainer")}</option><option value={"Mentor"}>{translateUi("Mentor")}</option></select>
+            <select name="accountRole" value={accountRole} onChange={e => setAccountRole(e.target.value)}><option value={"Member"}>{translateUi("Member")}</option><option value={"Mentor"}>{translateUi("Mentor")}</option></select>
+            {accountRole === "Mentor" && <small className="hub-field-note">{translateUi("You start with member access straight away. PLP reviews your mentor request, and your mentor workspace opens once it is approved.")}</small>}
           </Field>
           <Field label={translateUi("School (if applicable)")}><input name="school" list="school-suggestions" maxLength={160} autoCapitalize="characters" placeholder={translateUi("TYPE YOUR SCHOOL NAME")} onChange={e => { e.currentTarget.value = e.currentTarget.value.toUpperCase(); }}/><datalist id="school-suggestions">{translateUi(demoSchools.map(s => <option key={s.id} value={s.name.toUpperCase()}/>))}</datalist></Field>
           <PasswordField label={translateUi("Password")} name="password" creating/>

@@ -13,6 +13,9 @@
   Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; media-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
   -Server
  }
+ # Live quiz players can type the short address plpyouth.org/play; the game itself runs in the Hub.
+ @play path /play /play/*
+ redir @play https://{$HUB_HOST}{uri} 302
  # Public read-only API (announcement, welcome popup, fun corner) the website loads, as in the local setup.
  handle /api/public/* {
   reverse_proxy platform:8082 {

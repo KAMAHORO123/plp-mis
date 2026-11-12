@@ -19,7 +19,8 @@ export function AuthLayout({ actions }: {
     return (<div className="grid h-[100dvh] overflow-hidden overscroll-none bg-background lg:grid-cols-2">
       {/* Form side */}
       <div className="relative flex h-full min-h-0 flex-col px-5 py-4 sm:px-8 sm:py-5">
-        <div className="absolute right-5 top-5 flex items-center gap-3 sm:right-6 sm:top-6">{actions}</div>
+        {/* On large screens the round back button takes the top-right corner, so these sit just to its left. */}
+        <div className="absolute right-5 top-5 flex items-center gap-3 sm:right-6 sm:top-6 lg:right-[4.75rem]">{actions}</div>
         {/* Back to the website: on large screens it sits at the top edge, right before the pictures; on phones, centred at the top. */}
         <div className="absolute left-1/2 top-5 -translate-x-1/2 sm:top-7 lg:left-auto lg:right-3 lg:top-3 lg:translate-x-0">
           <a href={import.meta.env.VITE_SITE_URL || "/"} aria-label={translateUi("Back to PLP website")} className="flex h-11 w-11 bg-background shadow-sm items-center justify-center rounded-full border border-border text-primary hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">

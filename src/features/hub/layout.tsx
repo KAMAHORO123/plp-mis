@@ -6,7 +6,7 @@ import { AnnouncementBanner } from "./announcement";
 import { HelpChat } from "./workspaces";
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate, } from "react-router-dom";
-import { ArrowUpRight, ArrowLeft, BookOpen, BriefcaseBusiness, Users, Award, Coins, LayoutDashboard, Fingerprint, Menu, X, GraduationCap, ChartNoAxesCombined, PenTool, Globe, LogOut, ShieldCheck, Inbox, CalendarDays } from "lucide-react";
+import { ArrowUpRight, ArrowLeft, BookOpen, BriefcaseBusiness, Users, Award, Coins, LayoutDashboard, Fingerprint, Menu, X, GraduationCap, ChartNoAxesCombined, PenTool, Globe, LogOut, ShieldCheck, Inbox, CalendarDays, Gamepad2 } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
 import { SignOutDialog } from "@/components/shared/sign-out-dialog";
 import { AuthLayout } from "@/layouts/auth-layout";
@@ -141,20 +141,20 @@ function Layout({ privateWorkspace = false }: {
                 ...(leader ? [{ to: '/clubs', label: 'Club management', icon: Globe }, { to: '/memberships', label: 'Club invitations', icon: ShieldCheck }] : []),
                 { to: '/academy', label: 'Learning academy', icon: BookOpen },
                 { to: '/alx', label: 'ALX learning zone', icon: GraduationCap },
-                { to: '/learning-materials', label: 'Learning materials', icon: BookOpen },
                 { to: '/opportunities', label: 'Opportunities', icon: BriefcaseBusiness },
                 { to: '/mentorship', label: 'Mentorship', icon: Users },
                 ...(!leader ? [{ to: '/clubs', label: 'Activities', icon: Globe }] : []),
                 { to: '/certificates', label: 'My achievements', icon: Award },
                 { to: '/credits', label: 'PLP credits', icon: Coins },
             ]),
+            { to: '/live-quiz', label: 'Live quiz', icon: Gamepad2 },
             { to: '/calendar', label: 'Calendar', icon: CalendarDays },
             { to: '/passport', label: admin || trainer || mentor || coordinator ? 'My profile' : 'Youth passport', icon: Fingerprint },
         ];
         // Member benefits are shared by every role: the role's own tools come first, then the member pages
         // in one fixed order, then Calendar and the profile at the end.
-        const tail = links.filter(link => link.to === '/calendar' || link.to === '/passport');
-        const shared = [...(mentor && profile.schoolId ? [{ to: '/school-members', label: 'My school', icon: Users }] : []), hubNav[1], hubNav[2], { to: '/learning-materials', label: 'Learning materials', icon: BookOpen }, hubNav[3], hubNav[4], hubNav[5], hubNav[7], hubNav[8]];
+        const tail = links.filter(link => link.to === '/live-quiz' || link.to === '/calendar' || link.to === '/passport');
+        const shared = [...(mentor && profile.schoolId ? [{ to: '/school-members', label: 'My school', icon: Users }] : []), hubNav[1], hubNav[2], hubNav[3], hubNav[4], hubNav[5], hubNav[7], hubNav[8]];
         // Administrators manage courses, ALX, opportunities and mentoring from their own tools, so they skip the member pages.
         links.splice(0, links.length, ...links.filter(link => !tail.includes(link)), ...(admin ? [] : shared.filter(item => !links.some(link => link.to === item.to))), ...tail);
         // Several links can share a path (e.g. studio tabs); the one whose query matches wins.

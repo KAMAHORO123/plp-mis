@@ -28,7 +28,7 @@ async function admin(db) {
   const people = await one(`SELECT
       count(*) FILTER (WHERE role='member' AND status='approved') AS members,
       count(*) FILTER (WHERE role<>'member' AND status='approved') AS staff,
-      count(*) FILTER (WHERE status='pending') AS pending
+      count(*) FILTER (WHERE status='pending' OR (status='approved' AND requested_role IS NOT NULL)) AS pending
     FROM users WHERE email_verified_at IS NOT NULL`);
   const events = await one(`SELECT count(*) AS total,
       count(*) FILTER (WHERE data->>'date' >= ${TODAY}) AS upcoming,
@@ -52,7 +52,7 @@ async function admin(db) {
       UNION ALL SELECT r.id, s.name, 'School certificate request', CASE WHEN r.status='corrected' THEN 'Corrected' ELSE 'Awaiting review' END, jsonb_array_length(r.members) || ' recipients', '/certificate-centre', r.requested_at
         FROM certificate_requests r JOIN schools s ON s.id=r.school_id WHERE r.status IN ('submitted','corrected')
       UNION ALL SELECT id, name, 'Staff access request: ' || coalesce(requested_role,'staff'), 'Verify assignment', email, '/memberships', created_at
-        FROM users WHERE status='pending' AND email_verified_at IS NOT NULL
+        FROM users WHERE email_verified_at IS NOT NULL AND (status='pending' OR (status='approved' AND requested_role IS NOT NULL))
       ORDER BY at DESC LIMIT 100`)).rows.map(({ at, ...t }) => t);
   const trend = await series(db, {
     activities: `SELECT count(*) FROM records e WHERE e.kind='events' AND left(e.data->>'date',7)=m.month`,

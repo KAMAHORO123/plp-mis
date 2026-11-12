@@ -5,6 +5,7 @@ import { MeetingsPage, MeetingManager } from "@/features/hub/meetings";
 import { EmailVerificationPage } from "@/features/hub/verification-page";
 import { useHub } from '@/features/hub/store';
 import { StaffProfilePage } from '@/features/hub/staff-profile';
+import { LiveQuizPage, LiveQuizHostPage, PlayPage } from "@/features/hub/live-quiz";
 import { LearningMaterialsPage, ActivitiesPage, OperationsAnalyticsPage, SchoolDirectoryPage, SchoolLeaderDashboard } from '@/features/hub/school-operations';
 import { MembershipCertificatesPage } from '@/features/hub/membership-certificates';
 import { RoleDashboard } from '@/features/hub/role-dashboard';
@@ -123,9 +124,13 @@ export const router = createBrowserRouter([
                             },
                         ],
                     },
+                    // Live quiz players join with a PIN and a nickname: full screen, no account, no site menus.
+                    { path: "play", element: <PlayPage /> },
                     {
                         element: <MemberGuard />,
                         children: [
+                            // The host's live quiz screen fills the window so it can be projected.
+                            { path: "live-quiz/host/:id", element: <LiveQuizHostPage /> },
                             {
                                 element: <MemberWorkspaceLayout />,
                                 children: [
@@ -147,9 +152,11 @@ export const router = createBrowserRouter([
                                     { path: "certificates", element: <CertificatesPage /> },
                                     { path: "certificate-centre", element: <MembershipCertificatesPage /> },
                                     { path: "learning-certificates", element: <Navigate to="/certificates" replace/> },
-                                    { path: "learning-materials", element: <LearningMaterialsPage /> },
+                                    // Learning materials are for club leaders (and administrators, who manage them).
+                                    { element: <MemberGuard allowed={["Club leader", "Administrator"]}/>, children: [{ path: "learning-materials", element: <LearningMaterialsPage /> }] },
                                     { element: <MemberGuard allowed={["Club leader", "Administrator", "Mentor"]}/>, children: [{ path: "school-members", element: <SchoolRegisterRoute /> }] },
                                     { path: "credits", element: <CreditsPage /> },
+                                    { path: "live-quiz", element: <LiveQuizPage /> },
                                     { path: "calendar", element: <CalendarPage /> },
                                     {
                                         element: (<MemberGuard allowed={["Trainer", "Administrator"]}/>),

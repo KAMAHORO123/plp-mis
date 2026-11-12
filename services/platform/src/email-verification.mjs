@@ -54,7 +54,7 @@ export async function confirmVerification(db, email, code) {
     )).rows[0].count;
     if (daily > 15) return false;
     if (!(await verifyPassword(code, row.code_hash))) return false;
-    await tx.query("UPDATE users SET email_verified_at=now(), status=CASE WHEN status='pending' AND role='member' AND requested_role IS NULL THEN 'approved' ELSE status END WHERE id=$1", [
+    await tx.query("UPDATE users SET email_verified_at=now(), status=CASE WHEN status='pending' AND role='member' THEN 'approved' ELSE status END WHERE id=$1", [
       row.user_id,
     ]);
     await tx.query("DELETE FROM email_verifications WHERE user_id=$1", [

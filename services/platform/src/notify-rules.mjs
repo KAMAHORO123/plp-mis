@@ -56,8 +56,15 @@ export const onActivityReported = safe(async (db, user, event, attendeeIds, amou
   if (user.role !== "admin") await notify(db, "admin", { title: "Activity report submitted", body: `${event.data.title} · ${present} attended`, link: `/clubs?activity=${event.id}` });
 });
 
-export const onAccessChanged = safe(async (db, user, id, role, status) => {
-  if (status === "approved") await notify(db, [id], { title: "Your account is approved", body: `You now have ${role === "member" ? "member" : role} access to the PLP Hub.`, link: "/hub" }, user.id);
+export const onAccessChanged = safe(async (db, user, id, role, status, before = {}) => {
+  if (status !== "approved") return;
+  const asked = before.requested_role;
+  if (asked && role === asked)
+    return notify(db, [id], { title: `Your ${asked} access is approved`, body: `Sign in again to open your ${asked} workspace.`, link: "/hub" }, user.id);
+  if (asked && before.status === "approved" && role === before.role)
+    return notify(db, [id], { title: `Your ${asked} request was not approved`, body: "You keep full member access to the PLP Hub.", link: "/hub" }, user.id);
+  if (before.status !== "approved" || before.role !== role)
+    await notify(db, [id], { title: "Your account is approved", body: `You now have ${role === "member" ? "member" : role} access to the PLP Hub.`, link: "/hub" }, user.id);
 });
 
 export const onMentorship = safe(async (db, user, kind, recipientEmail, menteeName) => {

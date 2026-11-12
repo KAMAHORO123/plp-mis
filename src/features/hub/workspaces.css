@@ -713,3 +713,5 @@ html[data-theme="dark"] .alx-status.enrolled, html[data-theme="dark"] .hub-app .
 /* Card buttons fill the card width, side by side, so they line up with the card edges. */
 .alx-card footer .alx-actions { margin-left: 0; width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
 .alx-card footer .alx-actions .hub-button { width: 100%; justify-content: center; margin: 0; white-space: nowrap; }
+/* A short explanation under a form field, e.g. what choosing "Mentor" at sign-up means. */
+.hub-field-note { display: block; margin-top: 6px; font-size: 12.5px; line-height: 1.5; color: hsl(var(--muted-foreground)); }

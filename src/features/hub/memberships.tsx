@@ -71,18 +71,20 @@ export function MembershipsPage({ section = "accounts" }: {
         const role = p.requested_role || p.role;
         return save(p, role, "approved", p.school_id, p.role_review, `${p.name} is approved as ${roleName(role).toLowerCase()}. Their ${roleName(role).toLowerCase()} dashboard is available at their next sign-in.`);
     };
+    // Someone already using the Hub as a member keeps that access when their request is declined.
+    const declinedStatus = (p: Person) => p.status === "approved" ? "approved" : "rejected";
     const decline = async (p: Person) => {
-        if (await confirmAction({ title: `Decline ${p.name}'s ${roleName(p.requested_role || p.role).toLowerCase()} application?`, description: "They will not be able to sign in to a staff workspace.", confirmLabel: "Decline application", destructive: true }))
-            await save(p, "member", "rejected", p.school_id, p.role_review, "Application declined");
+        if (await confirmAction({ title: `Decline ${p.name}'s ${roleName(p.requested_role || p.role).toLowerCase()} application?`, description: p.status === "approved" ? "They keep their member access." : "They will not be able to sign in to a staff workspace.", confirmLabel: "Decline application", destructive: true }))
+            await save(p, "member", declinedStatus(p), p.school_id, p.role_review, "Application declined");
     };
     // Many applications at once: each is saved separately so one that needs attention (e.g. a missing school) is reported, not lost.
     async function decideAll(rows: Person[], accept: boolean) {
-        if (!accept && !await confirmAction({ title: `Decline ${rows.length} application${rows.length === 1 ? "" : "s"}?`, description: "They will not be able to sign in to a staff workspace.", confirmLabel: "Decline", destructive: true }))
+        if (!accept && !await confirmAction({ title: `Decline ${rows.length} application${rows.length === 1 ? "" : "s"}?`, description: "Members keep their member access; other applicants cannot sign in.", confirmLabel: "Decline", destructive: true }))
             return;
         let done = 0;
         for (const p of rows) {
             try {
-                await platformApi(`/users/${p.id}`, "PATCH", accept ? { role: p.requested_role || p.role, status: "approved", school_id: p.school_id, review: p.role_review ?? "" } : { role: "member", status: "rejected", school_id: p.school_id, review: p.role_review ?? "" });
+                await platformApi(`/users/${p.id}`, "PATCH", accept ? { role: p.requested_role || p.role, status: "approved", school_id: p.school_id, review: p.role_review ?? "" } : { role: "member", status: declinedStatus(p), school_id: p.school_id, review: p.role_review ?? "" });
                 done++;
             }
             catch { /* Counted below. */ }
@@ -143,11 +145,13 @@ export function MembershipsPage({ section = "accounts" }: {
             toast.error(translateUi((e as Error).message));
         }
     };
-    const pending = people.filter((p) => p.status === "pending");
+    // Waiting for a decision: new sign-ups still pending, and members who asked for a mentor (or other staff) role.
+    const requesting = (p: Person) => !!p.requested_role && p.status === "approved";
+    const pending = people.filter((p) => p.status === "pending" || requesting(p));
     if (section === "applications")
         return (<>
       <Panel>
-        <div className="ws-panel-title"><h2>{translateUi("Staff applications ")}<span className="ws-count">{translateUi(pending.length)}</span></h2><span className="ws-pill">{translateUi("Trainers, mentors and club leaders cannot sign in until approved")}</span></div>
+        <div className="ws-panel-title"><h2>{translateUi("Staff applications ")}<span className="ws-count">{translateUi(pending.length)}</span></h2><span className="ws-pill">{translateUi("Applicants use the Hub as members until their role is approved")}</span></div>
         {translateUi(!loaded ? <Spinner label="Loading applications…"/> : !pending.length ? <Empty>{translateUi("No staff applications awaiting approval.")}</Empty> : <RecordTable title={translateUi("staff applications")} rows={pending} pageSize={10} csv={{ name: "plp-staff-applications", columns: [["Name", (p) => p.name], ["Email", (p) => p.email], ["Requested role", (p) => roleName(p.requested_role || p.role)], ["Applied", (p) => p.created_at?.slice(0, 10)]] }} searchText={(p) => `${p.name} ${p.email} ${roleName(p.requested_role || p.role)}`}
             filters={[{ label: "Role", options: ["trainer", "mentor", "leader"].map((r) => ({ label: roleName(r), test: (p: Person) => (p.requested_role || p.role) === r })) }]}
             bulkActions={[{ label: "Send email", run: (rows) => setEmailing(rows) }, { label: "Approve", run: (rows) => decideAll(rows, true) }, { label: "Decline", tone: "danger", run: (rows) => decideAll(rows, false) }]}
@@ -207,12 +211,12 @@ export function MembershipsPage({ section = "accounts" }: {
           ]}
           filters={[{ label: "School", options: [{ label: "No school", test: (p: Person) => !p.school_id }, ...schools.map((sc) => ({ label: sc.name, test: (p: Person) => p.school_id === sc.id }))] }]} columns={[
             { label: "Name", render: (p) => <><strong>{translateUi(p.name)}</strong><small>{translateUi(p.email)}</small></> },
-            { label: "Role", render: (p) => <span className="mb-role">{translateUi(roleName(p.role))}{translateUi(p.requested_role && p.status === "pending" && <small>{translateUi("requested ")}{translateUi(roleName(p.requested_role))}</small>)}</span> },
+            { label: "Role", render: (p) => <span className="mb-role">{translateUi(roleName(p.role))}{translateUi(p.requested_role && (p.status === "pending" || requesting(p)) && <small>{translateUi("requested ")}{translateUi(roleName(p.requested_role))}</small>)}</span> },
             { label: "Status", render: (p) => <span className={`ws-status ${p.status === "approved" ? "ws-status-issued" : p.status === "pending" ? "" : "ws-status-returned"}`}>{translateUi(statusName(p.status))}</span> },
             { label: "School", render: (p) => schools.find((s) => s.id === p.school_id)?.name ?? "—" },
             { label: "Joined", render: (p) => formatDate(p.created_at) },
             { label: "Actions", render: (p) => p.id === self ? <small>{translateUi("Your account")}</small> : (<div className="mb-actions">
-              {translateUi(p.status === "pending" && <button className="hub-record-icon hub-record-approve" disabled={busy} aria-label={translateUi("Approve {p0}", { p0: translateUi(p.name) })} title={translateUi("Approve as {p0}", { p0: translateUi(roleName(p.requested_role || p.role)) })} onClick={() => void approve(p)}><CheckCircle2 size={17}/></button>)}
+              {translateUi((p.status === "pending" || requesting(p)) && <button className="hub-record-icon hub-record-approve" disabled={busy} aria-label={translateUi("Approve {p0}", { p0: translateUi(p.name) })} title={translateUi("Approve as {p0}", { p0: translateUi(roleName(p.requested_role || p.role)) })} onClick={() => void approve(p)}><CheckCircle2 size={17}/></button>)}
               <button className="hub-record-icon hub-record-edit" disabled={busy} aria-label={translateUi("Edit {p0}", { p0: translateUi(p.name) })} title={translateUi("Edit role and access")} onClick={() => setEditing(p)}><FilePenLine size={17}/></button>
               {translateUi(["approved", "suspended", "rejected"].includes(p.status) && <button className="hub-record-icon hub-record-suspend" disabled={busy} aria-label={translateUi(`${p.status === "approved" ? "Suspend" : "Reactivate"} ${p.name}`)} title={translateUi(p.status === "approved" ? "Suspend account" : "Reactivate account")} onClick={() => void toggleSuspend(p)}>{translateUi(p.status === "approved" ? <Ban size={17}/> : <RotateCcw size={17}/>)}</button>)}
               <button className="hub-record-icon hub-record-delete" disabled={busy} aria-label={translateUi("Delete {p0}", { p0: translateUi(p.name) })} title={translateUi("Delete account")} onClick={() => void remove(p)}><Trash2 size={17}/></button>

@@ -1,6 +1,6 @@
 import { translateUi, useSiteLanguage } from './i18n/language';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, ArrowLeft, ArrowRight, BookOpen, X } from "lucide-react";
+import { ArrowUpRight, ArrowLeft, ArrowRight, BookOpen, Gamepad2, X } from "lucide-react";
 import { albums } from './site-content';
 import './community-sections.css';
 const testimonials = [
@@ -177,6 +177,20 @@ export function useFunCornerContent(): FunCornerContent {
     }, []);
     return content;
 }
+/** Join a live quiz in the room: enter the PIN from the host's screen. Games run in the Hub (/play). */
+function LiveQuizJoin() {
+    useSiteLanguage();
+    const hub = (import.meta.env.VITE_HUB_URL || '').replace(/\/$/, '');
+    return <div className="plp-live-quiz">
+   <div><p className="plp-section-label"><Gamepad2 size={16}/>{translateUi(" LIVE QUIZ")}</p><h3>{translateUi("Playing in a meeting, class or conference?")}</h3><p>{translateUi("Enter the game PIN shown on the host\u2019s screen and play from your phone.")}</p></div>
+   <form onSubmit={e => { e.preventDefault(); const pin = String(new FormData(e.currentTarget).get('pin') || '').replace(/\D/g, ''); window.location.href = `${hub}/play${pin ? `?pin=${pin}` : ''}`; }}>
+    <label className="sr-only" htmlFor="live-quiz-pin">{translateUi("Game PIN")}</label>
+    <input id="live-quiz-pin" name="pin" inputMode="numeric" autoComplete="off" maxLength={7} pattern="\d{3}\s?\d{3}" placeholder={translateUi("Game PIN")}/>
+    <button className="plp-play-next">{translateUi("Join")}<ArrowRight size={18}/></button>
+   </form>
+   <a className="plp-live-quiz-host" href={`${hub}/live-quiz`}>{translateUi("Host your own quiz in the PLP Hub ")}<ArrowUpRight size={14}/></a>
+  </div>;
+}
 export function FunCorner() {
     useSiteLanguage();
     const { trivia, quotes: cornerQuotes } = useFunCornerContent();
@@ -213,6 +227,7 @@ export function FunCorner() {
    </div>
    <aside className="plp-quote-card" aria-label={translateUi("A thought to take with you")}><p className="plp-section-label">{translateUi("VOICES FOR PEACE")}</p><span className="plp-quote-mark" aria-hidden="true">{translateUi("\u201C")}</span><div aria-live="polite"><blockquote cite={quote.source || undefined}>{translateUi(quote.text)}</blockquote><strong className="plp-quote-author">{translateUi(quote.author)}</strong><p>{translateUi(quote.context)}</p></div><div className="plp-quote-bottom">{quote.source ? <a href={quote.source} target="_blank" rel="noopener noreferrer" className="plp-quote-source">{translateUi("Source: ")}{translateUi(quote.sourceName || "link")} <ArrowUpRight size={14}/></a> : <span/>}<button onClick={() => setQuoteIndex((quoteIndex + 1) % cornerQuotes.length)} aria-label={translateUi("Next quote")}><ArrowRight size={20}/></button></div></aside>
   </div>
+  <LiveQuizJoin />
  </section>;
 }
 export function AlbumSection() {

@@ -34,6 +34,7 @@ import {
 } from "./auth.mjs";
 import { kinds, canWrite, canRead, publicRecord } from "./policy.mjs";
 import { liveRoute, broadcast } from "./live.mjs";
+import { liveQuizRoute } from "./live-quiz.mjs";
 import { reportsRoute } from "./reports.mjs";
 import { validateRecord, validatePublishable, kigaliToday } from "./validation.mjs";
 import { passwordProblem } from "./password-policy.mjs";
@@ -225,7 +226,8 @@ export function createServer({
       const url = new URL(req.url, "http://localhost"),
         p = url.pathname.replace(/^\/api/, "");
       // Tell open pages that data changed so they refresh what they show; they re-fetch through normal permission checks.
-      if (!["GET", "HEAD"].includes(req.method) && !p.startsWith("/auth/") && !p.startsWith("/notifications"))
+      // Live quiz answers and moves are frequent and only matter to that game's screens, which poll for them.
+      if (!["GET", "HEAD"].includes(req.method) && !p.startsWith("/auth/") && !p.startsWith("/notifications") && !p.startsWith("/public/play/") && !p.startsWith("/live-"))
         res.on("finish", () => { if (res.statusCode < 400) broadcast("change", { area: p.split("/")[1] || "" }); });
       if (req.method === "GET" && p === "/healthz") {
         await db.query("SELECT 1");
@@ -359,13 +361,16 @@ export function createServer({
           "This code is incorrect, expired or has too many attempts. Request a new code.",
         );
         const verified = (await db.query("SELECT status,requested_role FROM users WHERE email=$1",[email])).rows[0];
+        // Everyone starts with member access; a mentor request is reviewed while they use the Hub.
         return send(200, {
           awaitingApproval: verified?.status === "pending",
-          message: verified?.status === "pending" ? "Email verified. Your staff application is awaiting administrator approval." : "Email verified. You can now sign in.",
+          requestedRole: verified?.requested_role || null,
+          message: verified?.status === "pending" ? "Email verified. Your staff application is awaiting administrator approval."
+            : verified?.requested_role ? "Email verified. You can now sign in as a member while PLP reviews your mentor request." : "Email verified. You can now sign in.",
         });
       }
       if (p === "/auth/register" && req.method === "POST") {
-        const input = credentials.extend({ name: text, requested_role: z.enum(["leader","trainer","mentor"]).optional() }).parse(await body(req));
+        const input = credentials.extend({ name: text, requested_role: z.enum(["mentor"]).optional() }).parse(await body(req));
         const weak = passwordProblem(input.password, { email: input.email, name: input.name });
         requireIt(!weak, 400, weak);
         requireIt(recoveryEnabled, 503, "Email delivery is currently unavailable. Please try again later.");
@@ -500,6 +505,16 @@ export function createServer({
         return send(200, record);
       }
       if (p.startsWith("/public/meetings") && await meetingsRoute({p,req,db,send})) return;
+      // Per-network limit for public actions such as joining a live quiz: at most `max` in 15 minutes.
+      const limit = async (name, max) => {
+        const key = digest(`${name}:${clientNetwork(req, trustProxy)}`);
+        const count = (await db.query(
+          "INSERT INTO auth_limits(key,count,expires_at) VALUES($1,1,now()+interval '15 minutes') ON CONFLICT(key) DO UPDATE SET count=CASE WHEN auth_limits.expires_at<now() THEN 1 ELSE auth_limits.count+1 END,expires_at=CASE WHEN auth_limits.expires_at<now() THEN now()+interval '15 minutes' ELSE auth_limits.expires_at END RETURNING count",
+          [key],
+        )).rows[0].count;
+        requireIt(count <= max, 429, "Too many attempts. Try again in a few minutes.");
+      };
+      if (p.startsWith("/public/play/") && await liveQuizRoute({ p, req, db, user: null, body: () => body(req), send, limit })) return;
       // The JWT must be valid and name a live session belonging to the same user.
       const session = readSession(req);
       const user = (
@@ -515,6 +530,7 @@ export function createServer({
       ).rows[0];
       requireIt(user, 401, "Sign in required");
       if (await liveRoute({ p, req, res, db, user, body: () => body(req), send })) return;
+      if (await liveQuizRoute({ p, req, db, user, body: () => body(req), send, limit })) return;
       if (await reportsRoute({ p, req, db, user, send })) return;
       if (await meetingsRoute({p,req,db,user,body:()=>body(req),send})) return;
       if (await teachingRoute({p,req,db,user,body:()=>body(req),send})) return;
@@ -789,17 +805,22 @@ export function createServer({
           })
           .strict()
           .parse(await body(req));
+        let before;
         await transaction(db, async (tx) => {
+          before = (await tx.query("SELECT role,status,requested_role FROM users WHERE id=$1 FOR UPDATE", [id])).rows[0];
+          requireIt(before, 404, "User not found");
           const r = await tx.query(
             // Approving an account also confirms its email, so an administrator can admit someone whose code never arrived.
             "UPDATE users SET role=$1,status=$2,school_id=$3,requested_role=NULL,role_review=$5,email_verified_at=CASE WHEN $2='approved' THEN coalesce(email_verified_at,now()) ELSE email_verified_at END WHERE id=$4 RETURNING id",
             [input.role, input.status, input.school_id, id,input.review || ""],
           );
           requireIt(r.rowCount, 404, "User not found");
-          await tx.query("DELETE FROM sessions WHERE user_id=$1", [id]);
+          // A new role or status takes effect at the next sign-in; declining a request alone leaves them signed in.
+          if (before.role !== input.role || before.status !== input.status)
+            await tx.query("DELETE FROM sessions WHERE user_id=$1", [id]);
           await audit(tx, user, "access.update", id);
         });
-        await onAccessChanged(db, user, id, input.role, input.status);
+        await onAccessChanged(db, user, id, input.role, input.status, before);
         return send(200, { ok: true });
       }
       if (p === "/users" && req.method === "POST") {
@@ -845,7 +866,7 @@ export function createServer({
         throw new HttpError(403, "Courses are created by trainers. Approve a trainer in Members & staff instead.");
       if (p === "/material-completions" && req.method === "GET") {
         requireIt(
-          user.role === "admin" || (["leader", "mentor"].includes(user.role) && user.school_id),
+          user.role === "admin" || (user.role === "leader" && user.school_id),
           403,
           "School leadership access required",
         );
@@ -1099,6 +1120,7 @@ export function createServer({
               } else where += " AND false";
             }
           }
+          if (user.role !== "admin" && kind === "materials" && user.role !== "leader") where += " AND false";
           if (user.role !== "admin" && kind === "materials") {
             values.push(user.school_id);
             where += ` AND (COALESCE(jsonb_array_length(data->'school_ids'),0)=0 OR data->'school_ids' @> jsonb_build_array($${values.length}::text))`;
