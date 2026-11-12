@@ -201,6 +201,8 @@ cd deploy && docker compose --env-file .env -f compose.yml --profile mail up -d 
 
 Database migrations run automatically on start. Run `./backup.sh` first if the update is large.
 
+If the update changed `deploy/Caddyfile`, also run `docker compose --env-file .env -f compose.yml restart gateway`. A `caddy reload` alone keeps the old file, because `git pull` replaces it.
+
 ## Useful commands
 
 All of these run from `/opt/plp/deploy` on the server.
