@@ -802,66 +802,36 @@ html[data-theme="dark"] .plp-art-footer::after { background-color: #0f0f0f; opac
 @media (max-width: 700px) { .plp-to-top { right: 14px; bottom: calc(76px + env(safe-area-inset-bottom)); width: 44px; height: 44px; } }
 @media (prefers-reduced-motion: reduce) { .plp-to-top { transition: none; } }
 
-/* Meet our team: everyone's photo in a slow banner moving left to right, then leaders, programmes and the group photo. */
-.plp-team { overflow: visible; }
-.plp-team-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
-.plp-team-pause { display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 18px; border-radius: 999px; border: 1px solid #cfdbe7; background: #fff; color: #1d4f80; font-weight: 600; font-size: 13px; cursor: pointer; }
-.plp-team-pause:hover { background: #eef4fb; }
-.plp-team-pause:focus-visible, .plp-team-marquee:focus-visible { outline: 3px solid var(--hub-blue); outline-offset: 4px; }
-/* The banner runs edge to edge across the page, fading out at both sides. */
-.plp-team-marquee { position: relative; width: 100vw; margin-left: calc(50% - 50vw); overflow: hidden; padding: 6px 0 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
-.plp-team-track { display: flex; width: max-content; animation: plp-team-scroll 140s linear infinite; }
-.plp-team-marquee.is-paused .plp-team-track, .plp-team-marquee:hover .plp-team-track, .plp-team-marquee:focus-within .plp-team-track { animation-play-state: paused; }
-@keyframes plp-team-scroll { from { transform: translateX(-50%); } to { transform: translateX(0); } }
-.plp-team .plp-team-track ul { display: flex; gap: 16px; margin: 0; padding: 0 8px; list-style: none; }
-.plp-team .plp-team-track li { position: relative; display: block; flex: none; width: 200px; padding: 0; border: 0; border-radius: 20px; overflow: hidden; background: #dfe7ef; box-shadow: 0 14px 30px -22px rgba(16, 35, 60, .7); }
-.plp-team .plp-team-track li:hover { box-shadow: 0 18px 34px -20px rgba(16, 35, 60, .75); }
-.plp-team-track img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; transition: transform .5s ease; }
-.plp-team-track li:hover img { transform: scale(1.05); }
-.plp-team-track li > div { position: absolute; inset: auto 0 0; display: grid; gap: 2px; padding: 40px 14px 13px; background: linear-gradient(180deg, transparent, rgba(8, 20, 35, .88)); color: #fff; }
-.plp-team-track strong { font: 600 14.5px/1.3 Sora, sans-serif; overflow-wrap: anywhere; }
-.plp-team-track small { font-size: 11.5px; line-height: 1.35; color: #cfe0f0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-/* Leaders and directors: a compact row with round photos. */
-.plp-team .plp-team-leaders { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-.plp-team .plp-team-leaders li { align-items: center; gap: 14px; padding: 14px 16px; border-radius: 16px; }
-.plp-team .plp-team-leaders img, .plp-team .plp-team-leaders .plp-team-monogram { width: 56px; height: 56px; flex: none; border-radius: 50%; object-fit: cover; }
-.plp-team .plp-team-leaders h3 { font-size: 15px; margin-bottom: 2px; }
-.plp-team .plp-team-leaders .plp-team-role { font-size: 11.5px; line-height: 1.45; }
-.plp-team-units dd .plp-team-member { display: inline-flex; align-items: center; gap: 8px; padding: 3px 12px 3px 3px; }
-.plp-team-member img, .plp-team-member i { width: 30px; height: 30px; flex: none; border-radius: 50%; object-fit: cover; }
-.plp-team-member i { display: grid; place-items: center; font: 500 10.5px/1 Sora, sans-serif; font-style: normal; background: #dce7f2; color: #1d5f99; }
-.plp-team .plp-team-group { position: relative; margin: 8px 0 0; border-radius: 24px; overflow: hidden; background: #e8eef4; }
-.plp-team .plp-team-group img { display: block; width: 100%; height: auto; aspect-ratio: 2.6 / 1; object-fit: cover; }
-.plp-team .plp-team-group figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 50px 28px 22px; background: linear-gradient(180deg, transparent, rgba(8, 20, 35, .8)); color: #fff; font: 500 clamp(18px, 2vw, 26px)/1.3 Sora, sans-serif; letter-spacing: -.02em; }
-html[data-theme="dark"] .plp-team-pause { background: #142335; border-color: #2c4157; color: #cfe0f0; }
-html[data-theme="dark"] .plp-team-units dd .plp-team-member { background: #1b2b3d; border-color: #2c4157; }
-@media (max-width: 1000px) { .plp-team .plp-team-leaders { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 600px) {
-  .plp-team .plp-team-track li { width: 150px; }
-  .plp-team .plp-team-leaders { grid-template-columns: 1fr; }
-  .plp-team .plp-team-group img { aspect-ratio: 16 / 10; }
+/* Meet our team: three cards at a time. The person in the middle is large; their neighbours are smaller and faded,
+   and clicking one (or Previous / Next, or the arrow keys) moves to them. Nothing moves on its own. */
+.plp-team { gap: 30px; }
+.plp-team-stage { display: grid; grid-template-columns: 1fr 1.3fr 1fr; align-items: center; gap: clamp(14px, 3vw, 34px); width: min(980px, 100%); margin: 0 auto; }
+.plp-team-card { display: block; width: 100%; margin: 0; padding: 0; overflow: hidden; border: 1px solid #e1e7ed; border-radius: 26px; background: #fff; color: inherit; text-align: left; font: inherit; box-shadow: 0 16px 34px -28px rgba(16, 35, 60, .55); transition: transform .35s ease, opacity .35s ease, box-shadow .35s ease; animation: plp-team-in .4s ease both; }
+@keyframes plp-team-in { from { opacity: 0; transform: translateY(10px); } }
+.plp-team-card img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; }
+.plp-team-card > div { display: grid; gap: 4px; padding: 16px 18px 18px; }
+.plp-team-card strong { font: 600 16px/1.3 Sora, sans-serif; color: #173b59; overflow-wrap: anywhere; }
+.plp-team-card small { font-size: 12.5px; line-height: 1.45; color: #61758c; }
+.plp-team-card.is-current { box-shadow: 0 34px 60px -34px rgba(16, 35, 60, .7); }
+.plp-team-card.is-current > div { padding: 20px 22px 22px; }
+.plp-team-card.is-current strong { font-size: 20px; }
+.plp-team-card.is-current small { font-size: 14px; }
+.plp-team-card.is-prev, .plp-team-card.is-next { transform: scale(.86); opacity: .5; cursor: pointer; }
+.plp-team-card.is-prev:hover, .plp-team-card.is-next:hover { opacity: .85; }
+.plp-team-card:focus-visible, .plp-team-controls button:focus-visible { outline: 3px solid var(--hub-blue); outline-offset: 4px; }
+.plp-team-controls { display: flex; align-items: center; justify-content: center; gap: 18px; }
+.plp-team-controls button { display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%; border: 1px solid #cfdbe7; background: #fff; color: #173b59; cursor: pointer; }
+.plp-team-controls button:hover { background: #10233c; border-color: #10233c; color: #fff; }
+.plp-team-controls span { min-width: 64px; text-align: center; font: 600 14px/1 Sora, sans-serif; color: #52667a; font-variant-numeric: tabular-nums; }
+html[data-theme="dark"] .plp-team-card { background: #142335; border-color: #24384d; }
+html[data-theme="dark"] .plp-team-card strong { color: #eef4fa; }
+html[data-theme="dark"] .plp-team-card small, html[data-theme="dark"] .plp-team-controls span { color: #a9bccd; }
+html[data-theme="dark"] .plp-team-controls button { background: #142335; border-color: #2c4157; color: #eef4fa; }
+@media (max-width: 640px) {
+  .plp-team-stage { grid-template-columns: .7fr 1.5fr .7fr; gap: 8px; }
+  .plp-team-card.is-prev > div, .plp-team-card.is-next > div { display: none; }
+  .plp-team-card.is-current > div { padding: 14px 14px 16px; }
+  .plp-team-card.is-current strong { font-size: 16px; }
+  .plp-team-card.is-current small { font-size: 12px; }
 }
-/* Reduced motion: no movement; the row stays still and can be scrolled sideways. */
-@media (prefers-reduced-motion: reduce) {
-  .plp-team-marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
-  .plp-team-track { animation: none; }
-  .plp-team-track ul[aria-hidden="true"] { display: none; }
-  .plp-team-pause { display: none; }
-  .plp-team-track img, .plp-team-track li:hover img { transition: none; transform: none; }
-}
-/* The team banner runs edge to edge; keep the page itself from scrolling sideways. */
-.plp-public-site { overflow-x: clip; }
-/* Meet our team, simplified: the heading, then one slow row of everyone's photo with their name and role below it. */
-.plp-team { gap: 34px; }
-.plp-team-track { animation-duration: 200s; }
-.plp-team .plp-team-track ul { gap: 22px; padding: 0 11px; }
-.plp-team .plp-team-track li { width: 220px; border-radius: 22px; background: #fff; border: 1px solid #e1e7ed; box-shadow: 0 16px 34px -28px rgba(16, 35, 60, .55); }
-.plp-team-track img { border-radius: 22px 22px 0 0; }
-.plp-team-track li > div { position: static; padding: 14px 16px 16px; background: none; color: inherit; gap: 4px; }
-.plp-team-track strong { color: #173b59; font-size: 15px; }
-.plp-team-track small { color: #61758c; font-size: 12px; }
-.plp-team-track li:hover img { transform: none; }
-html[data-theme="dark"] .plp-team .plp-team-track li { background: #142335; border-color: #24384d; }
-html[data-theme="dark"] .plp-team-track strong { color: #eef4fa; }
-html[data-theme="dark"] .plp-team-track small { color: #a9bccd; }
-@media (max-width: 600px) { .plp-team .plp-team-track li { width: 170px; } }
+@media (prefers-reduced-motion: reduce) { .plp-team-card { transition: none; animation: none; } }

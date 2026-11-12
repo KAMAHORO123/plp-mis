@@ -48,25 +48,34 @@ function Pathway() {
 }
 function Partnership() { useSiteLanguage(); return <section className="plp-partnership" id="partner"><p className="plp-section-label">{translateUi("WORK WITH PLP")}</p><h2>{translateUi("Put your experience")}<br />{translateUi("to work with young people.")}</h2><div><p>{translateUi("Partner on a programme, contribute a curriculum, host an internship, or co-create a community initiative. PLP\u2019s network connects partners with youth-led work in schools and communities.")}</p><a className="plp-editorial-link" href="mailto:info@peaceloveproclaimers.org?subject=Partner%20with%20PLP">{translateUi("Talk to PLP about a partnership ")}<ArrowUpRight size={18}/></a><PortfolioLink /></div></section>; }
 /**
- * Everyone's photo in a banner that moves slowly from left to right. It pauses on hover or keyboard focus and with the
- * Pause button (WCAG 2.2.2); with reduced motion it stays still and can be scrolled sideways. The list is drawn twice
- * so the loop is seamless; the copy is hidden from screen readers.
+ * Everyone's photo, three at a time: the person in the middle is shown large, their neighbours smaller on each side.
+ * Nothing moves on its own; Previous and Next (or the arrow keys) step through the team, and a side card can be clicked.
  */
-function TeamBanner({ paused }: { paused: boolean }) {
-    useSiteLanguage();
-    const cards = () => teamGallery.map(p => <li key={p.name}><img src={`/images/plp/team/${teamPhotos[p.name]}-card.webp`} alt="" width={320} height={400} loading="lazy" decoding="async"/><div><strong>{translateUi(p.name)}</strong><small>{translateUi(p.role)}</small></div></li>);
-    return <div className={`plp-team-marquee${paused ? " is-paused" : ""}`} role="region" aria-label={translateUi("Photos of the PLP team")} tabIndex={0}>
-    <div className="plp-team-track"><ul>{cards()}</ul><ul aria-hidden="true">{cards()}</ul></div>
-  </div>;
-}
 function Team() {
     useSiteLanguage();
-    const [paused, setPaused] = useState(false);
-    return <section className="plp-team" id="team" aria-labelledby="team-title">
-  <div className="plp-team-head"><div className="plp-team-intro"><p className="plp-section-label">{translateUi("THE PEOPLE BEHIND PLP")}</p><h2 id="team-title">{translateUi("Meet our team")}</h2><p>{translateUi("Working together for young people, with our club leaders, mentors, and volunteers.")}</p></div>
-   <button type="button" className="plp-team-pause" aria-pressed={paused} onClick={() => setPaused(!paused)}>{paused ? <Play size={16}/> : <Pause size={16}/>}{translateUi(paused ? "Play photos" : "Pause photos")}</button></div>
-  <TeamBanner paused={paused}/>
-    </section>;
+    const [index, setIndex] = useState(0);
+    const count = teamGallery.length;
+    const at = (offset: number) => teamGallery[(index + offset + count) % count];
+    const go = (step: number) => setIndex(i => (i + step + count) % count);
+    const card = (offset: -1 | 0 | 1) => {
+        const p = at(offset);
+        const place = offset === 0 ? "is-current" : offset < 0 ? "is-prev" : "is-next";
+        const content = <><img src={`/images/plp/team/${teamPhotos[p.name]}-card.webp`} alt="" width={320} height={400} loading="lazy" decoding="async"/><div><strong>{translateUi(p.name)}</strong><small>{translateUi(p.role)}</small></div></>;
+        return offset === 0
+            ? <figure key={p.name} className={`plp-team-card ${place}`} aria-live="polite">{content}</figure>
+            : <button key={p.name} type="button" className={`plp-team-card ${place}`} aria-label={translateUi("Show {p0}", { p0: p.name })} onClick={() => go(offset)}>{content}</button>;
+    };
+    return <section className="plp-team" id="team" aria-labelledby="team-title" onKeyDown={e => { if (e.key === "ArrowLeft") go(-1); if (e.key === "ArrowRight") go(1); }}>
+  <div className="plp-team-intro"><p className="plp-section-label">{translateUi("THE PEOPLE BEHIND PLP")}</p><h2 id="team-title">{translateUi("Meet our team")}</h2><p>{translateUi("Working together for young people, with our club leaders, mentors, and volunteers.")}</p></div>
+  <div className="plp-team-stage" role="group" aria-roledescription={translateUi("carousel")} aria-label={translateUi("PLP team members")}>
+   {card(-1)}{card(0)}{card(1)}
+  </div>
+  <div className="plp-team-controls">
+   <button type="button" onClick={() => go(-1)} aria-label={translateUi("Previous team member")}><ArrowLeft size={20}/></button>
+   <span>{translateUi("{p0} / {p1}", { p0: index + 1, p1: count })}</span>
+   <button type="button" onClick={() => go(1)} aria-label={translateUi("Next team member")}><ArrowRight size={20}/></button>
+  </div>
+ </section>;
 }
 /** Full-width hero slider: each photo carries its own headline and link; the first slide is the page title. */
 // Every slide has the same two-line heading: a name in gold, then what it is about in light blue.

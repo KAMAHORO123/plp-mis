@@ -11259,5 +11259,25 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "Remembering together": {
     "rw": "Kwibukira hamwe",
     "fr": "Se souvenir ensemble"
+  },
+  "Show {p0}": {
+    "rw": "Erekana {p0}",
+    "fr": "Afficher {p0}"
+  },
+  "carousel": {
+    "rw": "urutonde ruzunguruka",
+    "fr": "carrousel"
+  },
+  "PLP team members": {
+    "rw": "Abagize itsinda rya PLP",
+    "fr": "Membres de l’équipe PLP"
+  },
+  "Previous team member": {
+    "rw": "Uwabanje mu itsinda",
+    "fr": "Membre précédent"
+  },
+  "Next team member": {
+    "rw": "Ukurikiyeho mu itsinda",
+    "fr": "Membre suivant"
   }
 };
