@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { clubs, mentors } from "./data";
 import { useHub, balance, type HubCertificate } from "./store";
 import { Empty, Field, Heading, Panel, Progress, Stats, Tag, TextLink, Spinner } from "./ui";
+import { DateInput, Select } from "@/components/shared/form-controls";
 
 // Where a member is in their studies, saved on the platform so it follows them to every device.
 type Stage = "high-school" | "university" | "graduated" | "community";
@@ -251,9 +252,9 @@ export function PassportPage() {
               <input name="leadership" maxLength={500} defaultValue={profile.leadership.join(", ")}/>
             </Field>
             <Field label={translateUi("Where are you now?")}>
-              <select value={stage} onChange={(e) => setStage(e.target.value as Stage)}>
+              <Select value={stage} onChange={(e) => setStage(e.target.value as Stage)}>
                 {(Object.keys(stageLabels) as Stage[]).map((k) => <option key={k} value={k}>{translateUi(stageLabels[k])}</option>)}
-              </select>
+              </Select>
             </Field>
             {stage !== "community" && <div className="ws-form-grid">
               <Field label={translateUi(stage === "high-school" ? "School" : stage === "university" ? "University or college" : "Where you studied")}>
@@ -325,9 +326,9 @@ export function CertificatesPage({ administration = false }: {
       <div className="hub-achievements-summary"><span><strong>{translateUi(list.length)}</strong> {translateUi(list.length === 1 ? "achievement" : "achievements")}</span><TextLink to="/certificate-centre">{translateUi("School certificates")}</TextLink></div>
       <div className="ws-table-tools cs-filters">
         <input aria-label={translateUi("Search certificates")} value={query} onChange={e => setQuery(e.target.value)} placeholder={translateUi(admin ? "Search recipient, programme, or certificate ID" : "Search by programme or certificate ID")}/>
-        <select aria-label={translateUi("Certificate type")} value={kind} onChange={e => setKind(e.target.value)}>{['All', 'Course', 'School membership'].map(k => <option key={k} value={k}>{translateUi(k === 'All' ? 'Type: all' : k)}</option>)}</select>
-        <select aria-label={translateUi("Year issued")} value={year} onChange={e => setYear(e.target.value)}><option value="All">{translateUi("Year: all")}</option>{years.map(y => <option key={y} value={y}>{y}</option>)}</select>
-        <select aria-label={translateUi("Sort certificates")} value={order} onChange={e => setOrder(e.target.value)}><option value="newest">{translateUi("Newest first")}</option><option value="oldest">{translateUi("Oldest first")}</option><option value="az">{translateUi("A to Z")}</option></select>
+        <Select aria-label={translateUi("Certificate type")} value={kind} onChange={e => setKind(e.target.value)}>{['All', 'Course', 'School membership'].map(k => <option key={k} value={k}>{translateUi(k === 'All' ? 'Type: all' : k)}</option>)}</Select>
+        <Select aria-label={translateUi("Year issued")} value={year} onChange={e => setYear(e.target.value)}><option value="All">{translateUi("Year: all")}</option>{years.map(y => <option key={y} value={y}>{y}</option>)}</Select>
+        <Select aria-label={translateUi("Sort certificates")} value={order} onChange={e => setOrder(e.target.value)}><option value="newest">{translateUi("Newest first")}</option><option value="oldest">{translateUi("Oldest first")}</option><option value="az">{translateUi("A to Z")}</option></Select>
         {filtering && <button type="button" className="hub-text-button" onClick={() => { setQuery(''); setKind('All'); setYear('All'); }}>{translateUi("Clear filters")}</button>}
         <span>{translateUi("{p0} of {p1}", { p0: list.length, p1: mine.length })}</span>
       </div>
@@ -408,7 +409,7 @@ export function CreditsPage() {
       </div>
       {creditsError&&<p role="alert">{translateUi('Could not load your verified credits. ')}{creditsError}</p>}
       <Panel><div className="ws-panel-title"><div><h2>{translateUi('Credit history')}</h2><p className="hub-caption">{translateUi('Search your activity, filter by source, or choose a date range.')}</p></div></div>
-        <div className="credit-dates"><Field label={translateUi('From date')}><input type="date" value={from} onChange={e=>setFrom(e.target.value)}/></Field><Field label={translateUi('To date')}><input type="date" min={from} value={to} onChange={e=>setTo(e.target.value)}/></Field>{(from||to)&&<button className="hub-text-button" onClick={()=>{setFrom('');setTo('');}}>{translateUi('Clear dates')}</button>}</div>
+        <div className="credit-dates"><Field label={translateUi('From date')}><DateInput type="date" value={from} onChange={e=>setFrom(e.target.value)}/></Field><Field label={translateUi('To date')}><DateInput type="date" min={from} value={to} onChange={e=>setTo(e.target.value)}/></Field>{(from||to)&&<button className="hub-text-button" onClick={()=>{setFrom('');setTo('');}}>{translateUi('Clear dates')}</button>}</div>
         {creditsLoading?<Spinner label="Loading credit history…"/>:creditsError?<Empty>{translateUi('Credit history is unavailable.')}</Empty>:<RecordTable title="credit history" rows={shown} searchText={c=>`${c.label} ${c.source} ${c.date} ${c.amount}`} filters={[
           {label:'Source',options:sources.map(source=>({label:source,test:(c:typeof ledger[number])=>sourceLabel(c.source)===source}))},
           {label:'Type',options:[{label:'Earned',test:(c:typeof ledger[number])=>c.amount>0},{label:'Adjustments',test:(c:typeof ledger[number])=>c.amount<=0}]}

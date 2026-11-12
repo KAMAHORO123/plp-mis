@@ -16,6 +16,7 @@ import { hostName } from './school-operations';
 import type { CertificateRequest } from './school-data';
 import { DEFAULT_CITATION, schoolCertificateDesign, issuedCertificateDesign, type IssuedCertificate } from './certificate-pdf';
 import { CertificateCard, CertificateSummary } from './certificate-card';
+import { DateInput } from "@/components/shared/form-controls";
 const label = (r: CertificateRequest) => r.status === 'Issued' ? 'Issued' : r.status === 'Returned' ? 'Correction required' : r.correctedAt ? 'Corrected' : 'Awaiting approval';
 const pending = (r: CertificateRequest) => r.status === 'Submitted';
 export function MembershipCertificatesPage() {
@@ -47,7 +48,7 @@ function WordingFields({ draft, set }: {
   <Field label={translateUi("Certificate title")}><input list="cw-titles" value={draft.title} onChange={e => set({ ...draft, title: e.target.value })} required minLength={3} maxLength={60}/><datalist id="cw-titles">{translateUi(TITLES.map(t => <option key={t} value={t}/>))}</datalist></Field>
   <Field label={translateUi("Awarded for")}><input value={draft.programme} onChange={e => set({ ...draft, programme: e.target.value })} required minLength={3} maxLength={100} placeholder={translateUi("e.g. Peace Club Leadership 2026")}/></Field>
   <Field label={translateUi("Citation ({p0}/300)", { p0: translateUi(draft.citation.length) })}><textarea value={draft.citation} onChange={e => set({ ...draft, citation: e.target.value })} maxLength={300} rows={3}/></Field>
-  <div className="ws-form-grid"><Field label={translateUi("Term starts (optional)")}><input type="date" value={draft.periodFrom} max={draft.periodTo || todayISO()} onChange={e => set({ ...draft, periodFrom: e.target.value })}/></Field><Field label={translateUi("Term ends (optional)")}><input type="date" value={draft.periodTo} min={draft.periodFrom || undefined} onChange={e => set({ ...draft, periodTo: e.target.value })}/></Field></div>
+  <div className="ws-form-grid"><Field label={translateUi("Term starts (optional)")}><DateInput type="date" value={draft.periodFrom} max={draft.periodTo || todayISO()} onChange={e => set({ ...draft, periodFrom: e.target.value })}/></Field><Field label={translateUi("Term ends (optional)")}><DateInput type="date" value={draft.periodTo} min={draft.periodFrom || undefined} onChange={e => set({ ...draft, periodTo: e.target.value })}/></Field></div>
  </div>;
 }
 /** How the certificate will read, using the first recipient: the same card members see once it is issued. */

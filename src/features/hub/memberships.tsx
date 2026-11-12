@@ -12,6 +12,7 @@ import { platformApi } from "./platform-api";
 import { Empty, Field, Panel , Spinner } from "./ui";
 import { RecordTable } from "./management-ui";
 import "./workspaces.css";
+import { Select } from "@/components/shared/form-controls";
 type Person = {
     id: string;
     name: string;
@@ -174,10 +175,10 @@ export function MembershipsPage({ section = "accounts" }: {
             {editing.status === "pending" && <button type="button" className="hub-button secondary" onClick={() => { setEmailing([editing]); setEditing(null); }}><Mail size={15}/>{translateUi("Email applicant")}</button>}
             <form className="hub-form hub-space" onSubmit={(e) => { e.preventDefault(); const f = new FormData(e.currentTarget); void save(editing, String(f.get("role")), String(f.get("status")), String(f.get("school")) || null, String(f.get("review"))); }}>
               <div className="ws-form-grid">
-                <Field label={translateUi("Role")}><select name="role" defaultValue={editing.requested_role || editing.role}>{translateUi(["member", "leader", "trainer", "mentor", "admin"].map((r) => <option key={r} value={r}>{translateUi(roleName(r))}</option>))}</select></Field>
-                <Field label={translateUi("Account status")}><select name="status" defaultValue={editing.status}>{translateUi(["pending", "approved", "suspended", "rejected"].map((s) => <option key={s} value={s}>{translateUi(statusName(s))}</option>))}</select></Field>
+                <Field label={translateUi("Role")}><Select name="role" defaultValue={editing.requested_role || editing.role}>{translateUi(["member", "leader", "trainer", "mentor", "admin"].map((r) => <option key={r} value={r}>{translateUi(roleName(r))}</option>))}</Select></Field>
+                <Field label={translateUi("Account status")}><Select name="status" defaultValue={editing.status}>{translateUi(["pending", "approved", "suspended", "rejected"].map((s) => <option key={s} value={s}>{translateUi(statusName(s))}</option>))}</Select></Field>
               </div>
-              <Field label={translateUi("School (club leaders and mentors)")}><select name="school" defaultValue={schoolFor(editing) || ""}><option value="">{translateUi("No school")}</option>{translateUi(schools.map((s) => <option key={s.id} value={s.id}>{translateUi(s.name)}</option>))}</select></Field>
+              <Field label={translateUi("School (club leaders and mentors)")}><Select name="school" defaultValue={schoolFor(editing) || ""}><option value="">{translateUi("No school")}</option>{translateUi(schools.map((s) => <option key={s.id} value={s.id}>{translateUi(s.name)}</option>))}</Select></Field>
               <Field label={translateUi("Review note")}><textarea name="review" maxLength={1000} defaultValue={editing.role_review}/></Field>
               <div className="hub-actions hub-dialog-actions"><button type="button" className="hub-button secondary" onClick={() => setEditing(null)}>{translateUi("Cancel")}</button><button className="hub-button" disabled={busy}>{translateUi("Save access")}</button></div>
             </form>
@@ -234,10 +235,10 @@ export function MembershipsPage({ section = "accounts" }: {
             <DialogDescription>{translateUi(editing.email)}{translateUi(editing.requested_role ? ` · requested ${roleName(editing.requested_role)}` : "")}</DialogDescription>
             <form className="hub-form hub-space" onSubmit={(e) => { e.preventDefault(); const f = new FormData(e.currentTarget); void save(editing, String(f.get("role")), String(f.get("status")), String(f.get("school")) || null, String(f.get("review"))); }}>
               <div className="ws-form-grid">
-                <Field label={translateUi("Role")}><select name="role" defaultValue={editing.requested_role || editing.role}>{translateUi(["member", "leader", "trainer", "mentor", "admin"].map((r) => <option key={r} value={r}>{translateUi(roleName(r))}</option>))}</select></Field>
-                <Field label={translateUi("Account status")}><select name="status" defaultValue={editing.status}>{translateUi(["pending", "approved", "suspended", "rejected"].map((s) => <option key={s} value={s}>{translateUi(statusName(s))}</option>))}</select></Field>
+                <Field label={translateUi("Role")}><Select name="role" defaultValue={editing.requested_role || editing.role}>{translateUi(["member", "leader", "trainer", "mentor", "admin"].map((r) => <option key={r} value={r}>{translateUi(roleName(r))}</option>))}</Select></Field>
+                <Field label={translateUi("Account status")}><Select name="status" defaultValue={editing.status}>{translateUi(["pending", "approved", "suspended", "rejected"].map((s) => <option key={s} value={s}>{translateUi(statusName(s))}</option>))}</Select></Field>
               </div>
-              <Field label={translateUi("School (club leaders and mentors)")}><select name="school" defaultValue={schoolFor(editing) || ""}><option value="">{translateUi("No school")}</option>{translateUi(schools.map((s) => <option key={s.id} value={s.id}>{translateUi(s.name)}</option>))}</select></Field>
+              <Field label={translateUi("School (club leaders and mentors)")}><Select name="school" defaultValue={schoolFor(editing) || ""}><option value="">{translateUi("No school")}</option>{translateUi(schools.map((s) => <option key={s.id} value={s.id}>{translateUi(s.name)}</option>))}</Select></Field>
               <Field label={translateUi("Review note")}><textarea name="review" maxLength={1000} defaultValue={editing.role_review}/></Field>
               <div className="hub-actions hub-dialog-actions"><button type="button" className="hub-button secondary" onClick={() => setEditing(null)}>{translateUi("Cancel")}</button><button className="hub-button" disabled={busy}>{translateUi("Save access")}</button></div>
             </form>
@@ -268,8 +269,8 @@ export function MembershipsPage({ section = "accounts" }: {
             <Field label={translateUi("Full name")}><input name="name" required maxLength={200}/></Field>
             <Field label={translateUi("Email")}><input name="email" type="email" required maxLength={254}/></Field>
             <div className="ws-form-grid">
-              <Field label={translateUi("Role")}><select name="role" defaultValue="member">{translateUi(["member", "leader", "trainer", "mentor", "admin"].map((r) => <option key={r} value={r}>{translateUi(roleName(r))}</option>))}</select></Field>
-              <Field label={translateUi("School (club leaders and mentors)")}><select name="school" defaultValue=""><option value="">{translateUi("No school")}</option>{translateUi(schools.map((s) => <option key={s.id} value={s.id}>{translateUi(s.name)}</option>))}</select></Field>
+              <Field label={translateUi("Role")}><Select name="role" defaultValue="member">{translateUi(["member", "leader", "trainer", "mentor", "admin"].map((r) => <option key={r} value={r}>{translateUi(roleName(r))}</option>))}</Select></Field>
+              <Field label={translateUi("School (club leaders and mentors)")}><Select name="school" defaultValue=""><option value="">{translateUi("No school")}</option>{translateUi(schools.map((s) => <option key={s.id} value={s.id}>{translateUi(s.name)}</option>))}</Select></Field>
             </div>
             <div className="hub-actions hub-dialog-actions"><button type="button" className="hub-button secondary" onClick={() => setAdding(false)}>{translateUi("Cancel")}</button><button className="hub-button" disabled={busy}>{translateUi("Create account")}</button></div>
           </form>

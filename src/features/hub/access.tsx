@@ -8,6 +8,7 @@ import { ArrowRight, LockKeyhole, Eye, EyeOff, } from "lucide-react";
 import { categories, type HubRole } from "./data";
 import { today, uid, useHub, type Profile } from "./store";
 import { Empty, Field, Heading, Panel, Spinner, Tag, TextLink, } from "./ui";
+import { Select } from "@/components/shared/form-controls";
 /** The staff role someone asked for at sign-up, as the dashboard names it. */
 const roleRequest = (role?: string | null) => ({ leader: "Club leader", trainer: "Trainer", mentor: "Mentor" } as Record<string, string>)[role ?? ""];
 async function authRequest(path: string, body: object) {
@@ -378,7 +379,7 @@ export function JoinPage() {
             <input name="email" type="email" autoComplete="email" required defaultValue={validInvitation ? invitation.email : ""}/>
           </Field>
           <Field label={translateUi("Account type")}>
-            <select name="accountRole" value={accountRole} onChange={e => setAccountRole(e.target.value)}><option value={"Member"}>{translateUi("Member")}</option><option value={"Club leader"}>{translateUi("Club leader")}</option><option value={"Trainer"}>{translateUi("Trainer")}</option><option value={"Mentor"}>{translateUi("Mentor")}</option></select>
+            <Select name="accountRole" value={accountRole} onChange={e => setAccountRole(e.target.value)}><option value={"Member"}>{translateUi("Member")}</option><option value={"Club leader"}>{translateUi("Club leader")}</option><option value={"Trainer"}>{translateUi("Trainer")}</option><option value={"Mentor"}>{translateUi("Mentor")}</option></Select>
             {accountRole !== "Member" && <small className="hub-field-note">{translateUi("You start with member access straight away. PLP reviews your request, and your dashboard changes once it is approved.")}</small>}
           </Field>
           <Field label={translateUi(accountRole === "Club leader" || accountRole === "Mentor" ? "School you work with" : "School (if applicable)")}><input name="school" list="school-suggestions" maxLength={160} required={accountRole === "Club leader"} autoCapitalize="characters" placeholder={translateUi("TYPE YOUR SCHOOL NAME")} onChange={e => { e.currentTarget.value = e.currentTarget.value.toUpperCase(); }}/><datalist id="school-suggestions">{translateUi(demoSchools.map(s => <option key={s.id} value={s.name.toUpperCase()}/>))}</datalist></Field>

@@ -11471,5 +11471,65 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "Next team member": {
     "rw": "Ukurikiyeho mu itsinda",
     "fr": "Membre suivant"
+  },
+  "Choose a date": {
+    "rw": "Hitamo itariki",
+    "fr": "Choisir une date"
+  },
+  "Choose a time": {
+    "rw": "Hitamo isaha",
+    "fr": "Choisir une heure"
+  },
+  "Choose a date and time": {
+    "rw": "Hitamo itariki n’isaha",
+    "fr": "Choisir une date et une heure"
+  },
+  "Clear": {
+    "rw": "Siba",
+    "fr": "Effacer"
+  },
+  "Done": {
+    "rw": "Byarangiye",
+    "fr": "Terminé"
+  },
+  "Previous": {
+    "rw": "Ibibanza",
+    "fr": "Précédent"
+  },
+  "Choose month and year": {
+    "rw": "Hitamo ukwezi n’umwaka",
+    "fr": "Choisir le mois et l’année"
+  },
+  "Hour": {
+    "rw": "Isaha",
+    "fr": "Heure"
+  },
+  "Minute": {
+    "rw": "Umunota",
+    "fr": "Minute"
+  },
+  "{p0} files chosen": {
+    "rw": "Amadosiye {p0} yatoranyijwe",
+    "fr": "{p0} fichiers choisis"
+  },
+  "Choose files": {
+    "rw": "Hitamo amadosiye",
+    "fr": "Choisir des fichiers"
+  },
+  "Choose a file": {
+    "rw": "Hitamo idosiye",
+    "fr": "Choisir un fichier"
+  },
+  "Click to browse": {
+    "rw": "Kanda ushakishe",
+    "fr": "Cliquez pour parcourir"
+  },
+  "Remove the chosen file": {
+    "rw": "Kuramo idosiye watoranyije",
+    "fr": "Retirer le fichier choisi"
+  },
+  "Browse": {
+    "rw": "Shakisha",
+    "fr": "Parcourir"
   }
 };

@@ -10,6 +10,7 @@ import { demoSchools } from './school-data';
 import { uploadFile } from './platform-api';
 import { deleteRecord, readRecord, saveRecord } from './platform-records';
 import { TypeInput, activityDateRange } from './school-operations';
+import { FileInput } from "@/components/shared/form-controls";
 type Kind = 'activity' | 'material' | 'member';
 const labels: Record<Kind, string> = { activity: 'activity', material: 'material', member: 'member' };
 const serverKind = { activity: 'events', material: 'materials', member: 'members' } as const;
@@ -129,7 +130,7 @@ export function RecordActions({ kind, id }: {
    </Field>))}
    {translateUi(k === 'activity' && <Field label={translateUi("Activity type")}><TypeInput defaultValue={value('type') || 'Meeting'}/></Field>)}
    {translateUi(k === 'material' && <>
-    <Field label={translateUi("Replacement material file")}><input name="replacement" type="file" accept=".pdf,.png,.jpg,.jpeg"/></Field>
+    <Field label={translateUi("Replacement material file")}><FileInput name="replacement" type="file" accept=".pdf,.png,.jpg,.jpeg"/></Field>
     <fieldset><legend>{translateUi("Schools (leave unchecked for all schools)")}</legend>{translateUi(demoSchools.map(({ id: school, name }) => <label className="hub-check" key={school}><input type="checkbox" name="schools" value={school} defaultChecked={'schoolIds' in record && record.schoolIds.includes(school)}/>{translateUi(name)}</label>))}</fieldset>
    </>)}
    <div className="hub-actions hub-dialog-actions"><button type="button" className="hub-button secondary" disabled={busy} onClick={() => setEditing(false)}>{translateUi("Cancel")}</button><button className="hub-button" disabled={busy}>{translateUi("Save ")}{translateUi(label)}</button></div>

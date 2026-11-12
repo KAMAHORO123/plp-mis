@@ -16,6 +16,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { MembershipsPage } from "./memberships";
 import { RecordTable, usePaged, Pager } from "./management-ui";
 import "./workspaces.css";
+import { DateInput, FileInput, Select } from "@/components/shared/form-controls";
 const typeIcon: Record<string, LucideIcon> = { Internship: BriefcaseBusiness, Scholarship: GraduationCap, Job: BriefcaseBusiness, Fellowship: Award, Competition: Trophy, Grant: HandCoins, Volunteering: Users, "Conference & Summit": Megaphone, Training: Lightbulb };
 const DOCS = ["CV", "Cover letter", "Supporting letter"] as const;
 const isHttps = (v: string) => { try {
@@ -209,7 +210,7 @@ export function OpportunitiesPage() {
       </div>
       <div className="op-filters">
         <SearchBox value={search} onChange={setSearch} placeholder={translateUi("Search by role, organisation or place")}/>
-        <select aria-label={translateUi("Work format")} value={format} onChange={(e) => setFormat(e.target.value)}>{translateUi(["Any format", "On-site", "Remote", "Hybrid"].map((f) => <option key={f} value={f}>{translateUi(f)}</option>))}</select>
+        <Select aria-label={translateUi("Work format")} value={format} onChange={(e) => setFormat(e.target.value)}>{translateUi(["Any format", "On-site", "Remote", "Hybrid"].map((f) => <option key={f} value={f}>{translateUi(f)}</option>))}</Select>
       </div>
       <div className="op-types" aria-label={translateUi("Opportunity types")}>
         {translateUi(["All", ...opportunityTypes].map((t) => { return <button key={t} className={type === t ? "active" : ""} onClick={() => setType(t)}>{translateUi(t)}</button>; }))}
@@ -288,7 +289,7 @@ export function OpportunitiesPage() {
                 }
             }}>
             <Field label={translateUi("Why are you a good fit?")}><textarea name="note" required minLength={20} maxLength={1500} rows={5} placeholder={translateUi("Share your motivation and relevant experience.")}/></Field>
-            {translateUi(DOCS.map((kind) => <Field key={kind} label={translateUi(`${kind}${kind === "CV" ? "" : " (optional)"}`)}><input type="file" name={kind} required={kind === "CV"} accept=".pdf,.png,.jpg,.jpeg"/></Field>))}
+            {translateUi(DOCS.map((kind) => <Field key={kind} label={translateUi(`${kind}${kind === "CV" ? "" : " (optional)"}`)}><FileInput type="file" name={kind} required={kind === "CV"} accept=".pdf,.png,.jpg,.jpeg"/></Field>))}
             <p className="hub-caption">{translateUi("PDF, PNG or JPEG \u00B7 up to 5 MB per file.")}</p>
             <div className="hub-actions hub-dialog-actions"><button type="button" className="hub-button secondary" onClick={() => setApplying(null)}>{translateUi("Cancel")}</button><button className="hub-button" disabled={busy}><Send size={14}/> {translateUi(busy ? "Submitting…" : "Submit application")}</button></div>
           </form>
@@ -409,12 +410,12 @@ export function OpportunityAdmin() {
             }}>
             <Field label={translateUi("Title")}><input name="title" required minLength={3} maxLength={100} defaultValue={current?.title}/></Field>
             <div className="ws-form-grid">
-              <Field label={translateUi("Type")}><select name="type" defaultValue={current?.type ?? opportunityTypes[0]}>{translateUi(opportunityTypes.map((t) => <option key={t} value={t}>{translateUi(t)}</option>))}</select></Field>
+              <Field label={translateUi("Type")}><Select name="type" defaultValue={current?.type ?? opportunityTypes[0]}>{translateUi(opportunityTypes.map((t) => <option key={t} value={t}>{translateUi(t)}</option>))}</Select></Field>
               <Field label={translateUi("Organisation")}><input name="organization" required maxLength={100} defaultValue={current?.organization}/></Field>
               <Field label={translateUi("Location")}><input name="location" required maxLength={100} defaultValue={current?.location} placeholder={translateUi("e.g. Kigali, Rwanda")}/></Field>
-              <Field label={translateUi("Format")}><select name="format" defaultValue={current?.format ?? "On-site"}>{translateUi(["On-site", "Remote", "Hybrid"].map((t) => <option key={t} value={t}>{translateUi(t)}</option>))}</select></Field>
+              <Field label={translateUi("Format")}><Select name="format" defaultValue={current?.format ?? "On-site"}>{translateUi(["On-site", "Remote", "Hybrid"].map((t) => <option key={t} value={t}>{translateUi(t)}</option>))}</Select></Field>
               <Field label={translateUi("Commitment (optional)")}><input name="commitment" maxLength={60} defaultValue={current?.commitment} placeholder={translateUi("e.g. Full-time \u00B7 3 months")}/></Field>
-              <Field label={translateUi("Application deadline")}><input type="date" name="deadline" required min={current ? undefined : today()} defaultValue={current?.deadline}/></Field>
+              <Field label={translateUi("Application deadline")}><DateInput type="date" name="deadline" required min={current ? undefined : today()} defaultValue={current?.deadline}/></Field>
             </div>
             <Field label={translateUi("Description")}><textarea name="description" required minLength={20} maxLength={2500} rows={4} defaultValue={current?.description}/></Field>
             <Field label={translateUi("Eligibility")}><textarea name="eligibility" required minLength={10} maxLength={1000} rows={3} defaultValue={current?.eligibility}/></Field>

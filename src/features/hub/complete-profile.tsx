@@ -8,6 +8,7 @@ import { Field, Panel, Spinner } from "./ui";
 import { ProfilePhoto } from "./profile-photo";
 import { markProfileComplete } from "./access";
 import "./complete-profile.css";
+import { DateInput, Select } from "@/components/shared/form-controls";
 
 export type ProfileDetails = {
     birth_date: string | null; phone: string; linkedin: string; instagram: string; facebook: string;
@@ -89,7 +90,7 @@ export function CompleteProfilePage() {
           <h2><b>1</b>{translateUi("About you")}</h2>
           <div className="cp-photo"><p className="cp-label">{translateUi("Profile picture")} <small>{translateUi("optional")}</small></p><ProfilePhoto size={88}/></div>
           <div className="ws-form-grid">
-            <Field label={translateUi("Date of birth")}><input name="birth_date" type="date" required max={latest} defaultValue={me.birth_date ?? ""}/></Field>
+            <Field label={translateUi("Date of birth")}><DateInput name="birth_date" type="date" required max={latest} defaultValue={me.birth_date ?? ""}/></Field>
             <Field label={translateUi("Phone number")}><input name="phone" type="tel" required autoComplete="tel" placeholder="+250 7XX XXX XXX" pattern="\+?[0-9 ()\-]{7,20}" defaultValue={me.phone}/></Field>
           </div>
         </Panel>
@@ -104,7 +105,7 @@ export function CompleteProfilePage() {
         <Panel className="cp-section">
           <h2><b>3</b>{translateUi("Education and work")}</h2>
           <div className="ws-form-grid">
-            <Field label={translateUi("Education")}><select name="education_stage" required defaultValue={me.education_stage || ""}><option value="" disabled>{translateUi("Choose…")}</option>{STAGES.map(([v, l]) => <option key={v} value={v}>{translateUi(l)}</option>)}</select></Field>
+            <Field label={translateUi("Education")}><Select name="education_stage" required defaultValue={me.education_stage || ""}><option value="" disabled>{translateUi("Choose…")}</option>{STAGES.map(([v, l]) => <option key={v} value={v}>{translateUi(l)}</option>)}</Select></Field>
             <Field label={translateUi("School, university or field of study")}><input name="institution" maxLength={120} defaultValue={me.institution}/></Field>
           </div>
           <fieldset className="cp-work"><legend>{translateUi("Work")}</legend>

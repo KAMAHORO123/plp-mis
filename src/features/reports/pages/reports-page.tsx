@@ -8,7 +8,6 @@ import { downloadReportFile } from "@/lib/reports";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
 import { PageHeader } from "@/components/shared/page-header";
 import { FilterBar } from "@/components/shared/filter-bar";
@@ -21,6 +20,7 @@ import { useReports } from "@/hooks/use-queries";
 import { useGenerateReport } from "@/hooks/use-mutations";
 import { reportPerformanceStats, reportImpactStats, reportReadinessStats, } from "@/api/mock/metrics";
 import type { Report } from "@/types";
+import { DateInput } from "@/components/shared/form-controls";
 function StatSection({ title, description, stats }: {
     title: string;
     description: string;
@@ -126,11 +126,11 @@ export function ReportsPage() {
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <Label className="text-xs">{translateUi("Start Date")}</Label>
-                  <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}/>
+                  <DateInput type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}/>
                 </div>
                 <div>
                   <Label className="text-xs">{translateUi("End Date")}</Label>
-                  <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}/>
+                  <DateInput type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}/>
                 </div>
               </div>
               <Button className="w-full" onClick={handleGenerate} loading={generate.isPending}>

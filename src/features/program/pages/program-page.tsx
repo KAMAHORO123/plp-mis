@@ -21,6 +21,7 @@ import { useArchiveResource, useUpdateResource, useUploadResource } from "@/hook
 import { programStats } from "@/api/mock/metrics";
 import { cn, formatDate, formatNumber } from "@/lib/utils";
 import type { Resource } from "@/types";
+import { Select } from "@/components/shared/form-controls";
 export function ProgramPage() {
     useSiteLanguage();
     const { data: modules = [] } = useProgramModules();
@@ -166,12 +167,12 @@ export function ProgramPage() {
             <div><Label>{translateUi("Description")}</Label><Input value={uploadForm.description} onChange={(e) => setUploadForm({ ...uploadForm, description: e.target.value })}/></div>
             <div>
               <Label>{translateUi("Category")}</Label>
-              <select className="flex h-10 w-full rounded-md border px-3 text-sm" value={uploadForm.category} onChange={(e) => setUploadForm({ ...uploadForm, category: e.target.value })}>
+              <Select className="flex h-10 w-full rounded-md border px-3 text-sm" value={uploadForm.category} onChange={(e) => setUploadForm({ ...uploadForm, category: e.target.value })}>
                 <option value="CURRICULUM">{translateUi("Curriculum")}</option>
                 <option value="LEADERSHIP_MANUAL">{translateUi("Leadership Manual")}</option>
                 <option value="POLICY">{translateUi("Policy")}</option>
                 <option value="TRAINING_MATERIAL">{translateUi("Training Material")}</option>
-              </select>
+              </Select>
             </div>
           </div>
           <DialogFooter className="mt-4">

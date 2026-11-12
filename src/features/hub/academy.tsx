@@ -19,6 +19,7 @@ import { FormModal } from "./modal";
 import { uploadFile } from "./platform-api";
 import { deleteRecord, saveRecord } from "./platform-records";
 import { CameraRequired, ProctorCamera, departureLabel, startProctoring, useProctoring, type Departure } from "./proctoring";
+import { FileInput, Select } from "@/components/shared/form-controls";
 /** Share of required steps (module checks, assignment, final exam) the learner has finished. */
 function courseProgress(course: Course, e?: Enrollment) {
     if (!e)
@@ -90,9 +91,9 @@ export function AcademyPage() {
         </Link>))}
       <div className="ac-filters">
         <SearchBox value={search} onChange={setSearch} placeholder={translateUi("Search courses or skills")}/>
-        <select aria-label={translateUi("Course level")} value={level} onChange={(e) => setLevel(e.target.value)}>
+        <Select aria-label={translateUi("Course level")} value={level} onChange={(e) => setLevel(e.target.value)}>
           {translateUi(["All levels", "Beginner", "Intermediate", "Advanced"].map((l) => <option key={l} value={l}>{translateUi(l)}</option>))}
-        </select>
+        </Select>
         <div className="ws-tabs ac-view-tabs" role="tablist" aria-label={translateUi("My learning")}>
           {translateUi(["All courses", "In progress", "Completed"].map((v) => (<button key={v} role="tab" aria-selected={view === v} className={view === v ? "active" : ""} onClick={() => setView(v)}>{translateUi(v)}</button>)))}
         </div>
@@ -628,7 +629,7 @@ export function AlxPage() {
                     setBusy(false);
                 }
             }}>
-            <Field label={translateUi("Completion certificate")}><input name="proof" required type="file" accept="application/pdf,image/png,image/jpeg"/></Field>
+            <Field label={translateUi("Completion certificate")}><FileInput name="proof" required type="file" accept="application/pdf,image/png,image/jpeg"/></Field>
             <div className="hub-actions hub-dialog-actions">
               <button type="button" className="hub-button secondary" onClick={() => setUploading(null)}>{translateUi("Cancel")}</button>
               <button className="hub-button" disabled={busy}>{translateUi(busy ? "Uploading…" : "Submit certificate")}</button>

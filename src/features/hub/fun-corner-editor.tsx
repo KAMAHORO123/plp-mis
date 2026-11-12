@@ -8,6 +8,7 @@ import { FormModal } from './modal';
 import { RecordTable } from './management-ui';
 import { Field, Panel } from './ui';
 import { builtInQuotes, builtInTrivia, type CornerQuote, type FunCornerContent, type TriviaQuestion } from './community-sections';
+import { Select } from "@/components/shared/form-controls";
 
 const LIMIT = 12;
 const blankQuestion: TriviaQuestion = { category: '', question: '', options: ['', '', '', ''], answer: 0, detail: '', source: '', sourceName: '' };
@@ -122,7 +123,7 @@ function QuestionForm({ initial, isNew, busy, onClose, onSave }: { initial: Triv
     const set = <K extends keyof TriviaQuestion>(key: K, value: TriviaQuestion[K]) => setQ(d => ({ ...d, [key]: value }));
     return <FormModal wide title={translateUi(isNew ? 'Add a quiz question' : 'Edit quiz question')} description={translateUi('Two to four answers. Pick the correct one, then explain it so visitors learn something either way.')} onClose={onClose}>
       <form className="hub-form" onSubmit={e => { e.preventDefault(); onSave(q); }}>
-        <div className="ws-form-grid"><Field label={translateUi('Topic label')}><input required maxLength={60} placeholder={translateUi("A CULTURE OF PEACE")} value={q.category} onChange={e => set('category', e.target.value)}/></Field><Field label={translateUi('Correct answer')}><select value={q.answer} onChange={e => set('answer', Number(e.target.value))}>{q.options.map((option, i) => <option key={i} value={i}>{String.fromCharCode(65 + i)}{option.trim() ? `: ${option.trim().slice(0, 40)}` : ''}</option>)}</select></Field></div>
+        <div className="ws-form-grid"><Field label={translateUi('Topic label')}><input required maxLength={60} placeholder={translateUi("A CULTURE OF PEACE")} value={q.category} onChange={e => set('category', e.target.value)}/></Field><Field label={translateUi('Correct answer')}><Select value={q.answer} onChange={e => set('answer', Number(e.target.value))}>{q.options.map((option, i) => <option key={i} value={i}>{String.fromCharCode(65 + i)}{option.trim() ? `: ${option.trim().slice(0, 40)}` : ''}</option>)}</Select></Field></div>
         <Field label={translateUi('Question')}><input required maxLength={300} value={q.question} onChange={e => set('question', e.target.value)}/></Field>
         <div className="ws-form-grid">{q.options.map((option, i) => <Field key={i} label={translateUi(`Option ${String.fromCharCode(65 + i)}${i < 2 ? '' : ' (optional)'}`)}><input required={i < 2} maxLength={160} value={option} onChange={e => set('options', q.options.map((o, j) => j === i ? e.target.value : o))}/></Field>)}</div>
         <Field label={translateUi('Explanation shown after answering')}><textarea required maxLength={600} rows={3} value={q.detail} onChange={e => set('detail', e.target.value)}/></Field>

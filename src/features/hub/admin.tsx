@@ -15,6 +15,7 @@ import { BarChart3, Users } from "lucide-react";
 import { alxPrograms, categories, clubs, } from "./data";
 import { useHub, uid, today } from "./store";
 import { Empty, Field, Heading, Panel, Progress, Spinner, Stats, Tag, downloadCSV, } from "./ui";
+import { DateInput, Select } from "@/components/shared/form-controls";
 export function StudioPage() {
     useSiteLanguage();
     const { state, profile } = useHub();
@@ -201,14 +202,14 @@ export function AnalyticsPage() {
         }}>
           <div className="hub-grid two">
             <Field label={translateUi("Member")}>
-              <select name="memberId">
+              <Select name="memberId">
                 {translateUi(state.profiles.map((p) => (<option key={p.id} value={p.id}>
                     {translateUi(p.name)}
                   </option>)))}
-              </select>
+              </Select>
             </Field>
             <Field label={translateUi("Outcome type")}>
-              <select name="type">
+              <Select name="type">
                 {translateUi([
             "Employment",
             "Internship",
@@ -216,11 +217,11 @@ export function AnalyticsPage() {
             "Venture launched",
             "Community impact",
         ].map((t) => (<option key={t} value={t}>{translateUi(t)}</option>)))}
-              </select>
+              </Select>
             </Field>
           </div>
           <Field label={translateUi("Outcome date")}>
-            <input name="date" type="date" max={today()} required/>
+            <DateInput name="date" type="date" max={today()} required/>
           </Field>
           <Field label={translateUi("Outcome details")}>
             <textarea name="detail" required minLength={15} maxLength={2000}/>

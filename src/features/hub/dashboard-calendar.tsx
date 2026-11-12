@@ -10,6 +10,7 @@ import { SessionCalendar, CALENDAR_KINDS, type CalendarItem } from './session-ca
 import { platformApi } from './platform-api';
 import { useLiveTick } from './live';
 import { translateUi, useSiteLanguage } from '../../i18n/language';
+import { DateInput } from "@/components/shared/form-controls";
 const dayKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
 const dayOf = (date: string) => date.length === 10 ? date : dayKey(new Date(date));
 /** Everything with a date that matters to the signed-in person: sessions, activities, meetings and deadlines. */
@@ -120,8 +121,8 @@ export function CalendarPage() {
       <form className="hub-form" onSubmit={(e) => { e.preventDefault(); void save(new FormData(e.currentTarget)); }}>
         <Field label={translateUi('What')}><input name="title" required minLength={2} maxLength={120} defaultValue={current?.data.title} placeholder={translateUi('e.g. Study group')} autoFocus/></Field>
         <div className="ws-form-grid">
-          <Field label={translateUi('Date')}><input name="date" type="date" required defaultValue={current?.data.date ?? (newDate || todayKey)}/></Field>
-          <Field label={translateUi('Time (optional)')}><input name="start_time" type="time" defaultValue={current?.data.start_time}/></Field>
+          <Field label={translateUi('Date')}><DateInput name="date" type="date" required defaultValue={current?.data.date ?? (newDate || todayKey)}/></Field>
+          <Field label={translateUi('Time (optional)')}><DateInput name="start_time" type="time" defaultValue={current?.data.start_time}/></Field>
         </div>
         <Field label={translateUi('Where (optional)')}><span className="my-events-where"><MapPin size={15} aria-hidden="true"/><input name="location" maxLength={100} defaultValue={current?.data.location}/></span></Field>
         <Field label={translateUi('Notes (optional)')}><textarea name="description" rows={3} maxLength={1000} defaultValue={current?.data.description}/></Field>

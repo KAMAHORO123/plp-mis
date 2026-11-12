@@ -13,6 +13,7 @@ import { demoSchools, type CertificateRequest } from './school-data';
 import { Heading, Panel, Field, Empty } from './ui';
 import { FormModal } from './modal';
 import './workspaces.css';
+import { Select } from "@/components/shared/form-controls";
 const schoolName = (id?: string) => demoSchools.find(s => s.id === id)?.name ?? 'School not assigned';
 function useRecords() {
     const hub = useHub();
@@ -31,7 +32,7 @@ export function SchoolMembersPage() {
     const schoolId = admin ? school : profile.schoolId;
     const canManage = admin || profile.role === 'Club leader';
     return <div className="ws-page"><Heading eyebrow="SCHOOL COMMUNITY" title={translateUi("Every member matters.")} description={translateUi("Keep your school register in one place. Students do not need an account to receive a certificate.")}/>
- {translateUi(admin && <Field label={translateUi("School")}><select value={school} onChange={e => setSchool(e.target.value)}>{translateUi(demoSchools.map(s => <option key={s.id} value={s.id}>{translateUi(s.name)}</option>))}</select></Field>)}
+ {translateUi(admin && <Field label={translateUi("School")}><Select value={school} onChange={e => setSchool(e.target.value)}>{translateUi(demoSchools.map(s => <option key={s.id} value={s.id}>{translateUi(s.name)}</option>))}</Select></Field>)}
  {translateUi(adding === 'one' && <FormModal title={translateUi("Add a school member")} description={translateUi("Students do not need an account to receive a certificate.")} onClose={() => setAdding(null)}><form className="hub-form" onSubmit={e => { e.preventDefault(); const form = e.currentTarget; const f = new FormData(form); const name = String(f.get('name')).trim(), email = String(f.get('email')).trim().toLowerCase(); if (!schoolId || !name)
         return; if (email && state.schoolRecords.members.some(m => m.email === email)) {
         toast.error(translateUi('This email is already in the member register.'));

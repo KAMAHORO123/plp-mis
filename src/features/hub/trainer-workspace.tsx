@@ -16,6 +16,7 @@ import { categories } from "./data";
 import { courseChecklist, serverAssessments, EXAM_PASS_MARK, MAX_ATTEMPTS, QUIZ_PASS_MARK, type TeachingData, type TeachingQuestion } from "./teaching-types";
 import "./academy.css";
 import "./workspaces.css";
+import { Select } from "@/components/shared/form-controls";
 export type { TeachingData } from "./teaching-types";
 type CourseRow = {
     id: string;
@@ -314,8 +315,8 @@ function CourseBuilder({ row, admin, onExit, onClose }: {
                 <Field label={translateUi("Course title")}><input value={draft.title} onChange={(e) => change("title", e.target.value)} maxLength={200}/></Field>
                 <Field label={translateUi("Course summary")}><textarea value={draft.description} onChange={(e) => change("description", e.target.value)} maxLength={10000} rows={4}/></Field>
                 <div className="ws-form-grid">
-                  <Field label={translateUi("Learning pathway")}><select value={draft.category} onChange={(e) => change("category", e.target.value)}>{translateUi(categories.map((c) => <option key={c} value={c}>{translateUi(c)}</option>))}</select></Field>
-                  <Field label={translateUi("Level")}><select value={draft.level} onChange={(e) => change("level", e.target.value as TeachingData["level"])}><option value={"Beginner"}>{translateUi("Beginner")}</option><option value={"Intermediate"}>{translateUi("Intermediate")}</option><option value={"Advanced"}>{translateUi("Advanced")}</option></select></Field>
+                  <Field label={translateUi("Learning pathway")}><Select value={draft.category} onChange={(e) => change("category", e.target.value)}>{translateUi(categories.map((c) => <option key={c} value={c}>{translateUi(c)}</option>))}</Select></Field>
+                  <Field label={translateUi("Level")}><Select value={draft.level} onChange={(e) => change("level", e.target.value as TeachingData["level"])}><option value={"Beginner"}>{translateUi("Beginner")}</option><option value={"Intermediate"}>{translateUi("Intermediate")}</option><option value={"Advanced"}>{translateUi("Advanced")}</option></Select></Field>
                   <Field label={translateUi("Estimated duration")}><input value={draft.duration || ""} onChange={(e) => change("duration", e.target.value)} placeholder={translateUi("e.g. 3 hours")} maxLength={100}/></Field>
                   <Field label={translateUi("Skills learners gain (comma separated)")}><input value={(draft.skills ?? []).join(", ")} onChange={(e) => change("skills", e.target.value.split(",").map((s) => s.trimStart()).slice(0, 12))} onBlur={() => change("skills", (draft.skills ?? []).map((s) => s.trim()).filter(Boolean))} maxLength={600}/></Field>
                 </div>
@@ -455,7 +456,7 @@ function QuestionBank({ questions, onChange }: {
             }}>
               <Field label={translateUi("Question")}><textarea name="prompt" required minLength={5} maxLength={400} defaultValue={current?.prompt}/></Field>
               {translateUi([0, 1, 2, 3].map((i) => <Field key={i} label={translateUi("Option {p0}{p1}", { p0: translateUi(i + 1), p1: translateUi(i > 1 ? " (optional)" : "") })}><input name={`option${i}`} required={i < 2} maxLength={200} defaultValue={current?.options[i]}/></Field>))}
-              <Field label={translateUi("Correct answer")}><select name="answer" defaultValue={current?.answer ?? 0}>{translateUi([0, 1, 2, 3].map((i) => <option key={i} value={i}>{translateUi("Option ")}{translateUi(i + 1)}</option>))}</select></Field>
+              <Field label={translateUi("Correct answer")}><Select name="answer" defaultValue={current?.answer ?? 0}>{translateUi([0, 1, 2, 3].map((i) => <option key={i} value={i}>{translateUi("Option ")}{translateUi(i + 1)}</option>))}</Select></Field>
               <div className="hub-actions hub-dialog-actions"><button type="button" className="hub-button secondary" onClick={() => setEditing(null)}>{translateUi("Cancel")}</button><button className="hub-button">{translateUi("Save question")}</button></div>
             </form>))}
         </DialogContent>

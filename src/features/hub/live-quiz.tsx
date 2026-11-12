@@ -11,6 +11,7 @@ import { platformApi } from "./platform-api";
 import { Spinner } from "./ui";
 import { confirmAction } from "@/components/shared/confirm-dialog";
 import "./live-quiz.css";
+import { Select } from "@/components/shared/form-controls";
 
 type Seconds = 10 | 20 | 30 | 60;
 interface Question { text: string; answers: string[]; correct: number; seconds: Seconds }
@@ -187,7 +188,7 @@ function QuizEditor({ quiz, onClose }: { quiz: Partial<Quiz>; onClose: (saved: b
       {questions.map((q, i) => (<section key={i} className="lq-question" aria-label={translateUi("Question {p0}", { p0: i + 1 })}>
           <div className="lq-question-head">
             <b className="lq-number">{i + 1}</b>
-            <label className="lq-seconds"><Clock3 size={15} aria-hidden="true"/><span className="sr-only">{translateUi("Time")}</span><select value={q.seconds} onChange={(e) => change(i, { seconds: Number(e.target.value) as Seconds })}>{([10, 20, 30, 60] as const).map((s) => <option key={s} value={s}>{translateUi("{p0} seconds", { p0: s })}</option>)}</select></label>
+            <label className="lq-seconds"><Clock3 size={15} aria-hidden="true"/><span className="sr-only">{translateUi("Time")}</span><Select value={q.seconds} onChange={(e) => change(i, { seconds: Number(e.target.value) as Seconds })}>{([10, 20, 30, 60] as const).map((s) => <option key={s} value={s}>{translateUi("{p0} seconds", { p0: s })}</option>)}</Select></label>
             {questions.length > 1 && <button type="button" className="lq-icon is-danger" aria-label={translateUi("Remove question {p0}", { p0: i + 1 })} onClick={() => setQuestions((list) => list.filter((_, n) => n !== i))}><Trash2 size={16}/></button>}
           </div>
           <textarea className="lq-question-input" aria-label={translateUi("Question {p0}", { p0: i + 1 })} value={q.text} onChange={(e) => change(i, { text: e.target.value })} required maxLength={300} rows={2} placeholder={translateUi("Type your question")}/>

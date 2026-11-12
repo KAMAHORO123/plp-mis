@@ -28,6 +28,7 @@ import { useDeleteMember, useUpdateMember } from "@/hooks/use-mutations";
 import { memberStats } from "@/api/mock/metrics";
 import { formatDate, formatNumber } from "@/lib/utils";
 import type { Member, MemberRole } from "@/types";
+import { Select } from "@/components/shared/form-controls";
 const TAB_ROLE: Partial<Record<MemberTab, MemberRole>> = {
     students: "Student",
     coordinators: "Coordinator",
@@ -194,21 +195,21 @@ export function MembersPage() {
             <div><Label>{translateUi("District")}</Label><Input value={editForm.district} onChange={(e) => setEditForm({ ...editForm, district: e.target.value })}/></div>
             <div>
               <Label>{translateUi("Role")}</Label>
-              <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" value={editForm.role} onChange={(e) => setEditForm({ ...editForm, role: e.target.value as Member["role"] })}>
+              <Select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" value={editForm.role} onChange={(e) => setEditForm({ ...editForm, role: e.target.value as Member["role"] })}>
                 <option value="Student">Student</option>
                 <option value="Graduate">Graduate</option>
                 <option value="Coordinator">Coordinator</option>
                 <option value="Facilitator">Facilitator</option>
-              </select>
+              </Select>
             </div>
             <div>
               <Label>{translateUi("Status")}</Label>
-              <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value as Member["status"] })}>
+              <Select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value as Member["status"] })}>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
                 <option value="graduated">Graduated</option>
                 <option value="pending">Pending</option>
-              </select>
+              </Select>
             </div>
             <div className="sm:col-span-2">
               <Label>{translateUi("Graduation year")}</Label>

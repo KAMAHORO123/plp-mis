@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { clubs } from "./data";
 import { useHub, uid, award, type ClubActivity } from "./store";
 import { Empty, Field, Heading, Panel, Stats, Tag, downloadCSV } from "./ui";
+import { DateInput, Select } from "@/components/shared/form-controls";
 export function ClubsPage() {
     useSiteLanguage();
     const { state, profile, update } = useHub();
@@ -210,17 +211,17 @@ export function ClubsPage() {
                     <input name="title" required minLength={3} maxLength={100}/>
                   </Field>
                   <Field label={translateUi("Activity type")}>
-                    <select name="type">
+                    <Select name="type">
                       {translateUi([
                     "Meeting",
                     "Volunteering",
                     "Challenge",
                     "Recruitment",
                 ].map((t) => (<option key={t} value={t}>{translateUi(t)}</option>)))}
-                    </select>
+                    </Select>
                   </Field>
                   <Field label={translateUi("Date")}>
-                    <input name="date" type="date" required/>
+                    <DateInput name="date" type="date" required/>
                   </Field>
                   <Field label={translateUi("Hours per participant")}>
                     <input name="hours" type="number" min="0.5" max="24" step="0.5" required defaultValue="1"/>

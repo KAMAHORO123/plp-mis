@@ -14,6 +14,7 @@ import { platformApi } from "./platform-api";
 import { ProfilePhoto } from "./profile-photo";
 import { Empty, Field, Heading, Panel, SearchBox, Tag, greeting, dashboardSubtitle , Spinner } from "./ui";
 import "./workspaces.css";
+import { DateInput, Select } from "@/components/shared/form-controls";
 const toLocalInput = (date: Date) => new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 const nowLocal = () => toLocalInput(new Date(Date.now() + 60000));
 const when = (date: string) => new Date(date).toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
@@ -36,7 +37,7 @@ const sessionFilters = [
 ];
 const sessionFields = (f:FormData) => ({sessionType:String(f.get('sessionType')||'Online') as Session['sessionType'],location:String(f.get('location')||'').trim(),meetingLink:String(f.get('meetingLink')||'').trim()});
 function SessionFields({session, initialType = "Online"}:{session?:Session; initialType?:Session["sessionType"]}) {
-  return <><Field label={translateUi('Session format')}><select name="sessionType" aria-label={translateUi("Session format")} defaultValue={session?.sessionType||initialType}>{["Online","In person","Visit"].map(value=><option key={value} value={value}>{translateUi(value)}</option>)}</select></Field>
+  return <><Field label={translateUi('Session format')}><Select name="sessionType" aria-label={translateUi("Session format")} defaultValue={session?.sessionType||initialType}>{["Online","In person","Visit"].map(value=><option key={value} value={value}>{translateUi(value)}</option>)}</Select></Field>
     <Field label={translateUi('Google Meet or HTTPS link (optional)')}><input name="meetingLink" type="url" pattern="https://.*" maxLength={300} defaultValue={isHttps(session?.meetingLink||'')?session?.meetingLink:''} placeholder="https://meet.google.com/…"/></Field>
     <Field label={translateUi('Location or visit address (optional)')}><input name="location" maxLength={300} defaultValue={session?.location||(!isHttps(session?.meetingLink||'')?session?.meetingLink:'')} placeholder={translateUi('Office, school or meeting point')}/></Field>
     <p className="hub-caption">{translateUi('Visits are confirmed by the mentor. Meeting details can be agreed later.')}</p></>;
@@ -159,7 +160,7 @@ export function MentorshipPage() {
         <div className="ws-panel-title"><h2>{translateUi("Find your mentor")}</h2><span className="ws-pill">{translateUi(mentorList.length)}{translateUi(" mentors")}</span></div>
         <div className="hub-toolbar mt-0">
           <SearchBox value={search} onChange={setSearch} placeholder={translateUi("Search mentors")}/>
-          <select aria-label={translateUi("Mentor focus area")} value={area} onChange={(e) => setArea(e.target.value)}>{translateUi(["All focus areas", ...categories].map((c) => <option key={c} value={c}>{translateUi(c)}</option>))}</select>
+          <Select aria-label={translateUi("Mentor focus area")} value={area} onChange={(e) => setArea(e.target.value)}>{translateUi(["All focus areas", ...categories].map((c) => <option key={c} value={c}>{translateUi(c)}</option>))}</Select>
         </div>
         <div className="hub-grid three hub-space">
           {translateUi(mentorPage.items.map((m) => (<div key={m.id} className="hub-mentor-card">
@@ -211,7 +212,7 @@ export function MentorshipPage() {
                 return act("requested", { id: uid(), memberId: profile.id, mentorId: requesting.id, date, topic: String(f.get("topic")).trim(), goal: String(f.get("goal")).trim(), ...sessionFields(f), status: "Requested", requestedAt: new Date().toISOString() });
             }}>
           <Field label={translateUi("Topic")}><input name="topic" required maxLength={100} defaultValue={requesting.area}/></Field>
-          <Field label={translateUi("Preferred date & time")}><input name="date" type="datetime-local" min={nowLocal()} required/></Field>
+          <Field label={translateUi("Preferred date & time")}><DateInput name="date" type="datetime-local" min={nowLocal()} required/></Field>
           <SessionFields initialType={requestFormat}/>
           <Field label={translateUi("What would you like to work on?")}><textarea name="goal" minLength={15} maxLength={1200} required placeholder={translateUi("Share your goal and any context that helps your mentor prepare\u2026")}/></Field>
         </FormDialog>))}
@@ -222,7 +223,7 @@ export function MentorshipPage() {
                 return act("updated", { ...editing, date, topic: String(f.get("topic")).trim(), goal: String(f.get("goal")).trim(), ...sessionFields(f) });
             }}>
           <Field label={translateUi("Topic")}><input name="topic" required maxLength={100} defaultValue={editing.topic}/></Field>
-          <Field label={translateUi("Preferred date & time")}><input name="date" type="datetime-local" min={nowLocal()} required defaultValue={toLocalInput(new Date(editing.date))}/></Field>
+          <Field label={translateUi("Preferred date & time")}><DateInput name="date" type="datetime-local" min={nowLocal()} required defaultValue={toLocalInput(new Date(editing.date))}/></Field>
           <SessionFields session={editing ?? undefined}/>
           <Field label={translateUi("What would you like to work on?")}><textarea name="goal" minLength={15} maxLength={1200} required defaultValue={editing.goal}/></Field>
         </FormDialog>))}
@@ -383,7 +384,7 @@ export function MentorDashboard() {
                 }
                 return act("rescheduled", { ...action.session, status: "Confirmed", date: new Date(date).toISOString(), ...sessionFields(f) }, String(f.get("note")).trim());
             }}>
-          <Field label={translateUi("New date & time")}><input name="date" type="datetime-local" min={nowLocal()} required defaultValue={toLocalInput(new Date(action.session.date))}/></Field>
+          <Field label={translateUi("New date & time")}><DateInput name="date" type="datetime-local" min={nowLocal()} required defaultValue={toLocalInput(new Date(action.session.date))}/></Field>
           {translateUi(action.session.status === "Requested" && <p className="hub-caption">{translateUi("Rescheduling a request also confirms it at the new time.")}</p>)}
           <SessionFields session={action.session}/>
           <Field label={translateUi("Message (optional)")}><textarea name="note" maxLength={1000}/></Field>
@@ -409,7 +410,7 @@ export function MentorDashboard() {
             }}>
           <div className="pp-dialog-row"><ProfilePhoto size={64}/></div>
           <Field label={translateUi("Headline")}><input name="title" required minLength={3} maxLength={100} defaultValue={me.title === "PLP mentor" ? "" : me.title} placeholder={translateUi("e.g. Career coach for first-time job seekers")}/></Field>
-          <Field label={translateUi("Focus area")}><select name="area" defaultValue={me.area}>{translateUi(categories.map((c) => <option key={c} value={c}>{translateUi(c)}</option>))}</select></Field>
+          <Field label={translateUi("Focus area")}><Select name="area" defaultValue={me.area}>{translateUi(categories.map((c) => <option key={c} value={c}>{translateUi(c)}</option>))}</Select></Field>
           <Field label={translateUi("Short bio")}><textarea name="bio" required minLength={20} maxLength={600} rows={4} defaultValue={me.bio} placeholder={translateUi("Your experience and how you like to help mentees.")}/></Field>
           <label className="hub-check"><input type="checkbox" name="accepting" defaultChecked={me.accepting !== false}/>{translateUi(" Accepting new session requests")}</label>
         </FormDialog>))}

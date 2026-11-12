@@ -12,6 +12,7 @@ import { StatCard } from '@/components/shared/stat-card';
 import { platformApi, refreshVerifiedCredits } from './platform-api';
 import { Heading, Panel, Field, Empty, downloadCSV , Spinner } from './ui';
 import './workspaces.css';
+import { DateInput } from "@/components/shared/form-controls";
 type Meeting = {
     id: string;
     title: string;
@@ -236,7 +237,7 @@ export function MeetingManager() {
             }}>
     <Field label={translateUi("Meeting name")}><input name="title" required maxLength={100} defaultValue={current?.title || 'PLP monthly meeting'}/></Field>
     <Field label={translateUi("Venue")}><input name="location" required maxLength={200} defaultValue={current?.location || 'ALX Hub · Deco Center, KG 9 Avenue, Kigali'}/></Field>
-    <div className="ws-form-grid"><Field label={translateUi("Attendance opens")}><input name="opens" type="datetime-local" required defaultValue={current ? localInput(current.opens_at) : ''}/></Field><Field label={translateUi("Attendance closes")}><input name="closes" type="datetime-local" required defaultValue={current ? localInput(current.closes_at) : ''}/></Field></div>
+    <div className="ws-form-grid"><Field label={translateUi("Attendance opens")}><DateInput name="opens" type="datetime-local" required defaultValue={current ? localInput(current.opens_at) : ''}/></Field><Field label={translateUi("Attendance closes")}><DateInput name="closes" type="datetime-local" required defaultValue={current ? localInput(current.closes_at) : ''}/></Field></div>
     <div className="ws-form-grid"><Field label={translateUi("Credits per member")}><input name="credits" type="number" min={1} max={500} required defaultValue={current?.credits || 10}/></Field><Field label={translateUi("Attendance radius (metres)")}><input name="radius" type="number" min={30} max={300} required defaultValue={current?.radius_m || 150}/></Field></div>
     <details><summary>{translateUi("Venue map pin")}</summary><p className="hub-caption">{translateUi("Default pin from the ")}<a href="https://onboarding.alxafrica.com/pathway/hubs/" target="_blank" rel="noreferrer">{translateUi("ALX hub directory")}</a>{translateUi(". Confirm the entrance location before publishing.")}</p><div className="ws-form-grid"><Field label={translateUi("Latitude")}><input name="latitude" type="number" step="any" min={-90} max={90} required defaultValue={current?.latitude ?? -1.9270514}/></Field><Field label={translateUi("Longitude")}><input name="longitude" type="number" step="any" min={-180} max={180} required defaultValue={current?.longitude ?? 30.0986973}/></Field></div></details>
     {translateUi(!current && <label className="hub-check"><input name="publish" type="checkbox"/>{translateUi("Show this meeting in the website banner")}</label>)}

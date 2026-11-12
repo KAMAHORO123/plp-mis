@@ -11,6 +11,7 @@ import { Heading, Field } from './ui';
 import { FormModal } from './modal';
 import { ActivityCard, hostName } from './school-operations';
 import type { CommunityActivity } from './operations-data';
+import { Select } from "@/components/shared/form-controls";
 /** What members see: activities published by schools and PLP, with a one-tap "I'll participate". */
 export function CommunityDiscovery({ compact = false }: {
     compact?: boolean;
@@ -80,7 +81,7 @@ export function CommunityDiscovery({ compact = false }: {
       </div>
       <div className="act-filters">
         <Field label={translateUi("Search")}><span className="act-search"><Search size={15}/><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={translateUi("Activity, school or type")} style={{ paddingLeft: 36 }}/></span></Field>
-        <Field label={translateUi("School or community")}><select value={host} onChange={(e) => setHost(e.target.value)}><option value="All">{translateUi("All schools and communities")}</option>{translateUi(hosts.map((h) => <option key={h.id} value={h.id}>{translateUi(h.name)}</option>))}</select></Field>
+        <Field label={translateUi("School or community")}><Select value={host} onChange={(e) => setHost(e.target.value)}><option value="All">{translateUi("All schools and communities")}</option>{translateUi(hosts.map((h) => <option key={h.id} value={h.id}>{translateUi(h.name)}</option>))}</Select></Field>
       </div>
       {translateUi(shown.length ? grid(activityPage.items) : <p className="pv-empty">{translateUi(tab === 'Going' ? "You haven't signed up for anything yet. Pick an upcoming activity and tap “I'll participate”." : tab === 'Past' ? 'No past activities yet.' : 'No upcoming activities match. New ones appear here as soon as they are published.')}</p>)}
       <Pager {...activityPage}/>

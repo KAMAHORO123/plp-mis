@@ -10,6 +10,7 @@ import { Panel, Field } from './ui';
 import { defaultAnnouncement, defaultWelcomePopup, isUpcoming, type WelcomePopup, safeAnnouncementLink, standingAnnouncement, type Announcement } from './site-content';
 import { EventFlyer, PromoCard, countdown } from './event-flyer';
 import './community-sections.css';
+import { DateInput, FileInput } from "@/components/shared/form-controls";
 export function AnnouncementBanner({ preview }: {
     preview?: Announcement;
 }) {
@@ -85,10 +86,10 @@ export function AnnouncementEditor() {
         }}>
  <label className="hub-check"><input type="checkbox" checked={draft.enabled} onChange={e => change('enabled', e.target.checked)}/>{translateUi("Show announcement")}</label>
  <Field label={translateUi("Event title")}><input required maxLength={100} value={draft.title} onChange={e => change('title', e.target.value)}/></Field>
- <div className="ws-form-grid"><Field label={translateUi("Event date")}><input required type="date" value={draft.date} onChange={e => change('date', e.target.value)}/></Field><Field label={translateUi("Event location")}><input maxLength={60} value={draft.location} onChange={e => change('location', e.target.value)}/></Field></div>
+ <div className="ws-form-grid"><Field label={translateUi("Event date")}><DateInput required type="date" value={draft.date} onChange={e => change('date', e.target.value)}/></Field><Field label={translateUi("Event location")}><input maxLength={60} value={draft.location} onChange={e => change('location', e.target.value)}/></Field></div>
  <div className="ws-form-grid"><Field label={translateUi("Event link")}><input required maxLength={500} value={draft.href} onChange={e => change('href', e.target.value)}/></Field><Field label={translateUi("Link label")}><input required maxLength={40} value={draft.linkLabel} onChange={e => change('linkLabel', e.target.value)}/></Field></div>
  <Field label={translateUi("Short description (shown in the popup flyer)")}><textarea maxLength={240} rows={2} value={draft.description ?? ''} onChange={e => change('description', e.target.value)}/></Field>
- <Field label={translateUi("Flyer image (PNG or JPEG, portrait works best)")}><input type="file" accept="image/png,image/jpeg" onChange={async e => { const file = e.target.files?.[0]; if (!file) return; try { setBusy(true); change('flyer', await uploadFile(file)); toast.success(translateUi('Flyer uploaded. Save the announcement to publish it.')); } catch (err) { toast.error(translateUi((err as Error).message)); } finally { setBusy(false); } }}/></Field>
+ <Field label={translateUi("Flyer image (PNG or JPEG, portrait works best)")}><FileInput type="file" accept="image/png,image/jpeg" onChange={async e => { const file = e.target.files?.[0]; if (!file) return; try { setBusy(true); change('flyer', await uploadFile(file)); toast.success(translateUi('Flyer uploaded. Save the announcement to publish it.')); } catch (err) { toast.error(translateUi((err as Error).message)); } finally { setBusy(false); } }}/></Field>
  {translateUi(draft.flyer && <button type="button" className="hub-text-button" onClick={() => change('flyer', '')}>{translateUi("Remove flyer")}</button>)}
  <label className="hub-check"><input type="checkbox" checked={draft.sample} onChange={e => change('sample', e.target.checked)}/>{translateUi("Test only — keep this hidden from members and visitors")}</label>
  <p className={`hub-feedback ${draft.enabled && !draft.sample && draft.date >= today() ? '' : 'hub-access-error'}`}>{translateUi(draft.enabled && !draft.sample && draft.date >= today() ? 'When saved, this banner is shown to everyone on the public website.' : 'When saved, visitors see the standing “Join PLP” banner instead of this event.')}</p>
@@ -136,7 +137,7 @@ export function WelcomePopupEditor() {
  <Field label={translateUi("Message")}><textarea maxLength={240} rows={2} value={draft.text} onChange={e => change('text', e.target.value)}/></Field>
  <div className="ws-form-grid"><Field label={translateUi("Button label")}><input required minLength={2} maxLength={30} value={draft.cta} onChange={e => change('cta', e.target.value)}/></Field><Field label={translateUi("Button link")}><input required maxLength={500} value={draft.href} onChange={e => change('href', e.target.value)}/></Field></div>
  </>}
- <Field label={translateUi("Flyer image (PNG or JPEG)")}><input type="file" accept="image/png,image/jpeg" onChange={async e => { const file = e.target.files?.[0]; if (!file) return; try { setBusy(true); change('image', await uploadFile(file)); toast.success(translateUi('Image uploaded. Save to publish it.')); } catch (err) { toast.error(translateUi((err as Error).message)); } finally { setBusy(false); } }}/></Field>
+ <Field label={translateUi("Flyer image (PNG or JPEG)")}><FileInput type="file" accept="image/png,image/jpeg" onChange={async e => { const file = e.target.files?.[0]; if (!file) return; try { setBusy(true); change('image', await uploadFile(file)); toast.success(translateUi('Image uploaded. Save to publish it.')); } catch (err) { toast.error(translateUi((err as Error).message)); } finally { setBusy(false); } }}/></Field>
  {translateUi(draft.image && <button type="button" className="hub-text-button" onClick={() => change('image', '')}>{translateUi("Use the default photo")}</button>)}
  <h3>{translateUi("Preview")}</h3>{preview(draft)}
  <div className="hub-actions hub-dialog-actions"><button type="button" className="hub-button secondary" disabled={busy} onClick={() => setDraft(null)}>{translateUi("Cancel")}</button><button className="hub-button" disabled={busy}>{translateUi(busy ? 'Saving…' : 'Save welcome popup')}</button></div></form></FormModal>}
