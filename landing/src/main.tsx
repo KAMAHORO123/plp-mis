@@ -10,12 +10,14 @@ import { SiteLink as Link } from './site-link';
 import { HomePage, AboutPage, ProgrammesPage, StoriesPage, AlbumPage, PublicHubPage, CanadaPage } from './home';
 import { AnnouncementBanner } from './announcement';
 import { LandingFooter } from './landing-art';
+import { useRouteSeo } from './seo';
 import './globals.css';
 import './hub.css';
 import './landing.css';
 const nav = [['/', 'Home'], ['/about', 'About PLP'], ['/plp-hub', 'PLP Hub'], ['/programmes', 'Our programmes'], ['/stories', 'Our impact'], ['/album', 'PLP album'], ['/plp-canada', 'PLP Canada']];
 function Layout() {
     useSiteLanguage();
+    useRouteSeo();
     const [open, setOpen] = useState(false), [compact, setCompact] = useState(false);
     const headerRef = useHeaderFit<HTMLElement>();
     const location = useLocation();

@@ -38,6 +38,8 @@ www.{$SITE_HOST} {
   Referrer-Policy same-origin
   X-Frame-Options DENY
   -Server
+  # The Hub is for signed-in members; keep it out of search results (the public website is plpyouth.org).
+  X-Robots-Tag "noindex, nofollow"
   # Camera for proctored assessments, location for meeting check-in, full screen for exams and YouTube lessons.
   Permissions-Policy "camera=(self), microphone=(), geolocation=(self), fullscreen=(self \"https://www.youtube-nocookie.com\")"
   # HTTPS only for a year, and a strict content policy: scripts from this site only, YouTube's no-cookie player,
