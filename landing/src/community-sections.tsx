@@ -31,7 +31,7 @@ export function TestimonialsSection() {
    <figure aria-live="polite" key={item.name}>
     <span className="plp-voices-mark" aria-hidden="true">{"\u201C"}</span>
     <blockquote>{translateUi(item.quote)}</blockquote>
-    <figcaption><strong>{translateUi(item.name)}</strong><span>{translateUi(item.role)} · {translateUi(item.topic)}</span>{!item.approved && <em className="plp-voices-draft">{translateUi("Draft: waiting for approval")}</em>}</figcaption>
+    <figcaption><strong>{translateUi(item.name)}</strong><span>{translateUi(item.role)} · {translateUi(item.topic)}</span></figcaption>
    </figure>
    <div className="plp-voices-nav">
     <button type="button" aria-label={translateUi("Previous testimonial")} onClick={() => go(-1)}><ArrowLeft size={18}/></button>
