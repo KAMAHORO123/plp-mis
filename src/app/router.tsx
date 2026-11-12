@@ -129,7 +129,8 @@ export const router = createBrowserRouter([
                     {
                         element: <MemberGuard />,
                         children: [
-                            // The host's live quiz screen fills the window so it can be projected.
+                            // The live quiz studio and host screen are full pages, outside the dashboard menus.
+                            { path: "live-quiz", element: <LiveQuizPage /> },
                             { path: "live-quiz/host/:id", element: <LiveQuizHostPage /> },
                             {
                                 element: <MemberWorkspaceLayout />,
@@ -156,7 +157,6 @@ export const router = createBrowserRouter([
                                     { element: <MemberGuard allowed={["Club leader", "Mentor", "Administrator"]}/>, children: [{ path: "learning-materials", element: <LearningMaterialsPage /> }] },
                                     { element: <MemberGuard allowed={["Club leader", "Administrator", "Mentor"]}/>, children: [{ path: "school-members", element: <SchoolRegisterRoute /> }] },
                                     { path: "credits", element: <CreditsPage /> },
-                                    { path: "live-quiz", element: <LiveQuizPage /> },
                                     { path: "calendar", element: <CalendarPage /> },
                                     {
                                         element: (<MemberGuard allowed={["Trainer", "Administrator"]}/>),

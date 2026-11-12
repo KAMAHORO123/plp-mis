@@ -1,0 +1,27 @@
+// Team portraits (black and white, from the PLP team shoot). Names match the names shown on the About page.
+// Each person has /images/plp/team/<file>.webp (4:5 portrait) and <file>-face.webp (square, for small avatars).
+export const teamPhotos: Record<string, string> = {
+ "Israel Nuru": "israel-nuru",
+ "Aime Mutemura": "aime-mutemura",
+ "Divin Ibambasi": "divin-ibambasi",
+ "Gaju Alidah": "gaju-alidah",
+ "Ntwari Abdallah": "ntwari-abdallah",
+ "N. Jean De Dieu": "n-jean-de-dieu",
+ "Rita Sandrine": "rita-sandrine",
+ "Kamahoro Linda Kellia": "kamahoro-linda-kellia",
+ "Livia": "livia",
+ "Kelly Gisubizo": "kelly-gisubizo",
+ "Mutabazi": "mutabazi",
+ "Amelia": "amelia",
+ "Patrick": "patrick",
+ "Phocas": "phocas",
+ "Shema Dan": "shema-dan",
+ "ABI": "abi",
+ "Princess R.": "princess-r",
+ "Danny Kaberuka": "danny-kaberuka",
+ "Dalynah": "dalynah",
+ "Micha": "micha",
+ "Maxine": "maxine",
+ "Divine Kayonga": "divine-kayonga",
+ "Ornella Nene": "ornella-nene",
+};

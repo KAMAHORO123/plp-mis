@@ -800,3 +800,31 @@ html[data-theme="dark"] .plp-art-footer::after { background-color: #0f0f0f; opac
 .plp-to-top:focus-visible { outline: 3px solid #76bbec; outline-offset: 3px; }
 @media (max-width: 700px) { .plp-to-top { right: 14px; bottom: calc(76px + env(safe-area-inset-bottom)); width: 44px; height: 44px; } }
 @media (prefers-reduced-motion: reduce) { .plp-to-top { transition: none; } }
+
+/* Meet our team, with portraits: a group photo, portrait cards for leadership and directors, faces beside programme names. */
+.plp-team .plp-team-group { margin: 0; border-radius: 24px; overflow: hidden; background: #e8eef4; }
+.plp-team .plp-team-group img { display: block; width: 100%; height: auto; aspect-ratio: 2.4 / 1; object-fit: cover; }
+.plp-team .plp-team-leadership, .plp-team .plp-team-directors { gap: 18px; }
+.plp-team .plp-team-directors { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.plp-team .plp-team-leadership li, .plp-team .plp-team-directors li { flex-direction: column; gap: 0; padding: 0; overflow: hidden; border-radius: 18px; }
+.plp-team .plp-team-portrait { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: center top; background: #dfe7ef; transition: transform .5s ease; }
+.plp-team .plp-team-portrait.is-empty { display: grid; place-items: center; font: 500 34px/1 Sora, sans-serif; color: #fff; background: #173b59 url('/images/patterns/imigongo-blue.svg') center/120%; background-blend-mode: soft-light; }
+.plp-team .plp-team-leadership li > div, .plp-team .plp-team-directors li > div { padding: 16px 18px 18px; }
+.plp-team .plp-team-leadership h3 { font-size: 18px; }
+.plp-team .plp-team-directors h3 { font-size: 15px; }
+.plp-team li:hover .plp-team-portrait { transform: scale(1.03); }
+.plp-team li.plp-team-lead { box-shadow: inset 0 -3px 0 var(--hub-blue); }
+.plp-team li.plp-team-lead:hover { box-shadow: inset 0 -3px 0 var(--hub-blue), 0 12px 26px -20px rgba(16,35,60,.45); }
+.plp-team-units dd .plp-team-member { display: inline-flex; align-items: center; gap: 8px; padding: 3px 12px 3px 3px; }
+.plp-team-member img, .plp-team-member i { width: 30px; height: 30px; flex: none; border-radius: 50%; object-fit: cover; }
+.plp-team-member i { display: grid; place-items: center; font: 500 10.5px/1 Sora, sans-serif; font-style: normal; background: #dce7f2; color: #1d5f99; }
+html[data-theme="dark"] .plp-team-units dd .plp-team-member { background: #1b2b3d; border-color: #2c4157; }
+html[data-theme="dark"] .plp-team .plp-team-group, html[data-theme="dark"] .plp-team .plp-team-portrait { background: #1b2b3d; }
+@media (max-width: 1100px) { .plp-team .plp-team-directors { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 600px) {
+  .plp-team .plp-team-leadership, .plp-team .plp-team-directors { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .plp-team .plp-team-leadership li > div, .plp-team .plp-team-directors li > div { padding: 12px 12px 14px; }
+  .plp-team .plp-team-leadership h3, .plp-team .plp-team-directors h3 { font-size: 14px; }
+  .plp-team .plp-team-group img { aspect-ratio: 16 / 10; }
+}
+@media (prefers-reduced-motion: reduce) { .plp-team .plp-team-portrait { transition: none; } .plp-team li:hover .plp-team-portrait { transform: none; } }

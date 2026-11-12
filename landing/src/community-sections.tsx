@@ -188,7 +188,7 @@ function LiveQuizJoin() {
     <input id="live-quiz-pin" name="pin" inputMode="numeric" autoComplete="off" maxLength={7} pattern="\d{3}\s?\d{3}" placeholder={translateUi("Game PIN")}/>
     <button className="plp-play-next">{translateUi("Join")}<ArrowRight size={18}/></button>
    </form>
-   <a className="plp-live-quiz-host" href={`${hub}/live-quiz`}>{translateUi("Host your own quiz in the PLP Hub ")}<ArrowUpRight size={14}/></a>
+   <a className="plp-live-quiz-host" href="/live-quiz">{translateUi("How it works, and hosting your own quiz ")}<ArrowUpRight size={14}/></a>
   </div>;
 }
 export function FunCorner() {

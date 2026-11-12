@@ -1,4 +1,5 @@
 import { translateUi, useSiteLanguage } from '../../i18n/language';
+import { teamPhotos } from './team-photos';
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Pause, Play, Download, BookOpen, Compass, Users, Award } from "lucide-react";
@@ -77,12 +78,18 @@ const initials = (name: string) => name.replace(/^[A-Z]\.\s*/, "").split(/\s+/).
 function Person({ person: [name, role], lead = false }: {
     person: string[];
     lead?: boolean;
-}) { useSiteLanguage(); return <li className={lead ? "plp-team-lead" : undefined}><span className="plp-team-monogram" aria-hidden="true">{translateUi(initials(name))}</span><div><h3>{translateUi(name)}</h3><p className="plp-team-role">{translateUi(role)}</p></div></li>; }
+}) { useSiteLanguage(); const photo = teamPhotos[name]; return <li className={lead ? "plp-team-lead" : undefined}>{photo ? <img className="plp-team-portrait" src={`/images/plp/team/${photo}.webp`} alt="" width={480} height={600} loading="lazy" decoding="async"/> : <span className="plp-team-portrait is-empty" aria-hidden="true">{translateUi(initials(name))}</span>}<div><h3>{translateUi(name)}</h3><p className="plp-team-role">{translateUi(role)}</p></div></li>; }
+/** A team member in a programme list: their face (or initials) and name. */
+function Member({ name }: { name: string }) {
+    const photo = teamPhotos[name];
+    return <span className="plp-team-member">{photo ? <img src={`/images/plp/team/${photo}-face.webp`} alt="" width={36} height={36} loading="lazy" decoding="async"/> : <i aria-hidden="true">{initials(name) || "PLP"}</i>}{translateUi(name)}</span>;
+}
 function Team() {
     useSiteLanguage();
     return <section className="plp-team" id="team" aria-labelledby="team-title">
   <div className="plp-team-intro"><p className="plp-section-label">{translateUi("THE PEOPLE BEHIND PLP")}</p><h2 id="team-title">{translateUi("Meet our team")}</h2><p>{translateUi("Working together for young people, with our club leaders, mentors, and volunteers.")}</p></div>
-  <div className="plp-team-groups"><p className="plp-team-group-label">{translateUi("Leadership")}</p><ul className="plp-team-leadership">{translateUi(leadership.map(p => <Person key={p[0]} person={p} lead/>))}</ul><p className="plp-team-group-label">{translateUi("Directors")}</p><ul className="plp-team-directors">{translateUi(directors.map(p => <Person key={p[0]} person={p}/>))}</ul><p className="plp-team-group-label">{translateUi("Programmes and teams")}</p><div className="plp-team-units">{translateUi(teams.map(([area, , units]) => <section key={area}><h3>{translateUi(area === "Do" ? "PLP Connect" : area)}</h3><dl>{translateUi(units.map(([unit, people]) => <div key={unit}><dt>{translateUi(unit)}</dt><dd>{people.split(" · ").map(name => <span key={name}>{translateUi(name)}</span>)}</dd></div>))}</dl></section>))}</div><p className="plp-source-note">{translateUi("PLP is governed by a Board of Directors and supported by an Advisory Council.")}</p></div>
+  <figure className="plp-team-group"><img src="/images/plp/team/plp-team-group.webp" alt={translateUi("The PLP team together, smiling and giving thumbs up")} width={1600} height={667} loading="lazy" decoding="async"/></figure>
+  <div className="plp-team-groups"><p className="plp-team-group-label">{translateUi("Leadership")}</p><ul className="plp-team-leadership">{translateUi(leadership.map(p => <Person key={p[0]} person={p} lead/>))}</ul><p className="plp-team-group-label">{translateUi("Directors")}</p><ul className="plp-team-directors">{translateUi(directors.map(p => <Person key={p[0]} person={p}/>))}</ul><p className="plp-team-group-label">{translateUi("Programmes and teams")}</p><div className="plp-team-units">{translateUi(teams.map(([area, , units]) => <section key={area}><h3>{translateUi(area)}</h3><dl>{translateUi(units.map(([unit, people]) => <div key={unit}><dt>{translateUi(unit)}</dt><dd>{people.split(" · ").map(name => <Member key={name} name={name}/>)}</dd></div>))}</dl></section>))}</div><p className="plp-source-note">{translateUi("PLP is governed by a Board of Directors and supported by an Advisory Council.")}</p></div>
     </section>;
 }
 /** Full-width hero slider: each photo carries its own headline and link; the first slide is the page title. */

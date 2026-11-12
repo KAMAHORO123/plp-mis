@@ -11035,5 +11035,121 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "Not registered yet: add it under Schools, or pick one in Review": {
     "rw": "Ntiriranditse: ryongere muri Amashuri, cyangwa uhitemo rimwe muri Suzuma",
     "fr": "Pas encore enregistrée : ajoutez-la dans Écoles ou choisissez-en une dans Examiner"
+  },
+  "FUN CORNER · LIVE QUIZ": {
+    "rw": "AKANYA KO KWISHIMISHA · IKIBAZO-MUKINO KIRI KUBA",
+    "fr": "COIN DÉTENTE · QUIZ EN DIRECT"
+  },
+  "Make any room a game.": {
+    "rw": "Hindura icyumba icyo ari cyo cyose umukino.",
+    "fr": "Transformez chaque salle en jeu."
+  },
+  "My quizzes": {
+    "rw": "Ibibazo-mikino byanjye",
+    "fr": "Mes quiz"
+  },
+  "Create your first quiz": {
+    "rw": "Kora ikibazo-mukino cyawe cya mbere",
+    "fr": "Créez votre premier quiz"
+  },
+  "Join a game": {
+    "rw": "Injira mu mukino",
+    "fr": "Rejoindre une partie"
+  },
+  "Peace and Love Proclaimers website": {
+    "rw": "Urubuga rwa Peace and Love Proclaimers",
+    "fr": "Site de Peace and Love Proclaimers"
+  },
+  "Type your question": {
+    "rw": "Andika ikibazo cyawe",
+    "fr": "Saisissez votre question"
+  },
+  "QR code to join the game": {
+    "rw": "Kode ya QR yo kwinjira mu mukino",
+    "fr": "Code QR pour rejoindre la partie"
+  },
+  "Or scan to join": {
+    "rw": "Cyangwa usikane winjire",
+    "fr": "Ou scannez pour rejoindre"
+  },
+  "answers": {
+    "rw": "ibisubizo",
+    "fr": "réponses"
+  },
+  "Enter the game PIN shown on the host’s screen.": {
+    "rw": "Andika PIN y’umukino igaragara kuri ekarani y’uyobora umukino.",
+    "fr": "Saisissez le code PIN affiché sur l’écran de l’animateur."
+  },
+  "Play together,": {
+    "rw": "Mukinire hamwe,",
+    "fr": "Jouez ensemble,"
+  },
+  "live.": {
+    "rw": "ako kanya.",
+    "fr": "en direct."
+  },
+  "A quick, friendly quiz for meetings, classes and conferences. The host shows the questions on the big screen, and everyone answers from their phone.": {
+    "rw": "Ikibazo-mukino cyihuse kandi gishimishije cyo mu nama, mu ishuri no mu nama nkuru. Uyobora umukino yerekana ibibazo kuri ekarani nini, buri wese agasubiza akoresheje telefoni ye.",
+    "fr": "Un quiz rapide et convivial pour les réunions, les cours et les conférences. L’animateur affiche les questions sur grand écran, et chacun répond depuis son téléphone."
+  },
+  "Have a game PIN?": {
+    "rw": "Ufite PIN y’umukino?",
+    "fr": "Vous avez un code PIN ?"
+  },
+  "In which year did PLP start?": {
+    "rw": "PLP yatangiye mu wuhe mwaka?",
+    "fr": "En quelle année PLP a-t-elle commencé ?"
+  },
+  "How it works": {
+    "rw": "Uko bikora",
+    "fr": "Comment ça marche"
+  },
+  "Join with the PIN": {
+    "rw": "Injira ukoresheje PIN",
+    "fr": "Rejoignez avec le code PIN"
+  },
+  "Open this page on your phone, enter the PIN on the host’s screen and choose a nickname. No account needed.": {
+    "rw": "Fungura uru rupapuro kuri telefoni yawe, wandike PIN iri kuri ekarani y’uyobora umukino, uhitemo izina ry’umukino. Nta konti ikenewe.",
+    "fr": "Ouvrez cette page sur votre téléphone, saisissez le code PIN affiché par l’animateur et choisissez un pseudo. Aucun compte nécessaire."
+  },
+  "Answer fast": {
+    "rw": "Subiza vuba",
+    "fr": "Répondez vite"
+  },
+  "Tap the colour and shape that matches your answer. Correct answers score more the faster you are.": {
+    "rw": "Kanda ibara n’ishusho bihuye n’igisubizo cyawe. Uko usubiza neza vuba, ni ko ubona amanota menshi.",
+    "fr": "Touchez la couleur et la forme de votre réponse. Plus vous répondez vite et juste, plus vous marquez de points."
+  },
+  "Celebrate the winner": {
+    "rw": "Mwishimire uwatsinze",
+    "fr": "Célébrez le gagnant"
+  },
+  "After each question, see the right answer and the leaderboard. The top three take the podium at the end.": {
+    "rw": "Nyuma ya buri kibazo, reba igisubizo nyacyo n’urutonde rw’amanota. Abatatu ba mbere bajya ku rubyiniro ku musozo.",
+    "fr": "Après chaque question, découvrez la bonne réponse et le classement. Les trois premiers montent sur le podium à la fin."
+  },
+  "FOR FACILITATORS AND CLUB LEADERS": {
+    "rw": "KU BAYOBORA IBIGANIRO N’ABAYOBOZI B’AMACLUB",
+    "fr": "POUR LES ANIMATEURS ET RESPONSABLES DE CLUB"
+  },
+  "Host your own quiz": {
+    "rw": "Yobora ikibazo-mukino cyawe",
+    "fr": "Animez votre propre quiz"
+  },
+  "Write your questions, tick the right answers and start a game. Sign in to the PLP Hub to create and host quizzes.": {
+    "rw": "Andika ibibazo byawe, uhitemo ibisubizo nyabyo, utangize umukino. Injira muri PLP Hub kugira ngo ukore kandi uyobore ibibazo-mikino.",
+    "fr": "Rédigez vos questions, cochez les bonnes réponses et lancez une partie. Connectez-vous au PLP Hub pour créer et animer des quiz."
+  },
+  "Create a quiz": {
+    "rw": "Kora ikibazo-mukino",
+    "fr": "Créer un quiz"
+  },
+  "How it works, and hosting your own quiz": {
+    "rw": "Uko bikora, n’uko wayobora ikibazo-mukino cyawe",
+    "fr": "Comment ça marche, et animer votre propre quiz"
+  },
+  "The PLP team together, smiling and giving thumbs up": {
+    "rw": "Itsinda rya PLP hamwe, bamwenyura kandi bazamuye igikumwe",
+    "fr": "L’équipe PLP réunie, souriante, pouces levés"
   }
 };

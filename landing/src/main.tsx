@@ -11,10 +11,11 @@ import { HomePage, AboutPage, ProgrammesPage, StoriesPage, AlbumPage, PublicHubP
 import { AnnouncementBanner } from './announcement';
 import { LandingFooter } from './landing-art';
 import { useRouteSeo } from './seo';
+import { LiveQuizPage } from './live-quiz-page';
 import './globals.css';
 import './hub.css';
 import './landing.css';
-const nav = [['/', 'Home'], ['/about', 'About PLP'], ['/plp-hub', 'PLP Hub'], ['/programmes', 'Our programmes'], ['/stories', 'Our impact'], ['/album', 'PLP album'], ['/plp-canada', 'PLP Canada']];
+const nav = [['/', 'Home'], ['/about', 'About PLP'], ['/plp-hub', 'PLP Hub'], ['/programmes', 'Our programmes'], ['/stories', 'Our impact'], ['/album', 'PLP album'], ['/live-quiz', 'Live quiz'], ['/plp-canada', 'PLP Canada']];
 function Layout() {
     useSiteLanguage();
     useRouteSeo();
@@ -31,5 +32,5 @@ function Layout() {
         document.querySelector<HTMLButtonElement>('.hub-menu')?.focus();
     } }}>{translateUi([...nav, ['/auth/signup', 'Join PLP'], ['/auth/login', 'PLP Hub']].map(([to, label]) => <Link key={to} to={to}>{translateUi(label)}</Link>))}</nav>)}</div><main><Outlet />{translateUi(location.pathname === '/plp-hub' && !import.meta.env.VITE_HUB_URL && <section id="availability" className="plp-community-section"><h2>{translateUi("The online Hub is being prepared.")}</h2><p>{translateUi("Explore PLP\u2019s programmes while we prepare member access.")}</p></section>)}</main><LandingFooter /><HelpChat/><CookieNotice/></div>;
 }
-ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><LanguageDocument/><BrowserRouter><Routes><Route element={<Layout />}>{translateUi([['/', HomePage], ['/about', AboutPage], ['/programmes', ProgrammesPage], ['/stories', StoriesPage], ['/album', AlbumPage], ['/plp-canada', CanadaPage], ['/plp-hub', PublicHubPage]].map(([path, Page]) => { const Component = Page as typeof HomePage; return <Route key={path as string} path={path as string} element={<Component />}/>; }))}<Route path="*" element={<NotFoundPage />}/></Route></Routes></BrowserRouter></React.StrictMode>);
+ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><LanguageDocument/><BrowserRouter><Routes><Route element={<Layout />}>{translateUi([['/', HomePage], ['/about', AboutPage], ['/programmes', ProgrammesPage], ['/stories', StoriesPage], ['/album', AlbumPage], ['/plp-canada', CanadaPage], ['/plp-hub', PublicHubPage], ['/live-quiz', LiveQuizPage]].map(([path, Page]) => { const Component = Page as typeof HomePage; return <Route key={path as string} path={path as string} element={<Component />}/>; }))}<Route path="*" element={<NotFoundPage />}/></Route></Routes></BrowserRouter></React.StrictMode>);
 function NotFoundPage() { useSiteLanguage(); return <section className="plp-community-section"><h1>{translateUi("Page not found")}</h1><Link to="/">{translateUi("Return home")}</Link></section>; }

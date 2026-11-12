@@ -1,12 +1,14 @@
 // Live quiz (Fun corner): build a quiz, start a game with a PIN, and play it live in a meeting, class or conference.
-// Hosts use the Hub; players join at /play with the PIN and a nickname, no account needed.
+// Hosts build and run games at /live-quiz (signed in); players join at /play with the PIN and a nickname, no account needed.
+// The public website has its own Live quiz page that sends people here.
 import { translateUi, useSiteLanguage } from '../../i18n/language';
-import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import { ArrowRight, Check, Crown, Gamepad2, Pencil, Play, Plus, Trash2, Trophy, Users, X } from "lucide-react";
+import QRCode from "qrcode";
+import { ArrowLeft, ArrowRight, Check, Clock3, Crown, Gamepad2, LayoutDashboard, Pencil, Play, Plus, Trash2, Trophy, Users, X } from "lucide-react";
 import { platformApi } from "./platform-api";
-import { Empty, Field, Heading, Panel, Spinner } from "./ui";
+import { Spinner } from "./ui";
 import { confirmAction } from "@/components/shared/confirm-dialog";
 import "./live-quiz.css";
 
@@ -26,9 +28,10 @@ interface PlayerState {
 }
 
 // Answer tiles: the same colour and shape on the host screen and on phones, so players can match them at a glance.
-const TILES = [{ shape: "▲", name: "Triangle" }, { shape: "◆", name: "Diamond" }, { shape: "●", name: "Circle" }, { shape: "■", name: "Square" }];
+const SHAPES = ["▲", "◆", "●", "■"];
 const blankQuestion = (): Question => ({ text: "", answers: ["", ""], correct: 0, seconds: 20 });
-const siteAddress = () => (import.meta.env.VITE_SITE_URL || window.location.origin).replace(/^https?:\/\//, "").replace(/\/$/, "");
+const siteOrigin = () => (import.meta.env.VITE_SITE_URL || window.location.origin).replace(/\/$/, "");
+const siteAddress = () => siteOrigin().replace(/^https?:\/\//, "");
 /** "1st" in English, "1er" in French; Kinyarwanda phrases already say "place number", so the number alone. */
 const ordinal = (n: number, lang: string) => lang === "fr" ? (n === 1 ? "1er" : `${n}e`) : lang === "rw" ? String(n)
     : `${n}${n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] ?? "th"}`;
@@ -61,7 +64,32 @@ function useCountdown(question: ShownQuestion | null | undefined, open: boolean)
     return left;
 }
 
-// ---- Quiz list and builder (Hub) ---------------------------------------------------------------------------
+/** A round countdown that empties as time runs out. */
+function Timer({ left, total, small = false }: { left: number; total: number; small?: boolean }) {
+    useSiteLanguage();
+    const r = 26, c = 2 * Math.PI * r, share = total ? left / total : 0;
+    return <span className={`lq-timer${small ? " is-small" : ""}${left <= 5 ? " is-low" : ""}`} role="timer" aria-label={translateUi("{p0} seconds left", { p0: left })}>
+      <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r={r}/><circle cx="32" cy="32" r={r} strokeDasharray={c} strokeDashoffset={c * (1 - share)}/></svg>
+      <b>{left}</b>
+    </span>;
+}
+
+// ---- Quiz studio: list and builder (signed in, outside the dashboard) -------------------------------------------
+function Studio({ children }: { children: ReactNode }) {
+    useSiteLanguage();
+    return (<div className="hub-app lq-studio">
+      <header className="lq-studio-bar">
+        <a href={siteOrigin()} className="lq-studio-brand" aria-label={translateUi("Peace and Love Proclaimers website")}><img src="/logo.svg" alt="" width={120} height={68}/></a>
+        <span className="lq-studio-name"><Gamepad2 size={18} aria-hidden="true"/>{translateUi("Live quiz")}</span>
+        <nav aria-label={translateUi("Live quiz")}>
+          <Link to="/play">{translateUi("Join a game")}</Link>
+          <Link to="/hub"><LayoutDashboard size={16} aria-hidden="true"/>{translateUi("My Hub")}</Link>
+        </nav>
+      </header>
+      <main className="lq-studio-main">{children}</main>
+    </div>);
+}
+
 export function LiveQuizPage() {
     useSiteLanguage();
     const navigate = useNavigate();
@@ -84,29 +112,40 @@ export function LiveQuizPage() {
         try { await platformApi(`/live-quizzes/${quiz.id}`, "DELETE"); toast.success(translateUi("Quiz deleted")); void load(); }
         catch (e) { toast.error(translateUi((e as Error).message)); }
     }
-    if (editing) return <QuizEditor quiz={editing} onClose={(saved) => { setEditing(null); if (saved) void load(); }}/>;
-    return (<div className="ws-page lq-page">
-      <Heading eyebrow="FUN CORNER" title="Live quiz" description="Create a quiz, start a game and share the PIN. Everyone in the room plays on their phone, and the fastest correct answers win." action={<button className="hub-button" onClick={() => setEditing({ title: "", questions: [blankQuestion()] })}><Plus size={16}/>{translateUi("New quiz")}</button>}/>
-      <Panel className="lq-how">
-        <ol>
-          <li><strong>{translateUi("Create")}</strong><span>{translateUi("Write your questions and tick the right answer.")}</span></li>
-          <li><strong>{translateUi("Share the PIN")}</strong><span>{translateUi("Show your screen. Players go to {p0} and enter the PIN.", { p0: `${siteAddress()}/play` })}</span></li>
-          <li><strong>{translateUi("Play")}</strong><span>{translateUi("Start the questions, show the answers, and announce the winner.")}</span></li>
+    if (editing) return <Studio><QuizEditor quiz={editing} onClose={(saved) => { setEditing(null); if (saved) void load(); }}/></Studio>;
+    return (<Studio>
+      <section className="lq-hero">
+        <div>
+          <p className="lq-eyebrow">{translateUi("FUN CORNER · LIVE QUIZ")}</p>
+          <h1>{translateUi("Make any room a game.")}</h1>
+          <p>{translateUi("Create a quiz, start a game and share the PIN. Everyone in the room plays on their phone, and the fastest correct answers win.")}</p>
+          <button className="lq-btn lq-btn-gold" onClick={() => setEditing({ title: "", questions: [blankQuestion()] })}><Plus size={18}/>{translateUi("New quiz")}</button>
+        </div>
+        <ol className="lq-steps">
+          <li><b>1</b><span><strong>{translateUi("Create")}</strong>{translateUi("Write your questions and tick the right answer.")}</span></li>
+          <li><b>2</b><span><strong>{translateUi("Share the PIN")}</strong>{translateUi("Show your screen. Players go to {p0} and enter the PIN.", { p0: `${siteAddress()}/play` })}</span></li>
+          <li><b>3</b><span><strong>{translateUi("Play")}</strong>{translateUi("Start the questions, show the answers, and announce the winner.")}</span></li>
         </ol>
-      </Panel>
-      {quizzes === null ? <Spinner label="Loading your quizzes…"/> : !quizzes.length ? <Empty>{translateUi("You have no quizzes yet. Create one to play it live in a meeting, class or conference.")}</Empty> : (<div className="lq-grid">
-          {quizzes.map((quiz) => (<article key={quiz.id} className="lq-card">
-              <Gamepad2 size={22} aria-hidden="true"/>
-              <h2>{translateUi(quiz.title)}</h2>
-              <p>{translateUi(quiz.questions.length === 1 ? "1 question" : "{p0} questions", { p0: quiz.questions.length })}</p>
-              <div className="lq-card-actions">
-                <button className="hub-button" disabled={busy} onClick={() => void start(quiz)}><Play size={15}/>{translateUi("Start game")}</button>
-                <button className="hub-record-icon hub-record-edit" aria-label={translateUi("Edit {p0}", { p0: quiz.title })} title={translateUi("Edit quiz")} onClick={() => setEditing(quiz)}><Pencil size={16}/></button>
-                <button className="hub-record-icon hub-record-delete" aria-label={translateUi("Delete {p0}", { p0: quiz.title })} title={translateUi("Delete quiz")} onClick={() => void remove(quiz)}><Trash2 size={16}/></button>
-              </div>
-            </article>))}
-        </div>)}
-    </div>);
+      </section>
+      <section className="lq-library" aria-labelledby="lq-library-title">
+        <h2 id="lq-library-title">{translateUi("My quizzes")}</h2>
+        {quizzes === null ? <Spinner label="Loading your quizzes…"/> : !quizzes.length ? (<div className="lq-empty">
+            <Gamepad2 size={34} aria-hidden="true"/>
+            <p>{translateUi("You have no quizzes yet. Create one to play it live in a meeting, class or conference.")}</p>
+            <button className="lq-btn" onClick={() => setEditing({ title: "", questions: [blankQuestion()] })}><Plus size={17}/>{translateUi("Create your first quiz")}</button>
+          </div>) : (<div className="lq-grid">
+            {quizzes.map((quiz, n) => (<article key={quiz.id} className={`lq-card lq-card-${n % 4}`}>
+                <div className="lq-card-top"><span>{SHAPES[n % 4]}</span><small>{translateUi(quiz.questions.length === 1 ? "1 question" : "{p0} questions", { p0: quiz.questions.length })}</small></div>
+                <h3>{translateUi(quiz.title)}</h3>
+                <div className="lq-card-actions">
+                  <button className="lq-btn" disabled={busy} onClick={() => void start(quiz)}><Play size={16}/>{translateUi("Start game")}</button>
+                  <button className="lq-icon" aria-label={translateUi("Edit {p0}", { p0: quiz.title })} title={translateUi("Edit quiz")} onClick={() => setEditing(quiz)}><Pencil size={16}/></button>
+                  <button className="lq-icon is-danger" aria-label={translateUi("Delete {p0}", { p0: quiz.title })} title={translateUi("Delete quiz")} onClick={() => void remove(quiz)}><Trash2 size={16}/></button>
+                </div>
+              </article>))}
+          </div>)}
+      </section>
+    </Studio>);
 }
 
 function QuizEditor({ quiz, onClose }: { quiz: Partial<Quiz>; onClose: (saved: boolean) => void }) {
@@ -127,41 +166,49 @@ function QuizEditor({ quiz, onClose }: { quiz: Partial<Quiz>; onClose: (saved: b
         catch (e) { toast.error(translateUi((e as Error).message)); }
         finally { setBusy(false); }
     }
-    return (<div className="ws-page lq-page">
-      <Heading eyebrow="LIVE QUIZ" title={quiz.id ? "Edit quiz" : "New quiz"} description="Each question needs 2 to 4 answers. Tick the right one."/>
-      <form className="lq-editor" onSubmit={save}>
-        <Panel><Field label="Quiz title"><input value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={120} placeholder={translateUi("e.g. Peace and history challenge")}/></Field></Panel>
-        {questions.map((q, i) => (<Panel key={i} className="lq-question">
-            <div className="lq-question-head">
-              <strong>{translateUi("Question {p0}", { p0: i + 1 })}</strong>
-              <label className="lq-seconds">{translateUi("Time")}<select value={q.seconds} onChange={(e) => change(i, { seconds: Number(e.target.value) as Seconds })}>{([10, 20, 30, 60] as const).map((s) => <option key={s} value={s}>{translateUi("{p0} seconds", { p0: s })}</option>)}</select></label>
-              {questions.length > 1 && <button type="button" className="hub-record-icon hub-record-delete" aria-label={translateUi("Remove question {p0}", { p0: i + 1 })} onClick={() => setQuestions((list) => list.filter((_, n) => n !== i))}><Trash2 size={16}/></button>}
-            </div>
-            <Field label="Question"><textarea value={q.text} onChange={(e) => change(i, { text: e.target.value })} required maxLength={300} rows={2}/></Field>
-            <fieldset className="lq-answers">
-              <legend>{translateUi("Answers (tick the right one)")}</legend>
-              {q.answers.map((answer, a) => (<div key={a} className={`lq-answer-row lq-tone-${a}`}>
-                  <span className="lq-shape" aria-hidden="true">{TILES[a].shape}</span>
-                  <input aria-label={translateUi("Answer {p0}", { p0: a + 1 })} value={answer} onChange={(e) => change(i, { answers: q.answers.map((x, n) => n === a ? e.target.value : x) })} required maxLength={120}/>
-                  <label className="lq-correct"><input type="radio" name={`correct-${i}`} checked={q.correct === a} onChange={() => change(i, { correct: a })}/>{translateUi("Right answer")}</label>
-                  {q.answers.length > 2 && <button type="button" className="hub-text-button" aria-label={translateUi("Remove answer {p0}", { p0: a + 1 })} onClick={() => change(i, { answers: q.answers.filter((_, n) => n !== a), correct: q.correct === a ? 0 : q.correct > a ? q.correct - 1 : q.correct })}><X size={16}/></button>}
-                </div>))}
-              {q.answers.length < 4 && <button type="button" className="hub-text-button" onClick={() => change(i, { answers: [...q.answers, ""] })}><Plus size={15}/>{translateUi("Add an answer")}</button>}
-            </fieldset>
-          </Panel>))}
-        <div className="lq-editor-actions">
-          {questions.length < 50 && <button type="button" className="hub-button secondary" onClick={() => setQuestions((list) => [...list, blankQuestion()])}><Plus size={16}/>{translateUi("Add a question")}</button>}
-          <span/>
-          <button type="button" className="hub-button secondary" onClick={() => onClose(false)}>{translateUi("Cancel")}</button>
-          <button className="hub-button" disabled={busy}>{translateUi(busy ? "Saving…" : "Save quiz")}</button>
-        </div>
-      </form>
-    </div>);
+    return (<form className="lq-editor" onSubmit={save}>
+      <div className="lq-editor-head">
+        <button type="button" className="lq-back" onClick={() => onClose(false)}><ArrowLeft size={16}/>{translateUi("Back to my quizzes")}</button>
+        <h1>{translateUi(quiz.id ? "Edit quiz" : "New quiz")}</h1>
+        <p>{translateUi("Each question needs 2 to 4 answers. Tick the right one.")}</p>
+      </div>
+      <label className="lq-title-field"><span>{translateUi("Quiz title")}</span><input value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={120} placeholder={translateUi("e.g. Peace and history challenge")}/></label>
+      {questions.map((q, i) => (<section key={i} className="lq-question" aria-label={translateUi("Question {p0}", { p0: i + 1 })}>
+          <div className="lq-question-head">
+            <b className="lq-number">{i + 1}</b>
+            <label className="lq-seconds"><Clock3 size={15} aria-hidden="true"/><span className="sr-only">{translateUi("Time")}</span><select value={q.seconds} onChange={(e) => change(i, { seconds: Number(e.target.value) as Seconds })}>{([10, 20, 30, 60] as const).map((s) => <option key={s} value={s}>{translateUi("{p0} seconds", { p0: s })}</option>)}</select></label>
+            {questions.length > 1 && <button type="button" className="lq-icon is-danger" aria-label={translateUi("Remove question {p0}", { p0: i + 1 })} onClick={() => setQuestions((list) => list.filter((_, n) => n !== i))}><Trash2 size={16}/></button>}
+          </div>
+          <textarea className="lq-question-input" aria-label={translateUi("Question {p0}", { p0: i + 1 })} value={q.text} onChange={(e) => change(i, { text: e.target.value })} required maxLength={300} rows={2} placeholder={translateUi("Type your question")}/>
+          <div className="lq-answers" role="radiogroup" aria-label={translateUi("Answers (tick the right one)")}>
+            {q.answers.map((answer, a) => (<div key={a} className={`lq-answer lq-tone-${a}${q.correct === a ? " is-right" : ""}`}>
+                <span className="lq-shape" aria-hidden="true">{SHAPES[a]}</span>
+                <input aria-label={translateUi("Answer {p0}", { p0: a + 1 })} value={answer} onChange={(e) => change(i, { answers: q.answers.map((x, n) => n === a ? e.target.value : x) })} required maxLength={120} placeholder={translateUi("Answer {p0}", { p0: a + 1 })}/>
+                <label className="lq-tick" title={translateUi("Right answer")}><input type="radio" name={`correct-${i}`} checked={q.correct === a} onChange={() => change(i, { correct: a })}/><Check size={16} aria-hidden="true"/><span className="sr-only">{translateUi("Right answer")}</span></label>
+                {q.answers.length > 2 && <button type="button" className="lq-remove" aria-label={translateUi("Remove answer {p0}", { p0: a + 1 })} onClick={() => change(i, { answers: q.answers.filter((_, n) => n !== a), correct: q.correct === a ? 0 : q.correct > a ? q.correct - 1 : q.correct })}><X size={15}/></button>}
+              </div>))}
+            {q.answers.length < 4 && <button type="button" className="lq-add-answer" onClick={() => change(i, { answers: [...q.answers, ""] })}><Plus size={15}/>{translateUi("Add an answer")}</button>}
+          </div>
+        </section>))}
+      <div className="lq-editor-actions">
+        {questions.length < 50 && <button type="button" className="lq-btn lq-btn-ghost" onClick={() => setQuestions((list) => [...list, blankQuestion()])}><Plus size={17}/>{translateUi("Add a question")}</button>}
+        <span/>
+        <button type="button" className="lq-btn lq-btn-ghost" onClick={() => onClose(false)}>{translateUi("Cancel")}</button>
+        <button className="lq-btn" disabled={busy}>{translateUi(busy ? "Saving…" : "Save quiz")}</button>
+      </div>
+    </form>);
 }
 
 // ---- Host screen (projector) ---------------------------------------------------------------------------------
-export function LiveQuizHostPage() {
+function JoinQr({ pin }: { pin: string }) {
     useSiteLanguage();
+    const [src, setSrc] = useState("");
+    useEffect(() => { void QRCode.toDataURL(`${siteOrigin()}/play?pin=${pin}`, { margin: 1, width: 360, color: { dark: "#10233c", light: "#ffffff" } }).then(setSrc); }, [pin]);
+    return src ? <img className="lq-qr" src={src} width={180} height={180} alt={translateUi("QR code to join the game")}/> : <span className="lq-qr"/>;
+}
+
+export function LiveQuizHostPage() {
+    const lang = useSiteLanguage();
     const { id = "" } = useParams();
     const [game, setGame] = useState<HostState | null>(null);
     const [error, setError] = useState("");
@@ -178,41 +225,56 @@ export function LiveQuizHostPage() {
         catch (e) { toast.error(translateUi((e as Error).message)); }
         finally { setBusy(false); }
     }
-    if (!game) return <div className="hub-app lq-stage"><div className="lq-stage-inner">{error ? <><p className="lq-big-message">{translateUi(error)}</p><Link className="hub-button" to="/live-quiz">{translateUi("Back to my quizzes")}</Link></> : <Spinner label="Opening the game…" screen/>}</div></div>;
+    if (!game) return <div className="hub-app lq-scene"><main className="lq-stage">{error ? <div className="lq-panel lq-center"><p>{translateUi(error)}</p><Link className="lq-btn" to="/live-quiz">{translateUi("Back to my quizzes")}</Link></div> : <Spinner label="Opening the game…" screen/>}</main></div>;
     const q = game.question;
     const last = game.index + 1 >= game.total;
-    return (<div className="hub-app lq-stage">
-      <header className="lq-stage-bar">
-        <span className="lq-stage-title"><Gamepad2 size={18}/>{translateUi(game.title)}</span>
-        {game.status !== "lobby" && game.status !== "finished" && <span>{translateUi("Question {p0} of {p1}", { p0: game.index + 1, p1: game.total })}</span>}
-        <span className="lq-stage-pin">{translateUi("PIN")} <strong>{game.pin}</strong></span>
-        {game.status !== "finished" && <button className="hub-text-button" disabled={busy} onClick={() => void act("end")}>{translateUi("End game")}</button>}
+    const most = Math.max(1, ...(game.counts ?? []));
+    return (<div className="hub-app lq-scene">
+      <header className="lq-bar">
+        <span className="lq-bar-title"><Gamepad2 size={18} aria-hidden="true"/>{translateUi(game.title)}</span>
+        {game.status !== "lobby" && game.status !== "finished" && <span className="lq-chip">{translateUi("Question {p0} of {p1}", { p0: game.index + 1, p1: game.total })}</span>}
+        <span className="lq-chip">{translateUi("PIN")} <strong>{game.pin}</strong></span>
+        {game.status !== "finished" && <button className="lq-link" disabled={busy} onClick={() => void act("end")}>{translateUi("End game")}</button>}
       </header>
-      <main className="lq-stage-inner">
+      <main className="lq-stage">
         {game.status === "lobby" && (<>
-            <p className="lq-join-hint">{translateUi("Join at")} <strong>{siteAddress()}/play</strong></p>
-            <p className="lq-join-hint">{translateUi("Game PIN")}</p>
-            <p className="lq-pin" aria-label={translateUi("Game PIN {p0}", { p0: game.pin.split("").join(" ") })}>{game.pin.slice(0, 3)} {game.pin.slice(3)}</p>
-            <p className="lq-count"><Users size={20}/>{translateUi(game.players.length === 1 ? "1 player" : "{p0} players", { p0: game.players.length })}</p>
-            <ul className="lq-names" aria-live="polite">{game.players.map((p) => <li key={p.nickname}>{p.nickname}</li>)}</ul>
-            <button className="hub-button lq-go" disabled={busy || !game.players.length} onClick={() => void act("next")}>{translateUi(game.players.length ? "Start the quiz" : "Waiting for players…")}<ArrowRight size={18}/></button>
+            <div className="lq-lobby">
+              <div className="lq-panel lq-join-card">
+                <p>{translateUi("Join at")} <strong>{siteAddress()}/play</strong></p>
+                <p className="lq-label">{translateUi("Game PIN")}</p>
+                <p className="lq-pin" aria-label={translateUi("Game PIN {p0}", { p0: game.pin.split("").join(" ") })}>{game.pin.slice(0, 3)}<span> </span>{game.pin.slice(3)}</p>
+              </div>
+              <div className="lq-panel lq-qr-card"><JoinQr pin={game.pin}/><p>{translateUi("Or scan to join")}</p></div>
+            </div>
+            <div className="lq-roster">
+              <p className="lq-count"><Users size={20} aria-hidden="true"/>{translateUi(game.players.length === 1 ? "1 player" : "{p0} players", { p0: game.players.length })}</p>
+              {game.players.length ? <ul aria-live="polite">{game.players.map((p, n) => <li key={p.nickname} className={`lq-tone-${n % 4}`}>{p.nickname}</li>)}</ul> : <p className="lq-waiting">{translateUi("Waiting for players…")}</p>}
+            </div>
+            <button className="lq-btn lq-btn-gold lq-go" disabled={busy || !game.players.length} onClick={() => void act("next")}>{translateUi("Start the quiz")}<ArrowRight size={20}/></button>
           </>)}
         {(game.status === "question" || game.status === "reveal") && q && (<>
-            <h1 className="lq-question-text">{translateUi(q.text)}</h1>
-            {game.status === "question" && <div className="lq-timer-row"><span className="lq-timer" aria-label={translateUi("{p0} seconds left", { p0: left })}>{left}</span><span>{translateUi("{p0} of {p1} answered", { p0: game.answered, p1: game.players.length })}</span></div>}
-            <div className="lq-tiles">{q.answers.map((answer, i) => (<div key={i} className={`lq-tile lq-tone-${i}${game.status === "reveal" ? (i === q.correct ? " is-correct" : " is-faded") : ""}`}>
-                <span className="lq-shape" aria-hidden="true">{TILES[i].shape}</span><span>{translateUi(answer)}</span>
-                {game.status === "reveal" && <b className="lq-tile-count">{i === q.correct && <Check size={20} aria-label={translateUi("Right answer")}/>}{game.counts?.[i] ?? 0}</b>}
-              </div>))}</div>
-            {game.status === "question" ? <button className="hub-button secondary lq-go" disabled={busy} onClick={() => void act("reveal")}>{translateUi("Show the answer now")}</button> : (<>
+            <div className="lq-question-row">
+              {game.status === "question" ? <Timer left={left} total={q.seconds}/> : <span className="lq-timer is-done" aria-hidden="true"><Check size={28}/></span>}
+              <h1 className="lq-panel lq-question-text">{translateUi(q.text)}</h1>
+              <span className="lq-answered"><b>{game.answered}</b>{translateUi("answers")}</span>
+            </div>
+            <div className="lq-tiles">{q.answers.map((answer, i) => {
+                const count = game.counts?.[i] ?? 0;
+                const state = game.status === "reveal" ? (i === q.correct ? " is-correct" : " is-wrong") : "";
+                return <div key={i} className={`lq-tile lq-tone-${i}${state}`}>
+                  <span className="lq-shape" aria-hidden="true">{SHAPES[i]}</span><span className="lq-tile-text">{translateUi(answer)}</span>
+                  {game.status === "reveal" && <span className="lq-tile-count">{i === q.correct && <Check size={22} aria-label={translateUi("Right answer")}/>}<b>{count}</b><i style={{ width: `${(count / most) * 100}%` }} aria-hidden="true"/></span>}
+                </div>;
+              })}</div>
+            {game.status === "question" ? <button className="lq-btn lq-btn-ghost-light lq-go" disabled={busy} onClick={() => void act("reveal")}>{translateUi("Show the answer now")}</button> : (<div className="lq-reveal-foot">
                 <Leaderboard rows={game.leaderboard.slice(0, 5)}/>
-                <button className="hub-button lq-go" disabled={busy} onClick={() => void act("next")}>{translateUi(last ? "See the winner" : "Next question")}<ArrowRight size={18}/></button>
-              </>)}
+                <button className="lq-btn lq-btn-gold lq-go" disabled={busy} onClick={() => void act("next")}>{translateUi(last ? "See the winner" : "Next question")}<ArrowRight size={20}/></button>
+              </div>)}
           </>)}
         {game.status === "finished" && (<>
-            <Podium rows={game.leaderboard.slice(0, 3)}/>
+            <Podium rows={game.leaderboard.slice(0, 3)} lang={lang}/>
             {game.leaderboard.length > 3 && <Leaderboard rows={game.leaderboard.slice(3, 10)} start={4}/>}
-            <div className="lq-stage-actions"><Link className="hub-button" to="/live-quiz">{translateUi("Back to my quizzes")}</Link></div>
+            <Link className="lq-btn lq-btn-ghost-light" to="/live-quiz">{translateUi("Back to my quizzes")}</Link>
           </>)}
       </main>
     </div>);
@@ -221,15 +283,23 @@ export function LiveQuizHostPage() {
 function Leaderboard({ rows, start = 1 }: { rows: Standing[]; start?: number }) {
     useSiteLanguage();
     if (!rows.length) return null;
-    return <ol className="lq-board" start={start} aria-label={translateUi("Leaderboard")}>{rows.map((r, i) => <li key={r.nickname}><em aria-hidden="true">{start + i}</em><span>{r.nickname}</span><b>{r.score}</b></li>)}</ol>;
+    return <ol className="lq-panel lq-board" aria-label={translateUi("Leaderboard")}>{rows.map((r, i) => <li key={r.nickname}><em aria-hidden="true">{start + i}</em><span>{r.nickname}</span><b>{r.score}</b></li>)}</ol>;
 }
-function Podium({ rows }: { rows: Standing[] }) {
-    const lang = useSiteLanguage();
-    if (!rows.length) return <p className="lq-big-message">{translateUi("No one played this game.")}</p>;
+function Podium({ rows, lang }: { rows: Standing[]; lang: string }) {
+    useSiteLanguage();
+    if (!rows.length) return <div className="lq-panel lq-center"><p>{translateUi("No one played this game.")}</p></div>;
+    // Second, first, third, as on a real podium.
+    const order = [1, 0, 2].filter((i) => rows[i]);
     return (<div className="lq-podium">
-      <p className="lq-winner"><Crown size={30} aria-hidden="true"/>{translateUi("The winner is")}</p>
+      <p className="lq-winner"><Crown size={28} aria-hidden="true"/>{translateUi("The winner is")}</p>
       <h1>{rows[0].nickname}</h1>
-      <ol>{rows.map((r, i) => <li key={r.nickname} className={`lq-place-${i + 1}`}><Trophy size={20} aria-hidden="true"/><span>{ordinal(i + 1, lang)}</span><strong>{r.nickname}</strong><b>{r.score}</b></li>)}</ol>
+      <div className="lq-steps-podium" aria-label={translateUi("Leaderboard")}>
+        {order.map((i) => <div key={rows[i].nickname} className={`lq-place lq-place-${i + 1}`}>
+            <strong>{rows[i].nickname}</strong><span>{rows[i].score}</span>
+            <div className="lq-block"><Trophy size={i === 0 ? 30 : 22} aria-hidden="true"/><b>{ordinal(i + 1, lang)}</b></div>
+          </div>)}
+      </div>
+      <div className="lq-confetti" aria-hidden="true">{Array.from({ length: 18 }, (_, n) => <i key={n}/>)}</div>
     </div>);
 }
 
@@ -274,51 +344,58 @@ export function PlayPage() {
         try { await playApi("answer", token, "POST", { choice }); }
         catch (e) { toast.error(translateUi((e as Error).message)); }
     }
-    let content;
+    let content: ReactNode;
     if (!token) {
-        content = (<form className="lq-join" onSubmit={join}>
-          <Gamepad2 size={40} aria-hidden="true"/>
+        content = (<form className="lq-panel lq-join" onSubmit={join}>
+          <span className="lq-join-icon"><Gamepad2 size={30} aria-hidden="true"/></span>
           <h1>{translateUi("Join a live quiz")}</h1>
+          <p>{translateUi("Enter the game PIN shown on the host’s screen.")}</p>
           <label><span>{translateUi("Game PIN")}</span><input name="pin" inputMode="numeric" autoComplete="off" pattern="\d{3}\s?\d{3}" maxLength={7} required defaultValue={params.get("pin") ?? ""} placeholder="123 456"/></label>
           <label><span>{translateUi("Your nickname")}</span><input name="nickname" maxLength={24} required autoComplete="nickname" placeholder={translateUi("How others will see you")}/></label>
           {error && <p role="alert" className="lq-error">{translateUi(error)}</p>}
-          <button className="hub-button lq-go" disabled={busy}>{translateUi(busy ? "Joining…" : "Join game")}<ArrowRight size={18}/></button>
+          <button className="lq-btn lq-btn-gold lq-wide" disabled={busy}>{translateUi(busy ? "Joining…" : "Join game")}<ArrowRight size={18}/></button>
         </form>);
     }
     else if (!state) content = <Spinner label="Joining the game…"/>;
     else if (state.status === "lobby") {
-        content = <div className="lq-wait"><Check size={44} aria-hidden="true"/><h1>{translateUi("You’re in, {p0}!", { p0: state.nickname })}</h1><p>{translateUi("See your name on the host’s screen. The quiz starts soon.")}</p></div>;
+        content = <div className="lq-panel lq-center lq-pulse"><span className="lq-join-icon is-ok"><Check size={30} aria-hidden="true"/></span><h1>{translateUi("You’re in, {p0}!", { p0: state.nickname })}</h1><p>{translateUi("See your name on the host’s screen. The quiz starts soon.")}</p></div>;
     }
     else if (state.status === "question" && state.question) {
         const q = state.question;
         content = state.answer
-            ? <div className="lq-wait"><span className={`lq-tile lq-tone-${state.answer.choice} lq-mini`}><span className="lq-shape" aria-hidden="true">{TILES[state.answer.choice].shape}</span></span><h1>{translateUi("Answer locked in")}</h1><p>{translateUi("Waiting for the others…")}</p></div>
-            : (<div className="lq-answer-screen">
-                <p className="lq-phone-meta"><span>{translateUi("{p0} / {p1}", { p0: state.index + 1, p1: state.total })}</span><span className="lq-timer lq-timer-small">{left}</span></p>
-                <h1>{translateUi(q.text)}</h1>
-                <div className="lq-tiles lq-phone-tiles">{q.answers.map((a, i) => <button key={i} className={`lq-tile lq-tone-${i}`} onClick={() => void answer(i)} disabled={left === 0}><span className="lq-shape" aria-hidden="true">{TILES[i].shape}</span><span>{translateUi(a)}</span></button>)}</div>
+            ? <div className="lq-panel lq-center"><span className={`lq-tile lq-tone-${state.answer.choice} lq-mini`}><span className="lq-shape" aria-hidden="true">{SHAPES[state.answer.choice]}</span></span><h1>{translateUi("Answer locked in")}</h1><p>{translateUi("Waiting for the others…")}</p></div>
+            : (<div className="lq-answering">
+                <div className="lq-phone-head"><span className="lq-chip">{translateUi("{p0} / {p1}", { p0: state.index + 1, p1: state.total })}</span><Timer left={left} total={q.seconds} small/></div>
+                <h1 className="lq-panel lq-phone-question">{translateUi(q.text)}</h1>
+                <div className={`lq-tiles lq-phone-tiles${q.answers.length > 2 ? " is-grid" : ""}`}>{q.answers.map((a, i) => <button key={i} className={`lq-tile lq-tone-${i}`} onClick={() => void answer(i)} disabled={left === 0}><span className="lq-shape" aria-hidden="true">{SHAPES[i]}</span><span className="lq-tile-text">{translateUi(a)}</span></button>)}</div>
               </div>);
     }
     else if (state.status === "reveal") {
         const a = state.answer;
         content = (<div className={`lq-result ${a?.correct ? "is-correct" : "is-wrong"}`}>
+          <span className="lq-result-icon" aria-hidden="true">{a?.correct ? <Check size={44}/> : <X size={44}/>}</span>
           <h1>{translateUi(!a ? "Time’s up" : a.correct ? "Correct!" : "Not this time")}</h1>
           {a?.correct && <p className="lq-points">+{a.points}</p>}
           {state.question?.correct !== undefined && !a?.correct && <p>{translateUi("The right answer was: {p0}", { p0: state.question.answers[state.question.correct] })}</p>}
-          <p>{translateUi("You’re in {p0} place with {p1} points.", { p0: ordinal(state.rank, lang), p1: state.score })}</p>
+          <p className="lq-standing">{translateUi("You’re in {p0} place with {p1} points.", { p0: ordinal(state.rank, lang), p1: state.score })}</p>
         </div>);
     }
     else if (state.status === "finished") {
-        content = (<div className="lq-wait">
-          <Trophy size={44} aria-hidden="true"/>
-          <h1>{translateUi(state.rank === 1 ? "You won!" : "Game over")}</h1>
-          <p>{translateUi("You finished {p0} of {p1} with {p2} points.", { p0: ordinal(state.rank, lang), p1: state.players, p2: state.score })}</p>
-          {state.podium && <Podium rows={state.podium}/>}
-          <button className="hub-button" onClick={() => leave()}>{translateUi("Join another game")}</button>
+        content = (<div className="lq-final">
+          <div className="lq-panel lq-center">
+            <span className={`lq-join-icon${state.rank === 1 ? " is-gold" : ""}`}><Trophy size={30} aria-hidden="true"/></span>
+            <h1>{translateUi(state.rank === 1 ? "You won!" : "Game over")}</h1>
+            <p>{translateUi("You finished {p0} of {p1} with {p2} points.", { p0: ordinal(state.rank, lang), p1: state.players, p2: state.score })}</p>
+          </div>
+          {state.podium && <Podium rows={state.podium} lang={lang}/>}
+          <button className="lq-btn lq-btn-ghost-light lq-wide" onClick={() => leave()}>{translateUi("Join another game")}</button>
         </div>);
     }
-    return (<div className="hub-app lq-play">
-      <header className="lq-play-bar"><Link to="/" aria-label={translateUi("Peace and Love Proclaimers home")}><img src="/logo.svg" alt="" height={34}/></Link>{state && <span>{state.nickname} · {state.score}</span>}</header>
-      <main>{content}</main>
+    return (<div className="hub-app lq-scene lq-play">
+      <header className="lq-bar">
+        <a href={siteOrigin()} className="lq-bar-brand" aria-label={translateUi("Peace and Love Proclaimers website")}><span className="lq-bar-logo"><img src="/favicon.svg" alt="" width={28} height={28}/></span></a>
+        {state ? <span className="lq-chip"><strong>{state.nickname}</strong> · {state.score}</span> : <span className="lq-bar-title"><Gamepad2 size={18} aria-hidden="true"/>{translateUi("Live quiz")}</span>}
+      </header>
+      <main className="lq-stage lq-phone">{content}</main>
     </div>);
 }

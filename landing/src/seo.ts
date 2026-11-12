@@ -11,6 +11,7 @@ const pages: Record<string, { title: string; description: string }> = {
   '/stories': { title: `Our impact — ${NAME}`, description: 'Milestones in youth leadership, community service and peacebuilding, including Walk to Remember, held in more than 25 countries since 2009.' },
   '/album': { title: `PLP album — ${NAME}`, description: 'Photos from PLP Academy, community gatherings, Walk to Remember and other Peace and Love Proclaimers moments.' },
   '/plp-canada': { title: `PLP Canada — ${NAME}`, description: 'PLP Canada connects young people of Rwandan heritage in Canada, brought together by peace, love and a shared future.' },
+  '/live-quiz': { title: `Live quiz — ${NAME}`, description: 'Join a PLP live quiz with the game PIN, play from your phone in meetings, classes and conferences, or host your own quiz.' },
   '/plp-hub': { title: `PLP Hub — ${NAME}`, description: 'The PLP Hub is where members learn, find opportunities, earn certificates and keep their PLP journey in one place.' },
 };
 const notFound = { title: `Page not found — ${NAME}`, description: pages['/'].description };
