@@ -11211,5 +11211,53 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "Boardroom · Strategy & Research": {
     "rw": "Boardroom · Ingamba n’Ubushakashatsi",
     "fr": "Boardroom · Stratégie et recherche"
+  },
+  "Draft: waiting for approval": {
+    "rw": "Inyandiko y’agateganyo: itegereje kwemezwa",
+    "fr": "Brouillon : en attente d’approbation"
+  },
+  "Choose a voice": {
+    "rw": "Hitamo ijwi",
+    "fr": "Choisir une voix"
+  },
+  "I joined a school club to make friends. Leading one taught me that everyone in the room has something to give, if you make space for them to speak.": {
+    "rw": "Nagiye mu club y’ishuri kugira ngo mbone inshuti. Kuyobora imwe byanyigishije ko buri wese mu cyumba afite icyo atanga, iyo umuhaye umwanya wo kuvuga.",
+    "fr": "J’ai rejoint un club scolaire pour me faire des amis. En diriger un m’a appris que chacun a quelque chose à apporter, si on lui laisse la place de parler."
+  },
+  "Homegroups are where people stop being strangers. Week after week, we listen, we share, and we carry each other a little further.": {
+    "rw": "Mu matsinda yo mu rugo ni ho abantu bareka kuba abanyamahanga. Buri cyumweru turumvirana, dusangira, kandi tugafashanya gutera imbere.",
+    "fr": "Dans les groupes de maison, on cesse d’être des inconnus. Semaine après semaine, on écoute, on partage et on se porte un peu plus loin."
+  },
+  "MegaCare showed me that peace is practical. It looks like a visit, a meal shared, or simply showing up for someone who needs it.": {
+    "rw": "MegaCare yanyeretse ko amahoro ari ibikorwa. Ni ugusura, gusangira ifunguro, cyangwa kuba hafi y’ukeneye ubufasha.",
+    "fr": "MegaCare m’a montré que la paix est concrète : une visite, un repas partagé, ou simplement être là pour quelqu’un qui en a besoin."
+  },
+  "Through art, young people say what words cannot. Anda gives them a stage, and the courage to be heard.": {
+    "rw": "Binyuze mu buhanzi, urubyiruko ruvuga ibyo amagambo adashobora kuvuga. Anda ibaha urubuga n’ubutwari bwo kumvikana.",
+    "fr": "Par l’art, les jeunes disent ce que les mots ne peuvent pas dire. Anda leur offre une scène et le courage d’être entendus."
+  },
+  "Building the PLP Hub means every young person can learn, find opportunities and keep their journey in one place, wherever they are.": {
+    "rw": "Kubaka PLP Hub bivuze ko buri muntu ukiri muto ashobora kwiga, kubona amahirwe no kubika urugendo rwe ahantu hamwe, aho yaba ari hose.",
+    "fr": "Construire le PLP Hub, c’est permettre à chaque jeune d’apprendre, de trouver des opportunités et de garder son parcours au même endroit, où qu’il soit."
+  },
+  "Walking to remember connects us to our history. It reminds us why choosing peace, every day, matters so much.": {
+    "rw": "Kugenda twibuka bitwibutsa amateka yacu. Bitwibutsa impamvu guhitamo amahoro buri munsi ari ingenzi cyane.",
+    "fr": "Marcher pour se souvenir nous relie à notre histoire. Cela nous rappelle pourquoi choisir la paix, chaque jour, compte autant."
+  },
+  "Care in action": {
+    "rw": "Kwita ku bandi mu bikorwa",
+    "fr": "La bienveillance en action"
+  },
+  "Art that heals": {
+    "rw": "Ubuhanzi bukiza",
+    "fr": "L’art qui guérit"
+  },
+  "Building for young people": {
+    "rw": "Kubakira urubyiruko",
+    "fr": "Construire pour les jeunes"
+  },
+  "Remembering together": {
+    "rw": "Kwibukira hamwe",
+    "fr": "Se souvenir ensemble"
   }
 };

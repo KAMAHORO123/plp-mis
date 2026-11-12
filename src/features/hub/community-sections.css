@@ -183,15 +183,36 @@ html[data-theme="dark"] .plp-imigongo-banner.plp-banner-bold { background: linea
 .plp-photo-thumbnails button span { display:block; font-size:12px; }
 /* Photo viewers open in the middle of the screen. */
 .plp-photo-dialog[open] { position:fixed; inset:0; margin:auto; }
-/* Fun corner: join a live quiz with the PIN from the host's screen. A dark band reads well in both themes. */
-.plp-live-quiz{display:grid;grid-template-columns:1.2fr 1fr;align-items:center;gap:18px 36px;margin-top:22px;padding:28px 32px;border-radius:22px;background:#173b59;color:#fff}
-.plp-live-quiz .plp-section-label{display:inline-flex;align-items:center;gap:8px;color:#9fd0ff;margin:0}
-.plp-live-quiz h3{font-size:clamp(20px,2vw,26px);line-height:1.3;margin:8px 0;color:#fff}
-.plp-live-quiz p{color:#d3e4f3;line-height:1.7;margin:0}
-.plp-live-quiz form{display:flex;gap:10px;min-width:0}
-.plp-live-quiz input{flex:1;min-width:0;min-height:52px;border-radius:14px;border:2px solid #4f7ea6;background:#fff;color:#173b59;font-size:22px;font-weight:700;letter-spacing:.12em;text-align:center}
-.plp-live-quiz input::placeholder{letter-spacing:normal;font-weight:500;font-size:16px;color:#6a849b}
-.plp-live-quiz .plp-play-next{margin:0;white-space:nowrap}
-.plp-live-quiz-host{grid-column:2;justify-self:start;display:inline-flex;align-items:center;gap:6px;color:#9fd0ff;font-size:13px;text-decoration:underline;text-underline-offset:3px}
-.plp-live-quiz-host:hover{color:#fff}
-@media(max-width:800px){.plp-live-quiz{grid-template-columns:1fr;padding:24px 20px}.plp-live-quiz-host{grid-column:1}}
+
+/* Voices of PLP: the quote and a row of faces to choose from, beside a large black-and-white portrait. */
+.plp-voices{display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:clamp(32px,6vw,90px);padding:clamp(40px,6vw,72px) 0;border-top:1px solid #d9e5ed;border-bottom:1px solid #d9e5ed}
+.plp-voices h2{margin:0 0 26px;font-size:clamp(29px,3vw,43px);font-weight:500;letter-spacing:-.045em;line-height:1.15}
+.plp-voices h2 em{font-style:normal;color:#1d76dd}
+.plp-voices figure{position:relative;margin:0;padding-left:4px;min-height:230px;animation:plp-voice-in .45s ease both}
+@keyframes plp-voice-in{from{opacity:0;transform:translateY(8px)}}
+.plp-voices-mark{position:absolute;left:-10px;top:-46px;font:700 120px/1 Sora,sans-serif;color:#d8e6f4;z-index:-1}
+.plp-voices blockquote{margin:0 0 22px;font:400 clamp(19px,1.9vw,25px)/1.55 Sora,sans-serif;letter-spacing:-.02em;color:#173b59}
+.plp-voices figcaption{display:grid;gap:3px}
+.plp-voices figcaption strong{font:600 16px/1.3 Sora,sans-serif;color:#173b59}
+.plp-voices figcaption span{font-size:13px;color:#61758c}
+.plp-voices-draft{justify-self:start;margin-top:8px;padding:4px 10px;border-radius:999px;background:#fff4d6;color:#7a5200;font-style:normal;font-size:11.5px;font-weight:700}
+.plp-voices-nav{display:flex;align-items:center;gap:12px;margin-top:28px}
+.plp-voices-nav>button{display:grid;place-items:center;flex:none;width:46px;height:46px;border-radius:50%;border:1px solid #cfdbe7;background:#fff;color:#173b59;cursor:pointer}
+.plp-voices-nav>button:hover{background:#eef4fb}
+.plp-voices-people{display:flex;flex-wrap:wrap;gap:8px}
+.plp-voices-people button{padding:0;border:0;border-radius:50%;background:none;cursor:pointer;opacity:.55;transition:opacity .2s,transform .2s}
+.plp-voices-people button:hover{opacity:.9}
+.plp-voices-people button[aria-pressed=true]{opacity:1;transform:scale(1.08)}
+.plp-voices-people img{display:block;width:44px;height:44px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 0 0 1px #cfdbe7}
+.plp-voices-people button[aria-pressed=true] img{box-shadow:0 0 0 2px #1d76dd}
+.plp-voices button:focus-visible{outline:3px solid #1d76dd;outline-offset:3px}
+.plp-voices-photo{position:relative;justify-self:center;width:min(360px,100%)}
+.plp-voices-back{position:absolute;inset:18px -18px -18px 18px;border-radius:28px;background:#dceafb url('/images/patterns/imigongo-blue.svg') center/110px;opacity:.9}
+.plp-voices-photo img{position:relative;display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;border-radius:28px;box-shadow:0 30px 60px -34px rgba(16,35,60,.7);animation:plp-voice-in .45s ease both}
+.plp-voices-tag{position:absolute;left:18px;bottom:18px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.92);color:#173b59;font-size:12px;font-weight:700}
+html[data-theme="dark"] .plp-voices blockquote,html[data-theme="dark"] .plp-voices figcaption strong{color:#eef4fa}
+html[data-theme="dark"] .plp-voices-mark{color:#1f3550}
+html[data-theme="dark"] .plp-voices-nav>button{background:#142335;border-color:#2c4157;color:#eef4fa}
+html[data-theme="dark"] .plp-voices-back{background-color:#142335}
+@media(max-width:860px){.plp-voices{grid-template-columns:1fr}.plp-voices-photo{order:-1;width:min(280px,80%)}.plp-voices figure{min-height:0}}
+@media(prefers-reduced-motion:reduce){.plp-voices figure,.plp-voices-photo img{animation:none}.plp-voices-people button{transition:none}}

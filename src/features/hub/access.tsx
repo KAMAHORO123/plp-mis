@@ -379,7 +379,7 @@ export function JoinPage() {
           </Field>
           <Field label={translateUi("Account type")}>
             <select name="accountRole" value={accountRole} onChange={e => setAccountRole(e.target.value)}><option value={"Member"}>{translateUi("Member")}</option><option value={"Club leader"}>{translateUi("Club leader")}</option><option value={"Trainer"}>{translateUi("Trainer")}</option><option value={"Mentor"}>{translateUi("Mentor")}</option></select>
-            <small className="hub-field-note">{translateUi(accountRole === "Member" ? "Everyone in PLP is a member. Club leaders, trainers and mentors are members too." : "You start with member access straight away. PLP reviews your request, and your dashboard changes once it is approved.")}</small>
+            {accountRole !== "Member" && <small className="hub-field-note">{translateUi("You start with member access straight away. PLP reviews your request, and your dashboard changes once it is approved.")}</small>}
           </Field>
           <Field label={translateUi(accountRole === "Club leader" || accountRole === "Mentor" ? "School you work with" : "School (if applicable)")}><input name="school" list="school-suggestions" maxLength={160} required={accountRole === "Club leader"} autoCapitalize="characters" placeholder={translateUi("TYPE YOUR SCHOOL NAME")} onChange={e => { e.currentTarget.value = e.currentTarget.value.toUpperCase(); }}/><datalist id="school-suggestions">{translateUi(demoSchools.map(s => <option key={s.id} value={s.name.toUpperCase()}/>))}</datalist></Field>
           <PasswordField label={translateUi("Password")} name="password" creating/>

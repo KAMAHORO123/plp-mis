@@ -160,7 +160,7 @@ export function HomePage() {
   <ProgrammeFeatures />
   <Pathway />
   <PhotoPlayground />
-  {translateUi(import.meta.env.DEV && <TestimonialsSection />)}
+  <TestimonialsSection />
   <FunCorner />
   <Partnership />
     </>;

@@ -1,18 +1,45 @@
 import { translateUi, useSiteLanguage } from '../../i18n/language';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, ArrowLeft, ArrowRight, BookOpen, Gamepad2, X } from "lucide-react";
+import { ArrowUpRight, ArrowLeft, ArrowRight, BookOpen, X } from "lucide-react";
 import { albums } from './site-content';
+import { teamPhotos } from './team-photos';
 import './community-sections.css';
+// Voices of PLP. Each quote must come from (or be approved by) the person it names before it is published:
+// set approved: true once they agree. Drafts are only visible in development or with ?preview=testimonials.
 const testimonials = [
-    { name: 'Aline Uwase', initials: 'AU', topic: 'Finding my voice', quote: 'I used to stay quiet in group discussions. Having people listen to my ideas helped me feel more comfortable speaking up.' },
-    { name: 'Eric Ndayisaba', initials: 'EN', topic: 'Growing together', quote: 'I thought being a leader meant having all the answers. I have learned to listen first and ask for help when I need it.' },
-    { name: 'Diane Mukamana', initials: 'DM', topic: 'A place to belong', quote: 'I did not know anyone when I first joined. People made an effort to include me, and that made it easier to come back.' },
+    { name: 'Amelia', role: 'PLP Clubs', topic: 'Finding my voice', approved: false, quote: 'I joined a school club to make friends. Leading one taught me that everyone in the room has something to give, if you make space for them to speak.' },
+    { name: 'Patrick', role: 'Homegroups', topic: 'A place to belong', approved: false, quote: 'Homegroups are where people stop being strangers. Week after week, we listen, we share, and we carry each other a little further.' },
+    { name: 'Dalynah', role: 'MegaCare', topic: 'Care in action', approved: false, quote: 'MegaCare showed me that peace is practical. It looks like a visit, a meal shared, or simply showing up for someone who needs it.' },
+    { name: 'Danny Kaberuka', role: 'Anda Art Festival', topic: 'Art that heals', approved: false, quote: 'Through art, young people say what words cannot. Anda gives them a stage, and the courage to be heard.' },
+    { name: 'Kamahoro Linda Kellia', role: 'IT & Digital Systems', topic: 'Building for young people', approved: false, quote: 'Building the PLP Hub means every young person can learn, find opportunities and keep their journey in one place, wherever they are.' },
+    { name: 'ABI', role: 'Walk to Remember & Ku Gicaniro', topic: 'Remembering together', approved: false, quote: 'Walking to remember connects us to our history. It reminds us why choosing peace, every day, matters so much.' },
 ];
+const showDrafts = () => import.meta.env.DEV || (typeof location !== 'undefined' && new URLSearchParams(location.search).get('preview') === 'testimonials');
 export function TestimonialsSection() {
     useSiteLanguage();
+    const items = testimonials.filter(t => t.approved || showDrafts());
     const [index, setIndex] = useState(0);
-    const item = testimonials[index];
-    return <section className="plp-community-section plp-testimonials" id="testimonials" aria-labelledby="voices-title"><div><p className="plp-section-label">{translateUi("PEOPLE. POSSIBILITY. PLP.")}</p><h2 id="voices-title">{translateUi("Every voice.")}<br /><em>{translateUi("A new beginning.")}</em></h2><div className="plp-small-controls"><button aria-label={translateUi("Previous testimonial")} onClick={() => setIndex((index + 2) % 3)}><ArrowLeft size={18}/></button><span>{translateUi("0")}{translateUi(index + 1)}{translateUi(" / 03")}</span><button aria-label={translateUi("Next testimonial")} onClick={() => setIndex((index + 1) % 3)}><ArrowRight size={18}/></button></div></div><figure aria-live="polite"><span className="plp-big-quote" aria-hidden="true">{translateUi("\u201C")}</span><blockquote>{translateUi(item.quote)}</blockquote><figcaption><span className="plp-initials">{translateUi(item.initials)}</span><div><strong>{translateUi(item.name)}</strong><span>{translateUi(item.topic)}{translateUi(" \u00B7 Illustrative story")}</span></div></figcaption></figure></section>;
+    if (!items.length) return null;
+    const item = items[index % items.length];
+    const go = (step: number) => setIndex((index + step + items.length) % items.length);
+    const photo = (name: string, kind: 'card' | 'face') => `/images/plp/team/${teamPhotos[name]}-${kind}.webp`;
+    return <section className="plp-community-section plp-voices" id="testimonials" aria-labelledby="voices-title">
+  <div className="plp-voices-copy">
+   <p className="plp-section-label">{translateUi("PEOPLE. POSSIBILITY. PLP.")}</p>
+   <h2 id="voices-title">{translateUi("Every voice.")} <em>{translateUi("A new beginning.")}</em></h2>
+   <figure aria-live="polite" key={item.name}>
+    <span className="plp-voices-mark" aria-hidden="true">{"\u201C"}</span>
+    <blockquote>{translateUi(item.quote)}</blockquote>
+    <figcaption><strong>{translateUi(item.name)}</strong><span>{translateUi(item.role)} · {translateUi(item.topic)}</span>{!item.approved && <em className="plp-voices-draft">{translateUi("Draft: waiting for approval")}</em>}</figcaption>
+   </figure>
+   <div className="plp-voices-nav">
+    <button type="button" aria-label={translateUi("Previous testimonial")} onClick={() => go(-1)}><ArrowLeft size={18}/></button>
+    <div className="plp-voices-people" role="group" aria-label={translateUi("Choose a voice")}>{items.map((t, i) => <button type="button" key={t.name} aria-label={t.name} aria-pressed={i === index % items.length} onClick={() => setIndex(i)}><img src={photo(t.name, 'face')} alt="" width={44} height={44} loading="lazy" decoding="async"/></button>)}</div>
+    <button type="button" aria-label={translateUi("Next testimonial")} onClick={() => go(1)}><ArrowRight size={18}/></button>
+   </div>
+  </div>
+  <div className="plp-voices-photo" aria-hidden="true"><span className="plp-voices-back"/><img key={item.name} src={photo(item.name, 'card')} alt="" width={320} height={400}/><span className="plp-voices-tag">{translateUi(item.role)}</span></div>
+ </section>;
 }
 export const builtInTrivia = [
     {
@@ -177,20 +204,6 @@ export function useFunCornerContent(): FunCornerContent {
     }, []);
     return content;
 }
-/** Join a live quiz in the room: enter the PIN from the host's screen. Games run in the Hub (/play). */
-function LiveQuizJoin() {
-    useSiteLanguage();
-    const hub = (import.meta.env.VITE_HUB_URL || '').replace(/\/$/, '');
-    return <div className="plp-live-quiz">
-   <div><p className="plp-section-label"><Gamepad2 size={16}/>{translateUi(" LIVE QUIZ")}</p><h3>{translateUi("Playing in a meeting, class or conference?")}</h3><p>{translateUi("Enter the game PIN shown on the host\u2019s screen and play from your phone.")}</p></div>
-   <form onSubmit={e => { e.preventDefault(); const pin = String(new FormData(e.currentTarget).get('pin') || '').replace(/\D/g, ''); window.location.href = `${hub}/play${pin ? `?pin=${pin}` : ''}`; }}>
-    <label className="sr-only" htmlFor="live-quiz-pin">{translateUi("Game PIN")}</label>
-    <input id="live-quiz-pin" name="pin" inputMode="numeric" autoComplete="off" maxLength={7} pattern="\d{3}\s?\d{3}" placeholder={translateUi("Game PIN")}/>
-    <button className="plp-play-next">{translateUi("Join")}<ArrowRight size={18}/></button>
-   </form>
-   <a className="plp-live-quiz-host" href={`${hub}/live-quiz`}>{translateUi("Host your own quiz in the PLP Hub ")}<ArrowUpRight size={14}/></a>
-  </div>;
-}
 export function FunCorner() {
     useSiteLanguage();
     const { trivia, quotes: cornerQuotes } = useFunCornerContent();
@@ -227,7 +240,6 @@ export function FunCorner() {
    </div>
    <aside className="plp-quote-card" aria-label={translateUi("A thought to take with you")}><p className="plp-section-label">{translateUi("VOICES FOR PEACE")}</p><span className="plp-quote-mark" aria-hidden="true">{translateUi("\u201C")}</span><div aria-live="polite"><blockquote cite={quote.source || undefined}>{translateUi(quote.text)}</blockquote><strong className="plp-quote-author">{translateUi(quote.author)}</strong><p>{translateUi(quote.context)}</p></div><div className="plp-quote-bottom">{quote.source ? <a href={quote.source} target="_blank" rel="noopener noreferrer" className="plp-quote-source">{translateUi("Source: ")}{translateUi(quote.sourceName || "link")} <ArrowUpRight size={14}/></a> : <span/>}<button onClick={() => setQuoteIndex((quoteIndex + 1) % cornerQuotes.length)} aria-label={translateUi("Next quote")}><ArrowRight size={20}/></button></div></aside>
   </div>
-  <LiveQuizJoin />
  </section>;
 }
 export function AlbumSection() {
