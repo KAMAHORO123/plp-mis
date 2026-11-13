@@ -206,7 +206,7 @@ export function Select({ name, value, defaultValue, required, disabled, classNam
         onChange?.(changeEvent(name, real));
       }}>
       <RSelect.Trigger id={id} className="fc-trigger" aria-label={rest["aria-label"]} title={title}>
-        <span className={`fc-trigger-text${chosen && chosen.value !== "" ? "" : " is-placeholder"}`}>{chosen ? chosen.label : placeholder?.label ?? ""}</span>
+        <span className={`fc-trigger-text${chosen && !(chosen.value === "" && chosen.disabled) ? "" : " is-placeholder"}`}>{chosen ? chosen.label : placeholder?.label ?? ""}</span>
         <RSelect.Icon asChild><ChevronDown size={16} className="fc-trigger-chevron"/></RSelect.Icon>
       </RSelect.Trigger>
       <RSelect.Portal>
