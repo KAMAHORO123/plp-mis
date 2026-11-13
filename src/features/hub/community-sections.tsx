@@ -12,8 +12,6 @@ const testimonials = [
     { name: 'Patrick', role: 'Homegroups', topic: 'A place to belong', approved: false, quote: 'Homegroups are where people stop being strangers. Week after week, we listen, we share, and we carry each other a little further.' },
     { name: 'Dalynah', role: 'MegaCare', topic: 'Care in action', approved: false, quote: 'MegaCare showed me that peace is practical. It looks like a visit, a meal shared, or simply showing up for someone who needs it.' },
     { name: 'Danny Kaberuka', role: 'Anda Art Festival', topic: 'Art that heals', approved: false, quote: 'Through art, young people say what words cannot. Anda gives them a stage, and the courage to be heard.' },
-    { name: 'Kamahoro Linda Kellia', role: 'IT & Digital Systems', topic: 'Building for young people', approved: false, quote: 'Building the PLP Hub means every young person can learn, find opportunities and keep their journey in one place, wherever they are.' },
-    { name: 'ABI', role: 'Walk to Remember & Ku Gicaniro', topic: 'Remembering together', approved: false, quote: 'Walking to remember connects us to our history. It reminds us why choosing peace, every day, matters so much.' },
 ];
 const showDrafts = () => import.meta.env.DEV || import.meta.env.VITE_PREVIEW_TESTIMONIALS === 'true' || (typeof location !== 'undefined' && new URLSearchParams(location.search).get('preview') === 'testimonials');
 export function TestimonialsSection() {
