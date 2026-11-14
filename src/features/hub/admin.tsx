@@ -17,13 +17,17 @@ import { alxPrograms, categories, clubs, } from "./data";
 import { useHub, uid, today } from "./store";
 import { Empty, Field, Heading, Panel, Progress, Spinner, Stats, Tag, downloadCSV, } from "./ui";
 import { DateInput, Select } from "@/components/shared/form-controls";
+const ADMIN_TABS = ["ALX enrolments", "ALX certificates", "Opportunities", "Homepage slideshow", "Event banner", "Welcome popup", "Fun corner"];
 export function StudioPage() {
     useSiteLanguage();
     const { state, profile } = useHub();
     const [searchParams, setSearchParams] = useSearchParams();
     // The section lives in the URL, so sidebar links, back/forward and shared links all land on the right one.
     const requested = searchParams.get("tab");
-    const tab = (requested === "Assignments" && profile.role !== "Administrator") || (profile.role === "Administrator" && ["ALX enrolments", "ALX certificates", "Opportunities", "Website banner", "Fun corner"].includes(requested ?? "")) ? requested! : requested === "ALX reviews" && profile.role === "Administrator" ? "ALX certificates" : "Courses";
+    // Each part of the public website has its own tab; old "Website banner" links open the slideshow.
+    const legacy: Record<string, string> = { "ALX reviews": "ALX certificates", "Website banner": "Homepage slideshow" };
+    const wanted = profile.role === "Administrator" && requested ? legacy[requested] ?? requested : requested;
+    const tab = (wanted === "Assignments" && profile.role !== "Administrator") || (profile.role === "Administrator" && ADMIN_TABS.includes(wanted ?? "")) ? wanted! : "Courses";
     const admin = profile.role === "Administrator";
     // ALX certificates are recognised on upload; an administrator can revoke one that turns out to be invalid.
     const [people, setPeople] = useState<{
@@ -63,17 +67,19 @@ export function StudioPage() {
     if (!admin)
         return <TrainerWorkspace />;
     return (<>
-      <Heading eyebrow="MAKE ROOM FOR LEARNING" title={translateUi(admin ? "Content studio" : "Trainer studio")} description={translateUi(admin ? "See published courses, ALX enrolments and certificates, opportunities, the website banner and the landing page fun corner." : "Create learning experiences, review assignments, and support the next generation.")}/>
+      <Heading eyebrow="MAKE ROOM FOR LEARNING" title={translateUi(admin ? "Content studio" : "Trainer studio")} description={translateUi(admin ? "Manage courses, ALX enrolments and certificates, opportunities, and each part of the public website: the homepage slideshow, event banner, welcome popup and fun corner." : "Create learning experiences, review assignments, and support the next generation.")}/>
       <div className="hub-chips">
         {translateUi([
             "Courses",
             // Assignment feedback belongs to the course's trainer.
-            ...(admin ? ["ALX enrolments", "ALX certificates", "Opportunities", "Website banner", "Fun corner"] : ["Assignments"]),
+            ...(admin ? ADMIN_TABS : ["Assignments"]),
         ].map((t) => (<button key={t} className={tab === t ? "active" : ""} onClick={() => setSearchParams(t === "Courses" ? {} : { tab: t })}>
             {translateUi(admin && t === "Courses" ? "Published courses" : t)}
           </button>)))}
       </div>
-      {tab === "Website banner" && admin && <div className="hub-stack"><HeroSlidesEditor /><AnnouncementEditor /><WelcomePopupEditor /></div>}
+      {tab === "Homepage slideshow" && admin && <HeroSlidesEditor />}
+      {tab === "Event banner" && admin && <AnnouncementEditor />}
+      {tab === "Welcome popup" && admin && <WelcomePopupEditor />}
       {tab === "Fun corner" && admin && <FunCornerEditor />}
       {translateUi(tab === "Courses" && <TrainerWorkspace embedded={admin}/>)}
       {translateUi(tab === "Assignments" && !admin && <TrainerWorkspace initialTab="Learners & assignments"/>)}

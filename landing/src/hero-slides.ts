@@ -1,4 +1,4 @@
-// The homepage slideshow. Administrators can replace these slides in the Content studio (Website banner tab);
+// The homepage slideshow. Administrators can replace these slides in the Content studio (Homepage slideshow tab);
 // the site loads them from /api/public/hero-slides and keeps the built-in slides when none are saved.
 import { useEffect, useState } from "react";
 

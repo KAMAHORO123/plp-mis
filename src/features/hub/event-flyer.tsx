@@ -73,7 +73,7 @@ export function EventFlyer({ item, link }: {
     <PromoCard item={item} welcome={welcome ?? defaultWelcomePopup} link={link} onClose={dismiss} closeRef={close}/>
   </div>;
 }
-/** The popup card itself; the Website banner editor shows it inline as a preview. */
+/** The popup card itself; the Welcome popup editor shows it inline as a preview. */
 export function PromoCard({ item, welcome, link, onClose, closeRef, imageUrl, inline }: {
     item: Announcement | null;
     welcome: WelcomePopup;

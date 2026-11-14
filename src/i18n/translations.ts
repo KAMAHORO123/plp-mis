@@ -11699,5 +11699,13 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "Slide updated on the homepage": {
     "rw": "Ifoto yavuguruwe ahabanza",
     "fr": "Diapositive mise à jour sur l’accueil"
+  },
+  "Event banner": {
+    "rw": "Itangazo ry'igikorwa",
+    "fr": "Bannière d’événement"
+  },
+  "Manage courses, ALX enrolments and certificates, opportunities, and each part of the public website: the homepage slideshow, event banner, welcome popup and fun corner.": {
+    "rw": "Genzura amasomo, abiyandikishije muri ALX n'impamyabumenyi, amahirwe, n'igice cyose cy'urubuga rusange: amafoto y'ahabanza, itangazo ry'igikorwa, itangazo ry'ikaze n'ahantu ho kwidagadura.",
+    "fr": "Gérez les cours, les inscriptions et certificats ALX, les opportunités, et chaque partie du site public : le diaporama de l’accueil, la bannière d’événement, la fenêtre d’accueil et le coin détente."
   }
 };

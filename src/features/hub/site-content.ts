@@ -49,7 +49,7 @@ export function daysUntil(date: string) {
 }
 export const flyerUrl = (item: Announcement) => item.flyer ? `/api/public/announcement/flyer?v=${encodeURIComponent(item.flyer)}` : '';
 
-/** The popup shown when no event is live. Administrators edit it under Website banner. */
+/** The popup shown when no event is live. Administrators edit it in the Content studio (Welcome popup tab). */
 export interface WelcomePopup {
  imageOnly?: boolean;
  enabled: boolean;
