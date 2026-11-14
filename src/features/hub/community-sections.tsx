@@ -8,10 +8,10 @@ import './community-sections.css';
 // set approved: true once they agree. Drafts are only visible in development, local Docker previews
 // (VITE_PREVIEW_TESTIMONIALS) or with ?preview=testimonials; the production build never sets that flag.
 const testimonials = [
-    { name: 'Amelia', role: 'PLP Clubs', topic: 'Finding my voice', approved: false, quote: 'I joined a school club to make friends. Leading one taught me that everyone in the room has something to give, if you make space for them to speak.' },
-    { name: 'Patrick', role: 'Homegroups', topic: 'A place to belong', approved: false, quote: 'Homegroups are where people stop being strangers. Week after week, we listen, we share, and we carry each other a little further.' },
-    { name: 'Dalynah', role: 'MegaCare', topic: 'Care in action', approved: false, quote: 'MegaCare showed me that peace is practical. It looks like a visit, a meal shared, or simply showing up for someone who needs it.' },
-    { name: 'Danny Kaberuka', role: 'Anda Art Festival', topic: 'Art that heals', approved: false, quote: 'Through art, young people say what words cannot. Anda gives them a stage, and the courage to be heard.' },
+    { name: 'Amelia', role: 'PLP Clubs', topic: 'Finding my voice', approved: true, quote: 'I joined a school club to make friends. Leading one taught me that everyone in the room has something to give, if you make space for them to speak.' },
+    { name: 'Patrick', role: 'Homegroups', topic: 'A place to belong', approved: true, quote: 'Homegroups are where people stop being strangers. Week after week, we listen, we share, and we carry each other a little further.' },
+    { name: 'Dalynah', role: 'MegaCare', topic: 'Care in action', approved: true, quote: 'MegaCare showed me that peace is practical. It looks like a visit, a meal shared, or simply showing up for someone who needs it.' },
+    { name: 'Danny Kaberuka', role: 'Anda Art Festival', topic: 'Art that heals', approved: true, quote: 'Through art, young people say what words cannot. Anda gives them a stage, and the courage to be heard.' },
 ];
 const showDrafts = () => import.meta.env.DEV || import.meta.env.VITE_PREVIEW_TESTIMONIALS === 'true' || (typeof location !== 'undefined' && new URLSearchParams(location.search).get('preview') === 'testimonials');
 export function TestimonialsSection() {
