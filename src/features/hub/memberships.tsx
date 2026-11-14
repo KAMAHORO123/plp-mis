@@ -99,7 +99,7 @@ export function MembershipsPage({ section = "accounts" }: {
         if (done < rows.length)
             toast.error(translateUi("{p0} need individual review.", { p0: rows.length - done }));
     }
-    // Bulk account changes: each account is saved on its own so one failure (e.g. an account with records that cannot be deleted) never blocks the rest.
+    // Bulk account changes: each account is saved on its own so one failure (e.g. a lost connection) never blocks the rest.
     async function each(rows: Person[], label: string, run: (p: Person) => Promise<unknown>) {
         let done = 0;
         const failed: string[] = [];
@@ -129,7 +129,7 @@ export function MembershipsPage({ section = "accounts" }: {
     };
     const bulkDelete = async (rows: Person[]) => {
         if (!rows.length) return;
-        if (await confirmAction({ title: `Delete ${rows.length} account${rows.length === 1 ? "" : "s"}?`, description: "This permanently removes them. Accounts with learning, attendance or authored records are kept and reported back — suspend those instead.", confirmLabel: `Delete ${rows.length}`, destructive: true }))
+        if (await confirmAction({ title: rows.length === 1 ? "Are you sure you want to delete this account?" : `Are you sure you want to delete these ${rows.length} accounts?`, confirmLabel: "Delete", destructive: true }))
             await each(rows, "deleted", (p) => platformApi(`/users/${p.id}`, "DELETE"));
     };
     const toggleSuspend = async (p: Person) => {
@@ -138,7 +138,7 @@ export function MembershipsPage({ section = "accounts" }: {
             await save(p, p.role, suspending ? "suspended" : "approved", p.school_id, p.role_review, suspending ? "Account suspended" : "Account reactivated");
     };
     const remove = async (p: Person) => {
-        if (!await confirmAction({ title: `Delete ${p.name}'s account?`, description: "This permanently removes the account. Accounts with learning, attendance or authored records are kept — suspend those instead.", confirmLabel: "Delete account", destructive: true }))
+        if (!await confirmAction({ title: "Are you sure you want to delete this account?", confirmLabel: "Delete", destructive: true }))
             return;
         try {
             await platformApi(`/users/${p.id}`, "DELETE");

@@ -32,6 +32,10 @@ async function authRequest(path: string, body: object) {
 let confirmedAccess: { profileId: string; role: HubRole; complete: boolean } | null = null;
 /** Called once the profile details are saved, so the guard stops sending the person to the form. */
 export const markProfileComplete = () => { if (confirmedAccess) confirmedAccess.complete = true; };
+/** "Skip for now" on the profile form: the member explores the Hub for the rest of this visit and is asked again next time. */
+const SKIP_KEY = "plp-profile-skipped";
+export const skipProfileForNow = (profileId: string) => { try { sessionStorage.setItem(SKIP_KEY, profileId); } catch { /* storage may be blocked */ } };
+const skippedProfile = (profileId?: string) => { try { return !!profileId && sessionStorage.getItem(SKIP_KEY) === profileId; } catch { return false; } };
 export function MemberGuard({ allowed }: {
     allowed?: HubRole[];
 }) {
@@ -70,8 +74,11 @@ export function MemberGuard({ allowed }: {
             setChecked(true); });
         return () => { active = false; };
     }, [session?.profileId, location.pathname]);
-    if (!session)
+    if (!session) {
+        // Signing out forgets the last confirmed role, so the next sign-in always starts from the server's answer.
+        confirmedAccess = null;
         return (<Navigate to={`/auth/login?returnTo=${encodeURIComponent(location.pathname + location.search)}`} replace/>);
+    }
     if (!checked)
         return <Spinner screen label="Checking account access…"/>;
     if (!serverRole)
@@ -79,7 +86,7 @@ export function MemberGuard({ allowed }: {
     if (!isMember)
         return <Navigate to="/application-status" replace/>;
     // The saved form marks the cache straight away, before the next server check catches up.
-    if (!complete && !confirmedAccess?.complete && location.pathname !== "/complete-profile")
+    if (!complete && !confirmedAccess?.complete && !skippedProfile(session.profileId) && location.pathname !== "/complete-profile")
         return <Navigate to={`/complete-profile?returnTo=${encodeURIComponent(location.pathname + location.search)}`} replace/>;
     if (allowed && !allowed.includes(serverRole))
         return (<div className="hub-content">
@@ -142,7 +149,8 @@ export function SignInPage() {
                     navigate('/auth/pending', { replace: true });
                     return;
                 }
-                const member = { ...(state.profiles.find((p) => p.email.toLowerCase() === email) || {
+                // The server account id decides which saved profile is used, so an older copy with the same email never stands in for it.
+                const member = { ...(state.profiles.find((p) => p.id === account.id) || {
                         id: account.id, name: account.name, email,
                         role: "Community member" as const, bio: "", skills: [], leadership: [],
                         clubIds: [], managedClubIds: [], joined: today(), membership: "Approved" as const,

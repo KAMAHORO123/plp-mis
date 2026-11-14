@@ -874,17 +874,38 @@ export function createServer({
         requireIt(user.role === "admin", 403, "Administrator required");
         const id = uuid.parse(p.split("/").at(-1));
         requireIt(id !== user.id, 409, "You cannot delete your own account");
-        try {
-          await transaction(db, async (tx) => {
-            const r = await tx.query("DELETE FROM users WHERE id=$1 RETURNING id", [id]);
-            requireIt(r.rowCount, 404, "User not found");
-            await audit(tx, user, "access.delete", id);
-          });
-        } catch (error) {
-          // Accounts with learning, attendance or authored records are kept for the audit trail.
-          if (error.code === "23503") throw new HttpError(409, "This account has learning, attendance or authored records. Suspend it instead.");
-          throw error;
-        }
+        // The account is deleted whatever is attached to it. The person's own data goes with them; shared content
+        // they created (events, courses, meetings, registers, files) passes to the administrator deleting them,
+        // so nothing other people rely on disappears.
+        await transaction(db, async (tx) => {
+          requireIt((await tx.query("SELECT 1 FROM users WHERE id=$1 FOR UPDATE", [id])).rowCount, 404, "User not found");
+          const steps = [
+            "UPDATE certificate_requests SET reviewed_by=NULL WHERE reviewed_by=$1",
+            "UPDATE certificates SET issued_by=NULL WHERE issued_by=$1",
+            "UPDATE enrollments SET reviewed_by=NULL WHERE reviewed_by=$1",
+            "UPDATE notification_mail SET sender_id=NULL WHERE sender_id=$1",
+            "DELETE FROM certificates WHERE member_id=$1",
+            "DELETE FROM attendance WHERE member_id=$1",
+            "DELETE FROM credits WHERE member_id=$1",
+            "DELETE FROM enrollments WHERE member_id=$1",
+            "DELETE FROM meeting_checkins WHERE member_id=$1",
+            "DELETE FROM mentor_sessions WHERE member_id=$1 OR mentor_id=$1",
+            "DELETE FROM records WHERE owner_id=$1 AND kind IN ('applications','mentorship','projects','proofs','posts','agenda','alx')",
+          ];
+          const handOver = [
+            "UPDATE attendance SET recorded_by=$2 WHERE recorded_by=$1",
+            "UPDATE register_attendance SET recorded_by=$2 WHERE recorded_by=$1",
+            "UPDATE material_completions SET completed_by=$2 WHERE completed_by=$1",
+            "UPDATE meetings SET created_by=$2 WHERE created_by=$1",
+            "UPDATE certificate_requests SET requested_by=$2 WHERE requested_by=$1",
+            "UPDATE records SET owner_id=$2 WHERE owner_id=$1",
+            "UPDATE files SET owner_id=$2 WHERE owner_id=$1",
+          ];
+          for (const sql of steps) await tx.query(sql, [id]);
+          for (const sql of handOver) await tx.query(sql, [id, user.id]);
+          await tx.query("DELETE FROM users WHERE id=$1", [id]);
+          await audit(tx, user, "access.delete", id);
+        });
         return send(200, { ok: true });
       }
       // Trainers author their own courses; administrators only review and publish them.

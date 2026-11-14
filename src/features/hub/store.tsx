@@ -714,6 +714,7 @@ export function HubProvider({ children }: {
         sessionStorage.removeItem("plp-meeting-return");
         sessionStorage.removeItem(SESSION_KEY);
         sessionStorage.removeItem("plp-hub-new-code");
+        sessionStorage.removeItem("plp-profile-skipped");
         setSession(null);
     }
     useEffect(() => {

@@ -11707,5 +11707,17 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "Manage courses, ALX enrolments and certificates, opportunities, and each part of the public website: the homepage slideshow, event banner, welcome popup and fun corner.": {
     "rw": "Genzura amasomo, abiyandikishije muri ALX n'impamyabumenyi, amahirwe, n'igice cyose cy'urubuga rusange: amafoto y'ahabanza, itangazo ry'igikorwa, itangazo ry'ikaze n'ahantu ho kwidagadura.",
     "fr": "Gérez les cours, les inscriptions et certificats ALX, les opportunités, et chaque partie du site public : le diaporama de l’accueil, la bannière d’événement, la fenêtre d’accueil et le coin détente."
+  },
+  "Skip for now": {
+    "rw": "Simbuka ubu",
+    "fr": "Passer pour l’instant"
+  },
+  "Skip for now, I’ll complete it later": {
+    "rw": "Simbuka ubu, nzabyuzuza nyuma",
+    "fr": "Passer pour l’instant, je compléterai plus tard"
+  },
+  "Are you sure you want to delete this account?": {
+    "rw": "Uzi neza ko ushaka gusiba iyi konti?",
+    "fr": "Voulez-vous vraiment supprimer ce compte ?"
   }
 };

@@ -44,3 +44,8 @@
 @media (max-width: 1023px) { .cp-submit { bottom: 0; } }
 @media (max-width: 640px) { .cp-hero { padding: 22px 18px; } .cp-hero h1 { font-size: 22px; } .cp-submit { flex-direction: column; align-items: stretch; } .cp-submit .hub-button { width: 100%; justify-content: center; } }
 html[data-theme="dark"] .cp-hero { background: linear-gradient(120deg, #0c2238 0%, #164a7c 70%, #1f5f9c 100%); }
+/* Skip for now: members can explore the Hub first and complete the profile later. */
+.cp-hero .cp-skip { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 8px 14px; border: 1px solid rgba(255, 255, 255, .45); border-radius: 999px; background: rgba(255, 255, 255, .1); color: #fff; font: 600 13px/1.2 Inter, sans-serif; cursor: pointer; transition: background .15s; }
+.cp-hero .cp-skip:hover { background: rgba(255, 255, 255, .2); }
+.cp-submit-actions { display: flex; align-items: center; gap: 10px; }
+@media (max-width: 640px) { .cp-submit-actions { flex-direction: column-reverse; align-items: stretch; } }

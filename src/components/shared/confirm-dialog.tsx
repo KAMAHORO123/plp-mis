@@ -7,7 +7,7 @@ interface ConfirmDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     title: string;
-    description: string;
+    description?: string;
     confirmLabel?: string;
     cancelLabel?: string;
     destructive?: boolean;
@@ -24,7 +24,7 @@ export function ConfirmDialog({ open, onOpenChange, title, description, confirmL
             </div>))}
           <div className="space-y-1.5">
             <DialogTitle>{translateUi(title)}</DialogTitle>
-            <DialogDescription>{translateUi(description)}</DialogDescription>
+            {description ? <DialogDescription>{translateUi(description)}</DialogDescription> : <DialogDescription className="sr-only">{translateUi(title)}</DialogDescription>}
           </div>
         </div>
         <DialogFooter className="mt-6">
@@ -40,7 +40,7 @@ export function ConfirmDialog({ open, onOpenChange, title, description, confirmL
 }
 interface ConfirmRequest {
     title: string;
-    description: string;
+    description?: string;
     confirmLabel?: string;
     destructive?: boolean;
 }

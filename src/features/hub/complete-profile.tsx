@@ -6,7 +6,8 @@ import { toast } from "sonner";
 import { platformApi } from "./platform-api";
 import { Field, Panel, Spinner } from "./ui";
 import { ProfilePhoto } from "./profile-photo";
-import { markProfileComplete } from "./access";
+import { markProfileComplete, skipProfileForNow } from "./access";
+import { useHub } from "./store";
 import "./complete-profile.css";
 import { DateInput, Select } from "@/components/shared/form-controls";
 
@@ -42,6 +43,7 @@ function TagPicker({ label, values, onChange, ideas, placeholder }: { label: str
 export function CompleteProfilePage() {
     useSiteLanguage();
     const navigate = useNavigate();
+    const { session } = useHub();
     const [params] = useSearchParams();
     const [me, setMe] = useState<ProfileDetails | null>(null), [busy, setBusy] = useState(false);
     const [languages, setLanguages] = useState<string[]>([]), [skills, setSkills] = useState<string[]>([]), [interests, setInterests] = useState<string[]>([]);
@@ -70,6 +72,7 @@ export function CompleteProfilePage() {
             setBusy(false);
         }
     };
+    const skip = () => { skipProfileForNow(session?.profileId ?? ""); navigate(params.get("returnTo") || "/hub", { replace: true }); };
     const today = new Date(), latest = `${today.getFullYear() - 10}-12-31`;
     const steps = [filled.birth, filled.phone, filled.education, !!work, languages.length > 0, skills.length > 0, interests.length > 0];
     const done = steps.filter(Boolean).length, percent = Math.round((done / steps.length) * 100);
@@ -79,6 +82,7 @@ export function CompleteProfilePage() {
           <p className="cp-kicker">{translateUi(first ? "ONE LAST STEP" : "YOUR PROFILE")}</p>
           <h1>{translateUi(first ? "Complete your profile" : "Your profile details")}</h1>
           <p>{translateUi(first ? "Tell us a little about yourself so PLP can match you with the right courses, mentors and opportunities. It takes about two minutes." : "Keep your details up to date so PLP can keep matching you with the right opportunities.")}</p>
+          {first && <button type="button" className="cp-skip" onClick={skip}>{translateUi("Skip for now, I’ll complete it later")}<ArrowRight size={15}/></button>}
         </div>
         <div className="cp-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-label={translateUi("Profile completion")}>
           <strong>{percent}%</strong><span>{translateUi("{p0} of {p1} required answers", { p0: done, p1: steps.length })}</span>
@@ -119,7 +123,7 @@ export function CompleteProfilePage() {
           <TagPicker label="Skills" values={skills} onChange={setSkills} ideas={SKILL_IDEAS} placeholder="Type a skill and press Enter"/>
           <TagPicker label="Interests" values={interests} onChange={setInterests} ideas={INTEREST_IDEAS} placeholder="Type an interest and press Enter"/>
         </Panel>
-        <div className="cp-submit"><span className="hub-caption">{translateUi(done === steps.length ? "All set. Save to continue." : "Fields marked as optional can be left empty.")}</span><button className="hub-button" disabled={busy}>{translateUi(busy ? "Saving…" : first ? "Finish and go to my dashboard" : "Save details")}<ArrowRight size={16}/></button></div>
+        <div className="cp-submit"><span className="hub-caption">{translateUi(done === steps.length ? "All set. Save to continue." : "Fields marked as optional can be left empty.")}</span><div className="cp-submit-actions">{first && <button type="button" className="hub-button secondary" disabled={busy} onClick={skip}>{translateUi("Skip for now")}</button>}<button className="hub-button" disabled={busy}>{translateUi(busy ? "Saving…" : first ? "Finish and go to my dashboard" : "Save details")}<ArrowRight size={16}/></button></div></div>
       </form>
     </div>;
 }
