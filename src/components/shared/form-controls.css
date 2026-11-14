@@ -105,3 +105,16 @@
   :root .hub-app .ws-table-tools.is-open > :is(.fc-field, .hub-text-button) { display: block; }
   :root .hub-app .ws-table-tools > span:not(.fc-field) { grid-column: 1 / -1; margin-left: 0; }
 }
+
+/* The field wrapper never draws a box of its own. Classes written for the old native control (border, padding,
+   fixed height, rounded corners) land on the wrapper and would frame the trigger in a second border. */
+:root .fc-field { border: 0 !important; padding: 0 !important; background: none !important; box-shadow: none !important; outline: 0 !important; height: auto !important; min-height: 0 !important; border-radius: 0 !important; }
+
+/* Wrappers that already draw a pill around an icon and the control: the trigger inside is frameless. */
+.hub-app .lq-seconds:focus-within { border-color: hsl(var(--primary, 212 77% 49%)); box-shadow: 0 0 0 3px hsl(var(--primary, 212 77% 49%) / .18); }
+.hub-app .lq-seconds .fc-field { width: auto; }
+:root .hub-app .lq-seconds .fc-trigger { min-height: 38px; padding: 0 10px 0 4px; gap: 6px; border: 0; border-radius: 999px; background: none; box-shadow: none; font-weight: 600; }
+
+/* The FAQ chat's language row: a compact control, not a full-width field. */
+.hub-app .ws-chat-language .fc-field { width: auto; max-width: 170px; }
+.hub-app .ws-chat-language .fc-trigger { min-height: 34px; padding: 4px 10px; font-size: 12.5px; }
