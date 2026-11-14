@@ -11539,5 +11539,165 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "The whole PLP team": {
     "rw": "Itsinda ryose rya PLP",
     "fr": "Toute l’équipe PLP"
+  },
+  "Homepage slideshow": {
+    "rw": "Amafoto y'ahabanza",
+    "fr": "Diaporama de l’accueil"
+  },
+  "Custom": {
+    "rw": "Byahinduwe",
+    "fr": "Personnalisé"
+  },
+  "Original": {
+    "rw": "Iby'umwimerere",
+    "fr": "D’origine"
+  },
+  "The large photos at the top of the website’s home page. Change any photo or its words; saving updates the website straight away.": {
+    "rw": "Amafoto manini ari hejuru ku rupapuro rw'ahabanza rw'urubuga. Hindura ifoto cyangwa amagambo yayo; ubibitse urubuga ruhita ruhinduka.",
+    "fr": "Les grandes photos en haut de la page d’accueil du site. Changez une photo ou son texte ; l’enregistrement met le site à jour immédiatement."
+  },
+  "Add slide": {
+    "rw": "Ongeraho ifoto",
+    "fr": "Ajouter une diapositive"
+  },
+  "Move slide {p0} earlier": {
+    "rw": "Imura ifoto ya {p0} ijye imbere",
+    "fr": "Avancer la diapositive {p0}"
+  },
+  "Move slide {p0} later": {
+    "rw": "Imura ifoto ya {p0} ijye inyuma",
+    "fr": "Reculer la diapositive {p0}"
+  },
+  "Delete slide {p0}": {
+    "rw": "Siba ifoto ya {p0}",
+    "fr": "Supprimer la diapositive {p0}"
+  },
+  "Add a slide": {
+    "rw": "Ongeraho ifoto",
+    "fr": "Ajouter une diapositive"
+  },
+  "Edit slide": {
+    "rw": "Hindura ifoto",
+    "fr": "Modifier la diapositive"
+  },
+  "Saving updates the homepage straight away.": {
+    "rw": "Ubibitse, ahabanza hahita hahinduka.",
+    "fr": "L’enregistrement met l’accueil à jour immédiatement."
+  },
+  "No photo yet": {
+    "rw": "Nta foto irashyirwaho",
+    "fr": "Pas encore de photo"
+  },
+  "Button": {
+    "rw": "Buto",
+    "fr": "Bouton"
+  },
+  "Photo (PNG or JPEG, a wide photo at least 1600 pixels across looks sharpest)": {
+    "rw": "Ifoto (PNG cyangwa JPEG; ifoto ngari ifite nibura pigiseli 1600 z'ubugari igaragara neza kurushaho)",
+    "fr": "Photo (PNG ou JPEG ; une photo large d’au moins 1600 pixels est la plus nette)"
+  },
+  "Photo uploaded. Save to publish it.": {
+    "rw": "Ifoto yashyizweho. Bika kugira ngo itangazwe.",
+    "fr": "Photo envoyée. Enregistrez pour la publier."
+  },
+  "Part of the photo to show": {
+    "rw": "Igice cy'ifoto kigaragara",
+    "fr": "Partie de la photo à montrer"
+  },
+  "As it is now": {
+    "rw": "Uko bimeze ubu",
+    "fr": "Comme maintenant"
+  },
+  "Top": {
+    "rw": "Hejuru",
+    "fr": "Haut"
+  },
+  "Upper middle": {
+    "rw": "Hagati hejuru",
+    "fr": "Milieu haut"
+  },
+  "Middle": {
+    "rw": "Hagati",
+    "fr": "Milieu"
+  },
+  "Lower middle": {
+    "rw": "Hagati hasi",
+    "fr": "Milieu bas"
+  },
+  "Bottom": {
+    "rw": "Hasi",
+    "fr": "Bas"
+  },
+  "Name (gold)": {
+    "rw": "Izina (ibara rya zahabu)",
+    "fr": "Nom (en or)"
+  },
+  "Headline (light blue)": {
+    "rw": "Umutwe (ubururu bworoshye)",
+    "fr": "Titre (bleu clair)"
+  },
+  "Sentence": {
+    "rw": "Interuro",
+    "fr": "Phrase"
+  },
+  "Button link (a page like /about, or https://)": {
+    "rw": "Aho buto ijyana (urupapuro nka /about, cyangwa https://)",
+    "fr": "Lien du bouton (une page comme /about, ou https://)"
+  },
+  "Save slide": {
+    "rw": "Bika ifoto",
+    "fr": "Enregistrer la diapositive"
+  },
+  "Slide order saved": {
+    "rw": "Uko amafoto akurikirana byabitswe",
+    "fr": "Ordre des diapositives enregistré"
+  },
+  "Keep at least one slide on the homepage.": {
+    "rw": "Siga nibura ifoto imwe ahabanza.",
+    "fr": "Gardez au moins une diapositive sur l’accueil."
+  },
+  "Delete this slide?": {
+    "rw": "Usiba iyi foto?",
+    "fr": "Supprimer cette diapositive ?"
+  },
+  "It is removed from the homepage straight away.": {
+    "rw": "Ihita ivanwa ahabanza.",
+    "fr": "Elle est retirée de l’accueil immédiatement."
+  },
+  "The slide was deleted": {
+    "rw": "Ifoto yasibwe",
+    "fr": "La diapositive a été supprimée"
+  },
+  "Restore the original slideshow?": {
+    "rw": "Garura amafoto y'umwimerere?",
+    "fr": "Restaurer le diaporama d’origine ?"
+  },
+  "Your slides are replaced by the ones PLP started with.": {
+    "rw": "Amafoto yawe asimburwa n'ayo PLP yatangiranye.",
+    "fr": "Vos diapositives sont remplacées par celles d’origine de PLP."
+  },
+  "Restore": {
+    "rw": "Garura",
+    "fr": "Restaurer"
+  },
+  "The original slideshow is back on the website": {
+    "rw": "Amafoto y'umwimerere yagarutse ku rubuga",
+    "fr": "Le diaporama d’origine est de retour sur le site"
+  },
+  "Upload a photo for this slide.": {
+    "rw": "Shyiraho ifoto y'iyi slide.",
+    "fr": "Ajoutez une photo pour cette diapositive."
+  },
+  "The button link must be a site path like /about or a link starting with https://": {
+    "rw": "Aho buto ijyana hagomba kuba urupapuro nka /about cyangwa umurongo utangirana na https://",
+    "fr": "Le lien du bouton doit être une page comme /about ou un lien commençant par https://"
+  },
+  "Slide added to the homepage": {
+    "rw": "Ifoto yongewe ahabanza",
+    "fr": "Diapositive ajoutée à l’accueil"
+  },
+  "Slide updated on the homepage": {
+    "rw": "Ifoto yavuguruwe ahabanza",
+    "fr": "Diapositive mise à jour sur l’accueil"
   }
 };

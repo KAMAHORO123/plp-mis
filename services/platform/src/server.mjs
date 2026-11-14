@@ -12,6 +12,7 @@ import { mailConfigured } from "./mail-config.mjs";
 import { applicantMailRoute } from "./applicant-mail.mjs";
 import { schoolCertificates } from "./school-certificates.mjs";
 import { funCornerSchema } from "./fun-corner.mjs";
+import { heroSlidesSchema, uploadedImages } from "./hero-slides.mjs";
 import { filesRoute, validateAttachments, avatarRoute } from "./files.mjs";
 import http from "node:http";
 import { isDeepStrictEqual } from "node:util";
@@ -446,6 +447,21 @@ export function createServer({
         // Empty lists tell the site to keep its built-in questions and quotes.
         const row = (await db.query("SELECT data FROM content WHERE key='fun-corner'")).rows[0];
         return send(200, row?.data ?? { trivia: [], quotes: [] });
+      }
+      // The homepage slideshow; an empty list tells the site to keep its built-in slides.
+      if (p === "/public/hero-slides" && req.method === "GET") {
+        const row = (await db.query("SELECT data FROM content WHERE key='hero-slides'")).rows[0];
+        return send(200, row?.data ?? { slides: [] });
+      }
+      // Only images the published slideshow uses are served. Each upload has its own id, so it can be cached for good.
+      const heroImage = p.match(/^\/public\/hero-slides\/image\/([0-9a-f-]{36})$/);
+      if (heroImage && req.method === "GET") {
+        const used = (await db.query("SELECT 1 FROM content WHERE key='hero-slides' AND jsonb_path_exists(data, '$.slides[*] ? (@.image == $id)', jsonb_build_object('id', $1::text))", [heroImage[1]])).rowCount;
+        const file = used && uploadDirectory ? (await db.query("SELECT id,mime FROM files WHERE id=$1 AND mime IN ('image/png','image/jpeg')", [heroImage[1]])).rows[0] : null;
+        const bytes = file && await readFile(path.join(uploadDirectory, file.id)).catch(() => null);
+        if (!bytes) return send(404, { error: "No image" });
+        res.writeHead(200, { "Content-Type": file.mime, "Cache-Control": "public, max-age=31536000, immutable", "X-Content-Type-Options": "nosniff" });
+        return res.end(bytes);
       }
       // The welcome popup visitors see when no event is live; administrators edit it.
       if (p === "/public/welcome-popup" && req.method === "GET") {
@@ -1024,6 +1040,27 @@ export function createServer({
           await audit(tx, user, "fun-corner.reset", "fun-corner");
         });
         return send(200, { trivia: [], quotes: [] });
+      }
+      if (p === "/hero-slides" && req.method === "PUT") {
+        requireIt(user.role === "admin", 403, "Administrator required");
+        const input = heroSlidesSchema.parse(await body(req));
+        // Slide photos are shown publicly, so each upload must be a PNG or JPEG an administrator uploaded.
+        const images = uploadedImages(input.slides);
+        if (images.length)
+          requireIt((await db.query("SELECT count(*)::int AS n FROM files f JOIN users u ON u.id=f.owner_id WHERE f.id=ANY($1::uuid[]) AND u.role='admin' AND f.mime IN ('image/png','image/jpeg')", [images])).rows[0].n === images.length, 400, "Choose PNG or JPEG photos you uploaded");
+        await transaction(db, async (tx) => {
+          await tx.query("INSERT INTO content(key,data) VALUES('hero-slides',$1) ON CONFLICT(key) DO UPDATE SET data=$1,updated_at=now()", [input]);
+          await audit(tx, user, "hero-slides.update", "hero-slides");
+        });
+        return send(200, input);
+      }
+      if (p === "/hero-slides" && req.method === "DELETE") {
+        requireIt(user.role === "admin", 403, "Administrator required");
+        await transaction(db, async (tx) => {
+          await tx.query("DELETE FROM content WHERE key='hero-slides'");
+          await audit(tx, user, "hero-slides.reset", "hero-slides");
+        });
+        return send(200, { slides: [] });
       }
       if (p === "/welcome-popup" && req.method === "PUT") {
         requireIt(user.role === "admin", 403, "Administrator required");

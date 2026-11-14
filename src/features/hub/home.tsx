@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Pause, Play, Download, BookOpen, Compass, Users, Award, X } from "lucide-react";
 import { TestimonialsSection, FunCorner, AlbumSection, CanadaSection } from "./community-sections";
 import { PhotoPlayground } from "./landing-art";
+import { useHeroSlides, slideImage } from "./hero-slides";
 const programmes = [
     { id: "peace-memory", label: "Peace & memory", title: "Remembering together. Taking responsibility.", image: "plp-walk-to-remember", alt: "Thousands of young people dressed in black walking together in Kigali during the Walk to Remember", caption: "Peace & memory", intro: "Memory is part of how we build peace. PLP brings young people, survivors, and communities together to remember the 1994 Genocide against the Tutsi and confront the divisions that lead to violence.", items: [
             ["Walk to Remember", "Initiated by PLP in 2009, this youth-led campaign brings remembrance walks, survivor testimonies, poetry, and art into a shared act of commemoration. The initiative has reached more than 25 countries."],
@@ -90,45 +91,39 @@ function Team() {
  </section>;
 }
 /** Full-width hero slider: each photo carries its own headline and link; the first slide is the page title. */
-// Every slide has the same two-line heading: a name in gold, then what it is about in light blue.
-const HERO_SLIDES = [
-    { src: "/images/plp/albums/camp-8.jpg", position: "center 35%", name: "PLP Hub", title: "Learn and lead.", text: "Courses, mentoring and real opportunities for young people, all in one place.", to: "/plp-hub", cta: "Discover the PLP Hub" },
-    { src: "/images/plp/plp-walk-to-remember.webp", position: "center 60%", name: "Walk to Remember", title: "Walk as one.", text: "Every year, thousands walk with us to remember and to stand as one for unity.", to: "/about", cta: "Our story" },
-    { src: "/images/plp/plp-arts.webp", position: "center 40%", name: "Arts & culture", title: "Create freely.", text: "Art, music and expression that bring young people together.", to: "/programmes", cta: "Our programmes" },
-    { src: "/images/plp/albums/academy-8.jpg", position: "center 30%", name: "PLP Academy", title: "Grow together.", text: "A youth-led community rooted in Rwanda, reaching beyond borders.", to: "/programmes", cta: "Explore our work" },
-    { src: "/images/plp/plp-dialogue.webp", position: "center 55%", name: "Dialogue", title: "Speak up.", text: "Dialogue that turns young voices into action.", to: "/stories", cta: "Our impact" },
-];
 function HeroSlider() {
     useSiteLanguage();
-    const [index, setIndex] = useState(0), [paused, setPaused] = useState(false), [touchX, setTouchX] = useState<number | null>(null);
-    const go = (step: number) => setIndex(i => (i + step + HERO_SLIDES.length) % HERO_SLIDES.length);
+    const loaded = useHeroSlides(), slides = loaded ?? [], count = Math.max(slides.length, 1);
+    const [rawIndex, setIndex] = useState(0), [paused, setPaused] = useState(false), [touchX, setTouchX] = useState<number | null>(null);
+    const index = rawIndex % count;
+    const go = (step: number) => setIndex(i => (i % count + step + count) % count);
     useEffect(() => {
         // Slides always advance on their own; the pause button stops them (reduced motion only drops the zoom).
-        if (paused)
+        if (paused || slides.length < 2)
             return;
         const timer = window.setTimeout(() => go(1), 6000);
         return () => clearTimeout(timer);
-    }, [index, paused]);
+    }, [index, paused, slides.length]);
     return <section className={`plp-showcase${paused ? " is-paused" : ""}`} aria-roledescription="carousel" aria-label={translateUi("Peace and Love Proclaimers")} onTouchStart={e => setTouchX(e.touches[0].clientX)} onTouchEnd={e => { if (touchX !== null && Math.abs(e.changedTouches[0].clientX - touchX) > 40) go(e.changedTouches[0].clientX < touchX ? 1 : -1); setTouchX(null); }}>
-      {HERO_SLIDES.map((s, i) => {
+      {slides.map((s, i) => {
         const Heading = i === 0 ? "h1" : "h2", active = i === index;
-        return <div key={s.src} className={`plp-showcase-slide${active ? " is-active" : ""}`} aria-roledescription="slide" aria-label={translateUi("{p0} of {p1}", { p0: i + 1, p1: HERO_SLIDES.length })} aria-hidden={active ? undefined : true}>
-          <img src={s.src} alt="" style={{ objectPosition: s.position }} loading={i === 0 ? "eager" : "lazy"} {...(i === 0 ? { fetchpriority: "high" } : {})}/>
+        return <div key={`${i}-${s.image}`} className={`plp-showcase-slide${active ? " is-active" : ""}`} aria-roledescription="slide" aria-label={translateUi("{p0} of {p1}", { p0: i + 1, p1: slides.length })} aria-hidden={active ? undefined : true}>
+          <img src={slideImage(s.image)} alt="" style={{ objectPosition: s.position }} loading={i === 0 ? "eager" : "lazy"} {...(i === 0 ? { fetchpriority: "high" } : {})}/>
           <div className="plp-showcase-copy">
             <p className="plp-showcase-kicker">{translateUi("PEACE AND LOVE PROCLAIMERS · SINCE 2007")}</p>
             <Heading><span className="plp-hero-name">{translateUi(s.name)}</span><br /><span>{translateUi(s.title)}</span></Heading>
             <p>{translateUi(s.text)}</p>
-            <Link to={s.to} className="hub-button" tabIndex={active ? undefined : -1}>{translateUi(s.cta)}<ArrowRight size={18}/></Link>
+            {/^https:/.test(s.to) ? <a href={s.to} className="hub-button" tabIndex={active ? undefined : -1}>{translateUi(s.cta)}<ArrowRight size={18}/></a> : <Link to={s.to} className="hub-button" tabIndex={active ? undefined : -1}>{translateUi(s.cta)}<ArrowRight size={18}/></Link>}
           </div>
         </div>;
       })}
-      <div className="plp-showcase-controls">
-        <span className="plp-showcase-count" aria-hidden="true"><strong>{String(index + 1).padStart(2, "0")}</strong> / {String(HERO_SLIDES.length).padStart(2, "0")}</span>
-        <span className="plp-showcase-bars">{HERO_SLIDES.map((s, i) => <button key={s.src} type="button" className={i === index ? "is-active" : i < index ? "is-done" : undefined} aria-label={translateUi("Show slide {p0}", { p0: i + 1 })} aria-current={i === index ? "true" : undefined} onClick={() => setIndex(i)}><i key={i === index ? `on-${index}` : "off"}/></button>)}</span>
+      {slides.length > 1 && <div className="plp-showcase-controls">
+        <span className="plp-showcase-count" aria-hidden="true"><strong>{String(index + 1).padStart(2, "0")}</strong> / {String(slides.length).padStart(2, "0")}</span>
+        <span className="plp-showcase-bars">{slides.map((s, i) => <button key={`${i}-${s.image}`} type="button" className={i === index ? "is-active" : i < index ? "is-done" : undefined} aria-label={translateUi("Show slide {p0}", { p0: i + 1 })} aria-current={i === index ? "true" : undefined} onClick={() => setIndex(i)}><i key={i === index ? `on-${index}` : "off"}/></button>)}</span>
         <button type="button" className="plp-showcase-arrow" aria-label={translateUi(paused ? "Play slideshow" : "Pause slideshow")} aria-pressed={paused} onClick={() => setPaused(!paused)}>{paused ? <Play size={16}/> : <Pause size={16}/>}</button>
         <button type="button" className="plp-showcase-arrow" aria-label={translateUi("Previous slide")} onClick={() => go(-1)}><ArrowLeft size={18}/></button>
         <button type="button" className="plp-showcase-arrow" aria-label={translateUi("Next slide")} onClick={() => go(1)}><ArrowRight size={18}/></button>
-      </div>
+      </div>}
     </section>;
 }
 export function HomePage() {

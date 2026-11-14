@@ -21,7 +21,7 @@ export function TestimonialsSection() {
     if (!items.length) return null;
     const item = items[index % items.length];
     const go = (step: number) => setIndex((index + step + items.length) % items.length);
-    const photo = (name: string, kind: 'card' | 'face') => `/images/plp/team/${teamPhotos[name]}-${kind}.webp`;
+    const photo = (name: string, kind: 'hd' | 'face') => `/images/plp/team/${teamPhotos[name]}-${kind}.webp`;
     return <section className="plp-community-section plp-voices" id="testimonials" aria-labelledby="voices-title">
   <div className="plp-voices-copy">
    <p className="plp-section-label">{translateUi("PEOPLE. POSSIBILITY. PLP.")}</p>
@@ -37,7 +37,7 @@ export function TestimonialsSection() {
     <button type="button" aria-label={translateUi("Next testimonial")} onClick={() => go(1)}><ArrowRight size={18}/></button>
    </div>
   </div>
-  <div className="plp-voices-photo" aria-hidden="true"><span className="plp-voices-back"/><img key={item.name} src={photo(item.name, 'card')} alt="" width={320} height={400}/><span className="plp-voices-tag">{translateUi(item.role)}</span></div>
+  <div className="plp-voices-photo" aria-hidden="true"><span className="plp-voices-back"/><img key={item.name} src={photo(item.name, 'hd')} alt="" width={800} height={1000} decoding="async"/><span className="plp-voices-tag">{translateUi(item.role)}</span></div>
  </section>;
 }
 export const builtInTrivia = [

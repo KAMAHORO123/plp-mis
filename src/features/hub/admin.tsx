@@ -1,6 +1,7 @@
 import { translateUi, useSiteLanguage, formatDate } from '../../i18n/language';
 import { AnnouncementEditor, WelcomePopupEditor } from "./announcement";
 import { FunCornerEditor } from "./fun-corner-editor";
+import { HeroSlidesEditor } from "./hero-slides-editor";
 import { useLiveTick } from './live';
 import { RecordTable } from "./management-ui";
 import { TrainerWorkspace } from "./trainer-workspace";
@@ -72,7 +73,7 @@ export function StudioPage() {
             {translateUi(admin && t === "Courses" ? "Published courses" : t)}
           </button>)))}
       </div>
-      {tab === "Website banner" && admin && <div className="hub-stack"><AnnouncementEditor /><WelcomePopupEditor /></div>}
+      {tab === "Website banner" && admin && <div className="hub-stack"><HeroSlidesEditor /><AnnouncementEditor /><WelcomePopupEditor /></div>}
       {tab === "Fun corner" && admin && <FunCornerEditor />}
       {translateUi(tab === "Courses" && <TrainerWorkspace embedded={admin}/>)}
       {translateUi(tab === "Assignments" && !admin && <TrainerWorkspace initialTab="Learners & assignments"/>)}
