@@ -217,8 +217,8 @@ export function MembershipsPage({ section = "accounts" }: {
             { label: "Name", render: (p) => <><strong>{translateUi(p.name)}</strong><small>{translateUi(p.email)}</small></> },
             { label: "Role", render: (p) => <span className="mb-role">{translateUi(roleName(p.role))}{translateUi(p.requested_role && (p.status === "pending" || requesting(p)) && <small>{translateUi("requested ")}{translateUi(roleName(p.requested_role))}</small>)}</span> },
             { label: "Status", render: (p) => <span className={`ws-status ${p.status === "approved" ? "ws-status-issued" : p.status === "pending" ? "" : "ws-status-returned"}`}>{translateUi(statusName(p.status))}</span> },
-            // The school the person named themselves, until an administrator assigns one: shown as the name, marked as not confirmed yet.
-            { label: "School", render: (p) => schools.find((s) => s.id === p.school_id)?.name ?? (p.requested_school ? <span className="mb-role">{p.requested_school}<small>{translateUi("Not confirmed yet")}</small></span> : "—") },
+            // The school the person typed at sign-up (or the school record they are linked to).
+            { label: "School", render: (p) => schools.find((s) => s.id === p.school_id)?.name ?? (p.requested_school || "—") },
             { label: "Joined", render: (p) => formatDate(p.created_at) },
             { label: "Actions", render: (p) => p.id === self ? <small>{translateUi("Your account")}</small> : (<div className="mb-actions">
               {translateUi((p.status === "pending" || requesting(p)) && <button className="hub-record-icon hub-record-approve" disabled={busy} aria-label={translateUi("Approve {p0}", { p0: translateUi(p.name) })} title={translateUi("Approve as {p0}", { p0: translateUi(roleName(p.requested_role || p.role)) })} onClick={() => void approve(p)}><CheckCircle2 size={17}/></button>)}
