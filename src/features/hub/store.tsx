@@ -534,7 +534,8 @@ export function HubProvider({ children }: {
                     for (const row of rows)
                         if (row.member_id !== account.id && !s.profiles.some(p => p.id === row.member_id))
                             s.profiles.push({ id: row.member_id, name: row.member_name, email: row.member_email, role: "Community member", membership: "Approved", bio: "", skills: [], leadership: [], clubIds: [], managedClubIds: [], joined: "" });
-                    const current = s.profiles.find(p => p.id === session.profileId);
+                    // Only the tab's own account takes the server's role (another tab may have signed in as someone else).
+                    const current = account.id === session.profileId ? s.profiles.find(p => p.id === session.profileId) : undefined;
                     if (current)
                         current.role = account.role === 'admin' ? 'Administrator' : account.role === 'trainer' ? 'Trainer' : account.role === 'mentor' ? 'Mentor' : account.role === 'leader' ? 'Club leader' : 'Community member';
                 });
@@ -640,7 +641,7 @@ export function HubProvider({ children }: {
                 demoSchools.splice(0, demoSchools.length, ...schools.map(x => ({ id: x.id, name: x.name, district: x.district })));
             const file = (id: string, name = "Attachment"): HubFile => ({ name, type: "", data: `/api/files/${id}`, size: 0 });
             update(s => {
-                const current = s.profiles.find(p => p.id === session.profileId);
+                const current = me.id === session.profileId ? s.profiles.find(p => p.id === session.profileId) : undefined;
                 if (current) {
                     current.schoolId = me.school_id ?? undefined;
                     current.requestedSchool = me.requested_school || undefined;
@@ -683,7 +684,7 @@ export function HubProvider({ children }: {
             skills?: string[];
             leadership?: string[];
         }>("/me").then(me => { if (!active)
-            return; const url = me.avatar_file_id ? `/api/avatars/${me.id}?v=${me.avatar_file_id}` : undefined; update(s => { const p = s.profiles.find(x => x.id === session.profileId); if (!p)
+            return; const url = me.avatar_file_id ? `/api/avatars/${me.id}?v=${me.avatar_file_id}` : undefined; update(s => { const p = me.id === session.profileId ? s.profiles.find(x => x.id === session.profileId) : undefined; if (!p)
             return; if (p.avatarUrl !== url)
             p.avatarUrl = url;
             // The server copy of the passport wins; an empty server value keeps what this browser already had until the member saves once.

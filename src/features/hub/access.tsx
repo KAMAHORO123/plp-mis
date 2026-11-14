@@ -7,6 +7,7 @@ import { Link, Navigate, Outlet, useLocation, useNavigate, useSearchParams, } fr
 import { ArrowRight, LockKeyhole, Eye, EyeOff, } from "lucide-react";
 import { categories, type HubRole } from "./data";
 import { today, uid, useHub, type Profile } from "./store";
+import { toast } from "sonner";
 import { Empty, Field, Heading, Panel, Spinner, Tag, TextLink, } from "./ui";
 import { Select } from "@/components/shared/form-controls";
 /** The staff role someone asked for at sign-up, as the dashboard names it. */
@@ -40,8 +41,16 @@ export function MemberGuard({ allowed }: {
     allowed?: HubRole[];
 }) {
     useSiteLanguage();
-    const { session, isMember, signOut } = useHub();
+    const { state, session, isMember, signOut, update, openSession } = useHub();
     const location = useLocation();
+    // Coming back to a tab re-checks the account: another tab may have signed in as someone else.
+    const [focusCheck, setFocusCheck] = useState(0);
+    useEffect(() => {
+        const recheck = () => { if (document.visibilityState === "visible") setFocusCheck(n => n + 1); };
+        window.addEventListener("focus", recheck);
+        document.addEventListener("visibilitychange", recheck);
+        return () => { window.removeEventListener("focus", recheck); document.removeEventListener("visibilitychange", recheck); };
+    }, []);
     // Sections remount this guard, so the last confirmed access is remembered: moving between
     // sections re-checks quietly instead of showing the spinner each time.
     const known = confirmedAccess && confirmedAccess.profileId === session?.profileId ? confirmedAccess.role : null;
@@ -53,13 +62,43 @@ export function MemberGuard({ allowed }: {
         let active = true;
         setAccessError("");
         platformApi<{
+            id: string;
+            name: string;
+            email: string;
             role: string;
+            requested_role: string | null;
             profile_completed_at: string | null;
         }>("/me").then(account => {
+            if (!active || !session)
+                return;
             const role: HubRole = account.role === 'admin' ? 'Administrator' : account.role === 'trainer' ? 'Trainer' : account.role === 'mentor' ? 'Mentor' : account.role === 'leader' ? 'Club leader' : 'Community member';
+            // The server's signed-in account is the truth. If this tab still shows another account (someone signed in
+            // as a different person in another tab, which replaces the shared sign-in), the tab switches to the real one,
+            // so a name, menu or dashboard never belongs to someone other than the account the server is acting for.
+            const switched = account.id !== session.profileId;
+            const local = state.profiles.find(x => x.id === account.id);
+            if (switched || !local || local.role !== role || local.membership !== "Approved" || local.requestedRole !== roleRequest(account.requested_role)) update(s => {
+                let p = s.profiles.find(x => x.id === account.id);
+                if (!p) {
+                    p = { id: account.id, name: account.name, email: account.email, role, bio: "", skills: [], leadership: [], clubIds: [], managedClubIds: [], joined: today(), membership: "Approved" };
+                    s.profiles.push(p);
+                }
+                p.name = account.name || p.name;
+                p.email = account.email || p.email;
+                p.membership = "Approved";
+                p.role = role;
+                p.requestedRole = roleRequest(account.requested_role);
+                s.currentId = account.id;
+            });
+            if (switched) {
+                confirmedAccess = null;
+                openSession(account.id, "member");
+                return;
+            }
+            const sameProfile = confirmedAccess?.profileId === account.id;
             // Administrators are not asked to complete the member profile.
-            const done = role === 'Administrator' || !!account.profile_completed_at || !!confirmedAccess?.complete;
-            confirmedAccess = session ? { profileId: session.profileId, role, complete: done } : null;
+            const done = role === 'Administrator' || !!account.profile_completed_at || (sameProfile && !!confirmedAccess?.complete);
+            confirmedAccess = { profileId: account.id, role, complete: done };
             if (active) {
                 setServerRole(role);
                 setComplete(done);
@@ -68,12 +107,15 @@ export function MemberGuard({ allowed }: {
             confirmedAccess = null;
             setServerRole(null);
             setAccessError(e.message);
-            if (e.status === 401)
+            if (e.status === 401) {
+                // Changing someone's role or status ends their sessions, so their new access starts at the next sign-in.
+                toast.info(translateUi("Please sign in again. Your session ended or your access was updated."));
                 signOut();
+            }
         } }).finally(() => { if (active)
             setChecked(true); });
         return () => { active = false; };
-    }, [session?.profileId, location.pathname]);
+    }, [session?.profileId, location.pathname, focusCheck]);
     if (!session) {
         // Signing out forgets the last confirmed role, so the next sign-in always starts from the server's answer.
         confirmedAccess = null;

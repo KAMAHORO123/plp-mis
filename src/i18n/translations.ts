@@ -11719,5 +11719,13 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "Are you sure you want to delete this account?": {
     "rw": "Uzi neza ko ushaka gusiba iyi konti?",
     "fr": "Voulez-vous vraiment supprimer ce compte ?"
+  },
+  "Not confirmed yet": {
+    "rw": "Ntiremezwa",
+    "fr": "Pas encore confirmée"
+  },
+  "Please sign in again. Your session ended or your access was updated.": {
+    "rw": "Ongera winjire. Igihe cyawe cyarangiye cyangwa uburenganzira bwawe bwahinduwe.",
+    "fr": "Reconnectez-vous. Votre session a pris fin ou votre accès a été mis à jour."
   }
 };
