@@ -67,7 +67,7 @@ export function StudioPage() {
     if (!admin)
         return <TrainerWorkspace />;
     return (<>
-      <Heading eyebrow="MAKE ROOM FOR LEARNING" title={translateUi(admin ? "Content studio" : "Trainer studio")} description={translateUi(admin ? "Manage courses, ALX enrolments and certificates, opportunities, and each part of the public website: the homepage slideshow, event banner, welcome popup and fun corner." : "Create learning experiences, review assignments, and support the next generation.")}/>
+      <Heading eyebrow="MAKE ROOM FOR LEARNING" title={translateUi(admin ? "Content studio" : "Trainer studio")} description={admin ? undefined : translateUi("Create learning experiences, review assignments, and support the next generation.")}/>
       <div className="hub-chips">
         {translateUi([
             "Courses",
