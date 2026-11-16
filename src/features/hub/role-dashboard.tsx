@@ -195,10 +195,10 @@ export function SchoolRequest() {
         const school = String(new FormData(event.currentTarget).get('school') || '').trim();
         setBusy(true);
         try {
-            const saved = await platformApi<{ requested_school: string }>('/me/school', 'PUT', { school });
-            update(s => { const me = s.profiles.find(p => p.id === profile.id); if (me) me.requestedSchool = saved.requested_school; });
+            const saved = await platformApi<{ requested_school: string; school_id: string | null }>('/me/school', 'PUT', { school });
+            update(s => { const me = s.profiles.find(p => p.id === profile.id); if (me) { me.requestedSchool = saved.requested_school; if (saved.school_id) me.schoolId = saved.school_id; } });
             setEditing(false);
-            toast.success(translateUi('Sent to PLP for confirmation'));
+            toast.success(translateUi(saved.school_id ? 'You are now linked to your school' : 'Sent to PLP for confirmation'));
         }
         catch (e) { toast.error(translateUi((e as Error).message)); }
         finally { setBusy(false); }

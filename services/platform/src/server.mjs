@@ -12,6 +12,7 @@ import { mailConfigured } from "./mail-config.mjs";
 import { applicantMailRoute } from "./applicant-mail.mjs";
 import { schoolCertificates } from "./school-certificates.mjs";
 import { funCornerSchema } from "./fun-corner.mjs";
+import { linkTypedSchools } from "./school-link.mjs";
 import { heroSlidesSchema, uploadedImages } from "./hero-slides.mjs";
 import { filesRoute, validateAttachments, avatarRoute } from "./files.mjs";
 import http from "node:http";
@@ -385,6 +386,7 @@ export function createServer({
         if (claimed) {
           await db.query("DELETE FROM email_verifications WHERE user_id=$1", [claimed.id]);
           await db.query("DELETE FROM sessions WHERE user_id=$1", [claimed.id]);
+          await linkTypedSchools(db, claimed.id);
         }
         await requestVerification(db, input.email);
         return send(202, {
@@ -585,8 +587,11 @@ export function createServer({
         const { school } = z.object({ school: z.string().trim().min(2, "Enter your school's name.").max(160) }).strict().parse(await body(req));
         await db.query("UPDATE users SET requested_school=$2 WHERE id=$1", [user.id, school]);
         await audit(db, user, "member.school-request", user.id);
+        // A name that matches a school in the Hub links them at once; otherwise PLP is told about the new school.
+        const [linked] = await linkTypedSchools(db, user.id);
+        if (linked) return send(200, { requested_school: "", school_id: linked.school_id });
         await notify(db, "admin", { title: `${user.name} asked to be assigned to a school`, body: school, link: "/applications" }, user.id);
-        return send(200, { requested_school: school });
+        return send(200, { requested_school: school, school_id: null });
       }
       if (p === "/me/details" && req.method === "PUT") {
         // The "complete your profile" step: personal, contact, work and interest details in one save.
@@ -805,6 +810,7 @@ export function createServer({
           requireIt(result.rowCount, 404, "School not found");
           await audit(tx, user, input ? "school.update" : "school.delete", id);
         });
+        if (input) await linkTypedSchools(db);
         return send(200, { ok: true });
       }
       if (p === "/users" && req.method === "GET") {
@@ -846,6 +852,8 @@ export function createServer({
             await tx.query("DELETE FROM sessions WHERE user_id=$1", [id]);
           await audit(tx, user, "access.update", id);
         });
+        // Approved as a club leader or mentor without a school chosen: use the school they typed, when it matches.
+        if (!input.school_id) await linkTypedSchools(db, id);
         await onAccessChanged(db, user, id, input.role, input.status, before);
         return send(200, { ok: true });
       }
@@ -1015,6 +1023,8 @@ export function createServer({
           );
           await audit(tx, user, "school.create", id);
         });
+        // People who typed this school's name at sign-up are linked to it now that it exists.
+        await linkTypedSchools(db);
         return send(201, { id });
       }
       const schoolPath = p.match(/^\/schools\/([0-9a-f-]{36})$/);
@@ -1029,6 +1039,7 @@ export function createServer({
             return r.rowCount;
           });
           requireIt(done, 404, "School not found");
+          await linkTypedSchools(db);
           return send(200, { id });
         }
         // A school with people or records keeps its history; only empty duplicates can be removed.

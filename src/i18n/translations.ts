@@ -10792,6 +10792,10 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "rw": "Itangazo ryongeye kugaragara ku rubuga",
     "fr": "La fenêtre est de retour sur le site"
   },
+  "You are now linked to your school": {
+    "rw": "Ubu uhujwe n'ishuri ryawe",
+    "fr": "Vous êtes maintenant lié à votre école"
+  },
   "Welcome popup saved": {
     "rw": "Itangazo ry'ikaze ryabitswe",
     "fr": "Fenêtre d'accueil enregistrée"
