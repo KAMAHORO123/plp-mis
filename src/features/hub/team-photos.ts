@@ -9,7 +9,7 @@ export const teamPhotos: Record<string, string> = {
  "Ntwari Abdallah": "ntwari-abdallah",
  "N. Jean De Dieu": "n-jean-de-dieu",
  "Rita Sandrine": "rita-sandrine",
- "Kamahoro Linda Kellia": "kamahoro-linda-kellia-3",
+ "Kamahoro Linda Kellia": "kamahoro-linda-kellia-4",
  "Livia Kirezi": "livia",
  "Kelly Gisubizo": "kelly-gisubizo",
  "Mutabazi": "mutabazi",
