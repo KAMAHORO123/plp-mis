@@ -34,11 +34,10 @@ export function EventFlyer({ item, link }: {
     const [welcome, setWelcome] = useState<WelcomePopup | null>(null);
     const close = useRef<HTMLButtonElement>(null);
     useEffect(() => {
-        if (item) return;
         let active = true;
         fetch('/api/public/welcome-popup', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then((v: WelcomePopup | null) => { if (active) setWelcome(v ?? defaultWelcomePopup); }).catch(() => { if (active) setWelcome(defaultWelcomePopup); });
         return () => { active = false; };
-    }, [item]);
+    }, []);
     useEffect(() => {
         if (closedThisVisit) return;
         let timer: number | undefined;
@@ -67,8 +66,8 @@ export function EventFlyer({ item, link }: {
         setOpen(false);
         closedThisVisit = true;
     }
-    // Without an event, wait for the administrator's popup and respect its on/off switch.
-    if (!open || (!item && (!welcome || !welcome.enabled))) return null;
+    // Wait for the administrator's popup settings: switching it off hides the event popup too.
+    if (!open || !welcome || !welcome.enabled) return null;
     return <div className="plp-promo-layer" role="presentation" onClick={e => { if (e.target === e.currentTarget) dismiss(); }}>
     <PromoCard item={item} welcome={welcome ?? defaultWelcomePopup} link={link} onClose={dismiss} closeRef={close}/>
   </div>;

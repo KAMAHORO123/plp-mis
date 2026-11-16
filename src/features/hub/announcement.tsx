@@ -2,7 +2,7 @@ import { translateUi, useSiteLanguage, formatDate } from '../../i18n/language';
 import { platformApi, uploadFile } from "./platform-api";
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDays, ArrowUpRight, Pause, Play, PencilLine } from 'lucide-react';
+import { CalendarDays, ArrowUpRight, Pause, Play, PencilLine, Power } from 'lucide-react';
 import { FormModal } from './modal';
 import { toast } from 'sonner';
 import { useHub, today } from './store';
@@ -107,10 +107,22 @@ export function WelcomePopupEditor() {
     if (profile.role !== 'Administrator')
         return null;
     const change = (key: keyof WelcomePopup, value: string | boolean) => setDraft(d => d && ({ ...d, [key]: value }));
+    // One click turns every website popup off (or back on) without opening the form.
+    async function toggle() {
+        const next = { ...saved, enabled: !saved.enabled };
+        setBusy(true);
+        try {
+            await platformApi('/welcome-popup', 'PUT', next);
+            setSaved(next);
+            toast.success(translateUi(next.enabled ? 'The popup is back on the website' : 'The popup is turned off'));
+        }
+        catch (err) { toast.error(translateUi((err as Error).message)); }
+        finally { setBusy(false); }
+    }
     const preview = (item: WelcomePopup) => <div className="plp-promo-preview"><PromoCard inline item={null} welcome={item} imageUrl={item.image ? `/api/files/${item.image}` : undefined} onClose={() => { }} link={(className, children, _onClick, to) => <a className={className} href={to} onClick={e => e.preventDefault()}>{children}</a>}/></div>;
     return <Panel>
- <div className="ws-panel-title"><div><h2>{translateUi("Welcome popup")} <span className={`ws-status ${saved.enabled ? 'ws-status-issued' : 'ws-status-returned'}`}>{translateUi(saved.enabled ? 'On' : 'Off')}</span></h2><p className="hub-caption">{translateUi("Visitors see this popup when they open the website and no event is live. During an event, the event popup is shown instead.")}</p></div>
- <button type="button" className="hub-button" onClick={() => setDraft(saved)}><PencilLine size={16}/>{translateUi("Edit popup")}</button></div>
+ <div className="ws-panel-title"><div><h2>{translateUi("Welcome popup")} <span className={`ws-status ${saved.enabled ? 'ws-status-issued' : 'ws-status-returned'}`}>{translateUi(saved.enabled ? 'On' : 'Off')}</span></h2><p className="hub-caption">{translateUi("Visitors see this popup when they open the website and no event is live. During an event, the event popup is shown instead. Turning the popup off hides both.")}</p></div>
+ <div className="hub-actions"><button type="button" className={`hub-button ${saved.enabled ? 'secondary' : ''}`} disabled={busy} onClick={toggle}><Power size={16}/>{translateUi(saved.enabled ? 'Turn off popup' : 'Turn on popup')}</button><button type="button" className="hub-button" onClick={() => setDraft(saved)}><PencilLine size={16}/>{translateUi("Edit popup")}</button></div></div>
  <dl className="an-facts"><div><dt>{translateUi("Style")}</dt><dd>{translateUi(saved.imageOnly ? 'Flyer only' : 'Headline and button')}</dd></div>{!saved.imageOnly && <><div><dt>{translateUi("Headline")}</dt><dd>{saved.title || '—'}</dd></div><div><dt>{translateUi("Button")}</dt><dd>{saved.cta || '—'}</dd></div></>}<div><dt>{translateUi("Image")}</dt><dd>{translateUi(saved.image ? 'Custom flyer' : 'Default photo')}</dd></div></dl>
  <h3 className="hub-space">{translateUi("Popup preview")}</h3>{preview(saved)}
  {draft && <FormModal wide title={translateUi("Edit welcome popup")} description={translateUi("Saving updates the popup on the public website straight away.")} onClose={() => { if (!busy) setDraft(null); }}><form className="hub-form" onSubmit={async (e) => {

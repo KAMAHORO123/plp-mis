@@ -10744,9 +10744,9 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "rw": "Itangazo ry'ikaze",
     "fr": "Fenêtre d'accueil"
   },
-  "Visitors see this popup when they open the website and no event is live. During an event, the event popup is shown instead.": {
-    "rw": "Abasura urubuga babona iri tangazo iyo nta gikorwa kiriho. Iyo hari igikorwa, hagaragara itangazo ry'igikorwa.",
-    "fr": "Les visiteurs voient cette fenêtre en ouvrant le site lorsqu'aucun événement n'est en cours. Pendant un événement, la fenêtre de l'événement s'affiche à la place."
+  "Visitors see this popup when they open the website and no event is live. During an event, the event popup is shown instead. Turning the popup off hides both.": {
+    "rw": "Abasura urubuga babona iri tangazo iyo nta gikorwa kiriho. Iyo hari igikorwa, hagaragara itangazo ry'igikorwa. Kurizimya bihagarika byombi.",
+    "fr": "Les visiteurs voient cette fenêtre en ouvrant le site lorsqu'aucun événement n'est en cours. Pendant un événement, la fenêtre de l'événement s'affiche à la place. La désactiver masque les deux."
   },
   "Show the welcome popup": {
     "rw": "Erekana itangazo ry'ikaze",
@@ -10775,6 +10775,22 @@ export const translations: Record<string, {rw: string; fr: string}> = {
   "Save welcome popup": {
     "rw": "Bika itangazo ry'ikaze",
     "fr": "Enregistrer la fenêtre d'accueil"
+  },
+  "Turn off popup": {
+    "rw": "Zimya itangazo",
+    "fr": "Désactiver la fenêtre"
+  },
+  "Turn on popup": {
+    "rw": "Fungura itangazo",
+    "fr": "Activer la fenêtre"
+  },
+  "The popup is turned off": {
+    "rw": "Itangazo ryazimijwe",
+    "fr": "La fenêtre est désactivée"
+  },
+  "The popup is back on the website": {
+    "rw": "Itangazo ryongeye kugaragara ku rubuga",
+    "fr": "La fenêtre est de retour sur le site"
   },
   "Welcome popup saved": {
     "rw": "Itangazo ry'ikaze ryabitswe",
