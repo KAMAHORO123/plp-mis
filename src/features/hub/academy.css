@@ -150,3 +150,22 @@
 .ac-step-nav .hub-button>span{display:grid;min-width:0}.ac-step-nav .hub-button>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ac-step-nav .hub-button small{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.8}
 html[data-theme=dark] .ac-step-nav{background:#111827;border-color:#273449}
 @media(max-width:560px){.ac-step-nav .hub-button{max-width:none;flex:1}}
+
+/* mobile-readable-text: generated, do not edit by hand */
+@media (max-width: 640px) {
+  .ac-resume small,
+  .ac-card-art span,
+  .ac-badge,
+  .ac-syllabus span,
+  .ac-outline-module > p,
+  .ac-outline-item small,
+  .ac-exam-facts span,
+  .ac-result p span,
+  .ac-timer small,
+  .ac-question legend span,
+  .pr-camera span,
+  .pr-camera > small,
+  .ac-step-nav .hub-button small { font-size: 12px; }
+  .ac-hero-kicker { font-size: 12px !important; }
+}
+/* end mobile-readable-text */

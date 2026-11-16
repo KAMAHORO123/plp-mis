@@ -112,3 +112,13 @@ html[data-theme="dark"] .plp-promo-stats dd { color: #85bff4; }
 /* Popups are square-cornered: crisp edges for the card and everything inside it (status dots stay round). */
 .plp-flyer, .plp-flyer *, .plp-promo, .plp-promo *, .plp-promo-layer .plp-promo { border-radius: 0 !important; }
 .plp-promo-live i { border-radius: 50% !important; }
+
+/* mobile-readable-text: generated, do not edit by hand */
+@media (max-width: 640px) {
+  .plp-announcement-countdown,
+  .plp-notice-chip,
+  .plp-promo-badge,
+  .plp-promo-clock span,
+  .plp-promo-stats dt { font-size: 12px; }
+}
+/* end mobile-readable-text */

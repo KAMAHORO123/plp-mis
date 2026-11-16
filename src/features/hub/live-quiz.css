@@ -268,3 +268,9 @@
 .hub-app .lq-card-new:focus-visible { outline: 3px solid var(--lq-gold); outline-offset: 3px; }
 .hub-app .lq-card-cover { overflow: visible; }
 .hub-app .lq-card-shape { z-index: 1; }
+
+/* mobile-readable-text: generated, do not edit by hand */
+@media (max-width: 640px) {
+  .hub-app .lq-eyebrow { font-size: 12px; }
+}
+/* end mobile-readable-text */

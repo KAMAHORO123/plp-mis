@@ -49,3 +49,9 @@ html[data-theme="dark"] .cp-hero { background: linear-gradient(120deg, #0c2238 0
 .cp-hero .cp-skip:hover { background: rgba(255, 255, 255, .2); }
 .cp-submit-actions { display: flex; align-items: center; gap: 10px; }
 @media (max-width: 640px) { .cp-submit-actions { flex-direction: column-reverse; align-items: stretch; } }
+
+/* mobile-readable-text: generated, do not edit by hand */
+@media (max-width: 640px) {
+  .cp-hero .cp-kicker { font-size: 12px; }
+}
+/* end mobile-readable-text */

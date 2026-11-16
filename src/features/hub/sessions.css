@@ -81,3 +81,31 @@ html[data-theme=dark] .my-events time{background:#0f2a27;color:#99f6e4}
 .cal-day-existing li small{margin-left:auto;font-size:12px;color:var(--ds-muted,#667085)}
 /* Days on the full calendar can be clicked to add an event. */
 .calendar-page .calendar-grid button{cursor:pointer}
+
+@media (max-width: 640px) { .week-next a { display: block; padding: 10px 0; margin: -10px 0; } }
+
+/* Phones: the month name and the previous / Today / next buttons share one line. */
+@media (max-width: 640px) {
+  .schedule-month .hub-actions { flex-wrap: nowrap; gap: 6px; }
+  .schedule-month h3 { white-space: nowrap; }
+}
+
+/* mobile-readable-text: generated, do not edit by hand */
+@media (max-width: 640px) {
+  .schedule-grid em,
+  .schedule-badge,
+  .credit-label,
+  .calendar-legend,
+  .is-compact .schedule-grid>small,
+  .is-compact .schedule-month .hub-button,
+  .calendar-chips em,
+  .calendar-chips small,
+  .week-days small,
+  .week-legend,
+  .week-next time small,
+  .week-next li>div>span,
+  .ms-date small,
+  .my-events time small,
+  .cal-day-existing>small { font-size: 12px; }
+}
+/* end mobile-readable-text */

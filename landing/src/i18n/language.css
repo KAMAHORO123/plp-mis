@@ -35,3 +35,9 @@ html[data-theme="dark"] .plp-language-code, html[data-theme="dark"] .plp-theme-t
   .plp-theme-toggle, .hub-app .plp-theme-toggle { width:36px; height:36px; }
 }
 .hub-app .plp-language-switcher.is-compact select, .plp-language-switcher.is-compact select { width:100%; min-height:0; }
+
+/* mobile-readable-text: generated, do not edit by hand */
+@media (max-width: 640px) {
+  .plp-language-switcher select { font-size: 12px; }
+}
+/* end mobile-readable-text */

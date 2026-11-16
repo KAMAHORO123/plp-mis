@@ -723,3 +723,70 @@ html[data-theme="dark"] .alx-status.enrolled, html[data-theme="dark"] .hub-app .
 .ws-school-request input { flex: 1; min-width: 0; }
 @media (max-width: 760px) { .ws-school-request form { grid-template-columns: 1fr; } }
 .ws-school-request { margin-bottom: 18px; }
+
+/* Phones: row checkboxes are easier to hit with a thumb. */
+@media (max-width: 640px) {
+  .ws-check { width: 22px; height: 22px; }
+  .ws-table .ws-check-cell { width: 48px; }
+}
+
+/* Phones: the small notes under dashboard figures ("last 30 days") stay readable. */
+@media (max-width: 640px) { .dv-delta small, .dv-rank-label small { font-size: 12px; } }
+
+/* mobile-readable-text: generated, do not edit by hand */
+@media (max-width: 640px) {
+  .ws-hero-seal span,
+  .ws-stats small,
+  .ws-pill,
+  .ws-next-list > div > span,
+  .ws-activity p,
+  .ws-status,
+  .ws-process span,
+  .ws-recipient-list small,
+  .ws-table th,
+  .ws-chat-panel header small,
+  .ws-chat-messages small,
+  .ws-chat-suggestions button,
+  .ws-demo-grid small,
+  .ws-stat-top,
+  .ws-tabs button span,
+  .ws-table td small,
+  .ae-list small,
+  .act-date,
+  .act-type,
+  .act-status,
+  .pv-cover,
+  .pv-list small,
+  .am-steps small,
+  .am-section h3 span,
+  .am-people small,
+  .am-people em,
+  .am-tag,
+  .alx-focus,
+  .alx-status,
+  .nb-count,
+  .ws-tab-count,
+  .dv-rank-detail,
+  .cw-preview small,
+  .hub-dialog .ws-table thead th,
+  .hub-dialog .ws-table td small,
+  .cc-card .cc-small,
+  .cc-card .cc-foot dt,
+  .cc-card .cc-foot dd,
+  .cc-card .cc-foot code,
+  .cc-card .cc-qr small,
+  .cc-card .cc-meta span,
+  .cc-card .cc-badge,
+  .op-type,
+  .op-cta small,
+  .community-discovery-compact .act-date,
+  .community-discovery-compact .act-type,
+  .opportunities-page .op-type,
+  .cc-card .cc-qr span,
+  .ae-facts dt,
+  .ae-recipients small,
+  .ae-preview small { font-size: 12px; }
+  .ws-kicker,
+  .hub-mis .ws-page-header .ws-kicker { font-size: 12px !important; }
+}
+/* end mobile-readable-text */

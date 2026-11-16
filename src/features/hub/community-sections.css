@@ -215,3 +215,30 @@ html[data-theme="dark"] .plp-voices-nav>button{background:#142335;border-color:#
 html[data-theme="dark"] .plp-voices-back{background-color:#142335}
 @media(max-width:860px){.plp-voices{grid-template-columns:1fr}.plp-voices-photo{order:-1;width:min(280px,80%)}.plp-voices figure{min-height:0}}
 @media(prefers-reduced-motion:reduce){.plp-voices figure,.plp-voices-photo img{animation:none}.plp-voices-people button{transition:none}}
+
+/* mobile-readable-text: generated, do not edit by hand */
+@media (max-width: 640px) {
+  .plp-announcement-label,
+  .plp-public-site .plp-sample-note,
+  .plp-small-controls,
+  .plp-testimonials figcaption div>span,
+  .plp-fun-panel a,
+  .plp-canada-art small,
+  .plp-announcement,
+  .plp-imigongo-banner .plp-announcement-label,
+  .plp-announcement-message>span:last-child,
+  .plp-imigongo-banner a.plp-announcement-cta,
+  .plp-imigongo-banner .plp-announcement-date,
+  .plp-announcement-sample,
+  .plp-canada-feature figcaption,
+  .plp-canada-gallery figcaption > span,
+  .plp-trivia-meta,
+  .plp-trivia-options small,
+  .plp-quote-bottom small,
+  .plp-quote-source,
+  .plp-imigongo-banner .plp-announcement-message strong,
+  .plp-banner-bold .plp-announcement-message > span:last-child,
+  .plp-banner-bold .plp-announcement-countdown,
+  .plp-public-site .plp-banner-bold a.plp-announcement-cta { font-size: 12px; }
+}
+/* end mobile-readable-text */

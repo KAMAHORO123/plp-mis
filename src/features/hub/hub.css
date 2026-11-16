@@ -2077,3 +2077,45 @@
   .hub-auth .hub-form .hub-button.hub-access-submit { min-height: 44px; }
   .hub-auth .hub-access-shell .hub-access-footnote { margin-top: 12px; }
 }
+
+/* mobile-readable-text: generated, do not edit by hand */
+@media (max-width: 640px) {
+  .hub-brand small,
+  .hub-nav-label,
+  .hub-credit-mini p,
+  .hub-credit-mini a,
+  .hub-legacy-link,
+  .hub-hero-note,
+  .hub-art-caption p,
+  .hub-art-label,
+  .hub-impact-strip span,
+  .hub-impact-strip p,
+  .hub-tag,
+  .hub-stats span,
+  .hub-chips button,
+  .hub-course-art span,
+  .hub-course-meta,
+  .hub-progress > div,
+  .hub-club-card p,
+  .hub-credit-hero > div p,
+  .hub-art-caption strong,
+  .hub-header .hub-button,
+  .hub-hero .hub-button,
+  .hub-footer,
+  .hub-club-card > span,
+  .hub-application-steps,
+  .hub-dev-note,
+  .hub-website-link,
+  .hub-account small,
+  .hub-member-footer,
+  .hub-nav-count,
+  .hub-signin,
+  .hub-header .hub-brand small,
+  .hub-account strong { font-size: 12px; }
+  .hub-eyebrow,
+  .hub-footer-note,
+  .hub-app input[type="file"],
+  .hub-caption,
+  .hub-heading .hub-eyebrow { font-size: 12px !important; }
+}
+/* end mobile-readable-text */

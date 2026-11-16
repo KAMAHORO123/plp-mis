@@ -223,3 +223,13 @@ html[data-theme="dark"] .tw-tasks li { border-color: #232c35; }
 html[data-theme="dark"] .tw-tasks li > div small { color: #9fb2c4; }
 @media (max-width: 640px) { .tw-tasks li { grid-template-columns: 1fr; gap: 6px; } .tw-tasks li > .ws-status { justify-self: start; } }
 html[data-theme="dark"] .plp-dashboard :is(.ws-page-header, .hub-heading) { border: 0 !important; padding-left: 0; padding-right: 0; }
+
+/* mobile-readable-text: generated, do not edit by hand */
+@media (max-width: 640px) {
+  .plp-dashboard .hub-eyebrow,
+  .plp-dashboard .ws-table th,
+  .plp-dashboard .hub-tag,
+  .plp-dashboard .ws-insight-legend,
+  .ms-agenda li > span small { font-size: 12px; }
+}
+/* end mobile-readable-text */

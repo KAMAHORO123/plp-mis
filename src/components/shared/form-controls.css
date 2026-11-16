@@ -118,3 +118,10 @@
 /* The FAQ chat's language row: a compact control, not a full-width field. */
 .hub-app .ws-chat-language .fc-field { width: auto; max-width: 170px; }
 .hub-app .ws-chat-language .fc-trigger { min-height: 34px; padding: 4px 10px; font-size: 12.5px; }
+
+/* mobile-readable-text: generated, do not edit by hand */
+@media (max-width: 640px) {
+  .fc-cal-week span,
+  :root .hub-app .ws-tools-toggle b { font-size: 12px; }
+}
+/* end mobile-readable-text */

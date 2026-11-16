@@ -94,3 +94,11 @@ html[data-theme="dark"] .lqp-host-link { background: #f2b544; color: #3a2600; }
 html[data-theme="dark"] .hub-app .lqp-step-no { border-color: #142335; }
 html[data-theme="dark"] .hub-app .lqp-kicker { color: #9fd0ff; }
 @media (prefers-reduced-motion: reduce) { .hub-app .lqp-steps li { transition: none; } .hub-app .lqp-steps li:hover { transform: none; } }
+
+/* mobile-readable-text: generated, do not edit by hand */
+@media (max-width: 640px) {
+  .hub-app .lqp-eyebrow,
+  .hub-app .lqp-kicker,
+  .hub-app .lqp-art-label { font-size: 12px; }
+}
+/* end mobile-readable-text */

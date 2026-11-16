@@ -873,3 +873,50 @@ html[data-theme="dark"] .plp-team-all-grid small { color: #a9bccd; }
 .plp-team-all-grid { min-height: 0; flex: 1; }
 .plp-team .plp-team-all-grid { margin: 0; padding: 22px 28px 28px; gap: 16px; }
 @media (max-width: 640px) { .plp-team .plp-team-all-grid { padding: 14px 14px 18px; gap: 10px; } }
+
+/* Phones: every link and control is big enough to tap with a thumb (about 40px tall). */
+@media (max-width: 640px) {
+  .plp-showcase-bars button { height: 40px; }
+  .plp-programme-index { gap: 0 22px; }
+  .plp-programme-index a { min-height: 40px; }
+}
+
+/* mobile-readable-text: generated, do not edit by hand */
+@media (max-width: 640px) {
+  .plp-hero-kicker,
+  .plp-main-photo figcaption,
+  .plp-side-photo figcaption,
+  .plp-hero-baseline,
+  .plp-public-site .hub-header .hub-button,
+  .plp-moment figcaption span,
+  .plp-footer-invitation > span,
+  .plp-footer-wordmark span,
+  .plp-footer-bottom,
+  .plp-section-label,
+  .plp-org-hero figcaption,
+  .plp-programme-feature figcaption,
+  .plp-impact-lead figcaption,
+  .plp-org-wide-photo figcaption,
+  .plp-reach > p > span,
+  .plp-reach dt,
+  .plp-pathway-editorial li > span,
+  .plp-team-group-label,
+  .plp-team-units dt,
+  .plp-impact-record article > span,
+  .plp-poster-number,
+  .plp-public-site .plp-poster-caption p,
+  .plp-poster-details small,
+  .plp-public-site .hub-brand small,
+  .plp-footer-logo small,
+  .plp-public-site .hub-brand .plp-nav-wordmark,
+  .plp-pathway-symbol span,
+  .plp-hub-core > span,
+  .plp-hub-float span,
+  .plp-hub-visual-note,
+  .plp-showcase-kicker,
+  .plp-showcase :is(h1, h2) .plp-hero-name,
+  .plp-team-all-grid small { font-size: 12px; }
+  .plp-source-note,
+  .plp-source-download p { font-size: 12px !important; }
+}
+/* end mobile-readable-text */
