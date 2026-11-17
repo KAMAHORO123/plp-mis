@@ -881,6 +881,39 @@ html[data-theme="dark"] .plp-team-all-grid small { color: #a9bccd; }
   .plp-programme-index a { min-height: 40px; }
 }
 
+/* Management team: three labelled bands, one card per person, no connecting lines (row order shows who reports to whom). */
+.plp-management { max-width: 1250px; margin: auto; padding: 64px 0; display: grid; gap: 22px; }
+.plp-mgmt-band { position: relative; border: 1.5px solid #2f3e6b; border-radius: 18px; padding: 44px 18px 20px; display: grid; gap: 14px; }
+.plp-mgmt-band.is-departments { border-color: #5d7f57; }
+.plp-mgmt-band.is-dashed { border: 1.5px dashed #8a94a6; }
+.plp-mgmt-band > h3 { position: absolute; top: 16px; left: 20px; margin: 0; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #1d2b4f; }
+.plp-mgmt-row { display: flex; flex-wrap: wrap; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.plp-mgmt-row.is-center { justify-content: center; }
+.plp-mgmt-row.is-start { justify-content: flex-start; }
+.plp-mgmt-card { width: 200px; display: grid; justify-items: center; align-content: start; gap: 2px; padding: 14px 12px 16px; border: 1.5px solid #2f3e6b; border-radius: 12px; background: #e6e7f0; text-align: center; }
+.plp-mgmt-card img, .plp-mgmt-photo-gap { width: 100%; aspect-ratio: 1; border-radius: 8px; margin-bottom: 10px; }
+.plp-mgmt-card img { object-fit: cover; object-position: center 22%; background: #d9dce4; }
+/* No photo yet: an empty square, kept so a picture can be added later. */
+.plp-mgmt-photo-gap { display: block; background: rgba(255,255,255,.55); border: 1.5px dashed rgba(47,62,107,.28); }
+.plp-mgmt-card strong { font-size: 14px; line-height: 1.3; color: #101828; }
+.plp-mgmt-card span { font-size: 12.5px; line-height: 1.35; color: #4a5568; }
+.plp-mgmt-card.tone-lead, .plp-mgmt-card.tone-strategy { background: #e6e7f0; border-color: #2f3e6b; }
+.plp-mgmt-card.tone-programmes { background: #e9ebe6; border-color: #5d7f57; }
+.plp-mgmt-card.tone-office { background: #f5f3ea; border-color: #d2b06a; }
+.plp-mgmt-card.tone-oversight { background: #eceef1; border-color: #6b7486; }
+html[data-theme="dark"] .plp-mgmt-band > h3 { color: #dbe4f0; }
+html[data-theme="dark"] .plp-mgmt-card { background: #141c2b !important; }
+html[data-theme="dark"] .plp-mgmt-card strong { color: #f1f5f9; }
+html[data-theme="dark"] .plp-mgmt-card span { color: #a8b8cb; }
+@media (max-width: 640px) {
+  .plp-management { padding: 44px 0; }
+  .plp-mgmt-band { padding: 40px 10px 14px; border-radius: 14px; }
+  .plp-mgmt-row { gap: 10px; justify-content: center !important; }
+  .plp-mgmt-card { width: calc(50% - 5px); padding: 10px 8px 12px; }
+  .plp-mgmt-card strong { font-size: 13px; }
+  .plp-mgmt-card span { font-size: 12px; }
+}
+
 /* mobile-readable-text: generated, do not edit by hand */
 @media (max-width: 640px) {
   .plp-hero-kicker,

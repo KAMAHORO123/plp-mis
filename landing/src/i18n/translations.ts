@@ -1,5 +1,21 @@
 // Shared UI catalogue. Personal names and user-entered content retain their original text.
 export const translations: Record<string, {rw: string; fr: string}> = {
+  "Our management team": {
+    "rw": "Itsinda ry'ubuyobozi bwacu",
+    "fr": "Notre équipe de direction"
+  },
+  "Executive Committee": {
+    "rw": "Komite Nyobozi",
+    "fr": "Comité exécutif"
+  },
+  "Special Oversight Teams": {
+    "rw": "Amatsinda yihariye y'igenzura",
+    "fr": "Équipes de contrôle spéciales"
+  },
+  "Departments": {
+    "rw": "Amashami",
+    "fr": "Départements"
+  },
 "Switch to dark theme": {"rw": "Koresha insanganyamatsiko yijimye", "fr": "Activer le thème sombre"},
 "Switch to light theme": {"rw": "Koresha insanganyamatsiko yaka", "fr": "Activer le thème clair"},
 "Essential cookies only.": {"rw": "Cookies za ngombwa gusa.", "fr": "Cookies essentiels uniquement."},

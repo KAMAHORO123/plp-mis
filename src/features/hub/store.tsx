@@ -33,6 +33,8 @@ export interface Profile {
     /** Uploaded profile picture served by the platform, if any. */
     avatarUrl?: string;
 }
+/** The sample courses the Hub used to ship with; they are not official PLP courses. */
+const RETIRED_SAMPLE_COURSES = ["personal-leadership", "career-readiness", "startup-fundamentals", "digital-literacy", "peace-leadership"];
 export interface Enrollment {
     memberId: string;
     courseId: string;
@@ -302,10 +304,15 @@ function read(): HubState {
                     managedClubIds: p.managedClubIds ?? [],
                 }));
             if (Array.isArray(saved.courses))
-                saved.courses = saved.courses.map((c: Course) => ({
+                saved.courses = saved.courses.filter((c: Course) => !RETIRED_SAMPLE_COURSES.includes(c.id)).map((c: Course) => ({
                     ...c,
                     ownerId: c.ownerId,
                 }));
+            // The old sample courses were removed: their enrolments and certificates go with them.
+            if (Array.isArray(saved.enrollments))
+                saved.enrollments = saved.enrollments.filter((e: Enrollment) => !RETIRED_SAMPLE_COURSES.includes(e.courseId));
+            if (Array.isArray(saved.certificates))
+                saved.certificates = saved.certificates.filter((c: HubCertificate) => !RETIRED_SAMPLE_COURSES.includes(c.courseId));
         }
         if (saved?.version === 1 &&
             Object.keys(fresh).every((key) => key === "emailCleanupVersion" || key === "version" || key === "currentId" || key === "schoolRecords" || key === "operations" || Array.isArray(saved[key]))) {

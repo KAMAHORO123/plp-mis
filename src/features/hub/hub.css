@@ -1832,9 +1832,10 @@
 .hub-mis .hub-brand p:last-child {
   color: hsl(var(--primary));
 }
+/* The full PLP logo, the same one the website uses. */
 .hub-mis .hub-brand img {
-  width: 28px;
-  height: 28px;
+  width: auto;
+  height: 62px;
 }
 .hub-mis .hub-content {
   padding: 24px 32px;

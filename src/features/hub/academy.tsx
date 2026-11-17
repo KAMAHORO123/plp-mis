@@ -131,7 +131,7 @@ export function AcademyPage() {
         }))}
       </div>
       <Pager {...coursePage}/>
-      {translateUi(!list.length && <Empty>{translateUi("No courses match. Try another pathway, level, or clear your search.")}</Empty>)}
+      {translateUi(!list.length && <Empty>{translateUi(published.length ? "No courses match. Try another pathway, level, or clear your search." : "New courses are on the way. PLP trainers are preparing them, so check back soon.")}</Empty>)}
     </div>);
 }
 export type Item = {

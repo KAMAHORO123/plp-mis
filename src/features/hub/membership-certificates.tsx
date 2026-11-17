@@ -47,7 +47,7 @@ function WordingFields({ draft, set }: {
     return <div className="cw-fields">
   <Field label={translateUi("Certificate title")}><input list="cw-titles" value={draft.title} onChange={e => set({ ...draft, title: e.target.value })} required minLength={3} maxLength={60}/><datalist id="cw-titles">{translateUi(TITLES.map(t => <option key={t} value={t}/>))}</datalist></Field>
   <Field label={translateUi("Awarded for")}><input value={draft.programme} onChange={e => set({ ...draft, programme: e.target.value })} required minLength={3} maxLength={100} placeholder={translateUi("e.g. Peace Club Leadership 2026")}/></Field>
-  <Field label={translateUi("Citation ({p0}/300)", { p0: translateUi(draft.citation.length) })}><textarea value={draft.citation} onChange={e => set({ ...draft, citation: e.target.value })} maxLength={300} rows={3}/></Field>
+  <Field label={translateUi("Own wording (optional, {p0}/300)", { p0: translateUi(draft.citation.length) })}><textarea value={draft.citation} onChange={e => set({ ...draft, citation: e.target.value })} maxLength={300} rows={3} placeholder={translateUi("Leave empty to use PLP's official wording: committee members are thanked for their role, members for their service, each with their school's full name.")}/></Field>
   <div className="ws-form-grid"><Field label={translateUi("Term starts (optional)")}><DateInput type="date" value={draft.periodFrom} max={draft.periodTo || todayISO()} onChange={e => set({ ...draft, periodFrom: e.target.value })}/></Field><Field label={translateUi("Term ends (optional)")}><DateInput type="date" value={draft.periodTo} min={draft.periodFrom || undefined} onChange={e => set({ ...draft, periodTo: e.target.value })}/></Field></div>
  </div>;
 }

@@ -220,7 +220,7 @@ function Layout({ privateWorkspace = false }: {
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b border-border bg-background px-4 sm:px-6">
             <div className="flex min-w-0 items-center gap-3">
-              <Link to="/hub" className="hub-topbar-mark lg:hidden" aria-label={translateUi("Dashboard")}><img src="/favicon.svg" alt=""/></Link>
+              <Link to="/hub" className="hub-topbar-mark lg:hidden" aria-label={translateUi("Dashboard")}><img className="plp-logo-light" src="/logo.svg" alt=""/><img className="plp-logo-dark" src="/logo-dark.svg" alt=""/></Link>
               <span className="hidden text-sm text-muted-foreground sm:inline">{translateUi(" Hub / ")}</span>
               <span className="hub-topbar-title truncate text-sm font-medium">
                 {translateUi(current?.label ?? "Member workspace")}

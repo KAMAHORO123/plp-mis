@@ -29,13 +29,30 @@ export interface IssuedCertificate { id: string; recipient: string; programme: s
 // The wording every school certificate falls back to, so previews and downloads always read the same.
 export const DEFAULT_SCHOOL_TITLE = 'Certificate of Membership';
 export const DEFAULT_SCHOOL_PROGRAMME = 'Service as a PLP member';
-export const DEFAULT_CITATION = 'In recognition of dedicated service to the Peace and Love Proclaimers community and for helping build a culture of peace at school.';
+/** The sentence certificates used before PLP's official wording; certificates that still carry it now show the official wording. */
+const OLD_DEFAULT_CITATION = 'In recognition of dedicated service to the Peace and Love Proclaimers community and for helping build a culture of peace at school.';
+/** An empty citation means "use PLP's official wording" (see officialCitation). */
+export const DEFAULT_CITATION = '';
+/**
+ * PLP's official certificate wording, exactly as PLP management wrote it; only the role and school are filled in.
+ * School Club Committee members (anyone given a role) get the committee sentence; everyone else the member sentence.
+ */
+export function officialCitation(role?: string | null, school?: string | null) {
+  const where = school?.trim();
+  return role?.trim()
+    ? `With sincere thanks for your service as ${role.trim()} of Peace and Love Proclaimers (PLP)${where ? ` ${where}` : ''}, and in recognition of your meritorious service, tireless efforts, and valuable contributions to the organization.`
+    : `With sincere thanks to your service, your outstanding contribution, tireless effort as a member of Peace and Love Proclaimers (PLP)${where ? ` from ${where}` : ''}.`;
+}
 export const verificationUrlFor = (id: string) => `${window.location.origin}/verify/${encodeURIComponent(id)}`;
 
 /** The one description of a school certificate used by the preview card, the member's download and the leader's batch. */
 export function schoolCertificateDesign(c: { id: string; recipient: string; issued: string; school?: string | null; title?: string | null; programme?: string | null; citation?: string | null; role?: string | null; periodFrom?: string | null; periodTo?: string | null; verificationUrl?: string }): CertificateDesignData {
   return {
-    recipient: c.recipient, title: c.title || DEFAULT_SCHOOL_TITLE, role: c.role || undefined, citation: c.citation || DEFAULT_CITATION,
+    // The official wording already names the role, so it is not printed again on its own line.
+    ...(c.citation?.trim() && c.citation.trim() !== OLD_DEFAULT_CITATION
+      ? { role: c.role || undefined, citation: c.citation.trim() }
+      : { role: undefined, citation: officialCitation(c.role, c.school) }),
+    recipient: c.recipient, title: c.title || DEFAULT_SCHOOL_TITLE,
     period: formatPeriod(c.periodFrom, c.periodTo), programme: c.programme || DEFAULT_SCHOOL_PROGRAMME,
     organization: c.school || 'Peace and Love Proclaimers', recognition: 'In recognition of dedicated service to',
     dateLabel: 'ISSUED', completed: c.issued, issued: c.issued, authorization: 'PLP administrator',
@@ -114,11 +131,11 @@ export async function downloadCertificatePDF(certificates: CertificateDesignData
   pdf.setFont('helvetica','normal');pdf.setFontSize(10);pdf.setTextColor(99,112,128);pdf.text('Presented to',148.5,88,{align:'center'});
   pdf.setFont('times','bold');pdf.setTextColor(18,54,82);pdf.setFontSize(29);pdf.setFontSize(Math.min(29,29*235/Math.max(pdf.getTextWidth(certificate.recipient),1)));pdf.text(certificate.recipient,148.5,103,{align:'center'});
   pdf.setDrawColor(76,139,191);pdf.line(90,110,207,110);
-  // Optional role, then the citation (up to two lines) or the standard recognition line, then programme and school.
+  // Optional role, then the citation (up to three lines) or the standard recognition line, then programme and school.
   let y=110;
   if(certificate.role){pdf.setFont('times','italic');pdf.setFontSize(12);pdf.setTextColor(65,94,118);fit(pdf,certificate.role,12,200);pdf.text(certificate.role,148.5,117,{align:'center'});y=117;}
   pdf.setFont('helvetica','normal');pdf.setFontSize(10);pdf.setTextColor(99,112,128);
-  const lines=(pdf.splitTextToSize(certificate.citation||certificate.recognition,205) as string[]).slice(0,2);
+  const lines=(pdf.splitTextToSize(certificate.citation||certificate.recognition,215) as string[]).slice(0,3);
   lines.forEach((l,n)=>pdf.text(l,148.5,y+9+n*5,{align:'center'}));y+=9+(lines.length-1)*5;
   pdf.setFont('helvetica','bold');pdf.setTextColor(18,54,82);pdf.setFontSize(15);fit(pdf,certificate.programme,15,235);pdf.text(certificate.programme,148.5,y+11,{align:'center'});
   pdf.setFont('helvetica','normal');pdf.setFontSize(10);pdf.text(certificate.organization,148.5,y+18,{align:'center'});

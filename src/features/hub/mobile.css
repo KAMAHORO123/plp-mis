@@ -31,8 +31,8 @@
   background: #d92d20; color: #fff; font-size: 10.5px; font-weight: 700; line-height: 18px; text-align: center;
   box-shadow: 0 0 0 2px var(--ds-surface);
 }
-:root .hub-app.hub-mis.plp-dashboard .hub-topbar-mark { display: none; width: 32px; height: 32px; align-items: center; justify-content: center; }
-:root .hub-app.hub-mis.plp-dashboard .hub-topbar-mark img { width: 28px; height: 28px; }
+:root .hub-app.hub-mis.plp-dashboard .hub-topbar-mark { display: none; height: 40px; align-items: center; justify-content: center; }
+:root .hub-app.hub-mis.plp-dashboard .hub-topbar-mark img { width: auto; height: 38px; }  /* the full PLP logo, as on the website */
 
 @media (max-width: 1023px) {
   :root .hub-app.hub-mis.plp-dashboard .hub-tabbar { display: grid; }

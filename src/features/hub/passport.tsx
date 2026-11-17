@@ -61,8 +61,9 @@ export function JourneyPage() {
       <div className="hub-grid two">
         {translateUi(enrollments
             .filter((e) => !e.completedAt)
-            .map((e) => {
-            const c = state.courses.find((c) => c.id === e.courseId)!;
+            .flatMap((e) => {
+            const c = state.courses.find((c) => c.id === e.courseId);
+            if (!c) return [];
             return (<Panel key={c.id}>
                 <Tag>{translateUi(c.category)}</Tag>
                 <h2>{translateUi(c.title)}</h2>

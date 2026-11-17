@@ -10796,6 +10796,34 @@ export const translations: Record<string, {rw: string; fr: string}> = {
     "rw": "Ubu uhujwe n'ishuri ryawe",
     "fr": "Vous êtes maintenant lié à votre école"
   },
+  "New courses are on the way. PLP trainers are preparing them, so check back soon.": {
+    "rw": "Amasomo mashya ari mu nzira. Abatoza ba PLP barimo kuyategura, muzagaruke vuba.",
+    "fr": "De nouveaux cours arrivent. Les formateurs de PLP les préparent, revenez bientôt."
+  },
+  "Own wording (optional, {p0}/300)": {
+    "rw": "Amagambo yawe (si ngombwa, {p0}/300)",
+    "fr": "Votre propre texte (facultatif, {p0}/300)"
+  },
+  "Leave empty to use PLP's official wording: committee members are thanked for their role, members for their service, each with their school's full name.": {
+    "rw": "Siga ubusa ukoreshe amagambo yemewe ya PLP: abagize komite bashimirwa inshingano zabo, abanyamuryango bagashimirwa umurimo wabo, buri wese n'izina ryuzuye ry'ishuri rye.",
+    "fr": "Laissez vide pour utiliser le texte officiel de PLP : les membres du comité sont remerciés pour leur rôle, les membres pour leur service, avec le nom complet de leur école."
+  },
+  "Our management team": {
+    "rw": "Itsinda ry'ubuyobozi bwacu",
+    "fr": "Notre équipe de direction"
+  },
+  "Executive Committee": {
+    "rw": "Komite Nyobozi",
+    "fr": "Comité exécutif"
+  },
+  "Special Oversight Teams": {
+    "rw": "Amatsinda yihariye y'igenzura",
+    "fr": "Équipes de contrôle spéciales"
+  },
+  "Departments": {
+    "rw": "Amashami",
+    "fr": "Départements"
+  },
   "Welcome popup saved": {
     "rw": "Itangazo ry'ikaze ryabitswe",
     "fr": "Fenêtre d'accueil enregistrée"
