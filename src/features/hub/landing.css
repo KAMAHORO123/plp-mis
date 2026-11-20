@@ -881,22 +881,21 @@ html[data-theme="dark"] .plp-team-all-grid small { color: #a9bccd; }
   .plp-programme-index a { min-height: 40px; }
 }
 
-/* Management team: a deep navy band; black-and-white portraits in even columns, numbered group headings. */
-.plp-management { --mg-bg: #0c1a2c; --mg-ink: #f3f6fa; --mg-soft: #9fb1c6; --mg-line: rgba(255,255,255,.12); --mg-accent: #8cc0ff;
-  position: relative; max-width: 1180px; margin: 40px auto 0; padding: 96px 0 104px; display: grid; gap: 88px; color: var(--mg-ink);
-  background: var(--mg-bg); box-shadow: 0 0 0 100vmax var(--mg-bg); clip-path: inset(0 -100vmax); }
+/* Management team: on the page's own light background; black-and-white portraits in even columns, numbered group headings. */
+.plp-management { --mg-ink: #10233c; --mg-soft: #61758c; --mg-line: #e1e7ed; --mg-accent: #1c73bb;
+  position: relative; max-width: 1180px; margin: 40px auto 0; padding: 88px 0 96px; display: grid; gap: 80px; color: var(--mg-ink); border-top: 1px solid var(--mg-line); }
 .plp-mgmt-top { display: grid; grid-template-columns: minmax(0, 1fr) 340px; align-items: end; gap: 64px; }
 .plp-mgmt-eyebrow { margin: 0 0 18px; font-size: 12px; font-weight: 600; letter-spacing: .18em; color: var(--mg-accent); }
 .plp-mgmt-head h2 { margin: 0 0 20px; font-family: Sora, Inter, sans-serif; font-size: clamp(36px, 5vw, 60px); font-weight: 600; letter-spacing: -.035em; line-height: 1.02; color: var(--mg-ink); }
 .plp-mgmt-head > p:last-child { margin: 0; max-width: 460px; font-size: 17px; line-height: 1.65; color: var(--mg-soft); }
 
 .plp-mgr { list-style: none; display: grid; align-content: start; gap: 14px; min-width: 0; }
-.plp-mgr-photo { position: relative; margin: 0; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 14px; background: #15263b; }
+.plp-mgr-photo { position: relative; margin: 0; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 14px; background: #eef4fa; box-shadow: 0 1px 2px rgba(16,35,60,.06), 0 8px 24px -12px rgba(16,35,60,.18); }
 .plp-mgr-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; filter: grayscale(1) contrast(1.04); transition: transform .7s cubic-bezier(.2,.7,.3,1); }
 .plp-mgr:hover .plp-mgr-photo img { transform: scale(1.04); }
 /* No photo yet: a quiet tile with initials, the same size as every portrait. */
-.plp-mgr-initials { position: absolute; inset: 0; display: grid; place-items: center; font-family: Sora, Inter, sans-serif; font-size: clamp(28px, 3vw, 38px); font-weight: 500; letter-spacing: .06em; color: rgba(255,255,255,.34);
-  background: linear-gradient(160deg, #1a2d46 0%, #12233a 100%); }
+.plp-mgr-initials { position: absolute; inset: 0; display: grid; place-items: center; font-family: Sora, Inter, sans-serif; font-size: clamp(28px, 3vw, 38px); font-weight: 500; letter-spacing: .06em; color: #8fa3b8;
+  background: linear-gradient(160deg, #f3f7fb 0%, #e4ebf2 100%); }
 .plp-mgr-text { display: grid; gap: 4px; }
 .plp-mgr-text strong { font-size: 15.5px; font-weight: 600; line-height: 1.3; color: var(--mg-ink); }
 .plp-mgr-role { font-size: 13px; line-height: 1.45; color: var(--mg-soft); }
