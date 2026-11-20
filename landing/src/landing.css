@@ -957,6 +957,16 @@ html[data-theme="dark"] .plp-mgmt-team h4 span { background: #1b2a42; color: #8d
   .plp-mgr-role, .plp-mgr-detail { font-size: 12.5px; }
 }
 
+/* Phones: the programme cards form one even column: same width, same height, same corners, no offsets. */
+@media (max-width: 767px) {
+  .plp-programme-wall .plp-programme-poster, .plp-programme-wall:not(.plp-wall-full) .plp-programme-poster.poster-0, .plp-programme-wall:not(.plp-wall-full) .plp-programme-poster.poster-1 { grid-column: 1 / -1 !important; margin: 0 !important; width: 100%; animation: none !important; transform: none !important; }
+  .plp-programme-wall .plp-poster-link, .plp-programme-wall .poster-0 .plp-poster-link, .plp-programme-wall .poster-1 .plp-poster-link, .plp-programme-wall .poster-2 .plp-poster-link, .plp-programme-wall .poster-4 .plp-poster-link { min-height: 0; aspect-ratio: 4 / 5; border-radius: 20px; }
+  .plp-poster-number, .poster-1 .plp-poster-number { top: 20px; left: 20px; padding: 5px 10px; border-radius: 999px; background: rgba(6,20,38,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .plp-poster-link::after { background: linear-gradient(180deg, rgba(7,21,36,.35) 0%, transparent 22%, rgba(6,20,38,.45) 50%, rgba(6,20,38,.96) 100%); }
+  .plp-poster-caption { left: 20px; right: 20px; bottom: 22px; }
+  .plp-poster-caption h2 { font-size: 28px; line-height: 1.1; margin: 8px 0; }
+}
+
 /* mobile-readable-text: generated, do not edit by hand */
 @media (max-width: 640px) {
   .plp-hero-kicker,
