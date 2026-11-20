@@ -1,5 +1,5 @@
 import { translateUi, useSiteLanguage } from '../../i18n/language';
-import { managementTeam } from './management-team';
+import { executiveDirector, initials, managementTeam, type Manager } from './management-team';
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Pause, Play, Download, BookOpen, Compass, Users, Award } from "lucide-react";
@@ -52,21 +52,44 @@ function Partnership() { useSiteLanguage(); return <section className="plp-partn
  * Everyone's photo, three at a time: the person in the middle is shown large, their neighbours smaller on each side.
  * Nothing moves on its own; Previous and Next (or the arrow keys) step through the team, and a side card can be clicked.
  */
-/** PLP's management team in three labelled bands, one card per person, as PLP management laid it out. */
+/** One person: a portrait (or a space kept for one), their name and role. */
+function ManagerCard({ person, feature = false }: { person: Manager; feature?: boolean }) {
+    useSiteLanguage();
+    return <li className={`plp-mgr${feature ? ' is-feature' : ''}`}>
+   <figure className="plp-mgr-photo">
+    {person.photo
+        ? <img src={`/images/plp/team/${person.photo}-${feature ? 'hd' : 'card'}.webp`} alt="" width={feature ? 800 : 320} height={feature ? 1000 : 400} loading="lazy" decoding="async"/>
+        : <span className="plp-mgr-initials" aria-hidden="true">{initials(person.name)}</span>}
+   </figure>
+   <div className="plp-mgr-text">
+    {feature && <span className="plp-mgr-kicker">{translateUi("Leading PLP since 2007")}</span>}
+    <strong>{translateUi(person.name)}</strong>
+    <span className="plp-mgr-role">{translateUi(person.role)}</span>
+    {person.detail && <span className="plp-mgr-detail">{translateUi(person.detail)}</span>}
+   </div>
+  </li>;
+}
+/** PLP's management team: the Executive Director, then the Executive Committee, the Special Oversight Teams and the Departments. */
 function Team() {
     useSiteLanguage();
     return <section className="plp-management" id="team" aria-labelledby="team-title">
-  <div className="plp-team-intro"><p className="plp-section-label">{translateUi("THE PEOPLE BEHIND PLP")}</p><h2 id="team-title">{translateUi("Our management team")}</h2><p>{translateUi("Working together for young people, with our club leaders, mentors, and volunteers.")}</p></div>
-  {managementTeam.map(group => <section key={group.id} className={`plp-mgmt-band is-${group.id}${group.dashed ? ' is-dashed' : ''}`} aria-labelledby={`mgmt-${group.id}`}>
-   <h3 id={`mgmt-${group.id}`}>{translateUi(group.title)}</h3>
-   {group.rows.map((row, i) => <ul key={i} className={`plp-mgmt-row is-${group.align}`}>{row.map(p => <li key={p.name} className={`plp-mgmt-card tone-${p.tone}`}>
-     {p.photo
-         ? <img src={`/images/plp/team/${p.photo}-card.webp`} alt="" width={320} height={400} loading="lazy" decoding="async"/>
-         : <span className="plp-mgmt-photo-gap" aria-hidden="true"/>}
-     <strong>{translateUi(p.name)}</strong>
-     <span>{translateUi(p.role)}</span>
-     {p.detail && <span>{translateUi(p.detail)}</span>}
-    </li>)}</ul>)}
+  <header className="plp-mgmt-head">
+   <p className="plp-section-label">{translateUi("THE PEOPLE BEHIND PLP")}</p>
+   <h2 id="team-title">{translateUi("Our management team")}</h2>
+   <p>{translateUi("Working together for young people, with our club leaders, mentors, and volunteers.")}</p>
+  </header>
+  <ul className="plp-mgmt-lead"><ManagerCard person={executiveDirector} feature/></ul>
+  {managementTeam.map(group => <section key={group.id} className={`plp-mgmt-group is-${group.id}`} aria-labelledby={`mgmt-${group.id}`}>
+   <div className="plp-mgmt-group-head">
+    <h3 id={`mgmt-${group.id}`}>{translateUi(group.title)}</h3>
+    <p>{translateUi(group.intro)}</p>
+   </div>
+   <div className="plp-mgmt-teams">
+    {group.teams.map((team, i) => <div key={team.title ?? i} className={`plp-mgmt-team${team.people.length > 4 ? ' is-wide' : ''}`}>
+     {team.title && <h4>{translateUi(team.title)}<span>{team.people.length}</span></h4>}
+     <ul className="plp-mgmt-grid">{team.people.map(p => <ManagerCard key={p.name} person={p}/>)}</ul>
+    </div>)}
+   </div>
   </section>)}
  </section>;
 }

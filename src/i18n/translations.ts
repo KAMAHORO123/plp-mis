@@ -1,5 +1,37 @@
 // Shared UI catalogue. Personal names and user-entered content retain their original text.
 export const translations: Record<string, {rw: string; fr: string}> = {
+  "Leading PLP since 2007": {
+    "rw": "Ayobora PLP kuva mu 2007",
+    "fr": "À la tête de PLP depuis 2007"
+  },
+  "Sets PLP’s direction and leads its programmes, partnerships and finances.": {
+    "rw": "Igena icyerekezo cya PLP kandi iyobora gahunda zayo, ubufatanye n'imari.",
+    "fr": "Fixe la direction de PLP et pilote ses programmes, partenariats et finances."
+  },
+  "Independent committees that keep PLP accountable and fair.": {
+    "rw": "Komite zigenga zituma PLP ibazwa inshingano kandi ikora mu buryo bunoze.",
+    "fr": "Des comités indépendants qui veillent à la redevabilité et à l'équité de PLP."
+  },
+  "The teams who run PLP’s programmes, clubs and services every day.": {
+    "rw": "Amatsinda akora buri munsi gahunda, amaclub na serivisi bya PLP.",
+    "fr": "Les équipes qui font vivre chaque jour les programmes, clubs et services de PLP."
+  },
+  "Programmes": {
+    "rw": "Gahunda",
+    "fr": "Programmes"
+  },
+  "Clubs, Homegroups & Membership": {
+    "rw": "Amaclub, Homegroups n'Abanyamuryango",
+    "fr": "Clubs, homegroups et adhésion"
+  },
+  "Finance": {
+    "rw": "Imari",
+    "fr": "Finances"
+  },
+  "Communications": {
+    "rw": "Itumanaho",
+    "fr": "Communication"
+  },
 "Session format": {"rw": "Uburyo bw’ikiganiro", "fr": "Format de la séance"},
 "Visit": {"rw": "Gusura", "fr": "Visite"},
 "In person": {"rw": "Imbonankubone", "fr": "En personne"},
