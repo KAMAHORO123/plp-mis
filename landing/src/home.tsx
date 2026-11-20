@@ -52,44 +52,43 @@ function Partnership() { useSiteLanguage(); return <section className="plp-partn
  * Everyone's photo, three at a time: the person in the middle is shown large, their neighbours smaller on each side.
  * Nothing moves on its own; Previous and Next (or the arrow keys) step through the team, and a side card can be clicked.
  */
-/** One person: a portrait (or a space kept for one), their name and role. */
+/** One person: a portrait (or a quiet space kept for one), their name and role. */
 function ManagerCard({ person, feature = false }: { person: Manager; feature?: boolean }) {
     useSiteLanguage();
     return <li className={`plp-mgr${feature ? ' is-feature' : ''}`}>
    <figure className="plp-mgr-photo">
     {person.photo
-        ? <img src={`/images/plp/team/${person.photo}-${feature ? 'hd' : 'card'}.webp`} alt="" width={feature ? 800 : 320} height={feature ? 1000 : 400} loading="lazy" decoding="async"/>
+        ? <img src={`/images/plp/${person.photo}-${feature ? "hd" : "card"}.webp`} alt="" width={feature ? 800 : 320} height={feature ? 1000 : 400} loading="lazy" decoding="async"/>
         : <span className="plp-mgr-initials" aria-hidden="true">{initials(person.name)}</span>}
    </figure>
    <div className="plp-mgr-text">
-    {feature && <span className="plp-mgr-kicker">{translateUi("Leading PLP since 2007")}</span>}
     <strong>{translateUi(person.name)}</strong>
-    <span className="plp-mgr-role">{translateUi(person.role)}</span>
-    {person.detail && <span className="plp-mgr-detail">{translateUi(person.detail)}</span>}
+    <span className="plp-mgr-role">{translateUi(person.role)}{person.detail && <> · {translateUi(person.detail)}</>}</span>
    </div>
   </li>;
 }
-/** PLP's management team: the Executive Director, then the Executive Committee, the Special Oversight Teams and the Departments. */
+/** PLP's management team on a dark band: the Executive Director, then each group with numbered headings. */
 function Team() {
     useSiteLanguage();
     return <section className="plp-management" id="team" aria-labelledby="team-title">
-  <header className="plp-mgmt-head">
-   <p className="plp-section-label">{translateUi("THE PEOPLE BEHIND PLP")}</p>
-   <h2 id="team-title">{translateUi("Our management team")}</h2>
-   <p>{translateUi("Working together for young people, with our club leaders, mentors, and volunteers.")}</p>
-  </header>
-  <ul className="plp-mgmt-lead"><ManagerCard person={executiveDirector} feature/></ul>
-  {managementTeam.map(group => <section key={group.id} className={`plp-mgmt-group is-${group.id}`} aria-labelledby={`mgmt-${group.id}`}>
+  <div className="plp-mgmt-top">
+   <header className="plp-mgmt-head">
+    <p className="plp-mgmt-eyebrow">{translateUi("THE PEOPLE BEHIND PLP")}</p>
+    <h2 id="team-title">{translateUi("Our management team")}</h2>
+    <p>{translateUi("Working together for young people, with our club leaders, mentors, and volunteers.")}</p>
+   </header>
+   <ul className="plp-mgmt-lead"><ManagerCard person={executiveDirector} feature/></ul>
+  </div>
+  {managementTeam.map((group, n) => <section key={group.id} className={`plp-mgmt-group is-${group.id}`} aria-labelledby={`mgmt-${group.id}`}>
    <div className="plp-mgmt-group-head">
+    <span className="plp-mgmt-num" aria-hidden="true">0{n + 1}</span>
     <h3 id={`mgmt-${group.id}`}>{translateUi(group.title)}</h3>
     <p>{translateUi(group.intro)}</p>
    </div>
-   <div className="plp-mgmt-teams">
-    {group.teams.map((team, i) => <div key={team.title ?? i} className={`plp-mgmt-team${team.people.length > 4 ? ' is-wide' : ''}`}>
-     {team.title && <h4>{translateUi(team.title)}<span>{team.people.length}</span></h4>}
-     <ul className="plp-mgmt-grid">{team.people.map(p => <ManagerCard key={p.name} person={p}/>)}</ul>
-    </div>)}
-   </div>
+   {group.teams.map((team, i) => <div key={team.title ?? i} className="plp-mgmt-team">
+    {team.title && <h4>{translateUi(team.title)}</h4>}
+    <ul className="plp-mgmt-grid">{team.people.map(p => <ManagerCard key={p.name} person={p}/>)}</ul>
+   </div>)}
   </section>)}
  </section>;
 }
@@ -147,7 +146,7 @@ export function AboutPage() {
     useSiteLanguage();
     return <>
   <header className="plp-page-intro"><p className="plp-section-label">{translateUi("ABOUT PEACE AND LOVE PROCLAIMERS")}</p><h1>{translateUi("Youth for Change.")}<br />{translateUi("Since 2007.")}</h1><p>{translateUi("PLP is a youth-led organization creating future leaders through unity, peace, and youth development. Young people take responsibility for strengthening their communities and building a more unified world.")}</p></header>
-  <figure className="plp-org-wide-photo"><img src="/images/plp/plp-community-full.webp" alt={translateUi("A group of PLP members pictured together")} width="1343" height="822"/><figcaption>{translateUi("The PLP community")}</figcaption></figure>
+  <figure className="plp-org-wide-photo"><img src="/images/plp/plp-community-whole.webp" alt={translateUi("A group of PLP members pictured together")} width="1297" height="822"/><figcaption>{translateUi("The PLP community")}</figcaption></figure>
   <section className="plp-about-statements"><div><p className="plp-section-label">{translateUi("OUR VISION")}</p><h2>{translateUi("A united and peaceful world, led by skilled and empowered youth.")}</h2></div><div><p className="plp-section-label">{translateUi("OUR MISSION")}</p><p>{translateUi("To develop a generation of young people equipped with leadership, cultural identity, and practical skills, enabling them to build peaceful, resilient, and thriving communities.")}</p><h3>{translateUi("Why this work matters")}</h3><p>{translateUi("Our work addresses connected challenges: unemployment and limited practical skills, post-genocide trauma and loss of historical identity, mental health stigma and substance abuse, poverty and school dropout, and gaps in career readiness.")}</p></div></section>
   <Reach />
   <section className="plp-about-statements"><div><p className="plp-section-label">{translateUi("WHERE WE COME TOGETHER")}</p><h2>{translateUi("In schools.")}<br />{translateUi("In communities.")}<br />{translateUi("Across borders.")}</h2></div><div><p>{translateUi("Clubs and homegroups bring PLP into high schools, universities, and local communities. Rwanda is PLP\u2019s base and benchmark country.")}</p><p>{translateUi("A Canada chapter launched on July 26, 2025, extending the organization\u2019s community beyond Rwanda.")}</p><Link className="plp-editorial-link" to="/auth/signup">{translateUi("Join PLP ")}<ArrowUpRight size={18}/></Link></div></section>
